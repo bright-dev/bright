@@ -1,0 +1,3898 @@
+Mass Stream: LWR_CoreInput
+	Mass: 1
+	---------
+	U234	0.000343985
+	U235	0.0429981
+	U238	0.956658
+
+BUd_a = 0	k_a = 0.0545544	sign_a = -1
+BUd_b = -5	k_b = 0.053871	sign_b = -1
+
+BUd_a = 0	k_a = 0.0545544	sign_a = -1
+BUd_b = -10	k_b = 0.0531284	sign_b = -1
+
+BUd_a = 0	k_a = 0.109109	sign_a = -1
+BUd_b = -5	k_b = 0.107742	sign_b = -1
+
+BUd_a = 0	k_a = 0.109109	sign_a = -1
+BUd_b = -10	k_b = 0.106257	sign_b = -1
+
+BUd_a = 0	k_a = 0.163663	sign_a = -1
+BUd_b = -5	k_b = 0.161613	sign_b = -1
+
+BUd_a = 0	k_a = 0.163663	sign_a = -1
+BUd_b = -10	k_b = 0.159385	sign_b = -1
+
+BUd_a = 0	k_a = 0.218218	sign_a = -1
+BUd_b = -5	k_b = 0.215484	sign_b = -1
+
+BUd_a = 0	k_a = 0.218218	sign_a = -1
+BUd_b = -10	k_b = 0.212514	sign_b = -1
+
+BUd_a = 0	k_a = 0.272772	sign_a = -1
+BUd_b = -5	k_b = 0.269355	sign_b = -1
+
+BUd_a = 0	k_a = 0.272772	sign_a = -1
+BUd_b = -10	k_b = 0.265642	sign_b = -1
+
+BUd_a = 0	k_a = 0.327327	sign_a = -1
+BUd_b = -5	k_b = 0.323226	sign_b = -1
+
+BUd_a = 0	k_a = 0.327327	sign_a = -1
+BUd_b = -10	k_b = 0.31877	sign_b = -1
+
+BUd_a = 0	k_a = 0.381881	sign_a = -1
+BUd_b = -5	k_b = 0.377097	sign_b = -1
+
+BUd_a = 0	k_a = 0.381881	sign_a = -1
+BUd_b = -10	k_b = 0.371899	sign_b = -1
+
+BUd_a = 0	k_a = 0.436435	sign_a = -1
+BUd_b = -5	k_b = 0.430968	sign_b = -1
+
+BUd_a = 0	k_a = 0.436435	sign_a = -1
+BUd_b = -10	k_b = 0.425027	sign_b = -1
+
+BUd_a = 0	k_a = 0.49099	sign_a = -1
+BUd_b = -5	k_b = 0.484839	sign_b = -1
+
+BUd_a = 0	k_a = 0.49099	sign_a = -1
+BUd_b = -10	k_b = 0.478155	sign_b = -1
+
+BUd_a = 0	k_a = 0.545544	sign_a = -1
+BUd_b = -5	k_b = 0.53871	sign_b = -1
+
+BUd_a = 0	k_a = 0.545544	sign_a = -1
+BUd_b = -10	k_b = 0.531284	sign_b = -1
+
+BUd_a = 0	k_a = 0.600099	sign_a = -1
+BUd_b = -5	k_b = 0.592581	sign_b = -1
+
+BUd_a = 0	k_a = 0.600099	sign_a = -1
+BUd_b = -10	k_b = 0.584412	sign_b = -1
+
+BUd_a = 0	k_a = 0.654653	sign_a = -1
+BUd_b = -5	k_b = 0.646452	sign_b = -1
+
+BUd_a = 0	k_a = 0.654653	sign_a = -1
+BUd_b = -10	k_b = 0.637541	sign_b = -1
+
+BUd_a = 0	k_a = 0.709208	sign_a = -1
+BUd_b = -5	k_b = 0.700323	sign_b = -1
+
+BUd_a = 0	k_a = 0.709208	sign_a = -1
+BUd_b = -10	k_b = 0.690669	sign_b = -1
+
+BUd_a = 0	k_a = 0.763762	sign_a = -1
+BUd_b = -5	k_b = 0.754194	sign_b = -1
+
+BUd_a = 0	k_a = 0.763762	sign_a = -1
+BUd_b = -10	k_b = 0.743797	sign_b = -1
+
+BUd_a = 0	k_a = 0.818316	sign_a = -1
+BUd_b = -5	k_b = 0.808065	sign_b = -1
+
+BUd_a = 0	k_a = 0.818316	sign_a = -1
+BUd_b = -10	k_b = 0.796926	sign_b = -1
+
+BUd_a = 0	k_a = 0.872871	sign_a = -1
+BUd_b = -5	k_b = 0.861936	sign_b = -1
+
+BUd_a = 0	k_a = 0.872871	sign_a = -1
+BUd_b = -10	k_b = 0.850054	sign_b = -1
+
+BUd_a = 0	k_a = 0.927425	sign_a = -1
+BUd_b = -5	k_b = 0.915807	sign_b = -1
+
+BUd_a = 0	k_a = 0.927425	sign_a = -1
+BUd_b = -10	k_b = 0.903182	sign_b = -1
+
+BUd_a = 0	k_a = 0.98198	sign_a = -1
+BUd_b = -5	k_b = 0.969678	sign_b = -1
+
+BUd_a = 0	k_a = 0.98198	sign_a = -1
+BUd_b = -10	k_b = 0.956311	sign_b = -1
+
+BUd_a = 23.0347	k_a = 1.00234	sign_a = 1
+BUd_b = 28.0347	k_b = 0.987174	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 23.8264	k_a = 1	sign_a = 1
+BUd_b = 23.8264	k_b = 1	sign_b = -1
+BUd_c = 23.8264	k_c = 1	sign_c = -1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 208.726	k_b = 1.55733	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 213.726	k_b = 1.55534	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 218.726	k_b = 1.54643	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 223.726	k_b = 1.54508	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 228.726	k_b = 1.5428	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 233.726	k_b = 1.53608	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 238.726	k_b = 1.53372	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 243.726	k_b = 1.52674	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 248.726	k_b = 1.52483	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 253.726	k_b = 1.51659	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 258.726	k_b = 1.51118	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 263.726	k_b = 1.50952	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 268.726	k_b = 1.50814	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 273.726	k_b = 1.50419	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 278.726	k_b = 1.50055	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 283.726	k_b = 1.49249	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 288.726	k_b = 1.4908	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 293.726	k_b = 1.48514	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 298.726	k_b = 1.48187	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 303.726	k_b = 1.47825	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 308.726	k_b = 1.47626	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 313.726	k_b = 1.47485	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 318.726	k_b = 1.47145	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 323.726	k_b = 1.46983	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 328.726	k_b = 1.46658	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 333.726	k_b = 1.46333	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 338.726	k_b = 1.46056	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 343.726	k_b = 1.45746	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 348.726	k_b = 1.45251	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 353.726	k_b = 1.45178	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 358.726	k_b = 1.4486	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 363.726	k_b = 1.44623	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 368.726	k_b = 1.44309	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 373.726	k_b = 1.43423	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 378.726	k_b = 1.43322	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 383.726	k_b = 1.43511	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 388.726	k_b = 1.42448	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 393.726	k_b = 1.42179	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 398.726	k_b = 1.41864	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 403.726	k_b = 1.41633	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 408.726	k_b = 1.41385	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 413.726	k_b = 1.41131	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 418.726	k_b = 1.40878	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 423.726	k_b = 1.40626	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 428.726	k_b = 1.40374	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 433.726	k_b = 1.40123	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 438.726	k_b = 1.39872	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 443.726	k_b = 1.39622	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 448.726	k_b = 1.39373	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 453.726	k_b = 1.39124	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 458.726	k_b = 1.38876	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 463.726	k_b = 1.38629	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 468.726	k_b = 1.38382	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 473.726	k_b = 1.38135	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 478.726	k_b = 1.37889	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 483.726	k_b = 1.37644	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 488.726	k_b = 1.374	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 493.726	k_b = 1.37156	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 498.726	k_b = 1.36912	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 503.726	k_b = 1.36669	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 508.726	k_b = 1.36427	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 513.726	k_b = 1.36185	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 518.726	k_b = 1.35944	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 523.726	k_b = 1.35704	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 528.726	k_b = 1.35464	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 533.726	k_b = 1.35224	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 538.726	k_b = 1.34985	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 543.726	k_b = 1.34747	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 548.726	k_b = 1.34509	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 553.726	k_b = 1.34272	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 558.726	k_b = 1.34035	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 563.726	k_b = 1.33799	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 568.726	k_b = 1.33564	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 573.726	k_b = 1.33329	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 578.726	k_b = 1.33094	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 583.726	k_b = 1.3286	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 588.726	k_b = 1.32627	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 593.726	k_b = 1.32394	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 598.726	k_b = 1.32162	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 603.726	k_b = 1.3193	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 608.726	k_b = 1.31699	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 613.726	k_b = 1.31468	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 618.726	k_b = 1.31238	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 623.726	k_b = 1.31008	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 628.726	k_b = 1.30779	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 633.726	k_b = 1.3055	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 638.726	k_b = 1.30322	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 643.726	k_b = 1.30095	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 648.726	k_b = 1.29868	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 653.726	k_b = 1.29641	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 658.726	k_b = 1.29415	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 663.726	k_b = 1.29189	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 668.726	k_b = 1.28964	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 673.726	k_b = 1.2874	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 678.726	k_b = 1.28516	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 683.726	k_b = 1.28293	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 688.726	k_b = 1.2807	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 693.726	k_b = 1.27847	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 698.726	k_b = 1.27625	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 703.726	k_b = 1.27404	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 708.726	k_b = 1.27183	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 713.726	k_b = 1.26962	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 718.726	k_b = 1.26742	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 723.726	k_b = 1.26522	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 728.726	k_b = 1.26303	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 733.726	k_b = 1.26085	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 738.726	k_b = 1.25867	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 743.726	k_b = 1.25649	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 748.726	k_b = 1.25432	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 753.726	k_b = 1.25216	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 758.726	k_b = 1.24999	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 763.726	k_b = 1.24784	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 768.726	k_b = 1.24568	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 773.726	k_b = 1.24354	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 778.726	k_b = 1.24139	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 783.726	k_b = 1.23926	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 788.726	k_b = 1.23712	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 793.726	k_b = 1.23499	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 798.726	k_b = 1.23287	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 803.726	k_b = 1.23075	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 808.726	k_b = 1.22864	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 813.726	k_b = 1.22653	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 818.726	k_b = 1.22442	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 823.726	k_b = 1.22232	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 828.726	k_b = 1.22022	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 833.726	k_b = 1.21813	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 838.726	k_b = 1.21604	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 843.726	k_b = 1.21396	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 848.726	k_b = 1.21188	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 853.726	k_b = 1.20981	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 858.726	k_b = 1.20774	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 863.726	k_b = 1.20567	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 868.726	k_b = 1.20361	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 873.726	k_b = 1.20156	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 878.726	k_b = 1.1995	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 883.726	k_b = 1.19746	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 888.726	k_b = 1.19541	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 893.726	k_b = 1.19337	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 898.726	k_b = 1.19134	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 903.726	k_b = 1.18931	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 908.726	k_b = 1.18728	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 913.726	k_b = 1.18526	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 918.726	k_b = 1.18324	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 923.726	k_b = 1.18123	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 928.726	k_b = 1.17922	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 933.726	k_b = 1.17722	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 938.726	k_b = 1.17522	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 943.726	k_b = 1.17322	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 948.726	k_b = 1.17123	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 953.726	k_b = 1.16924	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 958.726	k_b = 1.16726	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 963.726	k_b = 1.16528	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 968.726	k_b = 1.1633	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 973.726	k_b = 1.16133	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 978.726	k_b = 1.15936	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 983.726	k_b = 1.1574	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 988.726	k_b = 1.15544	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 993.726	k_b = 1.15348	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 998.726	k_b = 1.15153	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.56511	sign_a = 1
+BUd_b = 1003.73	k_b = 1.14958	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 208.726	k_b = 1.5184	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 213.726	k_b = 1.51646	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 218.726	k_b = 1.50777	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 223.726	k_b = 1.50645	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 228.726	k_b = 1.50423	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 233.726	k_b = 1.49768	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 238.726	k_b = 1.49537	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 243.726	k_b = 1.48857	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 248.726	k_b = 1.48671	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 253.726	k_b = 1.47868	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 258.726	k_b = 1.4734	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 263.726	k_b = 1.47178	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 268.726	k_b = 1.47043	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 273.726	k_b = 1.46658	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 278.726	k_b = 1.46304	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 283.726	k_b = 1.45518	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 288.726	k_b = 1.45353	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 293.726	k_b = 1.44802	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 298.726	k_b = 1.44482	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 303.726	k_b = 1.44129	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 308.726	k_b = 1.43935	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 313.726	k_b = 1.43798	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 318.726	k_b = 1.43466	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 323.726	k_b = 1.43309	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 328.726	k_b = 1.42991	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 333.726	k_b = 1.42674	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 338.726	k_b = 1.42405	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 343.726	k_b = 1.42102	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 348.726	k_b = 1.4162	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 353.726	k_b = 1.41548	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 358.726	k_b = 1.41239	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 363.726	k_b = 1.41007	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 368.726	k_b = 1.40701	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 373.726	k_b = 1.39837	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 378.726	k_b = 1.39739	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 383.726	k_b = 1.39923	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 388.726	k_b = 1.38887	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 393.726	k_b = 1.38625	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 398.726	k_b = 1.38317	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 403.726	k_b = 1.38092	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 408.726	k_b = 1.3785	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 413.726	k_b = 1.37603	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 418.726	k_b = 1.37356	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 423.726	k_b = 1.3711	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 428.726	k_b = 1.36865	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 433.726	k_b = 1.3662	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 438.726	k_b = 1.36375	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 443.726	k_b = 1.36132	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 448.726	k_b = 1.35889	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 453.726	k_b = 1.35646	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 458.726	k_b = 1.35404	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 463.726	k_b = 1.35163	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 468.726	k_b = 1.34922	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 473.726	k_b = 1.34682	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 478.726	k_b = 1.34442	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 483.726	k_b = 1.34203	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 488.726	k_b = 1.33965	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 493.726	k_b = 1.33727	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 498.726	k_b = 1.33489	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 503.726	k_b = 1.33253	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 508.726	k_b = 1.33016	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 513.726	k_b = 1.32781	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 518.726	k_b = 1.32546	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 523.726	k_b = 1.32311	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 528.726	k_b = 1.32077	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 533.726	k_b = 1.31844	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 538.726	k_b = 1.31611	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 543.726	k_b = 1.31378	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 548.726	k_b = 1.31146	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 553.726	k_b = 1.30915	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 558.726	k_b = 1.30684	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 563.726	k_b = 1.30454	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 568.726	k_b = 1.30224	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 573.726	k_b = 1.29995	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 578.726	k_b = 1.29767	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 583.726	k_b = 1.29539	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 588.726	k_b = 1.29311	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 593.726	k_b = 1.29084	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 598.726	k_b = 1.28858	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 603.726	k_b = 1.28632	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 608.726	k_b = 1.28406	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 613.726	k_b = 1.28181	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 618.726	k_b = 1.27957	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 623.726	k_b = 1.27733	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 628.726	k_b = 1.27509	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 633.726	k_b = 1.27287	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 638.726	k_b = 1.27064	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 643.726	k_b = 1.26842	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 648.726	k_b = 1.26621	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 653.726	k_b = 1.264	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 658.726	k_b = 1.2618	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 663.726	k_b = 1.2596	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 668.726	k_b = 1.2574	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 673.726	k_b = 1.25521	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 678.726	k_b = 1.25303	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 683.726	k_b = 1.25085	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 688.726	k_b = 1.24868	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 693.726	k_b = 1.24651	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 698.726	k_b = 1.24434	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 703.726	k_b = 1.24218	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 708.726	k_b = 1.24003	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 713.726	k_b = 1.23788	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 718.726	k_b = 1.23573	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 723.726	k_b = 1.23359	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 728.726	k_b = 1.23146	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 733.726	k_b = 1.22933	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 738.726	k_b = 1.2272	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 743.726	k_b = 1.22508	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 748.726	k_b = 1.22296	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 753.726	k_b = 1.22085	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 758.726	k_b = 1.21874	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 763.726	k_b = 1.21664	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 768.726	k_b = 1.21454	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 773.726	k_b = 1.21245	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 778.726	k_b = 1.21036	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 783.726	k_b = 1.20828	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 788.726	k_b = 1.2062	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 793.726	k_b = 1.20412	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 798.726	k_b = 1.20205	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 803.726	k_b = 1.19998	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 808.726	k_b = 1.19792	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 813.726	k_b = 1.19586	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 818.726	k_b = 1.19381	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 823.726	k_b = 1.19176	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 828.726	k_b = 1.18972	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 833.726	k_b = 1.18768	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 838.726	k_b = 1.18564	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 843.726	k_b = 1.18361	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 848.726	k_b = 1.18159	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 853.726	k_b = 1.17956	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 858.726	k_b = 1.17755	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 863.726	k_b = 1.17553	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 868.726	k_b = 1.17352	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 873.726	k_b = 1.17152	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 878.726	k_b = 1.16952	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 883.726	k_b = 1.16752	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 888.726	k_b = 1.16553	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 893.726	k_b = 1.16354	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 898.726	k_b = 1.16156	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 903.726	k_b = 1.15958	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 908.726	k_b = 1.1576	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 913.726	k_b = 1.15563	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 918.726	k_b = 1.15366	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 923.726	k_b = 1.1517	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 928.726	k_b = 1.14974	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 933.726	k_b = 1.14779	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 938.726	k_b = 1.14584	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 943.726	k_b = 1.14389	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 948.726	k_b = 1.14195	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 953.726	k_b = 1.14001	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 958.726	k_b = 1.13807	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 963.726	k_b = 1.13614	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 968.726	k_b = 1.13422	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 973.726	k_b = 1.13229	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 978.726	k_b = 1.13038	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 983.726	k_b = 1.12846	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 988.726	k_b = 1.12655	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 993.726	k_b = 1.12465	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 998.726	k_b = 1.12274	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.52599	sign_a = 1
+BUd_b = 1003.73	k_b = 1.12084	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 208.726	k_b = 1.47947	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 213.726	k_b = 1.47758	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 218.726	k_b = 1.46911	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 223.726	k_b = 1.46783	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 228.726	k_b = 1.46566	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 233.726	k_b = 1.45927	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 238.726	k_b = 1.45703	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 243.726	k_b = 1.4504	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 248.726	k_b = 1.44859	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 253.726	k_b = 1.44076	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 258.726	k_b = 1.43562	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 263.726	k_b = 1.43404	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 268.726	k_b = 1.43273	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 273.726	k_b = 1.42898	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 278.726	k_b = 1.42552	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 283.726	k_b = 1.41787	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 288.726	k_b = 1.41626	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 293.726	k_b = 1.41089	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 298.726	k_b = 1.40778	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 303.726	k_b = 1.40434	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 308.726	k_b = 1.40245	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 313.726	k_b = 1.40111	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 318.726	k_b = 1.39787	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 323.726	k_b = 1.39634	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 328.726	k_b = 1.39325	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 333.726	k_b = 1.39016	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 338.726	k_b = 1.38753	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 343.726	k_b = 1.38459	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 348.726	k_b = 1.37988	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 353.726	k_b = 1.37919	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 358.726	k_b = 1.37617	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 363.726	k_b = 1.37392	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 368.726	k_b = 1.37093	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 373.726	k_b = 1.36252	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 378.726	k_b = 1.36156	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 383.726	k_b = 1.36335	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 388.726	k_b = 1.35326	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 393.726	k_b = 1.3507	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 398.726	k_b = 1.3477	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 403.726	k_b = 1.34551	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 408.726	k_b = 1.34315	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 413.726	k_b = 1.34075	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 418.726	k_b = 1.33834	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 423.726	k_b = 1.33594	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 428.726	k_b = 1.33355	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 433.726	k_b = 1.33117	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 438.726	k_b = 1.32879	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 443.726	k_b = 1.32641	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 448.726	k_b = 1.32404	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 453.726	k_b = 1.32168	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 458.726	k_b = 1.31932	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 463.726	k_b = 1.31697	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 468.726	k_b = 1.31462	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 473.726	k_b = 1.31228	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 478.726	k_b = 1.30995	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 483.726	k_b = 1.30762	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 488.726	k_b = 1.3053	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 493.726	k_b = 1.30298	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 498.726	k_b = 1.30067	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 503.726	k_b = 1.29836	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 508.726	k_b = 1.29606	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 513.726	k_b = 1.29376	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 518.726	k_b = 1.29147	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 523.726	k_b = 1.28918	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 528.726	k_b = 1.2869	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 533.726	k_b = 1.28463	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 538.726	k_b = 1.28236	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 543.726	k_b = 1.2801	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 548.726	k_b = 1.27784	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 553.726	k_b = 1.27558	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 558.726	k_b = 1.27333	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 563.726	k_b = 1.27109	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 568.726	k_b = 1.26885	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 573.726	k_b = 1.26662	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 578.726	k_b = 1.26439	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 583.726	k_b = 1.26217	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 588.726	k_b = 1.25995	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 593.726	k_b = 1.25774	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 598.726	k_b = 1.25554	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 603.726	k_b = 1.25333	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 608.726	k_b = 1.25114	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 613.726	k_b = 1.24894	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 618.726	k_b = 1.24676	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 623.726	k_b = 1.24458	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 628.726	k_b = 1.2424	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 633.726	k_b = 1.24023	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 638.726	k_b = 1.23806	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 643.726	k_b = 1.2359	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 648.726	k_b = 1.23374	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 653.726	k_b = 1.23159	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 658.726	k_b = 1.22944	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 663.726	k_b = 1.2273	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 668.726	k_b = 1.22516	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 673.726	k_b = 1.22303	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 678.726	k_b = 1.2209	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 683.726	k_b = 1.21878	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 688.726	k_b = 1.21666	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 693.726	k_b = 1.21455	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 698.726	k_b = 1.21244	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 703.726	k_b = 1.21033	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 708.726	k_b = 1.20823	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 713.726	k_b = 1.20614	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 718.726	k_b = 1.20405	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 723.726	k_b = 1.20196	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 728.726	k_b = 1.19988	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 733.726	k_b = 1.19781	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 738.726	k_b = 1.19573	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 743.726	k_b = 1.19367	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 748.726	k_b = 1.19161	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 753.726	k_b = 1.18955	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 758.726	k_b = 1.18749	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 763.726	k_b = 1.18544	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 768.726	k_b = 1.1834	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 773.726	k_b = 1.18136	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 778.726	k_b = 1.17933	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 783.726	k_b = 1.17729	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 788.726	k_b = 1.17527	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 793.726	k_b = 1.17325	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 798.726	k_b = 1.17123	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 803.726	k_b = 1.16921	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 808.726	k_b = 1.1672	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 813.726	k_b = 1.1652	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 818.726	k_b = 1.1632	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 823.726	k_b = 1.1612	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 828.726	k_b = 1.15921	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 833.726	k_b = 1.15722	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 838.726	k_b = 1.15524	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 843.726	k_b = 1.15326	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 848.726	k_b = 1.15129	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 853.726	k_b = 1.14932	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 858.726	k_b = 1.14735	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 863.726	k_b = 1.14539	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 868.726	k_b = 1.14343	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 873.726	k_b = 1.14148	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 878.726	k_b = 1.13953	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 883.726	k_b = 1.13758	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 888.726	k_b = 1.13564	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 893.726	k_b = 1.13371	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 898.726	k_b = 1.13177	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 903.726	k_b = 1.12984	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 908.726	k_b = 1.12792	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 913.726	k_b = 1.126	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 918.726	k_b = 1.12408	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 923.726	k_b = 1.12217	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 928.726	k_b = 1.12026	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 933.726	k_b = 1.11836	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 938.726	k_b = 1.11646	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 943.726	k_b = 1.11456	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 948.726	k_b = 1.11267	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 953.726	k_b = 1.11078	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 958.726	k_b = 1.10889	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 963.726	k_b = 1.10701	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 968.726	k_b = 1.10513	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 973.726	k_b = 1.10326	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 978.726	k_b = 1.10139	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 983.726	k_b = 1.09953	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 988.726	k_b = 1.09767	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 993.726	k_b = 1.09581	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 998.726	k_b = 1.09395	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.48686	sign_a = 1
+BUd_b = 1003.73	k_b = 1.0921	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 208.726	k_b = 1.44053	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 213.726	k_b = 1.43869	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 218.726	k_b = 1.43045	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 223.726	k_b = 1.4292	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 228.726	k_b = 1.42709	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 233.726	k_b = 1.42087	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 238.726	k_b = 1.41869	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 243.726	k_b = 1.41223	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 248.726	k_b = 1.41047	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 253.726	k_b = 1.40285	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 258.726	k_b = 1.39784	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 263.726	k_b = 1.39631	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 268.726	k_b = 1.39503	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 273.726	k_b = 1.39137	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 278.726	k_b = 1.38801	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 283.726	k_b = 1.38056	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 288.726	k_b = 1.37899	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 293.726	k_b = 1.37376	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 298.726	k_b = 1.37073	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 303.726	k_b = 1.36738	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 308.726	k_b = 1.36554	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 313.726	k_b = 1.36423	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 318.726	k_b = 1.36109	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 323.726	k_b = 1.35959	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 328.726	k_b = 1.35658	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 333.726	k_b = 1.35358	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 338.726	k_b = 1.35102	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 343.726	k_b = 1.34815	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 348.726	k_b = 1.34357	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 353.726	k_b = 1.34289	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 358.726	k_b = 1.33996	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 363.726	k_b = 1.33776	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 368.726	k_b = 1.33486	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 373.726	k_b = 1.32666	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 378.726	k_b = 1.32573	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 383.726	k_b = 1.32748	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 388.726	k_b = 1.31765	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 393.726	k_b = 1.31516	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 398.726	k_b = 1.31224	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 403.726	k_b = 1.3101	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 408.726	k_b = 1.30781	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 413.726	k_b = 1.30546	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 418.726	k_b = 1.30312	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 423.726	k_b = 1.30079	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 428.726	k_b = 1.29846	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 433.726	k_b = 1.29614	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 438.726	k_b = 1.29382	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 443.726	k_b = 1.29151	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 448.726	k_b = 1.2892	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 453.726	k_b = 1.2869	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 458.726	k_b = 1.2846	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 463.726	k_b = 1.28231	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 468.726	k_b = 1.28003	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 473.726	k_b = 1.27775	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 478.726	k_b = 1.27548	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 483.726	k_b = 1.27321	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 488.726	k_b = 1.27095	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 493.726	k_b = 1.26869	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 498.726	k_b = 1.26644	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 503.726	k_b = 1.26419	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 508.726	k_b = 1.26195	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 513.726	k_b = 1.25971	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 518.726	k_b = 1.25748	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 523.726	k_b = 1.25526	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 528.726	k_b = 1.25304	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 533.726	k_b = 1.25082	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 538.726	k_b = 1.24861	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 543.726	k_b = 1.24641	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 548.726	k_b = 1.24421	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 553.726	k_b = 1.24202	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 558.726	k_b = 1.23983	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 563.726	k_b = 1.23764	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 568.726	k_b = 1.23546	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 573.726	k_b = 1.23329	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 578.726	k_b = 1.23112	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 583.726	k_b = 1.22896	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 588.726	k_b = 1.2268	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 593.726	k_b = 1.22464	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 598.726	k_b = 1.22249	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 603.726	k_b = 1.22035	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 608.726	k_b = 1.21821	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 613.726	k_b = 1.21608	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 618.726	k_b = 1.21395	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 623.726	k_b = 1.21182	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 628.726	k_b = 1.2097	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 633.726	k_b = 1.20759	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 638.726	k_b = 1.20548	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 643.726	k_b = 1.20338	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 648.726	k_b = 1.20128	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 653.726	k_b = 1.19918	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 658.726	k_b = 1.19709	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 663.726	k_b = 1.195	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 668.726	k_b = 1.19292	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 673.726	k_b = 1.19084	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 678.726	k_b = 1.18877	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 683.726	k_b = 1.18671	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 688.726	k_b = 1.18464	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 693.726	k_b = 1.18259	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 698.726	k_b = 1.18053	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 703.726	k_b = 1.17848	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 708.726	k_b = 1.17644	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 713.726	k_b = 1.1744	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 718.726	k_b = 1.17236	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 723.726	k_b = 1.17033	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 728.726	k_b = 1.16831	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 733.726	k_b = 1.16629	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 738.726	k_b = 1.16427	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 743.726	k_b = 1.16226	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 748.726	k_b = 1.16025	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 753.726	k_b = 1.15824	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 758.726	k_b = 1.15624	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 763.726	k_b = 1.15425	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 768.726	k_b = 1.15226	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 773.726	k_b = 1.15027	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 778.726	k_b = 1.14829	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 783.726	k_b = 1.14631	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 788.726	k_b = 1.14434	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 793.726	k_b = 1.14237	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 798.726	k_b = 1.14041	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 803.726	k_b = 1.13845	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 808.726	k_b = 1.13649	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 813.726	k_b = 1.13454	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 818.726	k_b = 1.13259	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 823.726	k_b = 1.13065	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 828.726	k_b = 1.12871	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 833.726	k_b = 1.12677	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 838.726	k_b = 1.12484	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 843.726	k_b = 1.12291	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 848.726	k_b = 1.12099	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 853.726	k_b = 1.11907	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 858.726	k_b = 1.11716	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 863.726	k_b = 1.11525	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 868.726	k_b = 1.11334	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 873.726	k_b = 1.11144	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 878.726	k_b = 1.10954	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 883.726	k_b = 1.10765	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 888.726	k_b = 1.10576	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 893.726	k_b = 1.10387	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 898.726	k_b = 1.10199	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 903.726	k_b = 1.10011	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 908.726	k_b = 1.09824	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 913.726	k_b = 1.09637	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 918.726	k_b = 1.0945	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 923.726	k_b = 1.09264	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 928.726	k_b = 1.09078	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 933.726	k_b = 1.08893	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 938.726	k_b = 1.08707	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 943.726	k_b = 1.08523	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 948.726	k_b = 1.08339	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 953.726	k_b = 1.08155	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 958.726	k_b = 1.07971	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 963.726	k_b = 1.07788	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 968.726	k_b = 1.07605	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 973.726	k_b = 1.07423	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 978.726	k_b = 1.07241	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 983.726	k_b = 1.07059	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 988.726	k_b = 1.06878	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 993.726	k_b = 1.06697	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 998.726	k_b = 1.06517	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.44773	sign_a = 1
+BUd_b = 1003.73	k_b = 1.06337	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 208.726	k_b = 1.4016	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 213.726	k_b = 1.39981	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 218.726	k_b = 1.39179	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 223.726	k_b = 1.39057	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 228.726	k_b = 1.38852	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 233.726	k_b = 1.38247	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 238.726	k_b = 1.38034	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 243.726	k_b = 1.37406	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 248.726	k_b = 1.37235	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 253.726	k_b = 1.36493	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 258.726	k_b = 1.36006	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 263.726	k_b = 1.35857	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 268.726	k_b = 1.35732	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 273.726	k_b = 1.35377	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 278.726	k_b = 1.3505	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 283.726	k_b = 1.34325	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 288.726	k_b = 1.34172	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 293.726	k_b = 1.33663	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 298.726	k_b = 1.33368	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 303.726	k_b = 1.33042	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 308.726	k_b = 1.32863	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 313.726	k_b = 1.32736	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 318.726	k_b = 1.3243	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 323.726	k_b = 1.32285	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 328.726	k_b = 1.31992	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 333.726	k_b = 1.31699	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 338.726	k_b = 1.31451	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 343.726	k_b = 1.31171	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 348.726	k_b = 1.30726	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 353.726	k_b = 1.3066	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 358.726	k_b = 1.30374	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 363.726	k_b = 1.3016	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 368.726	k_b = 1.29878	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 373.726	k_b = 1.29081	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 378.726	k_b = 1.2899	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 383.726	k_b = 1.2916	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 388.726	k_b = 1.28203	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 393.726	k_b = 1.27961	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 398.726	k_b = 1.27677	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 403.726	k_b = 1.2747	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 408.726	k_b = 1.27246	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 413.726	k_b = 1.27018	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 418.726	k_b = 1.2679	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 423.726	k_b = 1.26563	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 428.726	k_b = 1.26337	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 433.726	k_b = 1.26111	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 438.726	k_b = 1.25885	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 443.726	k_b = 1.2566	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 448.726	k_b = 1.25436	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 453.726	k_b = 1.25212	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 458.726	k_b = 1.24988	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 463.726	k_b = 1.24766	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 468.726	k_b = 1.24543	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 473.726	k_b = 1.24322	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 478.726	k_b = 1.241	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 483.726	k_b = 1.2388	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 488.726	k_b = 1.2366	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 493.726	k_b = 1.2344	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 498.726	k_b = 1.23221	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 503.726	k_b = 1.23002	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 508.726	k_b = 1.22784	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 513.726	k_b = 1.22567	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 518.726	k_b = 1.2235	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 523.726	k_b = 1.22133	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 528.726	k_b = 1.21917	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 533.726	k_b = 1.21702	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 538.726	k_b = 1.21487	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 543.726	k_b = 1.21272	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 548.726	k_b = 1.21058	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 553.726	k_b = 1.20845	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 558.726	k_b = 1.20632	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 563.726	k_b = 1.20419	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 568.726	k_b = 1.20207	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 573.726	k_b = 1.19996	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 578.726	k_b = 1.19785	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 583.726	k_b = 1.19574	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 588.726	k_b = 1.19364	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 593.726	k_b = 1.19155	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 598.726	k_b = 1.18945	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 603.726	k_b = 1.18737	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 608.726	k_b = 1.18529	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 613.726	k_b = 1.18321	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 618.726	k_b = 1.18114	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 623.726	k_b = 1.17907	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 628.726	k_b = 1.17701	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 633.726	k_b = 1.17495	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 638.726	k_b = 1.1729	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 643.726	k_b = 1.17085	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 648.726	k_b = 1.16881	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 653.726	k_b = 1.16677	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 658.726	k_b = 1.16474	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 663.726	k_b = 1.16271	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 668.726	k_b = 1.16068	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 673.726	k_b = 1.15866	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 678.726	k_b = 1.15664	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 683.726	k_b = 1.15463	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 688.726	k_b = 1.15263	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 693.726	k_b = 1.15062	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 698.726	k_b = 1.14863	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 703.726	k_b = 1.14663	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 708.726	k_b = 1.14464	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 713.726	k_b = 1.14266	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 718.726	k_b = 1.14068	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 723.726	k_b = 1.1387	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 728.726	k_b = 1.13673	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 733.726	k_b = 1.13476	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 738.726	k_b = 1.1328	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 743.726	k_b = 1.13084	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 748.726	k_b = 1.12889	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 753.726	k_b = 1.12694	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 758.726	k_b = 1.12499	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 763.726	k_b = 1.12305	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 768.726	k_b = 1.12112	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 773.726	k_b = 1.11918	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 778.726	k_b = 1.11726	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 783.726	k_b = 1.11533	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 788.726	k_b = 1.11341	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 793.726	k_b = 1.1115	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 798.726	k_b = 1.10958	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 803.726	k_b = 1.10768	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 808.726	k_b = 1.10577	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 813.726	k_b = 1.10387	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 818.726	k_b = 1.10198	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 823.726	k_b = 1.10009	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 828.726	k_b = 1.0982	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 833.726	k_b = 1.09632	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 838.726	k_b = 1.09444	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 843.726	k_b = 1.09256	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 848.726	k_b = 1.09069	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 853.726	k_b = 1.08883	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 858.726	k_b = 1.08696	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 863.726	k_b = 1.08511	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 868.726	k_b = 1.08325	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 873.726	k_b = 1.0814	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 878.726	k_b = 1.07955	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 883.726	k_b = 1.07771	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 888.726	k_b = 1.07587	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 893.726	k_b = 1.07404	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 898.726	k_b = 1.07221	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 903.726	k_b = 1.07038	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 908.726	k_b = 1.06855	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 913.726	k_b = 1.06674	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 918.726	k_b = 1.06492	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 923.726	k_b = 1.06311	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 928.726	k_b = 1.0613	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 933.726	k_b = 1.0595	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 938.726	k_b = 1.05769	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 943.726	k_b = 1.0559	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 948.726	k_b = 1.0541	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 953.726	k_b = 1.05232	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 958.726	k_b = 1.05053	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 963.726	k_b = 1.04875	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 968.726	k_b = 1.04697	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 973.726	k_b = 1.0452	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 978.726	k_b = 1.04342	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 983.726	k_b = 1.04166	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 988.726	k_b = 1.03989	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 993.726	k_b = 1.03813	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 998.726	k_b = 1.03638	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.4086	sign_a = 1
+BUd_b = 1003.73	k_b = 1.03463	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 208.726	k_b = 1.36267	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 213.726	k_b = 1.36093	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 218.726	k_b = 1.35313	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 223.726	k_b = 1.35194	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 228.726	k_b = 1.34995	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 233.726	k_b = 1.34407	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 238.726	k_b = 1.342	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 243.726	k_b = 1.3359	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 248.726	k_b = 1.33423	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 253.726	k_b = 1.32702	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 258.726	k_b = 1.32228	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 263.726	k_b = 1.32083	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 268.726	k_b = 1.31962	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 273.726	k_b = 1.31616	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 278.726	k_b = 1.31298	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 283.726	k_b = 1.30593	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 288.726	k_b = 1.30445	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 293.726	k_b = 1.2995	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 298.726	k_b = 1.29664	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 303.726	k_b = 1.29347	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 308.726	k_b = 1.29173	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 313.726	k_b = 1.29049	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 318.726	k_b = 1.28751	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 323.726	k_b = 1.2861	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 328.726	k_b = 1.28325	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 333.726	k_b = 1.28041	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 338.726	k_b = 1.27799	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 343.726	k_b = 1.27528	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 348.726	k_b = 1.27095	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 353.726	k_b = 1.2703	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 358.726	k_b = 1.26753	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 363.726	k_b = 1.26545	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 368.726	k_b = 1.2627	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 373.726	k_b = 1.25495	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 378.726	k_b = 1.25407	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 383.726	k_b = 1.25572	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 388.726	k_b = 1.24642	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 393.726	k_b = 1.24407	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 398.726	k_b = 1.24131	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 403.726	k_b = 1.23929	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 408.726	k_b = 1.23712	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 413.726	k_b = 1.2349	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 418.726	k_b = 1.23268	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 423.726	k_b = 1.23048	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 428.726	k_b = 1.22827	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 433.726	k_b = 1.22607	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 438.726	k_b = 1.22388	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 443.726	k_b = 1.2217	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 448.726	k_b = 1.21951	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 453.726	k_b = 1.21734	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 458.726	k_b = 1.21517	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 463.726	k_b = 1.213	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 468.726	k_b = 1.21084	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 473.726	k_b = 1.20868	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 478.726	k_b = 1.20653	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 483.726	k_b = 1.20439	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 488.726	k_b = 1.20225	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 493.726	k_b = 1.20011	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 498.726	k_b = 1.19798	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 503.726	k_b = 1.19586	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 508.726	k_b = 1.19374	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 513.726	k_b = 1.19162	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 518.726	k_b = 1.18951	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 523.726	k_b = 1.18741	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 528.726	k_b = 1.18531	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 533.726	k_b = 1.18321	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 538.726	k_b = 1.18112	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 543.726	k_b = 1.17904	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 548.726	k_b = 1.17695	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 553.726	k_b = 1.17488	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 558.726	k_b = 1.17281	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 563.726	k_b = 1.17074	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 568.726	k_b = 1.16868	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 573.726	k_b = 1.16662	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 578.726	k_b = 1.16457	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 583.726	k_b = 1.16253	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 588.726	k_b = 1.16048	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 593.726	k_b = 1.15845	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 598.726	k_b = 1.15641	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 603.726	k_b = 1.15439	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 608.726	k_b = 1.15236	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 613.726	k_b = 1.15034	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 618.726	k_b = 1.14833	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 623.726	k_b = 1.14632	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 628.726	k_b = 1.14432	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 633.726	k_b = 1.14232	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 638.726	k_b = 1.14032	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 643.726	k_b = 1.13833	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 648.726	k_b = 1.13634	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 653.726	k_b = 1.13436	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 658.726	k_b = 1.13238	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 663.726	k_b = 1.13041	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 668.726	k_b = 1.12844	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 673.726	k_b = 1.12647	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 678.726	k_b = 1.12451	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 683.726	k_b = 1.12256	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 688.726	k_b = 1.12061	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 693.726	k_b = 1.11866	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 698.726	k_b = 1.11672	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 703.726	k_b = 1.11478	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 708.726	k_b = 1.11285	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 713.726	k_b = 1.11092	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 718.726	k_b = 1.10899	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 723.726	k_b = 1.10707	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 728.726	k_b = 1.10516	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 733.726	k_b = 1.10324	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 738.726	k_b = 1.10133	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 743.726	k_b = 1.09943	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 748.726	k_b = 1.09753	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 753.726	k_b = 1.09564	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 758.726	k_b = 1.09374	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 763.726	k_b = 1.09186	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 768.726	k_b = 1.08997	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 773.726	k_b = 1.0881	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 778.726	k_b = 1.08622	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 783.726	k_b = 1.08435	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 788.726	k_b = 1.08248	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 793.726	k_b = 1.08062	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 798.726	k_b = 1.07876	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 803.726	k_b = 1.07691	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 808.726	k_b = 1.07506	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 813.726	k_b = 1.07321	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 818.726	k_b = 1.07137	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 823.726	k_b = 1.06953	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 828.726	k_b = 1.0677	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 833.726	k_b = 1.06586	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 838.726	k_b = 1.06404	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 843.726	k_b = 1.06222	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 848.726	k_b = 1.0604	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 853.726	k_b = 1.05858	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 858.726	k_b = 1.05677	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 863.726	k_b = 1.05496	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 868.726	k_b = 1.05316	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 873.726	k_b = 1.05136	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 878.726	k_b = 1.04957	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 883.726	k_b = 1.04777	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 888.726	k_b = 1.04599	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 893.726	k_b = 1.0442	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 898.726	k_b = 1.04242	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 903.726	k_b = 1.04065	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 908.726	k_b = 1.03887	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 913.726	k_b = 1.0371	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 918.726	k_b = 1.03534	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 923.726	k_b = 1.03358	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 928.726	k_b = 1.03182	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 933.726	k_b = 1.03006	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 938.726	k_b = 1.02831	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 943.726	k_b = 1.02657	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 948.726	k_b = 1.02482	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 953.726	k_b = 1.02308	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 958.726	k_b = 1.02135	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 963.726	k_b = 1.01962	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 968.726	k_b = 1.01789	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 973.726	k_b = 1.01616	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 978.726	k_b = 1.01444	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 983.726	k_b = 1.01272	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 988.726	k_b = 1.01101	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 993.726	k_b = 1.0093	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 998.726	k_b = 1.00759	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.36947	sign_a = 1
+BUd_b = 1003.73	k_b = 1.00589	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 208.726	k_b = 1.32373	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 213.726	k_b = 1.32204	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 218.726	k_b = 1.31447	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 223.726	k_b = 1.31332	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 228.726	k_b = 1.31138	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 233.726	k_b = 1.30567	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 238.726	k_b = 1.30366	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 243.726	k_b = 1.29773	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 248.726	k_b = 1.29611	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 253.726	k_b = 1.28911	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 258.726	k_b = 1.2845	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 263.726	k_b = 1.28309	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 268.726	k_b = 1.28192	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 273.726	k_b = 1.27856	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 278.726	k_b = 1.27547	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 283.726	k_b = 1.26862	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 288.726	k_b = 1.26718	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 293.726	k_b = 1.26237	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 298.726	k_b = 1.25959	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 303.726	k_b = 1.25651	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 308.726	k_b = 1.25482	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 313.726	k_b = 1.25362	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 318.726	k_b = 1.25073	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 323.726	k_b = 1.24936	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 328.726	k_b = 1.24659	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 333.726	k_b = 1.24383	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 338.726	k_b = 1.24148	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 343.726	k_b = 1.23884	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 348.726	k_b = 1.23463	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 353.726	k_b = 1.23401	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 358.726	k_b = 1.23131	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 363.726	k_b = 1.22929	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 368.726	k_b = 1.22662	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 373.726	k_b = 1.21909	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 378.726	k_b = 1.21824	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 383.726	k_b = 1.21984	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 388.726	k_b = 1.21081	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 393.726	k_b = 1.20852	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 398.726	k_b = 1.20584	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 403.726	k_b = 1.20388	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 408.726	k_b = 1.20177	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 413.726	k_b = 1.19961	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 418.726	k_b = 1.19746	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 423.726	k_b = 1.19532	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 428.726	k_b = 1.19318	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 433.726	k_b = 1.19104	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 438.726	k_b = 1.18891	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 443.726	k_b = 1.18679	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 448.726	k_b = 1.18467	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 453.726	k_b = 1.18256	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 458.726	k_b = 1.18045	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 463.726	k_b = 1.17834	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 468.726	k_b = 1.17624	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 473.726	k_b = 1.17415	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 478.726	k_b = 1.17206	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 483.726	k_b = 1.16998	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 488.726	k_b = 1.1679	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 493.726	k_b = 1.16582	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 498.726	k_b = 1.16375	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 503.726	k_b = 1.16169	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 508.726	k_b = 1.15963	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 513.726	k_b = 1.15758	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 518.726	k_b = 1.15553	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 523.726	k_b = 1.15348	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 528.726	k_b = 1.15144	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 533.726	k_b = 1.1494	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 538.726	k_b = 1.14737	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 543.726	k_b = 1.14535	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 548.726	k_b = 1.14333	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 553.726	k_b = 1.14131	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 558.726	k_b = 1.1393	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 563.726	k_b = 1.13729	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 568.726	k_b = 1.13529	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 573.726	k_b = 1.13329	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 578.726	k_b = 1.1313	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 583.726	k_b = 1.12931	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 588.726	k_b = 1.12733	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 593.726	k_b = 1.12535	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 598.726	k_b = 1.12337	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 603.726	k_b = 1.1214	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 608.726	k_b = 1.11944	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 613.726	k_b = 1.11748	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 618.726	k_b = 1.11552	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 623.726	k_b = 1.11357	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 628.726	k_b = 1.11162	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 633.726	k_b = 1.10968	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 638.726	k_b = 1.10774	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 643.726	k_b = 1.1058	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 648.726	k_b = 1.10387	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 653.726	k_b = 1.10195	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 658.726	k_b = 1.10003	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 663.726	k_b = 1.09811	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 668.726	k_b = 1.0962	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 673.726	k_b = 1.09429	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 678.726	k_b = 1.09239	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 683.726	k_b = 1.09049	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 688.726	k_b = 1.08859	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 693.726	k_b = 1.0867	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 698.726	k_b = 1.08481	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 703.726	k_b = 1.08293	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 708.726	k_b = 1.08105	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 713.726	k_b = 1.07918	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 718.726	k_b = 1.07731	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 723.726	k_b = 1.07544	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 728.726	k_b = 1.07358	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 733.726	k_b = 1.07172	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 738.726	k_b = 1.06987	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 743.726	k_b = 1.06802	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 748.726	k_b = 1.06617	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 753.726	k_b = 1.06433	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 758.726	k_b = 1.06249	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 763.726	k_b = 1.06066	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 768.726	k_b = 1.05883	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 773.726	k_b = 1.05701	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 778.726	k_b = 1.05519	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 783.726	k_b = 1.05337	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 788.726	k_b = 1.05156	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 793.726	k_b = 1.04975	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 798.726	k_b = 1.04794	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 803.726	k_b = 1.04614	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 808.726	k_b = 1.04434	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 813.726	k_b = 1.04255	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 818.726	k_b = 1.04076	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 823.726	k_b = 1.03897	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 828.726	k_b = 1.03719	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 833.726	k_b = 1.03541	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 838.726	k_b = 1.03364	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 843.726	k_b = 1.03187	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 848.726	k_b = 1.0301	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 853.726	k_b = 1.02834	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 858.726	k_b = 1.02658	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 863.726	k_b = 1.02482	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 868.726	k_b = 1.02307	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 873.726	k_b = 1.02132	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 878.726	k_b = 1.01958	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 883.726	k_b = 1.01784	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 888.726	k_b = 1.0161	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 893.726	k_b = 1.01437	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 898.726	k_b = 1.01264	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 903.726	k_b = 1.01091	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 908.726	k_b = 1.00919	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 913.726	k_b = 1.00747	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 918.726	k_b = 1.00576	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 923.726	k_b = 1.00405	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 928.726	k_b = 1.00234	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 933.726	k_b = 1.00063	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.33035	sign_a = 1
+BUd_b = 938.726	k_b = 0.998934	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 935.589	k_a = 1	sign_a = 1
+BUd_b = 935.59	k_b = 1	sign_b = -1
+BUd_c = 935.59	k_c = 1	sign_c = -1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 208.726	k_b = 1.03173	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 213.726	k_b = 1.03041	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 218.726	k_b = 1.02451	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 223.726	k_b = 1.02361	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 228.726	k_b = 1.02211	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 233.726	k_b = 1.01765	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 238.726	k_b = 1.01609	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 243.726	k_b = 1.01146	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 248.726	k_b = 1.0102	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 253.726	k_b = 1.00474	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 258.726	k_b = 1.00116	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 263.726	k_b = 1.00006	sign_b = 1
+
+BUd_a = 203.726	k_a = 1.03689	sign_a = 1
+BUd_b = 268.726	k_b = 0.99914	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 260.466	k_a = 1	sign_a = 1
+BUd_b = 260.466	k_b = 1	sign_b = -1
+BUd_c = 260.466	k_c = 1	sign_c = 1
+
+BUd_a = 83.2299	k_a = 1.00918	sign_a = 1
+BUd_b = 88.2299	k_b = 1.00281	sign_b = 1
+
+BUd_a = 83.2299	k_a = 1.00918	sign_a = 1
+BUd_b = 93.2299	k_b = 0.996401	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 88.8615	k_a = 1	sign_a = 1
+BUd_b = 88.8615	k_b = 1	sign_b = -1
+BUd_c = 88.8615	k_c = 1	sign_c = -1
+
+BUd_a = 51.9543	k_a = 1.00642	sign_a = 1
+BUd_b = 56.9543	k_b = 0.992717	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 54.0496	k_a = 1	sign_a = 1
+BUd_b = 54.0496	k_b = 1	sign_b = -1
+BUd_c = 54.0496	k_c = 1	sign_c = 1
+
+BUd_a = 37.6921	k_a = 1.00353	sign_a = 1
+BUd_b = 42.6921	k_b = 0.986908	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 38.6807	k_a = 1	sign_a = 1
+BUd_b = 38.6808	k_b = 1	sign_b = -1
+BUd_c = 38.6808	k_c = 1	sign_c = -1
+
+BUd_a = 45.7073	k_a = 1.00253	sign_a = 1
+BUd_b = 50.7073	k_b = 0.988372	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 45.7582	k_a = 1.00229	sign_a = 1
+BUd_b = 45.7582	k_b = 0.999976	sign_b = -1
+BUd_c = 45.7582	k_c = 1.00229	sign_c = 1
+
+k did not converge with the Bisection Method to an accuracy of 1e-07 in 100 iterations.
+However, k_b is within 1% of 1 and closer to 1 than k_a; using these values.
+BUd_a = 48.7906	k_a = 1.00236	sign_a = 1
+BUd_b = 53.7906	k_b = 0.989601	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 50.2291	k_a = 1	sign_a = 1
+BUd_b = 50.2291	k_b = 1	sign_b = -1
+BUd_c = 50.2291	k_c = 1	sign_c = 1
+
+BUd_a = 50.3727	k_a = 1.00529	sign_a = 1
+BUd_b = 55.3727	k_b = 0.987775	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 52.251	k_a = 1	sign_a = 1
+BUd_b = 52.251	k_b = 1	sign_b = -1
+BUd_c = 52.251	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.0052	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99241	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.5945	k_a = 1	sign_a = 1
+BUd_b = 51.5946	k_b = 1	sign_b = -1
+BUd_c = 51.5945	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00378	sign_a = 1
+BUd_b = 53.7906	k_b = 0.991006	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.1034	k_a = 1	sign_a = 1
+BUd_b = 51.1034	k_b = 1	sign_b = -1
+BUd_c = 51.1034	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00307	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990303	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 50.8576	k_a = 1	sign_a = 1
+BUd_b = 50.8576	k_b = 1	sign_b = -1
+BUd_c = 50.8576	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00343	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990654	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 50.9805	k_a = 1	sign_a = 1
+BUd_b = 50.9806	k_b = 1	sign_b = -1
+BUd_c = 50.9805	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.0036	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99083	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.0419	k_a = 1	sign_a = 1
+BUd_b = 51.042	k_b = 1	sign_b = -1
+BUd_c = 51.0419	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00351	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990742	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.0112	k_a = 1	sign_a = 1
+BUd_b = 51.0113	k_b = 1	sign_b = -1
+BUd_c = 51.0113	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00347	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990698	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 50.9959	k_a = 1	sign_a = 1
+BUd_b = 50.9959	k_b = 1	sign_b = -1
+BUd_c = 50.9959	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00349	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99072	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.0036	k_a = 1	sign_a = 1
+BUd_b = 51.0036	k_b = 1	sign_b = -1
+BUd_c = 51.0036	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990709	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 50.9997	k_a = 1	sign_a = 1
+BUd_b = 50.9997	k_b = 1	sign_b = -1
+BUd_c = 50.9997	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00349	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990715	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.0016	k_a = 1	sign_a = 1
+BUd_b = 51.0016	k_b = 1	sign_b = -1
+BUd_c = 51.0016	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990712	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.0007	k_a = 1	sign_a = 1
+BUd_b = 51.0007	k_b = 1	sign_b = -1
+BUd_c = 51.0007	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.990711	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.0002	k_a = 1	sign_a = 1
+BUd_b = 51.0002	k_b = 1	sign_b = -1
+BUd_c = 51.0002	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 50.9999	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51.0001	k_a = 1	sign_a = 1
+BUd_b = 51.0001	k_b = 1	sign_b = -1
+BUd_c = 51.0001	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = -1
+
+BUd_a = 48.7906	k_a = 1.00348	sign_a = 1
+BUd_b = 53.7906	k_b = 0.99071	sign_b = -1
+
+Final Result of Burnup Bisection Method Calculation:
+BUd_a = 51	k_a = 1	sign_a = 1
+BUd_b = 51	k_b = 1	sign_b = -1
+BUd_c = 51	k_c = 1	sign_c = 1
+
+
+Final Result P_NL Calibration to Burnup via Bisection Method Calculation:
+Number oif iterations q = 50
+pnl_a = 1.03319	BUd_a = 51	sign_a = -1
+pnl_b = 1.03319	BUd_b = 51	sign_b = 1
+pnl_c = 1.03319	BUd_c = 51	sign_c = -1
+
+Non-Leakage Probability =  1.03318794692

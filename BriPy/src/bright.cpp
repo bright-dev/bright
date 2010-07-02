@@ -1,0 +1,1 @@
+../../FCComps/bright.cpp
