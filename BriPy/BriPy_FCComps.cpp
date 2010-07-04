@@ -47,6 +47,8 @@ namespace bp = boost::python;
 
 
 //Default Argument Function Overload Macros
+BOOST_PYTHON_FUNCTION_OVERLOADS(load_isos2track_hdf5_overloads, FCComps::load_isos2track_hdf5, 1, 3)
+BOOST_PYTHON_FUNCTION_OVERLOADS(load_isos2track_text_overloads, FCComps::load_isos2track_text, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(batchAve_overloads, batchAve, 1, 2)
 
 BOOST_PYTHON_MODULE(FCComps)
@@ -62,6 +64,9 @@ BOOST_PYTHON_MODULE(FCComps)
     void          (*isos2track2)(std::set<int>) = &FCComps::set_isos2track;
     bp::def("isos2track", isos2track1, isos2track__doc__);
     bp::def("isos2track", isos2track2, isos2track__doc__);
+
+    bp::def("load_isos2track_hdf5", &FCComps::load_isos2track_hdf5, load_isos2track_hdf5_overloads("Loads isos2track from an HDF5 file."));
+    bp::def("load_isos2track_text", &FCComps::load_isos2track_text, load_isos2track_text_overloads("Loads isos2track from a text file."));
 
     char verbosity__doc__ [] = "Gets/Sets the verbosity level.";
     int  (*verbosity1)()     = &FCComps::get_verbosity;
@@ -80,6 +85,15 @@ BOOST_PYTHON_MODULE(FCComps)
     void (*write_hdf52)(int)  = &FCComps::set_write_hdf5;
     bp::def("write_hdf5", write_hdf51, write_hdf5__doc__);
     bp::def("write_hdf5", write_hdf52, write_hdf5__doc__);
+
+/*
+    char load_isos2track__doc__ [] = "Loads isos2track from a file.";
+    void (*load_isos2track1)(std::string)              = &FCComps::load_isos2track;
+    void (*load_isos2track2)(std::string, std::string) = &FCComps::load_isos2track;
+    bp::def("load_isos2track", load_isos2track1, load_isos2track__doc__);
+    bp::def("load_isos2track", load_isos2track2, load_isos2track__doc__);
+*/
+
 
     //Basic to- and from-converters
     dict2map<Iso, Weight>();

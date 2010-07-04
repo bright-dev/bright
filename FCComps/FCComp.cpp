@@ -10,6 +10,10 @@
     std::set<int> FCComps::isos2track (null_set, null_set+0);
 #endif
 
+/*********************************************/
+/*** Fuel Cycle Components Namespace Stuff ***/
+/*********************************************/
+
 int FCComps::verbosity  = 0;
 int FCComps::write_text = 1;
 int FCComps::write_hdf5 = 0;
@@ -24,7 +28,78 @@ void FCComps::set_verbosity(int v)              {FCComps::verbosity = v;};
 void FCComps::set_write_text(int wt)            {FCComps::write_text = wt;};
 void FCComps::set_write_hdf5(int wh)            {FCComps::write_hdf5 = wh;};
 
+void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname, bool clear_prev)
+{
+    //Load values into isos2track from an hdf5 file.
+    //If the dataspace name is not given, try some defaults.
+    int dslen = 14;
+    std::string defaultsets [dslen];
+    defaultsets[0]  = "/isos2track";  
+    defaultsets[1]  = "/Isos2Track";
+    defaultsets[2]  = "/isostrack";   
+    defaultsets[3]  = "/IsosTrack";
+    defaultsets[4]  = "/isotrack";   
+    defaultsets[5]  = "/IsoTrack";    
+    defaultsets[6]  = "/ToIso";
+    defaultsets[7]  = "/ToIsos";
+    defaultsets[8]  = "/ToIso_zz";
+    defaultsets[9]  = "/ToIso_MCNP";  
+    defaultsets[10] = "/FromIso";    
+    defaultsets[11] = "/FromIsos";  
+    defaultsets[12] = "/FromIso_zz"; 
+    defaultsets[13] = "/FromIso_MCNP";
 
+    //Open file
+    H5::H5File isofile(filename, H5F_ACC_RDONLY);
+
+    //Open dataset
+    H5::DataSet isoset;
+    if (datasetname.length() != 0)
+        isoset = isofile.openDataSet(datasetname);
+    else
+    {
+        //Try to grab one of the default data sets
+        int n = 0;
+        while (n < dslen)
+        {
+            try {  
+                isoset = isofile.openDataSet(defaultsets[n]);
+                break;
+            }
+            catch( H5::FileIException not_found_error )
+            {
+            };
+            n++;
+        };
+        if (n == dslen)
+            throw H5::FileIException("load_isos2track", "Dataset not found!");
+    };
+
+    //Read in isos from dataset.
+    H5::DataSpace isospace = isoset.getSpace();
+    hsize_t isolen[1];
+    int isodim = isospace.getSimpleExtentDims(isolen, NULL);
+
+    //Try native int data type first
+    int         iso_out_int [isolen[0]];
+    isoset.read(iso_out_int, H5::PredType::NATIVE_INT);
+    //Maybe add other data types in the future... 
+
+    //Clear previous entries
+    if (clear_prev)
+        isos2track.clear();
+
+    //load into isos2track
+    for(int n = 0; n < isolen[0]; n++)
+    {
+        isos2track.insert(isoname::mixed_2_zzaaam(iso_out_int[n]));
+    };
+    
+};
+
+void FCComps::load_isos2track_text(std::string filename, int column, bool clear_prev)
+{
+};
 
 /**************************************************/
 /*** Fuel Cycle Component Classes And Functions ***/

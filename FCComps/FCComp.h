@@ -22,7 +22,10 @@
 //Declare Global Fuel Cycle Components in 
 //Thier own namespace!
 namespace FCComps {
-    extern std::set<int> isos2track;	//Set of isotopes to track for all components.
+    extern std::set<int> isos2track;	            //Set of isotopes to track for all components.
+    extern void load_isos2track_hdf5(std::string, std::string = "", bool = false);   //Load isotopic tracking list from HDF5 file.
+    extern void load_isos2track_text(std::string, int = 0,          bool = false);   //Load isotopic tracking list from text file.
+
     extern int verbosity;			//How much should the components talk to us? 0 = None, 1 = a little, 2 = a lot!, etc.
     extern int write_text;
     extern int write_hdf5;
