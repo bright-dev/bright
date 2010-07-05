@@ -86,14 +86,6 @@ BOOST_PYTHON_MODULE(FCComps)
     bp::def("write_hdf5", write_hdf51, write_hdf5__doc__);
     bp::def("write_hdf5", write_hdf52, write_hdf5__doc__);
 
-/*
-    char load_isos2track__doc__ [] = "Loads isos2track from a file.";
-    void (*load_isos2track1)(std::string)              = &FCComps::load_isos2track;
-    void (*load_isos2track2)(std::string, std::string) = &FCComps::load_isos2track;
-    bp::def("load_isos2track", load_isos2track1, load_isos2track__doc__);
-    bp::def("load_isos2track", load_isos2track2, load_isos2track__doc__);
-*/
-
 
     //Basic to- and from-converters
     dict2map<Iso, Weight>();

@@ -257,6 +257,20 @@ From mixed functions
 .. autofunction:: isoname.mixed_2_MCNP_List
 
 
+-------------------------------------
+Isotope Vector Key Swapping Functions
+-------------------------------------
+
+Isotopic vectors are really just dictionaries or maps. 
+The following functions provide an easy way to alter change the type
+of all of the keys in such a vector while maintaining the value.
+Unfortunately, this process involves a deep copy.
+
+.. autofunction:: isoname.isovec_keys_2_zzaaam
+
+.. autofunction:: isoname.isovec_keys_2_LLAAAM
+
+.. autofunction:: isoname.isovec_keys_2_MCNP
 
 -----------------------
 Other isoname functions

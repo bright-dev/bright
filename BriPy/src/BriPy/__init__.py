@@ -13,7 +13,7 @@ BreakOut = False
 for n in range(len(sys.path)-1, -1, -1):
     for root, dirs, files in os.walk(sys.path[n]):
         if "decay.h5" in files:
-            os.putenv("BRIGHT_DATA", root)
+            os.environ["BRIGHT_DATA"] = root
             BreakOut = True
             break
 

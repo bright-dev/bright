@@ -81,6 +81,50 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
           was not set.
 
 
+.. function:: load_isos2track_hdf5(filename[, dataset='', clear=False])
+
+    This convience function tries to load the isos2track set from a dataset 
+    in an HDF5 file.  The dataset *must* be of integer type.  String-based
+    nuclide names are currently not supported. 
+
+    Args:
+        * `filename` (str): Path to the data library.
+        * `dataset` (str):  Dataset name to grab nuclides from.
+        * `clear` (bool):   Flag that if set removes the currrent entries
+            from isos2track prior to loading in new values.
+
+    If the dataset argument is not provided or empty, the function tries to 
+    load from various default datasets in the following order::
+
+        "/isos2track"  
+        "/Isos2Track"
+        "/isostrack"   
+        "/IsosTrack"
+        "/isotrack"   
+        "/IsoTrack"    
+        "/ToIso"
+        "/ToIsos"
+        "/ToIso_zz"
+        "/ToIso_MCNP"
+        "/FromIso"  
+        "/FromIsos"  
+        "/FromIso_zz" 
+        "/FromIso_MCNP"
+        
+
+.. function:: load_isos2track_text(filename[, clear=False])
+
+    This convience function tries to load the isos2track set from a text
+    file.  The nuclide names may use any naming convention.  Mixing different
+    conventions in the same file is allowed.  Whitespace is required between
+    isotopic names.
+
+    Args:
+        * `filename` (str): Path to the data library.
+        * `clear` (bool):   Flag that if set removes the currrent entries
+            from isos2track prior to loading in new values.
+
+
 .. function:: verbosity([v])
 
     The verbosity level is a global parameter that determines how much information is displayed to stdout
@@ -100,3 +144,27 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
     Returns:
         * `None` (None): Returns nothing if `v` was set.
         * `currv` (int): Returns the current verbosity level if `v` was not set.
+
+.. function:: write_hdf5([f])
+
+    This functions gets/sets the flag that determines whether or not FCComp 
+    write-methods output to HDF5 files.
+
+    Args:
+        * `f` (int or bool): Set the new flag value, if present.
+
+    Returns:
+        * `None` (None): Returns nothing if `f` was set.
+        * `currf` (int): Returns the current flag value if `f` was not set.
+
+.. function:: write_text([f])
+
+    This functions gets/sets the flag that determines whether or not FCComp 
+    write-methods output to text files.
+
+    Args:
+        * `f` (int or bool): Set the new flag value, if present.
+
+    Returns:
+        * `None` (None): Returns nothing if `f` was set.
+        * `currf` (int): Returns the current flag value if `f` was not set.
