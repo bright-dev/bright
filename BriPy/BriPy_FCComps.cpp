@@ -48,7 +48,7 @@ namespace bp = boost::python;
 
 //Default Argument Function Overload Macros
 BOOST_PYTHON_FUNCTION_OVERLOADS(load_isos2track_hdf5_overloads, FCComps::load_isos2track_hdf5, 1, 3)
-BOOST_PYTHON_FUNCTION_OVERLOADS(load_isos2track_text_overloads, FCComps::load_isos2track_text, 1, 3)
+BOOST_PYTHON_FUNCTION_OVERLOADS(load_isos2track_text_overloads, FCComps::load_isos2track_text, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(batchAve_overloads, batchAve, 1, 2)
 
 BOOST_PYTHON_MODULE(FCComps)

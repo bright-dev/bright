@@ -97,8 +97,29 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
     
 };
 
-void FCComps::load_isos2track_text(std::string filename, int column, bool clear_prev)
+void FCComps::load_isos2track_text(std::string filename, bool clear_prev)
 {
+    //Clear previous entries
+    if (clear_prev)
+        isos2track.clear();
+
+    //open file
+    std::fstream isofile;
+    isofile.open(filename.c_str(), std::fstream::in);
+
+    char isoraw [20];
+    std::string isostr;
+    while (!isofile.eof())
+    {
+        isofile.width(20);
+        isofile >> isoraw;
+        isostr.assign(isoraw);
+        isostr = bright::MultiStrip(isostr, "()[],.;{}!#|");
+        isos2track.insert(isoname::mixed_2_zzaaam(isostr));
+    };
+
+    //close file
+    isofile.close();
 };
 
 /**************************************************/
