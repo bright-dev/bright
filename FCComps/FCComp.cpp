@@ -59,6 +59,10 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
     else
     {
         //Try to grab one of the default data sets
+        //...while suppressing HDF5 errors.
+        H5::FileIException not_found_error;
+        not_found_error.dontPrint();
+
         int n = 0;
         while (n < dslen)
         {
