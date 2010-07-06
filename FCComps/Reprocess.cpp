@@ -29,7 +29,7 @@ void Reprocess::initialize(SepEffDict sed)
 /*** Reprocess Constructors ***/
 /******************************/
 
-Reprocess::Reprocess ()
+Reprocess::Reprocess () : FCComp (rep_p2track, "")
 {
     //Reprocessing Fuel Cycle Component.  Applies Separation Efficiencies.
 }
