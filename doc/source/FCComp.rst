@@ -152,10 +152,9 @@ FCComp Methods
 
 .. method:: FCComp.writeIsoPass()
 
-    This method is responsible for adding a new pass to the output file "``{FCComp.name}Isos.txt``"
-    for this component.  Additionally, this is where :attr:`PassNum` is incremented by one.  This 
-    function is therefore seen as the last step for any component in every pass.  Further calculations 
-    should not be performed after :meth:`writeIsoPass` has been called.
+    This method is responsible for adding a new pass to the output text file 
+    "``{FCComp.name}Isos.txt``" for this component.  Further calculations should
+    not be performed after :meth:`writeIsoPass` has been called.
 
     This function has one very important subtlety: it does not write out mass streams data.
     Rather, input columns are given as normalized isotopic vectors (:attr:`MassStream.MassStream.comp`).
@@ -197,18 +196,38 @@ FCComp Methods
 
 .. method:: FCComp.writeParamPass()
 
-    What :meth:`writeIsoPass` does for a component's input and output isotopics, this function does for 
-    the components parameters.  To ensure that meaningful data is available, :meth:`writeParamPass` first 
-    calls :meth:`setParams`.  Note that to get the pass numbering correct, :meth:`writeIsoPass` should
-    always be called prior to this method.  The following is an example of "``{FCComp.name}Params.txt``"
-    for a light water reactor spent fuel reprocessing facility::
+    What :meth:`writeIsoPass` does for a component's input and output isotopics, 
+    this function does for the components parameters.  To ensure that meaningful 
+    data is available, :meth:`writeParamPass` first must have :meth:`setParams` 
+    called elsewhere in the program.  Note that to get the pass numbering correct, 
+    :attr:`PassNum` should always be incremented prior to this method.  The 
+    following is an example of "``{FCComp.name}Params.txt``" for a light water 
+    reactor spent fuel reprocessing facility::
 
         Param   1in             1out	
         Mass    9.985828E-01    9.975915E-01
 
+.. method:: FCComp.writeText()
+
+    This method calls :meth:`writeIsoPass` and then, if available, calls 
+    :meth:`writeParamPass`.  This is convience function for producing 
+    text-based output.  However, using :meth:`writeout` is recommended.
+
+.. method:: FCComp.writeHDF5()
+
+    This method writes out the isotopic pass data to an HDF5 file. 
+    Then, if available, it also writes parameter data as well.  
+    Using :meth:`writeout` instead is recommended.
+
 .. method:: FCComp.writeout()
 
-    This is a convenience function that calls :meth:`writeIsoPass`, followed by :meth:`writeParamPass` if it is
-    available.  This is what is most often used to write Bright output.  
+    This is a convenience function that first increments up :attr:`PassNum`.
+    Then, it checks to see if there are any parameters for this component.
+    If there are, it sets the current values using :meth:`setParams`.
 
-    In a future version of Bright, this may be replaced or extended to write to an HDF5 database.
+    If :attr:`BriPy.write_hdf5` is set, then :meth:`writeHDF5` is called.
+
+    If :attr:`BriPy.write_text` is set, then :meth:`writeText` is called.
+
+    This is what is most often used to write Bright output.  Therefore it is
+    seen as the last step for every component in each pass.  
