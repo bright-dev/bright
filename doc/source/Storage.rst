@@ -56,6 +56,11 @@ The following is a listing of the additional attributes specific to this class a
     protected attribute.  :attr:`isochains` itself is a set of zzaaam-integer vectors.  These vectors 
     represent the progression from mother to daughter to granddaughter to *etc*.
 
+.. attribute:: Storage.params2track
+
+    For :class:`Storage`, the only parameter that is tracked is the aggregate mass.  
+    Thus this attribute is automatically set to ``["Mass"]``.
+
 .. _Storage_Methods:
 
 ===============
@@ -120,5 +125,8 @@ Storage Methods
 
 .. method:: Storage.setParams()
 
-    Currently, the storage class has no special parameters that require tracking.  This function is a placeholder
-    and does nothing at the moment.
+    Here the parameters for :class:`Storage` are set.  For storage, this amounts to just
+    a "Mass" parameter::
+
+        self.ParamsIn["Mass"]  = self.IsosIn.mass
+        self.ParamsOut["Mass"] = self.IsosOut.mass

@@ -64,7 +64,7 @@ The following is a listing of the additional attributes specific to this class.
 .. attribute:: Reprocess.params2track
 
     For :class:`Reprocess`, the only parameter that is tracked is the aggregate mass.  Thus this attribute
-    is overridden with ``["Mass"]``.
+    is automatically set to ``["Mass"]``.
 
 .. _Reprocess_Methods:
 
@@ -106,7 +106,7 @@ Reprocess Methods
 
 .. method:: Reprocess.setParams()
 
-    Here the parameters for :class:`Reprocess` are set.  For example, reprocessing this amounts to just
+    Here the parameters for :class:`Reprocess` are set.  For reprocessing, this amounts to just
     a "Mass" parameter::
 
         self.ParamsIn["Mass"]  = self.IsosIn.mass

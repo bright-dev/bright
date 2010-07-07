@@ -43,6 +43,9 @@ typedef IsoChain::iterator IsoChainIter;
 typedef std::set<IsoChain> IsoChainSet;
 typedef IsoChainSet::iterator IsoChainSetIter;
 
+static std::string stor_p2t [] = {"Mass"};
+static std::set<std::string> stor_p2track (stor_p2t, stor_p2t+1);
+
 class Storage : public FCComp
 {
 //Storage/Cooling/Decay Fuel Cycle Component.

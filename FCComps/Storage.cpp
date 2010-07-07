@@ -131,13 +131,13 @@ void Storage::addchains(int i)
 /*** Storage Constructors ***/
 /****************************/
 
-Storage::Storage ()
+Storage::Storage () : FCComp (stor_p2track, "")
 {
     //Empty storage component
     initialize();
 }
 
-Storage::Storage(std::string n) : FCComp (n)
+Storage::Storage(std::string n) : FCComp (stor_p2track, n)
 {
     initialize();
 }
@@ -153,8 +153,8 @@ Storage::~Storage ()
 
 void Storage::setParams()
 {
-    //Placeholder function
-    //Storage doesn't require any parameters
+    ParamsIn["Mass"]  = IsosIn.mass;
+    ParamsOut["Mass"] = IsosOut.mass;
 }
 
 MassStream Storage::doCalc()
