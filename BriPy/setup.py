@@ -44,7 +44,7 @@ elif os.name == 'nt':
 ##########################
 ### Setup Package Data ###
 ##########################
-pack_data = {'BriPy': ['decay.h5', 'KaeriData.h5']}
+pack_data = {'BriPy': ['decay.h5', 'KaeriData.h5', 'FR.h5', 'LWR.h5']}
 
 if os.name == "nt":
         pack_data['isoname']    = ["boost_python-vc90-mt-1_42.dll"]

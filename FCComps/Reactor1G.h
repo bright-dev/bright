@@ -85,6 +85,7 @@ struct ReactorParameters
     double                        get_BUt()             const {return BUt;};
     bool                          get_useDisadvantage() const {return useDisadvantage;};
     std::string                   get_LatticeType()     const {return LatticeType;};
+    bool                          get_HydrogenRescale() const {return HydrogenRescale;};
 
     double                        get_Radius()          const {return Radius;};
     double                        get_Length()          const {return Length;};
@@ -102,6 +103,7 @@ struct ReactorParameters
     void set_BUt(double buT)                               {BUt = buT;};
     void set_useDisadvantage(bool uD)                      {useDisadvantage = uD;};
     void set_LatticeType(std::string lt)                   {LatticeType = lt;};
+    void set_HydrogenRescale(bool hr)                      {HydrogenRescale = hr;};
 
     void set_Radius(double r)                              {Radius = r;};
     void set_Length(double l)                              {Length = l;};

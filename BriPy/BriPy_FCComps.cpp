@@ -214,6 +214,7 @@ BOOST_PYTHON_MODULE(FCComps)
         .add_property("BUt",             &ReactorParameters::get_BUt,             &ReactorParameters::set_BUt)
         .add_property("useDisadvantage", &ReactorParameters::get_useDisadvantage, &ReactorParameters::set_useDisadvantage)
         .add_property("LatticeType",     &ReactorParameters::get_LatticeType,     &ReactorParameters::set_LatticeType)
+        .add_property("HydrogenRescale", &ReactorParameters::get_HydrogenRescale, &ReactorParameters::set_HydrogenRescale)
 
         .add_property("Radius",          &ReactorParameters::get_Radius,          &ReactorParameters::set_Radius)
         .add_property("Length",          &ReactorParameters::get_Length,          &ReactorParameters::set_Length)
