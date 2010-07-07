@@ -362,7 +362,7 @@ SubStream Attributes
 --------------------
 Several parameters are dependent on knowing the mass or composition of specific substreams.  The ``In`` streams are derived from
 :attr:`IsosIn <BriPy.FCComp.IsosIn>` while the ``Out`` SubStreams are derived from :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
-The easiest way to set these attributes is through the :meth:`calcSubStreams` method.
+The easiest way to set these attributes is through the :meth:`Reactor1G.calcSubStreams` method.
 
 .. attribute:: Reactor1G.InU
 

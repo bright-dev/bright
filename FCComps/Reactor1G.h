@@ -123,7 +123,7 @@ protected:
     IsoSet J;						//Set of isotopes that may be in IsosOut.
 
     //Thermal XS data is read in from static KAERI Data
-    //Only read in if teh disadvantage factor will be used.
+    //Only read in if the disadvantage factor will be used.
     std::map<int, double> sigma_a_therm;			//Microscopic Thermal Absorption XS 
     std::map<int, double> sigma_s_therm;			//Microscopic Thermal Scattering XS 
 
