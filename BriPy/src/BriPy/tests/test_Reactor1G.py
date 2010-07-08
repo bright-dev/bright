@@ -4,7 +4,7 @@ from unittest import TestCase
 import nose 
 
 from nose.tools import assert_equal, assert_not_equal, assert_raises, raises, \
-    assert_almost_equal, assert_true, assert_false
+    assert_almost_equal, assert_true, assert_false, set_trace
 
 import os
 import warnings
@@ -676,55 +676,336 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
     #Test LatticeF_F_ here
 
 
-class TestReactor1GMethods(TestCase):
-    """Tests that the fuel cycle component methods work."""
+class TestReactor1GInitializationMethods(TestCase):
+    """Tests that the fuel cycle component initialization methods work."""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.foldMassWeights()
 
     @classmethod
     def teardown_class(cls):
         general_teardown()
 
-"""
+    def test_initialize(self):
+        rp = ReactorParameters()
+        self.r1g.initialize(rp)
+        assert_equal(self.r1g.B, 0)
+        assert_equal(self.r1g.phi, 0.0)
+        assert_equal(self.r1g.FuelChemicalForm, {})
+        assert_equal(self.r1g.CoolantChemicalForm, {})
+        assert_equal(self.r1g.rhoF, 0.0)
+        assert_equal(self.r1g.rhoC, 0.0)
+        assert_equal(self.r1g.P_NL, 0.0)
+        assert_equal(self.r1g.TargetBU, 0.0)
+        assert_false(self.r1g.useZeta)
+        assert_equal(self.r1g.Lattice, '')
+        assert_false(self.r1g.H_XS_Rescale)
+        assert_equal(self.r1g.r, 0.0)
+        assert_equal(self.r1g.l, 0.0)
+        assert_equal(self.r1g.S_O, 0.0)
+        assert_equal(self.r1g.S_T, 0.0)
+
+    def test_loadLib(self):
+        self.r1g.loadLib(os.getenv("BRIGHT_DATA") + '/FR.h5')
+        self.r1g.loadLib(os.getenv("BRIGHT_DATA") + '/LWR.h5')
+
+    def test_foldMassWeights(self):
+        prevkey = self.r1g.miF.keys()
+        assert(922380 in self.r1g.miF.keys())
+        self.r1g.IsosIn = MassStream({922350: 0.5})
+        self.r1g.foldMassWeights()
+        assert(922380 not in self.r1g.miF.keys())
+        
+
+class TestReactor1GTransmutationMatrixMethods(TestCase):
+    """Tests that the fuel cycle component transmutation matrix methods work."""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.foldMassWeights()
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_mkMj_F_(self):
+        self.r1g.mkMj_F_()
+        # Test below is the same as test_Mj_F_()
+        Mj_F_  = self.r1g.Mj_F_
+        Tij_F_ = self.r1g.Tij_F_
+        for j in Mj_F_.keys():
+            for f in range(len(self.r1g.F)):
+                tmp_Mj = 0.0
+                for i in self.r1g.IsosIn.comp.keys():
+                    tmp_Mj = tmp_Mj + (self.r1g.miF[i] * Tij_F_[i][j][f])
+                if tmp_Mj == 0.0:
+                    assert_almost_equal(Mj_F_[j][f], 0.0, 4)
+                else:
+                    assert_almost_equal(Mj_F_[j][f] / tmp_Mj, 1.0, 4)
+
+    def test_mkMj_Fd_(self):
+        self.r1g.BUd_BisectionMethod()
+        self.r1g.mkMj_F_()
+        self.r1g.mkMj_Fd_()
+        assert(0.0 < self.r1g.IsosOut.mass)
+        assert(self.r1g.IsosOut.mass < 1.0)
+
+
+class TestReactor1GBasicCalculationMethods(TestCase):
+    """Tests that the Reactor1G basic calculation methods work."""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.foldMassWeights()
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_calcOutIso(self):
+        self.r1g.BUd_BisectionMethod()
+        self.r1g.calcOutIso()
+        assert(0.0 < self.r1g.IsosOut.mass)
+        assert(self.r1g.IsosOut.mass < 1.0)
+
+
+    def test_calcSubStreams(self):
+        self.r1g.doCalc()
+        self.r1g.calcSubStreams()
+        assert_equal(self.r1g.InU.mass, 1.0)
+        assert_equal(self.r1g.InTRU.mass, 0.0)
+        assert_equal(self.r1g.InLAN.mass, 0.0)
+        assert_equal(self.r1g.InACT.mass, 1.0)
+        assert(self.r1g.OutU.mass < 1.0)
+        assert(0.0 < self.r1g.OutTRU.mass)
+        assert(0.0 < self.r1g.OutLAN.mass)
+        assert(self.r1g.OutACT.mass < 1.0)
+
+    def test_calcTruCR(self):
+        self.r1g.doCalc()
+        tmp_TruCR = (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 935.0)
+        assert_almost_equal(self.r1g.calcTruCR() / tmp_TruCR, 1.0)
+
+
+class TestReactor1GBurnupMethods(TestCase):
+    """Tests that the Reactor1G burnup methods work."""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.doCalc()
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_FluenceAtBU(self):
+        fp = self.r1g.FluenceAtBU(80.0)
+        assert(0 <= fp.f)
+        assert(fp.f <= len(self.r1g.F))
+        assert(self.r1g.F[fp.f] <= fp.F)
+        assert(fp.F <= self.r1g.F[fp.f+1])
+        assert(self.r1g.BU_F_[fp.f] <= 80.0)
+        assert(80.0 <= self.r1g.BU_F_[fp.f+1])
+        tmp_m = (self.r1g.BU_F_[fp.f+1] - self.r1g.BU_F_[fp.f]) / (self.r1g.F[fp.f+1] - self.r1g.F[fp.f])
+        assert_equal(fp.m / tmp_m, 1.0)
+
+    def test_batchAve(self):
+        BUd = self.r1g.BUd
+        p = self.r1g.batchAve(BUd, "P")
+        d = self.r1g.batchAve(BUd, "D")
+        k = self.r1g.batchAve(BUd, "K")
+        kk = self.r1g.batchAve(BUd)
+        assert_equal(k, kk)
+#        assert_equal(p/d, k) # Averaging messes this up.
+
+    def test_batchAveK(self):
+        BUd = self.r1g.BUd
+        assert_almost_equal(self.r1g.batchAveK(BUd), 1.0)
+
     def test_doCalc_1(self):
-        BriPy.isos2track([922350, 922380, 942390])
-        r1g = Reactor1G()
-        r1g.decay_time = 0.0
-        r1g.IsosIn = MassStream({942390: 1.0})
-        r1g.doCalc()
-        assert_equal(r1g.IsosOut.mass, 1.0)
-        assert_almost_equal(r1g.IsosOut.comp[942390], 1.0) 
+        self.r1g.doCalc()
+        assert(self.r1g.IsosOut.mass < 1.0)
+        assert(self.r1g.IsosOut.comp[922350] < 0.5) 
 
     def test_doCalc_2(self):
-        BriPy.isos2track([922350, 922380, 942390])
-        r1g = Reactor1G()
-        r1g.decay_time = 0.0
-        r1g.doCalc(MassStream({942390: 1.0}))
-        assert_equal(r1g.IsosOut.mass, 1.0)
-        assert_equal(r1g.IsosOut.comp[942390], 1.0) 
+        self.r1g.doCalc(MassStream({942390: 0.05, 922380: 0.95}))
+        assert(self.r1g.IsosOut.mass < 1.0)
+        assert(self.r1g.IsosOut.comp[942390] < 1.0) 
 
-    def test_doCalc_3(self):
-        BriPy.isos2track([922350, 922380, 942390])
-        r1g = Reactor1G()
-        r1g.IsosIn = MassStream({942390: 1.0})
-        r1g.doCalc(24110*365.25*24*3600)
-        assert(r1g.IsosOut.mass < 1.0)
-        assert_almost_equal(r1g.IsosOut.comp[942390], 0.5, 3) 
+class TestReactor1GBurnupMethods2(TestCase):
+    """Tests that the Reactor1G burnup methods work."""
 
-    def test_doCalc_4(self):
-        BriPy.isos2track([922350, 922380, 942390])
-        r1g = Reactor1G()
-        r1g.doCalc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
-        assert(r1g.IsosOut.mass < 1.0)
-        assert_almost_equal(r1g.IsosOut.comp[942390], 0.5, 3) 
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.doCalc()
 
-    def test_setParams(self):
-        BriPy.isos2track([922350, 922380, 942390])
-        r1g = Reactor1G()
-        r1g.doCalc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
-        r1g.setParams()
-        assert_equal(r1g.ParamsIn["Mass"],  1.00)
-        assert(0.5 < r1g.ParamsOut["Mass"] < 1.0)
-"""
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_BUd_BisectionMethod(self):
+        assert_almost_equal(self.r1g.k, 1.0, 5)
+        self.r1g.B = 1
+        self.r1g.BUd_BisectionMethod()
+        assert_almost_equal(self.r1g.k, 1.0, 5)
+        self.r1g.B = 3
+
+class TestReactor1GBurnupMethods3(TestCase):
+    """Tests that the Reactor1G burnup methods work."""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.doCalc()
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_Run_PNL(self):
+        # Convergence is not gaurenteed!
+        self.r1g.Run_PNL(0.99)
+        assert_equal(self.r1g.P_NL, 0.99)
+        assert_almost_equal(self.r1g.k, 1.0, 1)
+        self.r1g.Run_PNL(0.98)
+
+
+class TestReactor1GBurnupMethods4(TestCase):
+    """Tests that the Reactor1G burnup methods work."""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.doCalc()
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_Calibrate_PNL_2_BUd(self):
+        self.r1g.Calibrate_PNL_2_BUd()
+        assert_not_equal(self.r1g.P_NL, 0.98)
+        assert_almost_equal(self.r1g.BUd / self.r1g.TargetBU, 1.0, 5)
         
+
+class TestReactor1GLatticeMethods(TestCase):
+    """Tests that the Reactor1G burnup methods work.
+    These are not exposed to Python directly =("""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g.loadLib(libfile)
+        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.doCalc()
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_LatticeEPlanar(self):
+        prev = self.r1g.LatticeE_F_
+        self.r1g.Lattice = "Planar"
+        self.r1g.r = 0.5
+        self.r1g.l = 1.0
+        self.r1g.foldMassWeights()
+        curr = self.r1g.LatticeE_F_
+        for f in range(len(self.r1g.F)):
+            assert_not_equal(prev[f], curr[f])
+
+    def test_LatticeFPlanar(self):
+        prev = self.r1g.LatticeF_F_
+        self.r1g.Lattice = "Planar"
+        self.r1g.r = 0.5
+        self.r1g.l = 1.0
+        self.r1g.foldMassWeights()
+        curr = self.r1g.LatticeF_F_
+        for f in range(len(self.r1g.F)):
+            assert_not_equal(prev[f], curr[f])
+
+    def test_LatticeESpherical(self):
+        prev = self.r1g.LatticeE_F_
+        self.r1g.Lattice = "Spherical"
+        self.r1g.r = 0.5
+        self.r1g.l = 1.0
+        self.r1g.foldMassWeights()
+        curr = self.r1g.LatticeE_F_
+        for f in range(len(self.r1g.F)):
+            assert_not_equal(prev[f], curr[f])
+
+    def test_LatticeFSpherical(self):
+        prev = self.r1g.LatticeF_F_
+        self.r1g.Lattice = "Spherical"
+        self.r1g.r = 0.5
+        self.r1g.l = 1.0
+        self.r1g.foldMassWeights()
+        curr = self.r1g.LatticeF_F_
+        for f in range(len(self.r1g.F)):
+            assert_not_equal(prev[f], curr[f])
+
+    def test_LatticeECylindrical(self):
+        prev = self.r1g.LatticeE_F_
+        self.r1g.Lattice = "Cylindrical"
+        self.r1g.r = 0.5
+        self.r1g.l = 1.0
+        self.r1g.foldMassWeights()
+        curr = self.r1g.LatticeE_F_
+        for f in range(len(self.r1g.F)):
+            assert_not_equal(prev[f], curr[f])
+
+    def test_LatticeFCylindrical(self):
+        prev = self.r1g.LatticeF_F_
+        self.r1g.Lattice = "Cylindrical"
+        self.r1g.r = 0.5
+        self.r1g.l = 1.0
+        self.r1g.foldMassWeights()
+        curr = self.r1g.LatticeF_F_
+        for f in range(len(self.r1g.F)):
+            assert_not_equal(prev[f], curr[f])
+
+    # Since the above are not exposed directly, 
+    # They implicitly test the following Reactor1G functions:
+    #   calcZeta()
+    #   calcZetaPlanar()
+    #   calcZetaSpherical()
+    #   calcZetaCylindrical()
+
 
 if __name__ == "__main__":
     nose.main()
