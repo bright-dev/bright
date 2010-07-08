@@ -35,11 +35,109 @@ void MassStream::norm_comp_dict ()
     return;
 }
 
-void MassStream::read_from_file (char * fchar)
+double MassStream::getArrayNthEntry(H5::DataSet * ds, int n)
+{
+    H5::DataSpace array_space = (*ds).getSpace();
+
+    hsize_t count  [1] = {1};    
+    hsize_t offset [1] = {n};   
+
+    //Handle negative indices
+    if (n < 0)
+        offset[0] = offset[0] + array_space.getSimpleExtentNpoints();
+
+    //If still out of range we have a problem
+    if (offset[0] < 0 || array_space.getSimpleExtentNpoints() <= offset[0])
+        throw HDF5BoundsError();
+
+    array_space.selectHyperslab(H5S_SELECT_SET, count, offset);
+
+    //Set memmory hyperspace
+    hsize_t dimsm[1] = {1};
+    H5::DataSpace memspace(1, dimsm);
+
+    hsize_t count_out  [1] = {1};    
+    hsize_t offset_out [1] = {0};
+
+    memspace.selectHyperslab(H5S_SELECT_SET, count_out, offset_out);
+
+    double data_out [1];
+    (*ds).read(data_out, H5::PredType::NATIVE_DOUBLE, memspace, array_space);
+
+    return data_out[0];    
+}
+
+void MassStream::load_from_hdf5 (std::string filename, std::string groupname, int row)
+{
+    //Check to see if the file exists.
+    struct stat FileInfoStats; 
+    int intStat = stat(filename.c_str(), &FileInfoStats);
+    if(intStat != 0)
+    {
+        std::cout << "!!!Warning!!! Cannot find " << filename << "!\n";
+        return;
+    };
+
+    //Check to see if the file is in HDF5 format.
+    bool isH5 = H5::H5File::isHdf5(filename);
+    if (!isH5)
+    {
+        std::cout << "!!!Warning!!! " << filename << " is not a valid HDF5 file!\n";
+        return;
+    };
+
+    H5::Exception::dontPrint();
+
+    H5::H5File msfile(filename, H5F_ACC_RDONLY);
+    H5::Group msgroup;
+
+    try
+    {
+        msgroup = msfile.openGroup(groupname);
+    }
+    catch (H5::Exception fgerror)
+    {
+        std::cout << "!!!Warning!!! Group " << groupname << " could not be found in " << filename << "!\n";
+        return;
+    }    
+
+    //Clear current content
+    comp.clear();
+
+    //Iterate over elements of the group.
+    H5::DataSet isoset;
+    double isovalue;
+    hsize_t msG = msgroup.getNumObjs();
+    for (int msg = 0; msg < msG; msg++)
+    {
+        std::string isokey = msgroup.getObjnameByIdx(msg);
+        isoset = msgroup.openDataSet(isokey);
+        isovalue = getArrayNthEntry(&isoset, row);
+
+        if (isokey == "Mass" || isokey == "MASS" || isokey == "mass")
+        {
+            mass = isovalue;
+        }
+        else
+        {
+            comp[isoname::mixed_2_zzaaam(isokey)] = isovalue;
+        };
+
+        isoset.close();
+    }
+
+    //Add name set here. (based on groupname)
+
+    msfile.close();
+    return;
+}
+
+
+void MassStream::load_from_text (char * fchar)
 {
     std::ifstream f;
 
-    //Make sure that the file we are reading the mass stream from is reallyt there.
+    //Make sure that the file we are reading the mass stream from is really there.
     try
     {
         f.open(fchar);
@@ -101,7 +199,7 @@ MassStream::MassStream(char * fchar, double m, std::string s)
     mass = m;
     name = s;
 
-    read_from_file(fchar);
+    load_from_text(fchar);
 
     norm_comp_dict();
 }
@@ -113,7 +211,7 @@ MassStream::MassStream(std::string fstr, double m, std::string s)
     mass = m;
     name = s;
 
-    read_from_file( (char *) fstr.c_str() );
+    load_from_text( (char *) fstr.c_str() );
 
     norm_comp_dict();
 }

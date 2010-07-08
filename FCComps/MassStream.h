@@ -13,6 +13,9 @@
 #include <set>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h> 
+
+#include "H5Cpp.h"
 
 #include "bright.h"
 #include "isoname.h"
@@ -26,13 +29,18 @@ typedef CompDict::iterator CompIter;
 class MassStream
 {
 // Parent Class for Handling Mass Streams"
+private:
+    double getArrayNthEntry(H5::DataSet *, int );
+
 protected:
     //MassStream function definitions
     double get_comp_sum ();
-    void read_from_file (char *);
 
 public:
     void norm_comp_dict ();
+
+    void load_from_hdf5 (std::string, std::string, int = -1);
+    void load_from_text (char *);
 
     //Fundemental mass stream data
     CompDict comp;
@@ -84,5 +92,15 @@ MassStream operator+ (MassStream, MassStream);
 MassStream operator* (MassStream, double);
 MassStream operator* (double, MassStream);
 MassStream operator/ (MassStream, double);
+
+
+//Exceptions
+class HDF5BoundsError: public std::exception
+{
+  virtual const char* what() const throw()
+  {
+    return "Index of point is out of bounds.  Cannot read in from HDF5 File.";
+  }
+};
 
 #endif

@@ -16,7 +16,24 @@ elif os.name == 'nt':
 	ext_kwargs["extra_compile_args"] = ["/EHsc"]
         ext_kwargs["define_macros"] = [("_WIN32", None)]
 
+#For MassStream
+MassStream_ext_kwargs = deepcopy(ext_kwargs)
+if os.name == 'posix':
+	MassStream_ext_kwargs["libraries"].extend( ["z", "m", "hdf5_cpp", "hdf5_hl_cpp"] )
+elif os.name == 'nt':
+        FCComps_ext_kwargs["extra_link_args"] = [
+                "/DEFAULTLIB:zlib1.lib",
 
+                #For Dynamic Libs (dll)
+                "/DEFAULTLIB:szlibdll.lib",
+                "/DEFAULTLIB:hdf5dll.lib",
+                "/DEFAULTLIB:hdf5_hldll.lib",
+                "/DEFAULTLIB:hdf5_cppdll.lib",
+                "/DEFAULTLIB:hdf5_hl_cppdll.lib"
+                ] 
+        FCComps_ext_kwargs["define_macros"].extend( [("_HDF5USEDLL_", None)] )
+
+#For FCComps
 FCComps_ext_kwargs = deepcopy(ext_kwargs)
 if os.name == 'posix':
 	FCComps_ext_kwargs["libraries"].extend( ["hdf5", "z", "m", "hdf5_hl", "hdf5_cpp", "hdf5_hl_cpp"] )
@@ -39,7 +56,6 @@ elif os.name == 'nt':
                 "/DEFAULTLIB:hdf5_hl_cppdll.lib"
                 ] 
         FCComps_ext_kwargs["define_macros"].extend( [("_HDF5USEDLL_", None)] )
-        pass                          
 
 ##########################
 ### Setup Package Data ###
@@ -79,7 +95,7 @@ setup(name="BriPy",
 		Extension("MassStream.MassStream", 
 			["src/MassStream.cpp", "src/isoname.cpp", "src/bright.cpp", 
 				"BriPy_MassStream.cpp"], 
-			**ext_kwargs),
+			**MassStream_ext_kwargs),
 		Extension("BriPy.FCComps",    
 			["src/bright.cpp", 
 				"src/isoname.cpp", 

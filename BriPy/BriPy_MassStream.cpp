@@ -31,6 +31,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getTRU_overloads, getTRU, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getMA_overloads,  getMA,  0, 1)  
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getFP_overloads,  getFP,  0, 1)  
 
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(lfhdf5_overloads, load_from_hdf5, 2, 3)
+
 BOOST_PYTHON_MODULE(MassStream)
 {
     //sets the current scope...
@@ -61,6 +63,9 @@ BOOST_PYTHON_MODULE(MassStream)
         .def(bp::init<CompDict,    bp::optional<double, std::string> >("MassStream Isotopic Component Dictionary Constructor."))
         .def(bp::init<char *,      bp::optional<double, std::string> >("MassStream Filename (Character Array) Constructor."))
         .def(bp::init<std::string, bp::optional<double, std::string> >("MassStream Filename (String) Constructor."))
+
+        .def("load_from_hdf5", &MassStream::load_from_hdf5, lfhdf5_overloads("Loads data into the MassStream from an HDF5 file."))
+        .def("load_from_text", &MassStream::load_from_text, "Loads data into the MassStream from a text file.")
 
         //Useful Functions
         .def("Print",      &MassStream::Print, "Print MassStream to std::out.")
