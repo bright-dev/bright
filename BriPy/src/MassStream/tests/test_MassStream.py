@@ -8,6 +8,8 @@ from nose.tools import assert_equal, assert_not_equal, assert_raises, raises, \
 
 import os
 import MassStream
+import numpy  as np
+import tables as tb
 
 #def setup_class(TestMassStreamConstructor):
 #    with open('ms.txt', 'w') as f:
@@ -51,6 +53,53 @@ class TestMassStreamConstructor(TestCase):
         assert_equal(ms.comp, {922350: 0.05, 922380: 0.95})
         assert_equal(ms.mass, 15.0)
         assert_equal(ms.name, 'Dict Try')
+
+    def test_load_from_hdf5(self):
+        #First make a temp file
+        f = tb.openFile("ms.h5", "w")
+        f.createGroup("/", "ms", "Mass Stream Test")
+        f.createArray("/ms", "Mass",  np.array([1.0, 0.5,  0.0]), "Mass Test")
+        f.createArray("/ms", "U235",  np.array([1.0, 0.25, 0.0]), "U235 Test")
+        f.createArray("/ms", "PU239", np.array([0.0, 0.25, 0.0]), "PU239 Test")
+        f.close()
+
+        #perform tests
+        ms = MassStream.MassStream()
+        ms.load_from_hdf5("ms.h5", "/ms")
+        assert_equal(ms.mass, 0.0)
+        assert_equal(ms.comp, {922350: 0.0, 942390: 0.0})
+
+        ms.load_from_hdf5("ms.h5", "/ms", 0)
+        assert_equal(ms.mass, 1.0)
+        assert_equal(ms.comp, {922350: 1.0, 942390: 0.0})
+
+        ms.load_from_hdf5("ms.h5", "/ms", 1)
+        assert_equal(ms.mass, 0.5)
+        assert_equal(ms.comp, {922350: 0.25, 942390: 0.25})
+
+        ms.load_from_hdf5("ms.h5", "/ms", 2)
+        assert_equal(ms.mass, 0.0)
+        assert_equal(ms.comp, {922350: 0.0, 942390: 0.0})
+
+        ms.load_from_hdf5("ms.h5", "/ms", -1)
+        assert_equal(ms.mass, 0.0)
+        assert_equal(ms.comp, {922350: 0.0, 942390: 0.0})
+
+        ms.load_from_hdf5("ms.h5", "/ms", -2)
+        assert_equal(ms.mass, 0.5)
+        assert_equal(ms.comp, {922350: 0.25, 942390: 0.25})
+
+        ms.load_from_hdf5("ms.h5", "/ms", -3)
+        assert_equal(ms.mass, 1.0)
+        assert_equal(ms.comp, {922350: 1.0, 942390: 0.0})
+
+        #clean up
+        os.remove('ms.h5')
+
+    def test_load_from_text(self):
+        ms = MassStream.MassStream()
+        ms.load_from_text("ms.txt")
+        assert_equal(ms.comp, {922350: 0.05, 922380: 0.95})
 
 
 class TestMassStreamMethods(TestCase):

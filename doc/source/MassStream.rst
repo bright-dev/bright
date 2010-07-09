@@ -39,13 +39,8 @@ This package holds the important ``MassStream`` object.
         each isotope's weight fraction.
 
         If a string is provided instead of a dictionary, then ``MassStream`` will
-        read in the compdict vector from a file at the strings location.  These 
-        files should have two columns: the first gives the nuclide (in any form)
-        and the second is the nuclides weight.  Here is an example for natural uranium::
-
-            922340  0.000055
-            U235    0.00720
-            92238   0.992745
+        read in the compdict vector from a file at the string's location using 
+        the :meth:`load_from_text` function.  
 
         If no compdict is provided, an empty MassStream object is constructed.
 
@@ -58,7 +53,70 @@ This package holds the important ``MassStream`` object.
         streams. Default ''.
 
 
+.. method:: MassStream.load_from_hdf5(filename, groupname[, row=N-1])
 
+    A :class:`MassStream` object may be initialized from an HDF5 file.
+    The HDF5 representation of a :class:`MassStream` is a group that holds several 
+    extendable array datasets.  One array is entitled "Mass" while the other datasets
+    are nuclide names in LLAAAM form ("U235", "NP237", *etc*).  For example::
+
+        File.h5 (file)
+            |-- MassStream (group)
+                |-- Mass (array)
+                |-- H1 (array)
+                |-- O16 (array)
+                |-- U235 (array)
+                |-- PU239 (array)
+                |-- ...
+
+    The arrays are all of length N, where each row typically represents a different 
+    fuel cycle pass.  The sum of all of the nuclide arrays should sum to one, like 
+    :attr:`MassStream.comp`. 
+
+    Args:
+        * `filename`  (str): Path to HDF5 file that contains the data to read in.    
+        * `groupname` (str): Path to HDF5 group that represents the data. 
+            In the above example, groupname = "/MassStream".    
+
+    Keyword Args:
+        * `row` (int): The index of the arrays from which to read the data.  This 
+            ranges from 0 to N-1.  Defaults to the last element of the array.
+            Negative indexing is allowed (row[-N] = row[0]).
+
+    Usage:
+        This function loads data into a pre-existing :class:`MassStream`.  
+        Initialization is therefore a two-step process::
+
+            ms = MassStream()
+            ms.load_from_hdf5("afile.h5", "/foo/bar/ms", -3)
+
+
+.. method:: MassStream.load_from_text(filename)
+
+    A :class:`MassStream` object may be initialized from a simple text file.
+    The text representation of MassStreams are nuclide identifiers in the 
+    first column and mass or weight values in the second column.  For example, 
+    for natural uranium::
+
+        922340  0.000055
+        U235    0.00720
+        92238   0.992745
+
+    Data in this file must be whitespace separated.  Any valid nuclide naming
+    scheme may be used for any isotope.
+
+    Args:
+        * `filename`  (str): Path to HDF5 file that contains the data to read in.    
+
+    Usage:
+        This function loads data into a pre-existing :class:`MassStream`.  
+        Initialization is therefore a two-step process::
+
+            ms = MassStream()
+            ms.load_from_text("natu.h5")
+
+        This function is most often called implicitly by the
+        :class:`MassStream` constructor.
 
 .. _MassStream_Attributes:
 
