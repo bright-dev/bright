@@ -27,6 +27,22 @@ protected:
 
 public:
     //Public data
+    double alpha_0; //specify on init.
+    MassStream IsosIn;
+    MassStream IsosOut;
+    MassStream IsosTail;
+
+    //key isotopic info
+    int j;          //The jth isotope is the key, in zzaaam form, must be in IsosIn.
+    double xP_j;    //Product enrichment of jth isotope
+    double xW_j;    //Waste/Tails enrichment of the jth isotope
+
+    //Stage info
+    double N;       //N-stages
+    double M;       //M-stages
+    double N0;      //initial guess of N-stages
+    double M0;      //initial guess of M-stages
+
 
     //Reprocessing Constructors
     Enrichment ();
@@ -49,11 +65,11 @@ public:
     double PoverF (double, double, double);
     double WoverF (double, double, double);
 
-    double alphastari (double, double, double);
+    double get_alphastari (double, double);
 
-    double Ei (double, double, double);
-    double Si (double, double, double);
-    double [] FindNM(alpha0, Mstar, compF, j, xjP, xjW, N0, M0):
+    double get_Ei (double, double);
+    double get_Si (double, double);
+    void FindNM(double):
 
     def xiP(comp, N, M, alpha0, Mstar, compF, j,  xjP, xjW):
     def xiW(comp, N, M, alpha0, Mstar, compF, j,  xjP, xjW):

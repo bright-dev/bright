@@ -89,62 +89,68 @@ double Enrichment::WoverF(x_F, x_P, x_W)
     return ((x_F - x_P)/(x_W - x_P));
 }
 
-double Enrichment::alphastar_i(double alpha_0, double M_i, double Mstar)
+double Enrichment::get_alphastar_i (double M_i, double Mstar)
 {
-       	return pow(alpha_0, (Mstar - M_i));
+    //M_i is the mass of the ith isotope    
+    return pow(alpha_0, (Mstar - M_i));
 }
 
-double Enrichment::Ei(double alpha_0, double M_i, double Mstar)
+double Enrichment::get_Ei (double M_i, double Mstar)
 {
-	double astar_i = alphastar_i(alpha0, M_i, Mstar);
-    return ((astar_i - 1.0) / (1.0 - pow(astar_i, -N) ));
-}
+    double alphastar_i = get_alphastar_i(M_i, Mstar);
+    return ((alphastar_i - 1.0) / (1.0 - pow(alphastar_i, -N) ));
+};
 
-def Si(alpha0, Mi, Mstar):
-	astari = alphastari(alpha0, Mi, Mstar)
-       	return ((astari - 1.0)/(astari**(M+1) - 1.0))
+double Enrichment::get_Si (double Mi, double Mstar)
+{
+    double alphastar_i = get_alphastar_i(M_i, Mstar);
+    return ((alphastari - 1.0)/(pow(alphastari, M+1) - 1.0));
+};
 
-def FindNM(alpha0, Mstar, compF, j, xjP, xjW, N0, M0):
-	#this is the order of exactness.  
-	#gives the degree to which N and M are solved for
-	ooe = 7.0	
+void Enrichment::FindNM(double Mstar)
+{
+    //This give the order-of-exactness to which N and M are solved for.
+    double ooe = 7.0;
 
-	PoF = PoverF(compF[j], xjP, xjW)
-	WoF = WoverF(compF[j], xjP, xjW)
-	astarj = alphastari(alpha0, float(j), Mstar)
-	N = N0
-	M = M0
+    double PoF = PoverF(IsosIn[j], xP_j, xW_j);
+    double WoF = WoverF(IsosIn[j], xP_j, xW_j);
+    alphastar_j = get_alphastar_i(isoname::nuc_weight(j), Mstar);
+    N = N0;
+    M = M0;
 
-#	print N, M, "<----"
-	
-	lhsP = PoF*xjP/compF[j]
-	rhsP = (astarj**(M+1.0) - 1.0) / (astarj**(M+1.0) - astarj**(-N))
-	lhsW = WoF*xjW/compF[j]
-	rhsW = (1.0 - astarj**(-N)) / (astarj**(M+1.0) - astarj**(-N))
+    double lhsP = PoF * xP_j / IsosIn[j];
+    double rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
+    double lhsW = WoF * xW_j / IsosIn[j];
+    double rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N))
 
-	n = 1.0
-	
-	while 10**(-ooe) <  abs(lhsP - rhsP) and 10**(-ooe) <  abs(lhsW - rhsW):
-		if 10**(-ooe) <  abs(lhsW - rhsW):
-			M = M - (lhsW - rhsW)*M
-			rhsW = (1.0 - astarj**(-N)) / (astarj**(M+1.0) - astarj**(-N))
-		if 10**(-ooe) <  abs(lhsP - rhsP):
-			N = N + (lhsP - rhsP)*N
-			rhsP = (astarj**(M+1.0) - 1.0) / (astarj**(M+1.0) - astarj**(-N))
-		if N < 10**(-ooe):
-			N = N0 + 1.0*n
-			M = M0 + 1.0*n
-			n = n + 1.0
-			#print "n is now ", n
-		if M < 10**(-ooe):
-			N = N0 + 1.0*n
-			M = M0 + 1.0*n
-			n = n + 1.0
-			#print "n is now ", n
+    double n = 1.0;
+	while (pow(10.0, -ooe) < fabs(lhsP - rhsP) && pow(10.0, -ooe) < fabs(lhsW - rhsW))
+    {
+		if (pow(10.0, -ooe) < fabs(lhsW - rhsW))
+        {
+			M = M - ((lhsW - rhsW) * M);
+			rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
+        };
 
-#		print N, M
-#	print N, M, "     ---->"
-	return [N, M]
+		if (pow(10.0, -ooe) < abs(lhsP - rhsP))
+        {
+			N = N + ((lhsP - rhsP) * N);
+			rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
+        };
+
+		if (N < pow(10.0, -ooe))
+        {
+			N = N0 + (1.0 * n);
+			M = M0 + (1.0 * n);
+			n = n + 1.0;
+        };
+
+		if (M < pow(10.0, -ooe))
+			N = N0 + (1.0 * n);
+			M = M0 + (1.0 * n);
+			n = n + 1.0;
+    };
+};
   
 def xiP(comp, N, M, alpha0, Mstar, compF, j,  xjP, xjW):
 	astari = alphastari(alpha0, float(comp), Mstar)
