@@ -129,6 +129,8 @@ void MassStream::load_from_hdf5 (std::string filename, std::string groupname, in
     //Add name set here. (based on groupname)
 
     msfile.close();
+
+    norm_comp_dict();
     return;
 }
 
@@ -166,6 +168,8 @@ void MassStream::load_from_text (char * fchar)
         }
     }
     f.close();
+
+    norm_comp_dict();
     return;
 }
 
@@ -179,7 +183,7 @@ void MassStream::load_from_text (char * fchar)
 MassStream::MassStream()
 {
     //Empty MassStream constructor
-    mass = 0.0;
+    mass = -1.0;
     name = "";
 }
 
@@ -200,8 +204,6 @@ MassStream::MassStream(char * fchar, double m, std::string s)
     name = s;
 
     load_from_text(fchar);
-
-    norm_comp_dict();
 }
 
 MassStream::MassStream(std::string fstr, double m, std::string s)
@@ -212,8 +214,6 @@ MassStream::MassStream(std::string fstr, double m, std::string s)
     name = s;
 
     load_from_text( (char *) fstr.c_str() );
-
-    norm_comp_dict();
 }
 
 /*--- Function definitions ---*/

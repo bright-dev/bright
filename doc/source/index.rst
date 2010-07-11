@@ -28,10 +28,13 @@ BriPy requires these additional dependencies:
    #. `PyTables <http://www.pytables.org/>`_
 
 The source code for Bright and BriPy may be found at the 
-`Launchpad project site <http://launchpad.net/bright>`_.
-Or you may simply branch from the trunk using bazaar::
+`GitHub project site <http://github.com/bright-dev>`_.
+Or you may simply branch from the trunk using git::
 
-    bzr branch lp:bright
+    git clone git://github.com/bright-dev/bright.git
+
+Additionally, you can join up as a Bright developer at 
+`the Google groups page <http://groups.google.com/group/bright-dev>`_.
 
 --------
 Contents
