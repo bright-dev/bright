@@ -111,6 +111,7 @@ void Enrichment::FindNM(double Mstar)
 {
     //This give the order-of-exactness to which N and M are solved for.
     double ooe = 7.0;
+    double tolerance = pow(10.0, -ooe);
 
     double PoF = PoverF(IsosIn[j], xP_j, xW_j);
     double WoF = WoverF(IsosIn[j], xP_j, xW_j);
@@ -124,259 +125,340 @@ void Enrichment::FindNM(double Mstar)
     double rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N))
 
     double n = 1.0;
-	while (pow(10.0, -ooe) < fabs(lhsP - rhsP) && pow(10.0, -ooe) < fabs(lhsW - rhsW))
+	while (tolerance < fabs(lhsP - rhsP) && tolerance < fabs(lhsW - rhsW))
     {
-		if (pow(10.0, -ooe) < fabs(lhsW - rhsW))
+		if (tolerance < fabs(lhsW - rhsW))
         {
 			M = M - ((lhsW - rhsW) * M);
 			rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
         };
 
-		if (pow(10.0, -ooe) < abs(lhsP - rhsP))
+		if (tolerance < abs(lhsP - rhsP))
         {
 			N = N + ((lhsP - rhsP) * N);
 			rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
         };
 
-		if (N < pow(10.0, -ooe))
+		if (N < tolerance)
         {
 			N = N0 + (1.0 * n);
 			M = M0 + (1.0 * n);
 			n = n + 1.0;
         };
 
-		if (M < pow(10.0, -ooe))
+		if (M < tolerance)
 			N = N0 + (1.0 * n);
 			M = M0 + (1.0 * n);
 			n = n + 1.0;
     };
 };
   
-def xiP(comp, N, M, alpha0, Mstar, compF, j,  xjP, xjW):
-	astari = alphastari(alpha0, float(comp), Mstar)
-	return compF[comp]*(astari**(M+1.0) - 1.0) / (astari**(M+1.0) - astari**(-N)) / PoverF(compF[j], xjP, xjW)
+double Enrichment::xP_i(int i, double Mstar)
+{
+    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i), Mstar);
+    double numerator = IsosIn[i]*(pow(alphastar_i, M+1.0) - 1.0);
+    double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(IsosIn[j], xP_j, xW_j);
+    return numerator / denominator;
+};
 
-def xiW(comp, N, M, alpha0, Mstar, compF, j,  xjP, xjW):
-	astari = alphastari(alpha0, float(comp), Mstar)
-	return compF[comp]*(1.0 - astari**(-N)) / (astari**(M+1.0) - astari**(-N)) / WoverF(compF[j], xjP, xjW)
-
-#this func takes a given initial guess number of enriching and stripping stages for a given composition
-#of fuel with a given jth key component, knowing the values that are desired in both Product and Waste streams.
-#Having this it solves for what the actual N and M stage numbers are and also what the product and waste streams 
-#compositions are.  It returns precisely these.
-
-def SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0):
-	NM = FindNM(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0)
-#	print "-------------"
-#	print "N = ", NM[0]
-#	print "M = ", NM[1]
-
-	compP = {}
-	compW = {}
-	compstr = ""
-	compFstr = ""
-	compWstr = ""
-	compPstr = ""
-	for comp in compF.keys():
-		compP[comp] = xiP(comp, NM[0], NM[1], alpha0, Mstar, compF, j,  xjP, xjW)
-		compW[comp] = xiW(comp, NM[0], NM[1], alpha0, Mstar, compF, j,  xjP, xjW)
-		compstr = compstr + comp + "\t"
-
-#	compPstr = makecompstr(compP)
-#	compFstr = makecompstr(compF)
-#	compWstr = makecompstr(compW)
-	
-#	print "A Num  " + '\t' + compstr
-#	print "Product" + '\t' + compPstr
-#	print "Feed   " + '\t' + compFstr
-#	print "Waste  " + '\t' + compWstr
-
-	return [NM, compP, compW]
+double Enrichment::xW_i(int i, double Mstar)
+{
+    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i), Mstar);
+    double numerator = IsosIn[i] * (1.0 - pow(alphastar_i, -N));
+	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(IsosIn[j], xP_j, xW_j);
+    return numerator / denominator;
+};
 
 
-#This func actually solve the whole system of equations.  It uses SolveNM to find the roots for the enriching
-# andstripping stage numbers.  It then checks to see if the product and waste streams add up to 100% like they
-# should.  If they don't then it trys other values of N and M varied by Newton's Method.
+def Enrichment::SolveNM(double Mstar)
+{
+    //This function takes a given initial guess number of enriching and stripping stages 
+    //for a given composition of fuel with a given jth key component, knowing the values 
+    //that are desired in both Product and Waste streams.  Having this it solves for what 
+    //the actual N and M stage numbers are and also what the product and waste streams 
+    //compositions are.  It returns precisely these.
 
-def Comp2UnitySecant(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0):
-        #this is the order of exactness.
-        #gives the degree to which N and M are solved for
-        ooe = 5.0
-	#Is the hisorty of N and M that has been input
-	HistoryTable =[]
-	counter = 0
+    FindNM(Mstar);
 
-        N = N0
-        M = M0
-	NLast = N0 + 1.0
-	MLast = M0 + 1.0
-	Ntemp = 0.0
-	Mtemp = 0.0
-	snm = SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, N, M)
-	snmLast = SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, NLast, MLast)
+    CompDict compP;
+    CompDict compW;
 
-	N = snm[0][0]
-	M = snm[0][1]
-	NLast = snmLast[0][0]
-	MLast = snmLast[0][1]
+    for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
+    {
+        compP[i->first] = xP_i(i->first, Mstar);
+        compW[i->first] = xW_i(i->first, Mstar);
+    };
 
-        sumP = 0.0
-        sumW = 0.0
-	sumPLast = 0.0
-	sumWLast = 0.0
-        for comp in compF.keys():
-	        sumP = sumP + snm[1][comp]
-        	sumW = sumW + snm[2][comp]
-	        sumPLast = sumPLast + snmLast[1][comp]
-        	sumWLast = sumWLast + snmLast[2][comp]
+    IsosOut  = MassStream(compP);
+    IsosTail = MassStream(compW);
 
-        while 10.0**(-ooe) < abs(1.0 - sumP) and 10.0**(-ooe) < abs(1.0 - sumW):
-#		print "---------------------"
+    return;
+};
 
-                if 10.0**(-ooe) > abs(1.0 - sumP):
-                        N = snm[0][0]
-                else:
-			N = snm[0][0] + (1.0 - sumP)*((snm[0][0] - snmLast[0][0])/(sumP - sumPLast))
-			NLast = snm[0][0]
-			if N < 0.0:
-				N = (snm[0][0] + N0)/2.0
-#				print "N < 0"
 
-                if 10.0**(-ooe) > abs(1.0 - sumW):
-                        M = snm[0][1]
-                else:
-			M = snm[0][1] + (1.0 - sumW)*((snm[0][1] - snmLast[0][1])/(sumW - sumWLast))
-			MLast = snm[0][1]
-			if M < 0.0:
-				M = (snm[0][1] + M0)/2.0
-#				print "M < 0"
+void Enrichment::Comp2UnitySecant(double Mstar)
+{
+    //This function actually solves the whole system of equations.  It uses SolveNM 
+    //to find the roots for the enriching and stripping stage numbers.  It then 
+    //checks to see if the product and waste streams add up to 100% like they
+    //should.  If they don't then it trys other values of N and M varied by Newton's Method.
 
-		if InfiniteLoopChckr(HistoryTable, [N,M]):
-#			print "Infinite Loop Found and Exception Taken"
-			raise Exception('Infinite Loop Found')
+    //This give the order-of-exactness to which N and M are solved for.
+    double ooe = 5.0;
+    double tolerance = pow(10.0, -ooe);
 
-		if counter > 10000:
-#			print "Secant Counter Hit Limit....Breaking..."
-#			break
-			raise Exception('Counter Limit Hit')
-		else:
-			counter = counter + 1
+	//Is the hisorty of N and M that has been input
+	std::list<double> historyN;
+	std::list<double> historyM;
 
-		snmLast = SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, NLast, MLast)
-#		print "===="
-                snm = SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, N, M)
-        	sumP = 0.0
-	        sumW = 0.0
-		sumPLast = 0.0
-		sumWLast = 0.0
-        	for comp in compF.keys():
-		        sumP = sumP + snm[1][comp]
-        		sumW = sumW + snm[2][comp]
-		        sumPLast = sumPLast + snmLast[1][comp]
-	        	sumWLast = sumWLast + snmLast[2][comp]
-	return snm
+    //Start iteration Counter
+	int counter = 0;
 
-def Comp2UnityOther(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0):
-        #this is the order of exactness.
-        #gives the degree to which N and M are solved for
-        ooe = 5.0
-	#Is the hisorty of N and M that has been input
-	HistoryTable =[]
+    //Set first two points
+	double lastN = N0 + 1.0;
+	double lastM = M0 + 1.0;
+    double currN = N0;
+    double currM = M0;
 
-	snm = []
-        N = N0
-        M = M0
-	snm = SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, N, M)
-        sumP = 0.0
-        sumW = 0.0
-	for comp in compF.keys():
-		sumP = sumP + snm[1][comp]
-		sumW = sumW + snm[2][comp]
-        while 10.0**(-ooe) < abs(1.0 - sumP) and 10.0**(-ooe) < abs(1.0 - sumW):
-                if 10.0**(-ooe) > abs(1.0 - sumP):
-                        N = snm[0][0]
-                else:
-			N = snm[0][0] - (1.0 - sumP)/(1.0 + sumP)
+    //Initialize 'last' point
+    N = lastN;
+    M = lastM;
+    SolveNM(Mstar);
+    double massLastP = IsosOut.mass;
+    double massLastW = IsosTail.mass;
+    histortN.push_back(N);
+    histortN.push_back(M);
 
-                if 10.0**(-ooe) > abs(1.0 - sumW):
-                        M = snm[0][1]
-                else:
-			M = snm[0][1] + (1.0 - sumW)/(1.0 + sumW)
+    //Initialize 'current' point
+    N = currN;
+    M = currM;
+    SolveNM(Mstar);
+    double massCurrP = IsosOut.mass;
+    double massCurrW = IsosTail.mass;
+    histortN.push_back(N);
+    histortN.push_back(M);
 
-		#Note this infinite loop checker does not raise an exception
-		#Thus the exception cannot be caught by a try statement and then another
-		#root finding Comp2Unity method tried.
-		#This simply returns whatever the vaule of the of snm is at the time.
-		#This is fine for M* = 235.1 for U, since M* won't be optimized here as an outlier 
-		#and since it is looping it is probably signalling around some actual value.
-		if InfiniteLoopChckr(HistoryTable, [N,M]):
-#			print "Infinite Loop Found and Broken"
-			break
+    //My guess is that what we are checkin here is that the isotopic compositions
+    //make sense with abs(1.0 - massCurrP) rather than calculatign the 
+    //relative product to watse mass streams.
+    double tempN = 0.0;
+    double tempM = 0.0;
+    while (tolerance < fabs(1.0 - massCurrP) && tolerance < fabs(1.0 - massCurrW))
+    {
+        if (tolerance <= fabs(1.0 - massCurrP)
+        {
+            //Make a new guess for N
+            tempN = currN;
+            currN = currN + (1.0 - massCurrP)*((currN - lastN)/(massCurrP - massLastP));
+			lastN = tempN;
 
-                snm = SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, N, M)
-                sumP = 0.0
-                sumW = 0.0
-                for comp in compF.keys():
-                        sumP = sumP + snm[1][comp]
-                        sumW = sumW + snm[2][comp]
-	return snm
+            //If the new value of N is less than zero, reset.
+			if (currN < 0.0)
+            {
+				currN = (tempN + N0)/2.0;
+            };
+        };
+
+        if (tolerance <= fabs(1.0 - massCurrW)
+        {
+            //Make a new guess for M
+            tempM = currM;
+            currM = currM + (1.0 - massCurrW)*((currM - lastM)/(massCurrW - massLastW));
+            lastM = tempM;
+
+            //If the new value of M is less than zero, reset.
+            if (M < 0.0)
+            {
+                currM = (tempM + M0)/2.0;
+            };
+        };
+
+        //Check for infinite loops
+        for (int h = 0; h < historyN.size(), h++)
+        {
+            if (historyN[h] == currN && historyM[h] == currM)
+            {
+                throw EnrichmentInfiniteLoopError();
+            };
+
+            if (150 <= historyN.size())
+            {
+                historyN.pop_front();
+                historyM.pop_front();
+            };
+        };
+        historyN.push_back(N);
+        historyM.push_back(M);
+
+        if (10000 < counter)
+        {
+            throw EnrichmentIterationLimit();
+        }
+        else
+        {
+            counter = counter + 1;
+        };
+
+        //Calculate new isotopics for valid (N, M)        
+        massLastP = massCurrP;
+        massLastW = massCurrW;
+
+        N = currN;
+        M = currM;
+        SolveNM(Mstar);
+        massCurrP = IsosOut.mass;
+        massCurrW = IsosTail.mass;
+    };
+
+	return;
+};
+
+void Enrichment::Comp2UnityOther(double Mstar)
+{
+    //This give the order-of-exactness to which N and M are solved for.
+    double ooe = 5.0;
+    double tolerance = pow(10.0, -ooe);
+
+	//Is the hisorty of N and M that has been input
+	std::list<double> historyN;
+	std::list<double> historyM;
+
+    //Initial point
+    N = N0;
+    M = M0;
+	SolveNM(Mstar);
+    double massP = IsosOut.mass;
+    double massW = IsosTails.mass;
+
+    while (tolerance < fabs(1.0 - massP) && tolerance < fabs(1.0 - massW) )
+    {
+        if (tolerance <= fabs(1.0 - massP))
+        {
+            N = N - (1.0 - massP)/(1.0 + massP);
+        };
+
+        if (tolerance <= fabs(1.0 - massW))
+        {
+			M = M + (1.0 - massW)/(1.0 + massW)
+        };
+
+		//Note this infinite loop checker does not raise an exception
+		//Thus the exception cannot be caught by a try statement and then another
+		//root finding Comp2Unity method tried.
+		//This simply leaves N and M in whatever their current state is at the time.
+		//This is fine for M* = 235.1 for U, since M* won't be optimized here as an outlier 
+		//and since it is looping it is probably signalling around some actual value.
+
+        //Check for infinite loops
+        for (int h = 0; h < historyN.size(), h++)
+        {
+            if (historyN[h] == currN && historyM[h] == currM)
+            {
+                //throw EnrichmentInfiniteLoopError(); //Possible future use.
+                return;
+            };
+
+            if (150 <= historyN.size())
+            {
+                historyN.pop_front();
+                historyM.pop_front();
+            };
+        };
+        historyN.push_back(N);
+        historyM.push_back(M);
+
+        //Calculate new masses
+        SolveNM(Mstar);
+        massP = IsosOut.mass;
+        massW = IsosTail.mass;
+    };
+
+	return;
+};
+
+double Enrichment::deltaU_i_OverG(int i, double Mstar)
+{
+    //Solves for a stage separative power relevant to the ith component
+    //per unit of flow G.  This is taken from Equation 31 divided by G 
+    //from the paper "Wood, Houston G., Borisevich, V. D. and Sulaberidze, G. A.,
+    //'On a Criterion Efficiency for Multi-Isotope Mixtures Separation', 
+    //Separation Science and Technology, 34:3, 343 - 357"
+    //To link to this article: DOI: 10.1081/SS-100100654
+    //URL: http://dx.doi.org/10.1081/SS-100100654
+
+    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i), Mstar);
+	return log(pow(alpha_0, (Mstar - isoname::nuc_weight(j))) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
+};
+
+void Enrichment::LoverF(double Mstar)
+{
+    //This function finds the total flow rate (L) over the feed flow rate (F)
+
+	bool compConverged = false;
+
+	try
+    {
+        //Try secant method first
+		Comp2UnitySecant(Mstar);
+		compConverged = true;
+    }
+	catch (...)
+    {
+		try
+        {
+            //Then try other cr8zy method
+			Comp2UnityOther(Mstar);
+    		compConverged = true;
+        }
+		catch (...)
+        {
+            //Nol other methods to try!
+    		compConverged = false;
+        };
+    };
+
+	if (compConverged)
+    {
+		double PoF = PoverF(IsosIn[j], xP_j, xW_j);
+		double WoF = WoverF(IsosIn[j], xP_j, xW_j);
+
+		//Matched Flow Ratios
+		double RF = IsosIn.comp[j]   / IsosIn.comp[k];
+		double RP = IsosOut.comp[j]  / IsosOut.comp[k];
+		double RW = IsosTail.comp[j] / IsosTail.comp[k];
+
+		double LtotalOverF = 0.0;
+		double SWUoverF = 0.0;
+        double tempNumerator = 0.0; 
+
+		for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
+        {
+			tempNumerator = (PoF*IsosOut.comp[i->first]*log(RP) + WoF*IsosTail.comp[i->first]*log(RW) - IsosIn.comp[i->first]*log(RF));
+			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first, Mstar));
+			SWUoverF = SWUoverF + tempNumerator;
+        };
+
+        //Assign flow rates
+        TotalPerFeed = LtotalOverF;
+
+        //The -1 term is put in the SWU calculation because otherwise SWUoverF 
+        //represents the SWU that would be undone if you were to deenrich the 
+        //whole process.  Thus the SWU to enrich is -1x this number.  This is 
+        //a by-product of the value function used as a constraint.
+        SWUperFeed    = -1 * SWUoverF;          //This is the SWU for 1 kg of Feed material.
+		SWUperProduct = -1 * SWUoverF / PoF;	//This is the SWU for 1 kg of Product material.
+
+        //Assign Isotopic streams the proper masses.
+        IsosOut.mass  = IsosIn.mass * PoF;
+        IsosTail.mass = IsosIn.mass * WoF;
+    };
+
+    return;
+};
 
 #The FindMstar finds a value of Mstar by minimzing the seperative power.  The intial vaules needed are the
 #same as for the other functions with the note that Mstar -> Mstar0 where Mstar0 is some intial guess at
 #what Mstar might be.
-
-#Comes from eq 32 in Houston Wood paper. Divided by G.
-def eq28denom(comp, alpha0, Mstar, j):
-	astari = alphastari(alpha0, float(comp), Mstar)
-	return math.log(alpha0**(Mstar - float(j)))*((astari - 1.0)/(astari + 1.0))
-
-#Finds the total flow rate over the feed flow rate
-#UnityMeth is a string that indicates which Comp2Unity root finding method should be used
-#UnityMeth uses the Secant Method by default.
-def LoverF(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0, k):
-	gotValue = False
-
-	#N,M,Product,Waste
-	NMPW = []
-	try:
-#		print "Secant"
-		NMPW = Comp2UnitySecant(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0)
-		gotValue = True
-	except:
-		try:
-#			print "Other"
-			NMPW = Comp2UnityOther(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0)
-			gotValue = True
-		except:
-			pass
-
-	if gotValue:
-		PoF = PoverF(compF[j], xjP, xjW)
-		WoF = WoverF(compF[j], xjP, xjW)
-		#Matched Ratios
-		RP = NMPW[1][j] / NMPW[1][k]
-		RF = compF[j] / compF[k]
-		RW = NMPW[2][j] / NMPW[2][k]
-
-		LtotalOverF = 0.0
-		SWUoverF = 0.0
-
-		for comp in compF.keys():
-			tempNumerator = (PoF*NMPW[1][comp]*math.log(RP) + WoF*NMPW[2][comp]*math.log(RW) - compF[comp]*math.log(RF))
-#			print tempNumerator
-			LtotalOverF = LtotalOverF + tempNumerator / eq28denom(comp, alpha0, Mstar, j)
-			SWUoverF = SWUoverF + tempNumerator
-
-		NMPW.append(LtotalOverF)
-		#The -1 term is put in because otherwise SWUoverF represents the SWU one would be undoing if you were to
-		#deenrich the whole process.  The SWU to enrich is -1x this num.  This is because of the value function used.
-		#This is the SWU for 1 kg of feed material
-		NMPW.append(-1 * SWUoverF)
-		#This is the SWU for 1 kg of Product material
-		NMPW.append(-1 * SWUoverF / PoF)
-		return NMPW
-	else:
-		return False
 
 #This is the final function that actually solves for an optimized M* that makes the cascade!
 def MstarOptimize(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k):
@@ -453,146 +535,3 @@ def MstarOptimize(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k):
 	#Def of result: List with elements,
 	# [ [N,M], xP, xW, L/F, M*  ]
 
-#The Following Few Functions yeild the cascade That is optimized and emriches fuel to a certain Max Burnup
-
-#Gives the maximum burnup of fuel with u235 and u236 enrichements and a certain number of batches.
-#All variables should be input as floats.   
-def MaxBurn(u235, u236, batches):
-	a = 3.479397448490798
-	b = 11.048652045162228
-	c = -0.002046586356345106
-	d = 1.6011191339360904
-	f = -0.12958835040198202
-	g = -2.483552758121467
-	h = 1.9153885037054987
-	j = 12.797726339337736
-	k = 7.975144395645545
-	m = 0.741332522502401
-
-	batchcoeff = 2.0*batches/(batches + 1.0)
-	part1 = b*((u235 - h)**f)/(u236 - g)
-	part2 = -d*(u236 - g)
-	part3 = c*((u236 - g)**a)/(u235 - h)
-	part4 = j*(u235 - h)**m
-	paren = part1 + part2 + part3 + part4 + k
-
-	return batchcoeff*paren
-
-def GetMaxBurn(CasOut, batches):
-	return MaxBurn(CasOut['235']*100, CasOut['236']*100, batches)
-
-def CascadeForBurnGoal(alpha0, Mstar0, compF, j,  xjP0, xjW, N0, M0, k, BurnGoal, batches):
-	ooe = 4.0
-
-	xjPLast = xjP0
-	MaxBurnLast = GetMaxBurn( MstarOptimize(alpha0, Mstar0, compF, j,  xjPLast, xjW, N0, M0, k)[1], batches)
-	print xjPLast, MaxBurnLast
-	xjPNow = xjP0 + 0.001
-	CascadeNow = MstarOptimize(alpha0, Mstar0, compF, j,  xjPNow, xjW, N0, M0, k)
-	MaxBurnNow = GetMaxBurn( CascadeNow[1], batches )
-	print xjPNow, MaxBurnNow
-
-	while 10**(-ooe) < abs(MaxBurnNow - BurnGoal):
-		tempxjP = xjPNow
-		tempMaxBurn = MaxBurnNow
-	
-		xjPNow = xjPNow + (BurnGoal - MaxBurnNow)*(xjPNow - xjPLast)/(MaxBurnNow - MaxBurnLast)
-		print xjPNow,
-		CascadeNow = MstarOptimize(alpha0, Mstar0, compF, j,  xjPNow, xjW, N0, M0, k)
-		MaxBurnNow = GetMaxBurn( CascadeNow[1], batches )
-		print MaxBurnNow
-	
-		xjPLast = tempxjP
-		MaxBurnLast = tempMaxBurn
-
-	return CascadeNow
-
-#This set of Function Blends two fuels together but enriches one first, 
-#It finds the enrichment needed to get to a certain Burnup
-def dictMult(dict, scalar):
-	tempdict = {}
-	for k in dict.keys():
-		tempdict[k] = dict[k] * scalar
-	return tempdict
-
-def xFmix(xF1, kg1, xF2, kg2):
-	tempxF = {}
-	tempxF1 = dictMult(xF1, kg1)
-	tempxF2 = dictMult(xF2, kg2)
-
-	for k in tempxF1.keys():
-		if k in tempxF2.keys():
-			tempxF[k] = tempxF1[k] + tempxF2[k]
-		else:
-			tempxF[k] = tempxF1[k]
-	for k in tempxF2.keys():
-		if k in tempxF1.keys():
-			pass
-		else:
-			tempxF[k] = tempxF2[k]
-
-	tempxF = dictMult(tempxF, 1.0/(kg1 + kg2) )
-	return tempxF
-
-def CascadeForBurnGoalBlended(alpha0, Mstar0, compF, j,  xjP0, xjW, N0, M0, k, BurnGoal, batches, kg, kgBlend, compFBlend):
-	ooe = 5.0
-
-	xjPLast = xjP0
-	CascadeLast = MstarOptimize(alpha0, Mstar0, compF, j,  xjPLast, xjW, N0, M0, k)
-	xFmixedLast = xFmix( CascadeLast[1], kg, compFBlend, kgBlend)
-	MaxBurnLast = GetMaxBurn( xFmixedLast, batches)
-	print xjPLast, MaxBurnLast
-	xjPNow = xjP0 + 0.001
-	CascadeNow = MstarOptimize(alpha0, Mstar0, compF, j,  xjPNow, xjW, N0, M0, k)
-	xFmixedNow = xFmix( CascadeNow[1], kg, compFBlend, kgBlend)
-	MaxBurnNow = GetMaxBurn( xFmixedNow, batches )
-	print xjPNow, MaxBurnNow
-
-	while 10**(-ooe) < abs(MaxBurnNow - BurnGoal):
-		tempxjP = xjPNow
-	        tempMaxBurn = MaxBurnNow
-	
-        	xjPNow = xjPNow + (BurnGoal - MaxBurnNow)*(xjPNow - xjPLast)/(MaxBurnNow - MaxBurnLast)
-	        print xjPNow,
-		CascadeNow = MstarOptimize(alpha0, Mstar0, compF, j,  xjPNow, xjW, N0, M0, k)
-		xFmixedNow = xFmix( CascadeNow[1], kg, compFBlend, kgBlend)
-		MaxBurnNow = GetMaxBurn( xFmixedNow, batches )
-	        print MaxBurnNow
-
-        	xjPLast = tempxjP
-	        MaxBurnLast = tempMaxBurn
-
-	return CascadeNow
-
-#This functuion finds the mass of a certain amount of a composition needed to obtain a given burnup when the composition is enriched 
-#a set amount.  This differs from the function abopve in which the mass of the composition is known and the enrichment weight percent 
-#is solved for to obtain a given burnup.  Initial Conditions should be set close to the value.  
-def CascadeForBurnGoalBlendedMass(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k, BurnGoal, batches, kg0, kgBlend, compFBlend):
-	ooe = 5.0
-
-	Cascade = MstarOptimize(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k)
-
-	kgLast = kg0 
-	xFmixedLast = xFmix( Cascade[1], kgLast, compFBlend, kgBlend)
-	MaxBurnLast = GetMaxBurn( xFmixedLast, batches)
-	print kgLast, MaxBurnLast
-	kgNow = kg0 + 0.01
-	xFmixedNow = xFmix( Cascade[1], kgNow, compFBlend, kgBlend)
-	MaxBurnNow = GetMaxBurn( xFmixedNow, batches )
-	print kgNow, MaxBurnNow
-
-	while 10**(-ooe) < abs(MaxBurnNow - BurnGoal):
-		tempkg = kgNow
-	        tempMaxBurn = MaxBurnNow
-	
-        	kgNow = kgNow + (BurnGoal - MaxBurnNow)*(kgNow - kgLast)/(MaxBurnNow - MaxBurnLast)
-	        print kgNow,
-		xFmixedNow = xFmix( Cascade[1], kgNow, compFBlend, kgBlend)
-		MaxBurnNow = GetMaxBurn( xFmixedNow, batches )
-	        print MaxBurnNow
-
-        	kgLast = tempkg
-	        MaxBurnLast = tempMaxBurn
-
-	Cascade.append(kgNow)
-	return Cascade

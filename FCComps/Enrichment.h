@@ -6,7 +6,9 @@
 #include <map>
 #include <set>
 #include <string>
+#include <list>
 #include <exception>
+#include <math.h>
 #include "FCComp.h"
 #include "MassStream.h"
 #include "isoname.h"
@@ -27,27 +29,32 @@ protected:
 
 public:
     //Public data
-    double alpha_0; //specify on init.
-    MassStream IsosIn;
-    MassStream IsosOut;
-    MassStream IsosTail;
+    double alpha_0;         //specify on init.
+    double Mstar_0;         //specify on init.
+    MassStream IsosIn;      //Feed stream
+    MassStream IsosOut;     //Product Stream
+    MassStream IsosTail;    //Waste Stream
 
     //key isotopic info
     int j;          //The jth isotope is the key, in zzaaam form, must be in IsosIn.
+    int k;          //The kth isotope is the other key to separate j away from.
     double xP_j;    //Product enrichment of jth isotope
     double xW_j;    //Waste/Tails enrichment of the jth isotope
 
     //Stage info
-    double N;       //N-stages
-    double M;       //M-stages
+    double N;       //N Enriching Stages
+    double M;       //M Stripping Stages
     double N0;      //initial guess of N-stages
     double M0;      //initial guess of M-stages
 
+    //Flow Rates
+    double TotalPerFeed;    //Total flow rate per feed rate.
+    double SWUperFeed;      //This is the SWU for 1 kg of Feed material.
+    double SWUperProduct;   //This is the SWU for 1 kg of Product material.
 
     //Reprocessing Constructors
     Enrichment ();
     Enrichment (std::string = "");
-//    Reprocess (std::map<std::string, double>, std::string = "");
     
     //Get Functions
 //    SepEffDict get_sepeff() const {return sepeff;};
@@ -71,15 +78,34 @@ public:
     double get_Si (double, double);
     void FindNM(double):
 
-    def xiP(comp, N, M, alpha0, Mstar, compF, j,  xjP, xjW):
-    def xiW(comp, N, M, alpha0, Mstar, compF, j,  xjP, xjW):
-    def SolveNM(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0):
-    def Comp2UnitySecant(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0):
-def Comp2UnityOther(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0):
-def eq28denom(comp, alpha0, Mstar, j):
-def LoverF(alpha0, Mstar, compF, j,  xjP, xjW, N0, M0, k):
+    double xP_i(double);
+    double xW_i(double);
+    void SolveNM(double);
+    void Comp2UnitySecant(double);
+    void Comp2UnityOther(double);
+    double deltaU_i_OverG(int, double);
+    void LoverF(double);
 def MstarOptimize(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k):
 };
+
+
+//Exceptions
+class EnrichmentInfiniteLoopError: public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Inifinite loop found while calculating enrichment cascade!  Breaking...";
+    };
+};
+
+class EnrichmentIterationLimit: public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Iteration limit hit durring enrichment calculation!  Breaking...";
+    };
+};
+
 
 #endif
 
