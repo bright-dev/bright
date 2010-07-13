@@ -89,25 +89,25 @@ double Enrichment::WoverF(x_F, x_P, x_W)
     return ((x_F - x_P)/(x_W - x_P));
 }
 
-double Enrichment::get_alphastar_i (double M_i, double Mstar)
+double Enrichment::get_alphastar_i (double M_i)
 {
     //M_i is the mass of the ith isotope    
     return pow(alpha_0, (Mstar - M_i));
 }
 
-double Enrichment::get_Ei (double M_i, double Mstar)
+double Enrichment::get_Ei (double M_i)
 {
-    double alphastar_i = get_alphastar_i(M_i, Mstar);
+    double alphastar_i = get_alphastar_i(M_i);
     return ((alphastar_i - 1.0) / (1.0 - pow(alphastar_i, -N) ));
 };
 
-double Enrichment::get_Si (double Mi, double Mstar)
+double Enrichment::get_Si (double Mi)
 {
-    double alphastar_i = get_alphastar_i(M_i, Mstar);
+    double alphastar_i = get_alphastar_i(M_i);
     return ((alphastari - 1.0)/(pow(alphastari, M+1) - 1.0));
 };
 
-void Enrichment::FindNM(double Mstar)
+void Enrichment::FindNM()
 {
     //This give the order-of-exactness to which N and M are solved for.
     double ooe = 7.0;
@@ -115,7 +115,7 @@ void Enrichment::FindNM(double Mstar)
 
     double PoF = PoverF(IsosIn[j], xP_j, xW_j);
     double WoF = WoverF(IsosIn[j], xP_j, xW_j);
-    alphastar_j = get_alphastar_i(isoname::nuc_weight(j), Mstar);
+    alphastar_j = get_alphastar_i(isoname::nuc_weight(j));
     N = N0;
     M = M0;
 
@@ -153,24 +153,24 @@ void Enrichment::FindNM(double Mstar)
     };
 };
   
-double Enrichment::xP_i(int i, double Mstar)
+double Enrichment::xP_i(int i)
 {
-    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i), Mstar);
+    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
     double numerator = IsosIn[i]*(pow(alphastar_i, M+1.0) - 1.0);
     double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(IsosIn[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
-double Enrichment::xW_i(int i, double Mstar)
+double Enrichment::xW_i(int i)
 {
-    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i), Mstar);
+    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
     double numerator = IsosIn[i] * (1.0 - pow(alphastar_i, -N));
 	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(IsosIn[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
 
-def Enrichment::SolveNM(double Mstar)
+def Enrichment::SolveNM()
 {
     //This function takes a given initial guess number of enriching and stripping stages 
     //for a given composition of fuel with a given jth key component, knowing the values 
@@ -178,7 +178,7 @@ def Enrichment::SolveNM(double Mstar)
     //the actual N and M stage numbers are and also what the product and waste streams 
     //compositions are.  It returns precisely these.
 
-    FindNM(Mstar);
+    FindNM();
 
     CompDict compP;
     CompDict compW;
@@ -196,7 +196,7 @@ def Enrichment::SolveNM(double Mstar)
 };
 
 
-void Enrichment::Comp2UnitySecant(double Mstar)
+void Enrichment::Comp2UnitySecant()
 {
     //This function actually solves the whole system of equations.  It uses SolveNM 
     //to find the roots for the enriching and stripping stage numbers.  It then 
@@ -223,7 +223,7 @@ void Enrichment::Comp2UnitySecant(double Mstar)
     //Initialize 'last' point
     N = lastN;
     M = lastM;
-    SolveNM(Mstar);
+    SolveNM();
     double massLastP = IsosOut.mass;
     double massLastW = IsosTail.mass;
     histortN.push_back(N);
@@ -232,7 +232,7 @@ void Enrichment::Comp2UnitySecant(double Mstar)
     //Initialize 'current' point
     N = currN;
     M = currM;
-    SolveNM(Mstar);
+    SolveNM();
     double massCurrP = IsosOut.mass;
     double massCurrW = IsosTail.mass;
     histortN.push_back(N);
@@ -305,7 +305,7 @@ void Enrichment::Comp2UnitySecant(double Mstar)
 
         N = currN;
         M = currM;
-        SolveNM(Mstar);
+        SolveNM();
         massCurrP = IsosOut.mass;
         massCurrW = IsosTail.mass;
     };
@@ -313,7 +313,7 @@ void Enrichment::Comp2UnitySecant(double Mstar)
 	return;
 };
 
-void Enrichment::Comp2UnityOther(double Mstar)
+void Enrichment::Comp2UnityOther()
 {
     //This give the order-of-exactness to which N and M are solved for.
     double ooe = 5.0;
@@ -368,7 +368,7 @@ void Enrichment::Comp2UnityOther(double Mstar)
         historyM.push_back(M);
 
         //Calculate new masses
-        SolveNM(Mstar);
+        SolveNM();
         massP = IsosOut.mass;
         massW = IsosTail.mass;
     };
@@ -376,7 +376,7 @@ void Enrichment::Comp2UnityOther(double Mstar)
 	return;
 };
 
-double Enrichment::deltaU_i_OverG(int i, double Mstar)
+double Enrichment::deltaU_i_OverG(int i)
 {
     //Solves for a stage separative power relevant to the ith component
     //per unit of flow G.  This is taken from Equation 31 divided by G 
@@ -386,11 +386,11 @@ double Enrichment::deltaU_i_OverG(int i, double Mstar)
     //To link to this article: DOI: 10.1081/SS-100100654
     //URL: http://dx.doi.org/10.1081/SS-100100654
 
-    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i), Mstar);
+    double alphastar_i = get_alphastar_0i(isoname::nuc_weight(i));
 	return log(pow(alpha_0, (Mstar - isoname::nuc_weight(j))) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
 };
 
-void Enrichment::LoverF(double Mstar)
+void Enrichment::LoverF()
 {
     //This function finds the total flow rate (L) over the feed flow rate (F)
 
@@ -399,7 +399,7 @@ void Enrichment::LoverF(double Mstar)
 	try
     {
         //Try secant method first
-		Comp2UnitySecant(Mstar);
+		Comp2UnitySecant();
 		compConverged = true;
     }
 	catch (...)
@@ -407,7 +407,7 @@ void Enrichment::LoverF(double Mstar)
 		try
         {
             //Then try other cr8zy method
-			Comp2UnityOther(Mstar);
+			Comp2UnityOther();
     		compConverged = true;
         }
 		catch (...)
@@ -456,59 +456,81 @@ void Enrichment::LoverF(double Mstar)
     return;
 };
 
-#The FindMstar finds a value of Mstar by minimzing the seperative power.  The intial vaules needed are the
-#same as for the other functions with the note that Mstar -> Mstar0 where Mstar0 is some intial guess at
-#what Mstar might be.
+void Enrichment::MstarOptimize()
+{
+    //The MstarOptimize function finds a value of Mstar by minimzing the seperative power.  
+    //Note that Mstar0 represents an intial guess at what Mstar might be.
+    //This is the final function that actually solves for an optimized M* that makes the cascade!
 
-#This is the final function that actually solves for an optimized M* that makes the cascade!
-def MstarOptimize(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k):
-	#History table that has Mstar, LoF, and slope between this point and the last one 
-	hist = []
+	//History table that has Mstar, LoF, and slope between this point and the last one 
+	//hist = []
 
-	#ooe = order of exactness
-	#xpn = exponent index
-	ooe = 7.0
-	xpn = 1.0
+    //This give the order-of-exactness to which M* is solved for.
+    double ooe = 7.0;
+    double tolerance = pow(10.0, -ooe);
+	//xpn is the exponential index index
+	double xpn = 1.0;
 
-	MstarLast = Mstar0
-	LoverFLast = LoverF(alpha0, MstarLast, compF, j,  xjP, xjW, N0, M0, k)
-	MstarNow = Mstar0 + 0.1
-	LoverFNow = LoverF(alpha0, MstarNow, compF, j,  xjP, xjW, N0, M0, k)
+    //Initialize 'last' point
+	double lastMstar = Mstar0;
+    Mstar = lastMstar;
+	LoverF();
+    double lastLoverF = TotalPerFeed;
 
-	m = slope(MstarNow, LoverFNow[3], MstarLast, LoverFLast[3])
-	Sign = m / abs(m)
-	del m
+    //Initialize 'current' point
+	double currMstar = Mstar0 + 0.1;
+    Mstar = currMstar;
+	LoverF();
+    double currLoverF = TotalPerFeed;
 
-	if Sign < 0:
-		hist.insert(0, [MstarLast, LoverFLast] )
-		hist.insert(0, [MstarNow, LoverFNow] )
-	elif 0 < Sign:
-		hist.insert(0, [MstarNow, LoverFNow] )
-		hist.insert(0, [MstarLast, LoverFLast] )
-	else:
-		print "Slope for intial conditions is already Zero, so you already have minimized M*"
+	double m = bright::slope(currMstar, currLoverF, lastMstar, lastLoverF);
+	double m_sign = m / fabs(m);
 
-#	print str(hist[1][0]) + '\t' + str(hist[1][1][3]) + '\t'
-#	print str(hist[0][0]) + '\t' + str(hist[0][1][3]) + '\t'
+    double tempMstar;
+    double tempLoverF;
+    double tempm;
+    double tempm_sign;
 
-	while xpn < ooe:
-		MstarNow = hist[0][0] - Sign*10**(-xpn)
+    if (0.0 < m_sign)
+    {
+        tempMstar  = lastMstar;
+        tempLoverF = lastLoverF;
+        lastMstar  = currMstar;
+        lastLoverF = currLoverF;
+        currMstar  = tempMstar;
+        currLoverF = tempLoverF;
+    };
 
-#		print "Got Here"
-		LoverFNow = LoverF(alpha0, MstarNow, compF, j,  xjP, xjW, N0, M0, k)
+    //Start iterations.    
+	while (xpn < ooe)
+    {
+        lastMstar  = currMstar;
+        lastLoverF = currLoverF;
 
-		hist.insert(0, [MstarNow, LoverFNow] )
-	
-#		print str(hist[0][0]) + '\t' + str(hist[0][1][3]) + '\t',
+		currMstar = currMstar - (m_sign * pow(10.0, -xpn));
+        Mstar = currMstar;
+		LoverF();
+        currLoverF = TotalPerFeed;
 
-		if hist[1][1][3] < hist[0][1][3]:
-			tempMstar = hist[0][0] - Sign*10**(-xpn)
-			tempLoverF = LoverF(alpha0, tempMstar, compF, j,  xjP, xjW, N0, M0, k)
-			tempm = slope(MstarNow, LoverFNow[3], tempMstar, tempLoverF[3])
-			if tempm == 0.0:
-				hist.insert(0, [tempMstar, tempLoverF] )
-#				print str(hist[0][0]) + '\t' + str(hist[0][1][3]) + '\t'
-				break
+		if (lastLoverF < currLoverF)
+        {
+			tempMstar = currMstar - (m_sign * pow(10.0, -xpn));
+            Mstar = tempMstar;
+            LoverF();
+			tempLoverF = TotalPerFeed; 
+
+			tempm = bright::slope(currMstar, currLoverF, tempMstar, tempLoverF);
+
+			if (tempm == 0.0)
+            {
+                lastMstar  = currMstar;
+                lastLoverF = currLoverF;
+                currMstar  = tempMstar;
+                currLoverF = tempLoverF;
+				break;
+            };
+
+ STOPPED HERE!
 			tempSign = tempm / abs(tempm)
 			if Sign == tempSign:
 				pass
@@ -526,12 +548,12 @@ def MstarOptimize(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k):
 				Sign = tempm / abs(tempm)
 #			print Sign, tempSign,
 			del tempMstar, tempLoverF, tempm, tempSign
-
-#		print str(hist[0][0]) + '\t' + str(hist[0][1][3]) + '\t'
+        };
+    };
 
 	result = hist[0][1]
 	result.append(hist[0][0])
 	return result
 	#Def of result: List with elements,
 	# [ [N,M], xP, xW, L/F, M*  ]
-
+};

@@ -31,6 +31,7 @@ public:
     //Public data
     double alpha_0;         //specify on init.
     double Mstar_0;         //specify on init.
+    double Mstar;           //Current Mstar
     MassStream IsosIn;      //Feed stream
     MassStream IsosOut;     //Product Stream
     MassStream IsosTail;    //Waste Stream
@@ -72,20 +73,20 @@ public:
     double PoverF (double, double, double);
     double WoverF (double, double, double);
 
-    double get_alphastari (double, double);
+    double get_alphastari (double);
 
-    double get_Ei (double, double);
-    double get_Si (double, double);
-    void FindNM(double):
+    double get_Ei (double);
+    double get_Si (double);
+    void FindNM():
 
-    double xP_i(double);
-    double xW_i(double);
-    void SolveNM(double);
-    void Comp2UnitySecant(double);
-    void Comp2UnityOther(double);
-    double deltaU_i_OverG(int, double);
-    void LoverF(double);
-def MstarOptimize(alpha0, Mstar0, compF, j,  xjP, xjW, N0, M0, k):
+    double xP_i();
+    double xW_i();
+    void SolveNM();
+    void Comp2UnitySecant();
+    void Comp2UnityOther();
+    double deltaU_i_OverG(int);
+    void LoverF();
+    void MstarOptimize();
 };
 
 
