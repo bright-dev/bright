@@ -11,6 +11,7 @@
 #include "src/FCComp.h"
 #include "src/Reprocess.h"
 #include "src/Storage.h"
+#include "src/Enrichment.h"
 #include "src/Reactor1G.h"
 #include "src/FastReactor1G.h"
 #include "src/LightWaterReactor1G.h"
@@ -374,4 +375,26 @@ BOOST_PYTHON_MODULE(FCComps)
         //Useful Functions
         .def("setParams",  &LightWaterReactor1G::setParams)
     ;
+
+
+    //Enrichment Method Function Overloads
+    MassStream (Enrichment::*Enrichment_doCalc_NA)()           = &Enrichment::doCalc;
+    MassStream (Enrichment::*Enrichment_doCalc_CD)(CompDict)   = &Enrichment::doCalc;
+    MassStream (Enrichment::*Enrichment_doCalc_MS)(MassStream) = &Enrichment::doCalc;
+        
+    bp::class_< Enrichment, bp::bases<FCComp> >("Enrichment", "Enrichmenting Facility Fuel Cycle Component",  bp::init< >() )
+        //Basic Enrichment Properties
+        .add_property("alpha_0", &Enrichment::get_alpha_0, &Enrichment::set_alpha_0)
+
+        //Enrichment Constructor Overloads
+        .def(bp::init< >())
+
+        //Useful Functions
+        .def("initialize", &Enrichment::initialize)
+        .def("setParams",  &Enrichment::setParams)
+        .def("doCalc", Enrichment_doCalc_NA)
+        .def("doCalc", Enrichment_doCalc_CD)
+        .def("doCalc", Enrichment_doCalc_MS)
+    ;
+
 };

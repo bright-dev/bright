@@ -10,7 +10,7 @@
 /*** Protected Functions ***/
 /***************************/
 
-void Enrichment::initialize(SepEffDict sed)
+void Enrichment::initialize()
 {
     //Initializes the enrichment component. with specific separation efficiencies.
 }
@@ -24,7 +24,7 @@ Enrichment::Enrichment ()
     //Enrichment Fuel Cycle Component. Perfomrs Multi-Component Enrichment
 }
 
-Enrichment::Enrichment (std::string n) : FCComp (rep_p2track, n)
+Enrichment::Enrichment (std::string n) : FCComp (enr_p2track, n)
 {
     //Enrichmenting Fuel Cycle Component.  Applies Separation Efficiencies.
     initialize();
@@ -43,29 +43,17 @@ void Enrichment::setParams ()
 
 MassStream Enrichment::doCalc ()
 {
-    //Does the Enrichmenting
-    CompDict incomp  = IsosIn.multByMass();
-    CompDict outcomp;
-    for (CompIter i = incomp.begin(); i != incomp.end(); i++)
-    {
-        outcomp[i->first] = (i->second) * sepeff[i->first];
-    }
-    IsosOut = MassStream (outcomp);
+    //Does the Enriching
+    MstarOptimize();
     return IsosOut;
 }
 
 MassStream Enrichment::doCalc (CompDict incomp)
 {
-    //Does the Enrichmenting
+    //Does the Enriching
     //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to IsosIn.
     IsosIn = MassStream (incomp);
-    CompDict outcomp;
-    for (CompIter i = incomp.begin(); i != incomp.end(); i++)
-    {
-        outcomp[i->first] = (i->second) * sepeff[i->first];
-    }
-    IsosOut = MassStream (outcomp);
-    return IsosOut;
+    return doCalc();
 }
 
 MassStream Enrichment::doCalc (MassStream instream)
@@ -83,7 +71,7 @@ double Enrichment::PoverF(double x_F, double x_P, double x_W)
     return ((x_F - x_W)/(x_P - x_W));
 }
 
-double Enrichment::WoverF(x_F, x_P, x_W)
+double Enrichment::WoverF(double x_F, double x_P, double x_W)
 {
     //Waste over Feed Enrichment Ratio
     return ((x_F - x_P)/(x_W - x_P));
@@ -101,10 +89,10 @@ double Enrichment::get_Ei (double M_i)
     return ((alphastar_i - 1.0) / (1.0 - pow(alphastar_i, -N) ));
 };
 
-double Enrichment::get_Si (double Mi)
+double Enrichment::get_Si (double M_i)
 {
     double alphastar_i = get_alphastar_i(M_i);
-    return ((alphastari - 1.0)/(pow(alphastari, M+1) - 1.0));
+    return ((alphastar_i - 1.0)/(pow(alphastar_i, M+1) - 1.0));
 };
 
 void Enrichment::FindNM()
@@ -113,16 +101,16 @@ void Enrichment::FindNM()
     double ooe = 7.0;
     double tolerance = pow(10.0, -ooe);
 
-    double PoF = PoverF(IsosIn[j], xP_j, xW_j);
-    double WoF = WoverF(IsosIn[j], xP_j, xW_j);
-    alphastar_j = get_alphastar_i(isoname::nuc_weight(j));
+    double PoF = PoverF(IsosIn.comp[j], xP_j, xW_j);
+    double WoF = WoverF(IsosIn.comp[j], xP_j, xW_j);
+    double alphastar_j = get_alphastar_i(isoname::nuc_weight(j));
     N = N0;
     M = M0;
 
-    double lhsP = PoF * xP_j / IsosIn[j];
+    double lhsP = PoF * xP_j / IsosIn.comp[j];
     double rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
-    double lhsW = WoF * xW_j / IsosIn[j];
-    double rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N))
+    double lhsW = WoF * xW_j / IsosIn.comp[j];
+    double rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
 
     double n = 1.0;
 	while (tolerance < fabs(lhsP - rhsP) && tolerance < fabs(lhsW - rhsW))
@@ -147,30 +135,32 @@ void Enrichment::FindNM()
         };
 
 		if (M < tolerance)
+        {
 			N = N0 + (1.0 * n);
 			M = M0 + (1.0 * n);
 			n = n + 1.0;
+        };
     };
 };
   
 double Enrichment::xP_i(int i)
 {
     double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
-    double numerator = IsosIn[i]*(pow(alphastar_i, M+1.0) - 1.0);
-    double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(IsosIn[j], xP_j, xW_j);
+    double numerator = IsosIn.comp[i]*(pow(alphastar_i, M+1.0) - 1.0);
+    double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(IsosIn.comp[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
 double Enrichment::xW_i(int i)
 {
     double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
-    double numerator = IsosIn[i] * (1.0 - pow(alphastar_i, -N));
-	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(IsosIn[j], xP_j, xW_j);
+    double numerator = IsosIn.comp[i] * (1.0 - pow(alphastar_i, -N));
+	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(IsosIn.comp[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
 
-def Enrichment::SolveNM()
+void Enrichment::SolveNM()
 {
     //This function takes a given initial guess number of enriching and stripping stages 
     //for a given composition of fuel with a given jth key component, knowing the values 
@@ -185,8 +175,8 @@ def Enrichment::SolveNM()
 
     for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
     {
-        compP[i->first] = xP_i(i->first, Mstar);
-        compW[i->first] = xW_i(i->first, Mstar);
+        compP[i->first] = xP_i(i->first);
+        compW[i->first] = xW_i(i->first);
     };
 
     IsosOut  = MassStream(compP);
@@ -208,8 +198,8 @@ void Enrichment::Comp2UnitySecant()
     double tolerance = pow(10.0, -ooe);
 
 	//Is the hisorty of N and M that has been input
-	std::list<double> historyN;
-	std::list<double> historyM;
+	std::vector<double> historyN;
+	std::vector<double> historyM;
 
     //Start iteration Counter
 	int counter = 0;
@@ -226,8 +216,8 @@ void Enrichment::Comp2UnitySecant()
     SolveNM();
     double massLastP = IsosOut.mass;
     double massLastW = IsosTail.mass;
-    histortN.push_back(N);
-    histortN.push_back(M);
+    historyN.push_back(N);
+    historyN.push_back(M);
 
     //Initialize 'current' point
     N = currN;
@@ -235,8 +225,8 @@ void Enrichment::Comp2UnitySecant()
     SolveNM();
     double massCurrP = IsosOut.mass;
     double massCurrW = IsosTail.mass;
-    histortN.push_back(N);
-    histortN.push_back(M);
+    historyN.push_back(N);
+    historyN.push_back(M);
 
     //My guess is that what we are checkin here is that the isotopic compositions
     //make sense with abs(1.0 - massCurrP) rather than calculatign the 
@@ -245,7 +235,7 @@ void Enrichment::Comp2UnitySecant()
     double tempM = 0.0;
     while (tolerance < fabs(1.0 - massCurrP) && tolerance < fabs(1.0 - massCurrW))
     {
-        if (tolerance <= fabs(1.0 - massCurrP)
+        if (tolerance <= fabs(1.0 - massCurrP))
         {
             //Make a new guess for N
             tempN = currN;
@@ -259,7 +249,7 @@ void Enrichment::Comp2UnitySecant()
             };
         };
 
-        if (tolerance <= fabs(1.0 - massCurrW)
+        if (tolerance <= fabs(1.0 - massCurrW))
         {
             //Make a new guess for M
             tempM = currM;
@@ -274,7 +264,7 @@ void Enrichment::Comp2UnitySecant()
         };
 
         //Check for infinite loops
-        for (int h = 0; h < historyN.size(), h++)
+        for (int h = 0; h < historyN.size(); h++)
         {
             if (historyN[h] == currN && historyM[h] == currM)
             {
@@ -283,8 +273,8 @@ void Enrichment::Comp2UnitySecant()
 
             if (150 <= historyN.size())
             {
-                historyN.pop_front();
-                historyM.pop_front();
+                historyN.erase(historyN.begin());
+                historyM.erase(historyM.begin());
             };
         };
         historyN.push_back(N);
@@ -320,15 +310,15 @@ void Enrichment::Comp2UnityOther()
     double tolerance = pow(10.0, -ooe);
 
 	//Is the hisorty of N and M that has been input
-	std::list<double> historyN;
-	std::list<double> historyM;
+	std::vector<double> historyN;
+	std::vector<double> historyM;
 
     //Initial point
     N = N0;
     M = M0;
-	SolveNM(Mstar);
+	SolveNM();
     double massP = IsosOut.mass;
-    double massW = IsosTails.mass;
+    double massW = IsosTail.mass;
 
     while (tolerance < fabs(1.0 - massP) && tolerance < fabs(1.0 - massW) )
     {
@@ -339,7 +329,7 @@ void Enrichment::Comp2UnityOther()
 
         if (tolerance <= fabs(1.0 - massW))
         {
-			M = M + (1.0 - massW)/(1.0 + massW)
+			M = M + (1.0 - massW)/(1.0 + massW);
         };
 
 		//Note this infinite loop checker does not raise an exception
@@ -350,9 +340,9 @@ void Enrichment::Comp2UnityOther()
 		//and since it is looping it is probably signalling around some actual value.
 
         //Check for infinite loops
-        for (int h = 0; h < historyN.size(), h++)
+        for (int h = 0; h < historyN.size(); h++)
         {
-            if (historyN[h] == currN && historyM[h] == currM)
+            if (historyN[h] == N && historyM[h] == M)
             {
                 //throw EnrichmentInfiniteLoopError(); //Possible future use.
                 return;
@@ -360,8 +350,8 @@ void Enrichment::Comp2UnityOther()
 
             if (150 <= historyN.size())
             {
-                historyN.pop_front();
-                historyM.pop_front();
+                historyN.erase(historyN.begin());
+                historyM.erase(historyM.begin());
             };
         };
         historyN.push_back(N);
@@ -386,8 +376,8 @@ double Enrichment::deltaU_i_OverG(int i)
     //To link to this article: DOI: 10.1081/SS-100100654
     //URL: http://dx.doi.org/10.1081/SS-100100654
 
-    double alphastar_i = get_alphastar_0i(isoname::nuc_weight(i));
-	return log(pow(alpha_0, (Mstar - isoname::nuc_weight(j))) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
+    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
+	return log(pow( alpha_0, (Mstar - isoname::nuc_weight(j)) )) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
 };
 
 void Enrichment::LoverF()
@@ -419,8 +409,8 @@ void Enrichment::LoverF()
 
 	if (compConverged)
     {
-		double PoF = PoverF(IsosIn[j], xP_j, xW_j);
-		double WoF = WoverF(IsosIn[j], xP_j, xW_j);
+		double PoF = PoverF(IsosIn.comp[j], xP_j, xW_j);
+		double WoF = WoverF(IsosIn.comp[j], xP_j, xW_j);
 
 		//Matched Flow Ratios
 		double RF = IsosIn.comp[j]   / IsosIn.comp[k];
@@ -434,7 +424,7 @@ void Enrichment::LoverF()
 		for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
         {
 			tempNumerator = (PoF*IsosOut.comp[i->first]*log(RP) + WoF*IsosTail.comp[i->first]*log(RW) - IsosIn.comp[i->first]*log(RF));
-			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first, Mstar));
+			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first));
 			SWUoverF = SWUoverF + tempNumerator;
         };
 
@@ -472,13 +462,13 @@ void Enrichment::MstarOptimize()
 	double xpn = 1.0;
 
     //Initialize 'last' point
-	double lastMstar = Mstar0;
+	double lastMstar = Mstar_0;
     Mstar = lastMstar;
 	LoverF();
     double lastLoverF = TotalPerFeed;
 
     //Initialize 'current' point
-	double currMstar = Mstar0 + 0.1;
+	double currMstar = Mstar_0 + 0.1;
     Mstar = currMstar;
 	LoverF();
     double currLoverF = TotalPerFeed;
@@ -521,39 +511,39 @@ void Enrichment::MstarOptimize()
 
 			tempm = bright::slope(currMstar, currLoverF, tempMstar, tempLoverF);
 
-			if (tempm == 0.0)
+            if (tempm == 0.0)
             {
                 lastMstar  = currMstar;
                 lastLoverF = currLoverF;
                 currMstar  = tempMstar;
                 currLoverF = tempLoverF;
-				break;
+                break;
             };
 
- STOPPED HERE!
-			tempSign = tempm / abs(tempm)
-			if Sign == tempSign:
-				pass
-			else:
-				xpn = xpn + 1
-				hist.pop(0)
+            tempm_sign = tempm / fabs(tempm);
+            if (m_sign != tempm_sign)
+            {
+                xpn = xpn + 1;
 
-				tempMstar = hist[0][0] + Sign*10**(-xpn)
-				tempLoverF = LoverF(alpha0, tempMstar, compF, j,  xjP, xjW, N0, M0, k)
-				tempm = slope(MstarNow, LoverFNow[3], tempMstar, tempLoverF[3])
-				if tempm == 0.0:
-					hist.insert(0, [tempMstar, tempLoverF] )
-#					print str(hist[0][0]) + '\t' + str(hist[0][1][3]) + '\t'
-					break
-				Sign = tempm / abs(tempm)
-#			print Sign, tempSign,
-			del tempMstar, tempLoverF, tempm, tempSign
+                tempMstar = lastMstar + (m_sign * pow(10.0, -xpn));
+                Mstar = tempMstar;
+                LoverF();
+                tempLoverF = TotalPerFeed;
+                tempm = bright::slope(lastMstar, lastLoverF, tempMstar, tempLoverF);
+
+                if (tempm == 0.0)
+                {
+                    currMstar  = tempMstar;
+                    currLoverF = tempLoverF;
+                    break;
+                };
+
+                m_sign = tempm / fabs(tempm);
+            };
         };
     };
 
-	result = hist[0][1]
-	result.append(hist[0][0])
-	return result
-	#Def of result: List with elements,
-	# [ [N,M], xP, xW, L/F, M*  ]
+    Mstar        = currMstar;
+    TotalPerFeed = currLoverF;
+	return;
 };

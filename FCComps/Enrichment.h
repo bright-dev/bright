@@ -6,7 +6,7 @@
 #include <map>
 #include <set>
 #include <string>
-#include <list>
+#include <vector>
 #include <exception>
 #include <math.h>
 #include "FCComp.h"
@@ -55,13 +55,13 @@ public:
 
     //Reprocessing Constructors
     Enrichment ();
-    Enrichment (std::string = "");
+    Enrichment (std::string);
     
     //Get Functions
-//    SepEffDict get_sepeff() const {return sepeff;};
+    double get_alpha_0() const {return alpha_0;};
 
     //Set Functions
-//    void set_sepeff(SepEffDict sed) {sepeff = sed;};
+    void set_alpha_0(double a0) {alpha_0 = a0;};
 
     //Public access functions
     void initialize();		//Initializes the constructors.
@@ -73,14 +73,14 @@ public:
     double PoverF (double, double, double);
     double WoverF (double, double, double);
 
-    double get_alphastari (double);
+    double get_alphastar_i (double);
 
     double get_Ei (double);
     double get_Si (double);
-    void FindNM():
+    void FindNM();
 
-    double xP_i();
-    double xW_i();
+    double xP_i(int);
+    double xW_i(int);
     void SolveNM();
     void Comp2UnitySecant();
     void Comp2UnityOther();
