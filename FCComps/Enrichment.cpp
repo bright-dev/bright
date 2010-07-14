@@ -2,6 +2,31 @@
 
 #include "Enrichment.h"
 
+/*********************************/
+/*** Enrichment Helper Classes ***/
+/*********************************/
+
+EnrichmentParameters fillUraniumEnrichmentDefaults()
+{
+    //Default enrichment paramters for uranium-based enrichment
+    EnrichmentParameters ued; 
+
+    ued.alpha_0 = 1.05;
+    ued.Mstar_0 = 236.5;
+
+    ued.j = 922350;
+    ued.k = 922380;
+
+    ued.N0 = 30.0;
+    ued.M0 = 10.0;
+
+    ued.xP_j = 0.05;
+    ued.xW_j = 0.0025;
+
+    return ued;
+};
+EnrichmentParameters UraniumEnrichmentDefaults ( fillUraniumEnrichmentDefaults() );
+
 /************************************************/
 /*** Enrichment Component Class and Functions ***/
 /************************************************/
@@ -10,24 +35,39 @@
 /*** Protected Functions ***/
 /***************************/
 
-void Enrichment::initialize()
+void Enrichment::initialize(EnrichmentParameters ep)
 {
-    //Initializes the enrichment component. with specific separation efficiencies.
+    //Initializes the enrichment component. 
+    alpha_0 = ep.alpha_0;
+    Mstar_0 = ep.Mstar_0;
+    j       = ep.j;
+    k       = ep.k;
+    N0      = ep.N0;
+    M0      = ep.M0;
+    xP_j    = ep.xP_j;
+    xW_j    = ep.xW_j;
 }
 
 /*******************************/
 /*** Enrichment Constructors ***/
 /*******************************/
 
-Enrichment::Enrichment ()
+Enrichment::Enrichment () : FCComp(enr_p2track, "")
 {
     //Enrichment Fuel Cycle Component. Perfomrs Multi-Component Enrichment
+    initialize(UraniumEnrichmentDefaults);
 }
 
 Enrichment::Enrichment (std::string n) : FCComp (enr_p2track, n)
 {
     //Enrichmenting Fuel Cycle Component.  Applies Separation Efficiencies.
-    initialize();
+    initialize(UraniumEnrichmentDefaults);
+}
+
+Enrichment::Enrichment (EnrichmentParameters ep, std::string n) : FCComp (enr_p2track, n)
+{
+    //Enrichmenting Fuel Cycle Component.  Applies Separation Efficiencies.
+    initialize(ep);
 }
 
 
@@ -37,8 +77,32 @@ Enrichment::Enrichment (std::string n) : FCComp (enr_p2track, n)
 
 void Enrichment::setParams ()
 {
-    ParamsIn["Mass"]  = IsosIn.mass;
-    ParamsOut["Mass"] = IsosOut.mass;	
+    ParamsIn["MassFeed"]  = IsosIn.mass;
+    ParamsOut["MassFeed"] = 0.0;	
+
+    ParamsIn["MassProduct"]  = 0.0;
+    ParamsOut["MassProduct"] = IsosOut.mass;	
+
+    ParamsIn["MassTails"]  = 0.0;
+    ParamsOut["MassTails"] = IsosTail.mass;	
+
+    ParamsIn["N"]  = 0.0;
+    ParamsOut["N"] = N;	
+
+    ParamsIn["M"]  = 0.0;
+    ParamsOut["M"] = M;	
+
+    ParamsIn["Mstar"]  = 0.0;
+    ParamsOut["Mstar"] = Mstar;	
+
+    ParamsIn["TotalPerFeed"]  = 0.0;
+    ParamsOut["TotalPerFeed"] = TotalPerFeed;	
+
+    ParamsIn["SWUperFeed"]  = 0.0;
+    ParamsOut["SWUperFeed"] = SWUperFeed;	
+
+    ParamsIn["SWUperProduct"]  = 0.0;
+    ParamsOut["SWUperProduct"] = SWUperProduct;	
 }
 
 MassStream Enrichment::doCalc ()

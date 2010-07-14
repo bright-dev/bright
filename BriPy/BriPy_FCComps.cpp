@@ -196,6 +196,68 @@ BOOST_PYTHON_MODULE(FCComps)
         .def("doCalc", Storage_doCalc_MS_DB)
     ;
 
+
+
+    /******************/
+    /*** Enrichment ***/
+    /******************/
+
+    //EnrichmentParameters Class...Used in Enrichment
+    bp::class_< EnrichmentParameters >("EnrichmentParameters", "Set of physical parameters that define an enrichment cascade. This is used to instantiate new reactor objects.", bp::init<>() )
+        .add_property("alpha_0", &Enrichment::get_alpha_0, &Enrichment::set_alpha_0)
+        .add_property("Mstar_0", &Enrichment::get_Mstar_0, &Enrichment::set_Mstar_0)
+        .add_property("j",       &Enrichment::get_j,       &Enrichment::set_j)
+        .add_property("k",       &Enrichment::get_k,       &Enrichment::set_k)
+        .add_property("N0",      &Enrichment::get_N0,      &Enrichment::set_N0)
+        .add_property("M0",      &Enrichment::get_M0,      &Enrichment::set_M0)
+        .add_property("xP_j",    &Enrichment::get_xP_j,    &Enrichment::set_xP_j)
+        .add_property("xW_j",    &Enrichment::get_xW_j,    &Enrichment::set_xW_j)
+    ;
+
+    //Enrichment Method Function Overloads
+    MassStream (Enrichment::*Enrichment_doCalc_NA)()           = &Enrichment::doCalc;
+    MassStream (Enrichment::*Enrichment_doCalc_CD)(CompDict)   = &Enrichment::doCalc;
+    MassStream (Enrichment::*Enrichment_doCalc_MS)(MassStream) = &Enrichment::doCalc;
+        
+    bp::class_< Enrichment, bp::bases<FCComp> >("Enrichment", "Enrichmenting Facility Fuel Cycle Component",  bp::init< >() )
+        //Basic Enrichment Properties
+        .add_property("alpha_0", &Enrichment::get_alpha_0, &Enrichment::set_alpha_0)
+        .add_property("Mstar_0", &Enrichment::get_Mstar_0, &Enrichment::set_Mstar_0)
+        .add_property("j",       &Enrichment::get_j,       &Enrichment::set_j)
+        .add_property("k",       &Enrichment::get_k,       &Enrichment::set_k)
+        .add_property("N0",      &Enrichment::get_N0,      &Enrichment::set_N0)
+        .add_property("M0",      &Enrichment::get_M0,      &Enrichment::set_M0)
+        .add_property("xP_j",    &Enrichment::get_xP_j,    &Enrichment::set_xP_j)
+        .add_property("xW_j",    &Enrichment::get_xW_j,    &Enrichment::set_xW_j)
+
+        .add_property("Mstar",    &Enrichment::get_Mstar,    &Enrichment::set_Mstar)
+        .add_property("IsosTail", &Enrichment::get_IsosTail, &Enrichment::set_IsosTail)
+        .add_property("N",        &Enrichment::get_N,        &Enrichment::set_N)
+        .add_property("M",        &Enrichment::get_M,        &Enrichment::set_M)
+
+        .add_property("TotalPerFeed",  &Enrichment::get_TotalPerFeed,  &Enrichment::set_TotalPerFeed)
+        .add_property("SWUperFeed",    &Enrichment::get_SWUperFeed,    &Enrichment::set_SWUperFeed)
+        .add_property("SWUperProduct", &Enrichment::get_SWUperProduct, &Enrichment::set_SWUperProduct)
+
+        //Enrichment Constructor Overloads
+        .def(bp::init<std::string>())
+        .def(bp::init<EnrichmentParameters,  bp::optional<std::string> >())
+
+        //Useful Functions
+        .def("initialize", &Enrichment::initialize)
+        .def("setParams",  &Enrichment::setParams)
+        .def("doCalc", Enrichment_doCalc_NA)
+        .def("doCalc", Enrichment_doCalc_CD)
+        .def("doCalc", Enrichment_doCalc_MS)
+    ;
+
+
+
+
+    /*****************/
+    /*** Reactor1G ***/
+    /*****************/
+
     //FleneceIndex Class...Used in Reactor1G
     bp::class_< FluencePoint >("FluencePoint", "Structure for Fluence Point",  bp::init<>() )
         .def_readwrite("f", &FluencePoint::f)
@@ -376,25 +438,5 @@ BOOST_PYTHON_MODULE(FCComps)
         .def("setParams",  &LightWaterReactor1G::setParams)
     ;
 
-
-    //Enrichment Method Function Overloads
-    MassStream (Enrichment::*Enrichment_doCalc_NA)()           = &Enrichment::doCalc;
-    MassStream (Enrichment::*Enrichment_doCalc_CD)(CompDict)   = &Enrichment::doCalc;
-    MassStream (Enrichment::*Enrichment_doCalc_MS)(MassStream) = &Enrichment::doCalc;
-        
-    bp::class_< Enrichment, bp::bases<FCComp> >("Enrichment", "Enrichmenting Facility Fuel Cycle Component",  bp::init< >() )
-        //Basic Enrichment Properties
-        .add_property("alpha_0", &Enrichment::get_alpha_0, &Enrichment::set_alpha_0)
-
-        //Enrichment Constructor Overloads
-        .def(bp::init< >())
-
-        //Useful Functions
-        .def("initialize", &Enrichment::initialize)
-        .def("setParams",  &Enrichment::setParams)
-        .def("doCalc", Enrichment_doCalc_NA)
-        .def("doCalc", Enrichment_doCalc_CD)
-        .def("doCalc", Enrichment_doCalc_MS)
-    ;
 
 };
