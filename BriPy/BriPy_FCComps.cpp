@@ -203,16 +203,19 @@ BOOST_PYTHON_MODULE(FCComps)
     /******************/
 
     //EnrichmentParameters Class...Used in Enrichment
-    bp::class_< EnrichmentParameters >("EnrichmentParameters", "Set of physical parameters that define an enrichment cascade. This is used to instantiate new reactor objects.", bp::init<>() )
-        .add_property("alpha_0", &Enrichment::get_alpha_0, &Enrichment::set_alpha_0)
-        .add_property("Mstar_0", &Enrichment::get_Mstar_0, &Enrichment::set_Mstar_0)
-        .add_property("j",       &Enrichment::get_j,       &Enrichment::set_j)
-        .add_property("k",       &Enrichment::get_k,       &Enrichment::set_k)
-        .add_property("N0",      &Enrichment::get_N0,      &Enrichment::set_N0)
-        .add_property("M0",      &Enrichment::get_M0,      &Enrichment::set_M0)
-        .add_property("xP_j",    &Enrichment::get_xP_j,    &Enrichment::set_xP_j)
-        .add_property("xW_j",    &Enrichment::get_xW_j,    &Enrichment::set_xW_j)
+    bp::class_< EnrichmentParameters >("EnrichmentParameters", "Set of physical parameters that define an enrichment cascade. This is used to instantiate new enrichment objects.", bp::init<>() )
+        .add_property("alpha_0", &EnrichmentParameters::get_alpha_0, &EnrichmentParameters::set_alpha_0)
+        .add_property("Mstar_0", &EnrichmentParameters::get_Mstar_0, &EnrichmentParameters::set_Mstar_0)
+        .add_property("j",       &EnrichmentParameters::get_j,       &EnrichmentParameters::set_j)
+        .add_property("k",       &EnrichmentParameters::get_k,       &EnrichmentParameters::set_k)
+        .add_property("N0",      &EnrichmentParameters::get_N0,      &EnrichmentParameters::set_N0)
+        .add_property("M0",      &EnrichmentParameters::get_M0,      &EnrichmentParameters::set_M0)
+        .add_property("xP_j",    &EnrichmentParameters::get_xP_j,    &EnrichmentParameters::set_xP_j)
+        .add_property("xW_j",    &EnrichmentParameters::get_xW_j,    &EnrichmentParameters::set_xW_j)
     ;
+
+    //Grabs a copy of the urnaium enrichment default Settings
+    bp::def("UraniumEnrichmentDefaults", &fillUraniumEnrichmentDefaults);
 
     //Enrichment Method Function Overloads
     MassStream (Enrichment::*Enrichment_doCalc_NA)()           = &Enrichment::doCalc;

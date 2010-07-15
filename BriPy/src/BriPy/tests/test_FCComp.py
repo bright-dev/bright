@@ -60,7 +60,7 @@ class TestFCCompAttributes(TestCase):
     def test_IsosIn_Empty(self):
         fcc = FCComp()
         assert_equal(fcc.IsosIn.comp, {})
-        assert_equal(fcc.IsosIn.mass, 0.0)
+        assert_equal(fcc.IsosIn.mass, -1.0)
         assert_equal(fcc.IsosIn.name, '')
 
     def test_IsosIn_Filled(self):
@@ -74,7 +74,7 @@ class TestFCCompAttributes(TestCase):
     def test_IsosOut_Empty(self):
         fcc = FCComp()
         assert_equal(fcc.IsosOut.comp, {})
-        assert_equal(fcc.IsosOut.mass, 0.0)
+        assert_equal(fcc.IsosOut.mass, -1.0)
         assert_equal(fcc.IsosOut.name, '')
 
     def test_IsosOut_Filled(self):

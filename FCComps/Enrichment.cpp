@@ -171,6 +171,9 @@ void Enrichment::FindNM()
     N = N0;
     M = M0;
 
+    if (2 < FCComps::verbosity)
+        std::cout << "    <---- N = " << N << "\tM = " << M << "\n";     
+
     double lhsP = PoF * xP_j / IsosIn.comp[j];
     double rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
     double lhsW = WoF * xW_j / IsosIn.comp[j];
@@ -196,6 +199,9 @@ void Enrichment::FindNM()
 			N = N0 + (1.0 * n);
 			M = M0 + (1.0 * n);
 			n = n + 1.0;
+
+            if (2 < FCComps::verbosity)
+                std::cout << "          n is now equal to " << n << "\n";     
         };
 
 		if (M < tolerance)
@@ -203,8 +209,18 @@ void Enrichment::FindNM()
 			N = N0 + (1.0 * n);
 			M = M0 + (1.0 * n);
 			n = n + 1.0;
+
+            if (2 < FCComps::verbosity)
+                std::cout << "          n is now equal to " << n << "\n";
         };
+
+        if (2 < FCComps::verbosity)
+            std::cout << "    ----- N = " << N << "\tM = " << M << "\n";     
     };
+
+    if (2 < FCComps::verbosity)
+        std::cout << "    ----> N = " << N << "\tM = " << M << "\n";     
+    return; 
 };
   
 double Enrichment::xP_i(int i)
@@ -299,6 +315,9 @@ void Enrichment::Comp2UnitySecant()
     double tempM = 0.0;
     while (tolerance < fabs(1.0 - massCurrP) && tolerance < fabs(1.0 - massCurrW))
     {
+        if (1 < FCComps::verbosity)
+            std::cout << "--------------------\n";
+
         if (tolerance <= fabs(1.0 - massCurrP))
         {
             //Make a new guess for N
@@ -310,6 +329,8 @@ void Enrichment::Comp2UnitySecant()
 			if (currN < 0.0)
             {
 				currN = (tempN + N0)/2.0;
+                if (1 < FCComps::verbosity)
+                    std::cout << "    N < 0, resetting.\n";
             };
         };
 
@@ -324,6 +345,8 @@ void Enrichment::Comp2UnitySecant()
             if (M < 0.0)
             {
                 currM = (tempM + M0)/2.0;
+                if (1 < FCComps::verbosity)
+                    std::cout << "    M < 0, resetting.\n";
             };
         };
 
@@ -332,20 +355,24 @@ void Enrichment::Comp2UnitySecant()
         {
             if (historyN[h] == currN && historyM[h] == currM)
             {
+                if (1 < FCComps::verbosity)
+                    std::cout << "~~~ Infinite loop found and exception thrown! ~~~.\n";
                 throw EnrichmentInfiniteLoopError();
             };
 
-            if (150 <= historyN.size())
-            {
-                historyN.erase(historyN.begin());
-                historyM.erase(historyM.begin());
-            };
+        };
+        if (150 <= historyN.size())
+        {
+            historyN.erase(historyN.begin());
+            historyM.erase(historyM.begin());
         };
         historyN.push_back(N);
         historyM.push_back(M);
 
         if (10000 < counter)
         {
+            if (1 < FCComps::verbosity)
+                std::cout << "~~~ Secant method counter limit hit! ~~~.\n";
             throw EnrichmentIterationLimit();
         }
         else
@@ -362,6 +389,9 @@ void Enrichment::Comp2UnitySecant()
         SolveNM();
         massCurrP = IsosOut.mass;
         massCurrW = IsosTail.mass;
+
+        if (1 < FCComps::verbosity)
+            std::cout << "====================\n";
     };
 
 	return;
@@ -453,6 +483,8 @@ void Enrichment::LoverF()
 	try
     {
         //Try secant method first
+        if (0 < FCComps::verbosity)
+            std::cout << "Attempting Secant Method in L/F Calculation...\n";
 		Comp2UnitySecant();
 		compConverged = true;
     }
@@ -461,12 +493,14 @@ void Enrichment::LoverF()
 		try
         {
             //Then try other cr8zy method
+            if (0 < FCComps::verbosity)
+                std::cout << "Attempting Another Method in L/F Calculation...\n";
 			Comp2UnityOther();
     		compConverged = true;
         }
 		catch (...)
         {
-            //Nol other methods to try!
+            //No other methods to try!
     		compConverged = false;
         };
     };
@@ -491,6 +525,9 @@ void Enrichment::LoverF()
 			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first));
 			SWUoverF = SWUoverF + tempNumerator;
         };
+        if (0 < FCComps::verbosity)
+            std::cout << "    L/F = " << LtotalOverF << "\n";        
+
 
         //Assign flow rates
         TotalPerFeed = LtotalOverF;
@@ -555,9 +592,20 @@ void Enrichment::MstarOptimize()
         currLoverF = tempLoverF;
     };
 
+    //Print points
+    if (0 < FCComps::verbosity)
+    {
+        std::cout << "Last Point: M* = " << lastMstar << "\tL/F = " << lastLoverF << "\n";
+        std::cout << "Curr Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
+    };
+
     //Start iterations.    
 	while (xpn < ooe)
     {
+        //Check that parameters are still well-formed
+        if ( std::isnan(currMstar) || std::isnan(currLoverF) || std::isnan(lastMstar) || std::isnan(lastLoverF))
+            throw EnrichmentIterationNaN();
+
         lastMstar  = currMstar;
         lastLoverF = currLoverF;
 
@@ -565,6 +613,12 @@ void Enrichment::MstarOptimize()
         Mstar = currMstar;
 		LoverF();
         currLoverF = TotalPerFeed;
+
+        //Print Point
+        if (0 < FCComps::verbosity)
+        {
+            std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
+        };
 
 		if (lastLoverF < currLoverF)
         {
@@ -581,6 +635,12 @@ void Enrichment::MstarOptimize()
                 lastLoverF = currLoverF;
                 currMstar  = tempMstar;
                 currLoverF = tempLoverF;
+
+                //Print Point
+                if (0 < FCComps::verbosity)
+                {
+                    std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
+                };
                 break;
             };
 
@@ -599,6 +659,12 @@ void Enrichment::MstarOptimize()
                 {
                     currMstar  = tempMstar;
                     currLoverF = tempLoverF;
+
+                    //Print Point
+                    if (0 < FCComps::verbosity)
+                    {
+                        std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
+                    };
                     break;
                 };
 

@@ -182,6 +182,14 @@ class EnrichmentIterationLimit: public std::exception
     };
 };
 
+class EnrichmentIterationNaN: public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Iteration has hit a point where some values are not-a-number!  Breaking...";
+    };
+};
+
 
 #endif
 
