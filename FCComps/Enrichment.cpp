@@ -86,20 +86,20 @@ void Enrichment::setParams ()
     ParamsIn["MassTails"]  = 0.0;
     ParamsOut["MassTails"] = IsosTail.mass;	
 
-    ParamsIn["N"]  = 0.0;
+    ParamsIn["N"]  = N;
     ParamsOut["N"] = N;	
 
-    ParamsIn["M"]  = 0.0;
+    ParamsIn["M"]  = M;
     ParamsOut["M"] = M;	
 
-    ParamsIn["Mstar"]  = 0.0;
+    ParamsIn["Mstar"]  = Mstar;
     ParamsOut["Mstar"] = Mstar;	
 
-    ParamsIn["TotalPerFeed"]  = 0.0;
+    ParamsIn["TotalPerFeed"]  = TotalPerFeed;
     ParamsOut["TotalPerFeed"] = TotalPerFeed;	
 
-    ParamsIn["SWUperFeed"]  = 0.0;
-    ParamsOut["SWUperFeed"] = SWUperFeed;	
+    ParamsIn["SWUperFeed"]  = SWUperFeed;
+    ParamsOut["SWUperFeed"] = 0.0;	
 
     ParamsIn["SWUperProduct"]  = 0.0;
     ParamsOut["SWUperProduct"] = SWUperProduct;	
@@ -262,7 +262,8 @@ void Enrichment::SolveNM()
     CompDict compP;
     CompDict compW;
 
-    for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
+    for (CompIter i = 
+IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
     {
         compP[i->first] = xP_i(i->first);
         compW[i->first] = xW_i(i->first);
@@ -428,7 +429,7 @@ void Enrichment::Comp2UnitySecant()
     //of N and M varied by Newton's Method.  Rinse and repeat as needed.
 
     //This give the order-of-exactness to which N and M are solved for.
-    double ooe = 5.0;
+    double ooe = 7.0;
     double tolerance = pow(10.0, -ooe);
 
 	//Is the hisorty of N and M that has been input
@@ -470,7 +471,7 @@ void Enrichment::Comp2UnitySecant()
     double tempLastN = 0.0;
     double tempLastM = 0.0;
 
-    while (tolerance < fabs(xP_j - currxP_j) && tolerance < fabs(xW_j - currxW_j))
+    while (tolerance < fabs(xP_j - currxP_j) || tolerance < fabs(xW_j - currxW_j))
     {
         if (1 < FCComps::verbosity)
             std::cout << "--------------------\n";
