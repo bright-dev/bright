@@ -255,7 +255,7 @@ class TestEnrichmentMethods(TestCase):
     @classmethod
     def setup_class(cls):
         BriPy.isos2track([922350, 922360, 922380])
-        BriPy.verbosity(10)
+        BriPy.verbosity(0)
 
     @classmethod
     def teardown_class(cls):
@@ -279,8 +279,7 @@ class TestEnrichmentMethods(TestCase):
 
     def test_doCalc_1(self):
         e = Enrichment()
-        e.IsosIn = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
-        e.doCalc()
+        e.doCalc({922350: 0.01, 922380: 0.985, 922360: 0.005})
 #        assert_equal(e.IsosOut.mass, 0.99)
 #        assert_equal(e.IsosOut.comp[942390], 1.0) # Recall ms.comp is normalized
 

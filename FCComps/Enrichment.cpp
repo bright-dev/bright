@@ -168,8 +168,10 @@ void Enrichment::FindNM()
     double PoF = PoverF(IsosIn.comp[j], xP_j, xW_j);
     double WoF = WoverF(IsosIn.comp[j], xP_j, xW_j);
     double alphastar_j = get_alphastar_i(isoname::nuc_weight(j));
-    N = N0;
-    M = M0;
+
+    // Save original state of N & M
+    double origN = N;
+    double origM = M;
 
     if (2 < FCComps::verbosity)
         std::cout << "    <---- N = " << N << "\tM = " << M << "\n";     
@@ -182,36 +184,43 @@ void Enrichment::FindNM()
     double n = 1.0;
 	while (tolerance < fabs(lhsP - rhsP) && tolerance < fabs(lhsW - rhsW))
     {
+		if (tolerance < fabs(lhsP - rhsP))
+        {
+			N = N - ((lhsP - rhsP) * N);
+			rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
+        };
+
 		if (tolerance < fabs(lhsW - rhsW))
         {
 			M = M - ((lhsW - rhsW) * M);
 			rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
         };
 
-		if (tolerance < abs(lhsP - rhsP))
+        // Print Summary
+        if (3 < FCComps::verbosity)
         {
-			N = N + ((lhsP - rhsP) * N);
-			rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
+            std::cout << "            N = " << N << "\tlhsP = " << lhsP << "\trhsP = " << rhsP << "\n";
+            std::cout << "            M = " << M << "\tlhsW = " << lhsW << "\trhsW = " << rhsW << "\n";
         };
 
 		if (N < tolerance)
         {
-			N = N0 + (1.0 * n);
-			M = M0 + (1.0 * n);
+			N = origN + n;
+			M = origM + n;
 			n = n + 1.0;
 
             if (2 < FCComps::verbosity)
-                std::cout << "          n is now equal to " << n << "\n";     
+                std::cout << "          N set n equal to " << n << "\n";
         };
 
 		if (M < tolerance)
         {
-			N = N0 + (1.0 * n);
-			M = M0 + (1.0 * n);
+			N = origN + n;
+			M = origM + n;
 			n = n + 1.0;
 
             if (2 < FCComps::verbosity)
-                std::cout << "          n is now equal to " << n << "\n";
+                std::cout << "          M set n equal to " << n << "\n";
         };
 
         if (2 < FCComps::verbosity)
@@ -265,7 +274,8 @@ void Enrichment::SolveNM()
     return;
 };
 
-
+//The following is old and broken...
+/*
 void Enrichment::Comp2UnitySecant()
 {
     //This function actually solves the whole system of equations.  It uses SolveNM 
@@ -311,8 +321,11 @@ void Enrichment::Comp2UnitySecant()
     //My guess is that what we are checkin here is that the isotopic compositions
     //make sense with abs(1.0 - massCurrP) rather than calculatign the 
     //relative product to watse mass streams.
-    double tempN = 0.0;
-    double tempM = 0.0;
+    double tempCurrN = 0.0;
+    double tempCurrM = 0.0;
+    double tempLastN = 0.0;
+    double tempLastM = 0.0;
+
     while (tolerance < fabs(1.0 - massCurrP) && tolerance < fabs(1.0 - massCurrW))
     {
         if (1 < FCComps::verbosity)
@@ -321,14 +334,15 @@ void Enrichment::Comp2UnitySecant()
         if (tolerance <= fabs(1.0 - massCurrP))
         {
             //Make a new guess for N
-            tempN = currN;
+            tempCurrN = currN;
+            tempLastN = lastN;
             currN = currN + (1.0 - massCurrP)*((currN - lastN)/(massCurrP - massLastP));
-			lastN = tempN;
+			lastN = tempCurrN;
 
             //If the new value of N is less than zero, reset.
 			if (currN < 0.0)
             {
-				currN = (tempN + N0)/2.0;
+				currN = (tempCurrN + tempLastN)/2.0;
                 if (1 < FCComps::verbosity)
                     std::cout << "    N < 0, resetting.\n";
             };
@@ -337,14 +351,15 @@ void Enrichment::Comp2UnitySecant()
         if (tolerance <= fabs(1.0 - massCurrW))
         {
             //Make a new guess for M
-            tempM = currM;
+            tempCurrM = currM;
+            tempLastM = lastM;
             currM = currM + (1.0 - massCurrW)*((currM - lastM)/(massCurrW - massLastW));
-            lastM = tempM;
+            lastM = tempCurrM;
 
             //If the new value of M is less than zero, reset.
             if (M < 0.0)
             {
-                currM = (tempM + M0)/2.0;
+                currM = (tempCurrM + tempLastM)/2.0;
                 if (1 < FCComps::verbosity)
                     std::cout << "    M < 0, resetting.\n";
             };
@@ -390,13 +405,162 @@ void Enrichment::Comp2UnitySecant()
         massCurrP = IsosOut.mass;
         massCurrW = IsosTail.mass;
 
+        IsosOut.Print();
+        IsosTail.Print();
+
         if (1 < FCComps::verbosity)
+        {
+            std::cout << "Product Mass: " << massCurrP << "\tWaste Mass: " << massCurrW << "\n";
             std::cout << "====================\n";
+        };
+    };
+
+	return;
+};
+*/
+
+void Enrichment::Comp2UnitySecant()
+{
+    //This function actually solves the whole system of equations.  It uses SolveNM 
+    //to find the roots for the enriching and stripping stage numbers.  It then 
+    //checks to see if the product and waste streams meet their target enrichments
+    //for the jth component like they should.  If they don't then it trys other values 
+    //of N and M varied by Newton's Method.  Rinse and repeat as needed.
+
+    //This give the order-of-exactness to which N and M are solved for.
+    double ooe = 5.0;
+    double tolerance = pow(10.0, -ooe);
+
+	//Is the hisorty of N and M that has been input
+	std::vector<double> historyN;
+	std::vector<double> historyM;
+
+    //Start iteration Counter
+	int counter = 0;
+
+    //Set first two points
+	double lastN = N0 + 1.0;
+	double lastM = M0 + 1.0;
+    double currN = N0;
+    double currM = M0;
+
+    //Initialize 'last' point
+    N = lastN;
+    M = lastM;
+    SolveNM();
+    double lastxP_j = IsosOut.comp[j];
+    double lastxW_j = IsosTail.comp[j];
+    historyN.push_back(N);
+    historyN.push_back(M);
+
+    //Initialize 'current' point
+    N = currN;
+    M = currM;
+    SolveNM();
+    double currxP_j = IsosOut.comp[j];
+    double currxW_j = IsosTail.comp[j];
+    historyN.push_back(N);
+    historyN.push_back(M);
+
+    //My guess is that what we are checkin here is that the isotopic compositions
+    //make sense with abs(1.0 - massCurrP) rather than calculatign the 
+    //relative product to watse mass streams.
+    double tempCurrN = 0.0;
+    double tempCurrM = 0.0;
+    double tempLastN = 0.0;
+    double tempLastM = 0.0;
+
+    while (tolerance < fabs(xP_j - currxP_j) && tolerance < fabs(xW_j - currxW_j))
+    {
+        if (1 < FCComps::verbosity)
+            std::cout << "--------------------\n";
+
+        if (tolerance <= fabs(xP_j - currxP_j))
+        {
+            //Make a new guess for N
+            tempCurrN = currN;
+            tempLastN = lastN;
+            currN = currN + (xP_j - currxP_j)*((currN - lastN)/(currxP_j - lastxP_j));
+			lastN = tempCurrN;
+
+            //If the new value of N is less than zero, reset.
+			if (currN < 0.0)
+            {
+				currN = (tempCurrN + tempLastN)/2.0;
+                if (1 < FCComps::verbosity)
+                    std::cout << "    N < 0, resetting.\n";
+            };
+        };
+
+        if (tolerance <= fabs(xW_j - currxW_j))
+        {
+            //Make a new guess for M
+            tempCurrM = currM;
+            tempLastM = lastM;
+            currM = currM + (xW_j - currxW_j)*((currM - lastM)/(currxW_j - lastxW_j));
+            lastM = tempCurrM;
+
+            //If the new value of M is less than zero, reset.
+            if (M < 0.0)
+            {
+                currM = (tempCurrM + tempLastM)/2.0;
+                if (1 < FCComps::verbosity)
+                    std::cout << "    M < 0, resetting.\n";
+            };
+        };
+
+        //Check for infinite loops
+        for (int h = 0; h < historyN.size(); h++)
+        {
+            if (historyN[h] == currN && historyM[h] == currM)
+            {
+                if (1 < FCComps::verbosity)
+                    std::cout << "~~~ Infinite loop found and exception thrown! ~~~.\n";
+                throw EnrichmentInfiniteLoopError();
+            };
+
+        };
+        if (150 <= historyN.size())
+        {
+            historyN.erase(historyN.begin());
+            historyM.erase(historyM.begin());
+        };
+        historyN.push_back(N);
+        historyM.push_back(M);
+
+        if (10000 < counter)
+        {
+            if (1 < FCComps::verbosity)
+                std::cout << "~~~ Secant method counter limit hit! ~~~.\n";
+            throw EnrichmentIterationLimit();
+        }
+        else
+        {
+            counter = counter + 1;
+        };
+
+        //Calculate new isotopics for valid (N, M)        
+        lastxP_j = currxP_j;
+        lastxW_j = currxW_j;
+
+        N = currN;
+        M = currM;
+        SolveNM();
+        currxP_j = IsosOut.comp[j];
+        currxW_j = IsosTail.comp[j];
+
+        if (1 < FCComps::verbosity)
+        {
+            std::cout << "Product Mass: " << currxP_j << "\tWaste Mass: " << currxW_j << "\n";
+            std::cout << "====================\n";
+        };
     };
 
 	return;
 };
 
+
+// I have serious doubts that this works...
 void Enrichment::Comp2UnityOther()
 {
     //This give the order-of-exactness to which N and M are solved for.
