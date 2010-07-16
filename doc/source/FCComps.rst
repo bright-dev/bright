@@ -14,6 +14,7 @@ For a listing of isonames raw docstrings (helpful if you need to know C++ signat
    :maxdepth: 3
 
    FCComp
+   Enrichment
    Reprocess
    Storage
    Reactor1G
