@@ -74,8 +74,6 @@ public:
     double alpha_0;         //specify on init.
     double Mstar_0;         //specify on init.
     double Mstar;           //Current Mstar
-    MassStream IsosIn;      //Feed stream
-    MassStream IsosOut;     //Product Stream
     MassStream IsosTail;    //Waste Stream
 
     //key isotopic info

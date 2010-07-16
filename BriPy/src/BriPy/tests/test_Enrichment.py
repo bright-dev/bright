@@ -280,8 +280,8 @@ class TestEnrichmentMethods(TestCase):
     def test_doCalc_1(self):
         e = Enrichment()
         e.doCalc({922350: 0.01, 922380: 0.985, 922360: 0.005})
-#        assert_equal(e.IsosOut.mass, 0.99)
-#        assert_equal(e.IsosOut.comp[942390], 1.0) # Recall ms.comp is normalized
+        assert_equal(e.IsosOut.comp[922350],  0.05) 
+        assert_equal(e.IsosTail.comp[922350], 0.0025) 
 
 """
     def test_doCalc_2(self):
