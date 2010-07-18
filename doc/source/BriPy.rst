@@ -47,7 +47,7 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
 
         #Continue with the fuel cycle code...
 
-    The need for a `BrightStart()`-like function is that it ensures (in a language irrelevant way) that Bright
+    The need for a `BrightStart()`-like function is that it ensures (in a language independent way) that Bright
     can find its common data libraries that hold information on common cross-section data, half-lives, *etc*.
 
 

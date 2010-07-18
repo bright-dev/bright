@@ -1,7 +1,7 @@
 ****************
 Enrichment Class
 ****************
-Bright handles enrichment cascades in a very general maaner.  The Enrichment 
+Bright handles enrichment cascades in a very general manner.  The Enrichment 
 object supports normal two isotope component mixture enrichment as well as 
 multi-component cascades.  
 
@@ -49,7 +49,7 @@ attributes specific to this class.
     The :math:`M^*_0` represents a first guess at what the :attr:`Mstar` is.  
     The value of :attr:`Mstar_0` on initialization should be in the ballpark 
     of the optimized result of :attr:`Mstar`.  However, :math:`M^*_0` must 
-    always have a value between the wieghts of the :attr:`j` and :attr:`k`
+    always have a value between the weights of the :attr:`j` and :attr:`k`
     key components.
 
 .. attribute:: Enrichment.Mstar
@@ -61,14 +61,71 @@ attributes specific to this class.
 .. attribute:: Enrichment.j
 
     This is an integer in zzaaam-form that represents the jth key component.
-    This is the nuclide is prefferentially enriched in the product stream.
+    This nuclide is preferentially enriched in the product stream.
     For standard uranium cascades :attr:`j` is ``922350``, or U-235.
 
 .. attribute:: Enrichment.k
 
     This is an integer in zzaaam-form that represents the kth key component.
-    This is the nuclide is prefferentially enriched in the waste stream.
+    This nuclide is preferentially enriched in the waste stream.
     For standard uranium cascades :attr:`k` is ``922380``, or U-238.
+
+.. attribute:: Enrichment.xP_j
+
+    This is the target enrichment of the :attr:`j`th isotope in the 
+    product stream :attr:`IsosOut <BriPy.FCComp.IsosOut>`.  The
+    :math:`x^P_j` value is set by the user at initialization or
+    run-time.  For typical uranium vectors, this value is about 
+    U-235 = 0.05.
+
+.. attribute:: Enrichment.xW_j
+
+    This is the target enrichment of the :attr:`j`th isotope in the 
+    waste stream :attr:`IsosTail`.  The :math:`x^W_j` value is set 
+    by the user at initialization or runtime.  For typical uranium vectors, 
+    this value is about U-235 = 0.0025.
+
+.. attribute:: Enrichment.N
+
+    This is the number of enriching stages present in an ideal cascade.
+    Along with :attr:`Mstar` and :attr:`M`, this number is optimized to 
+    ensure that a product enrichment of :attr:`xP_j` is attained.  
+
+.. attribute:: Enrichment.M
+
+    This is the number of stripping stages present in an ideal cascade.
+    Along with :attr:`Mstar` and :attr:`N`, this number is optimized to 
+    ensure that a waste enrichment of :attr:`xW_j` is attained.  
+
+.. attribute:: Enrichment.N0
+
+    This is the number of enriching stages that is initially guessed
+    by the user.
+
+.. attribute:: Enrichment.M0
+
+    This is the number of enriching stages that is initially guessed
+    by the user.
+
+.. attribute:: Enrichment.TotalPerFeed
+
+    This represents the total flow rate of the cascade divided by the feed
+    flow rate.  As such, it shows the mass of material needed in the 
+    cascade to enrich an additional kilogram of feed.  Symbolically, 
+    the total flow rate is given as :math:`L` while the feed rate is 
+    :math:`F`.  Therefore, this quantity is sometimes seen as ``L-over-F``
+    or as ``L/F``.  :attr:`TotalPerFeed` is the value that is minimized to
+    form an optimized cascade.
+
+.. attribute:: Enrichment.SWUperFeed
+
+    This value denotes the number of separative work units (SWU) required
+    per kg of feed for the specified cascade.   
+
+.. attribute:: Enrichment.SWUperProduct
+
+    This value is the number of separative work units (SWU) required
+    to produce 1 [kg] of product in the specified cascade.   
 
 .. attribute:: Enrichment.IsosTail
 
@@ -110,7 +167,7 @@ Enrichment Methods
 .. method:: Enrichment.initialize(enrich_params)
 
     The :meth:`initialize` function takes an enrichment parameter object and sets
-    the cooresponding :class:`Enrichment` attributes to the same value.
+    the corresponding :class:`Enrichment` attributes to the same value.
 
     Args:
         * `enrich_params` (EnrichmentParameters): A class containing the values to
@@ -147,4 +204,101 @@ Enrichment Methods
 
         self.ParamsIn["SWUperProduct"]  = 0.0
         self.ParamsOut["SWUperProduct"] = self.SWUperProduct
+
+
+
+=========================
+Enrichment Helper Classes
+=========================
+
+Enrichment has one major helper class, :class:`EnrichmentParameters`, that 
+aids in specifying the inputs necessary for the multi-component cascade 
+model to run.  Additonally, the :func:`UraniumEnrichmentDefaults` is
+a sub-class of :class:`EnrichmentParameters` that provides stock values 
+for uranium enrichment.
+
+
+.. class:: EnrichmentParameters()
+
+    This class is a collection of values that mirror the attributes in 
+    :class:`Enrichment` that are required for the cascade model to run.
+    In C-code this a simple ``struct``.  Like 
+    :class:`ReactorParameters <BriPy.ReactorParameters>`, this class 
+    takes no arguments on initialization.  An empty :class:`ErichmentParameters`
+    instance has all values (weakly) set to zero. 
+
+.. attribute:: EnrichmentParameters.alpha_0
+
+    The :math:`\alpha_0` attribute specifies the overall stage separation factor 
+    for the cascade.  This should be set on initialization.  Values should be 
+    greater than one.  Values less than one represent de-enrichment.
+
+.. attribute:: EnrichmentParameters.Mstar_0
+
+    The :math:`M^*_0` represents a first guess at what the :attr:`Mstar` is.  
+    The value of :attr:`Mstar_0` on initialization should be in the ballpark 
+    of the optimized result of :attr:`Mstar`.  However, :math:`M^*_0` must 
+    always have a value between the weights of the :attr:`j` and :attr:`k`
+    key components.
+
+.. attribute:: EnrichmentParameters.j
+
+    This is an integer in zzaaam-form that represents the jth key component.
+    This nuclide is preferentially enriched in the product stream.
+    For standard uranium cascades :attr:`j` is ``922350``, or U-235.
+
+.. attribute:: EnrichmentParameters.k
+
+    This is an integer in zzaaam-form that represents the kth key component.
+    This nuclide is preferentially enriched in the waste stream.
+    For standard uranium cascades :attr:`k` is ``922380``, or U-238.
+
+.. attribute:: EnrichmentParameters.xP_j
+
+    This is the target enrichment of the :attr:`j`th isotope in the 
+    product stream :attr:`IsosOut <BriPy.FCComp.IsosOut>`.  The
+    :math:`x^P_j` value is set by the user at initialization or
+    run-time.  For typical uranium vectors, this value is about 
+    U-235 = 0.05.
+
+.. attribute:: EnrichmentParameters.xW_j
+
+    This is the target enrichment of the :attr:`j`th isotope in the 
+    waste stream :attr:`IsosTail`.  The :math:`x^W_j` value is set 
+    by the user at initialization or runtime.  For typical uranium vectors, 
+    this value is about U-235 = 0.0025.
+
+.. attribute:: EnrichmentParameters.N0
+
+    This is the number of enriching stages that is initially guessed
+    by the user.
+
+.. attribute:: EnrichmentParameters.M0
+
+    This is the number of enriching stages that is initially guessed
+    by the user.
+
+
+.. function:: UraniumEnrichmentDefaults()
+
+    This function returns a deep copy of a UraniumEnrichmentDefaults
+    class.  This houses values for the initial parameters that make
+    it easy to specify a urnaium enrichment cascade.
+
+    The values of this sub-class of :class:`EnrichmentParameters` are as
+    follows::
+
+        ued = BriPy.UraniumEnrichmentDefaults()
+
+        ued.alpha_0 = 1.05
+        ued.Mstar_0 = 236.5
+
+        ued.j = 922350
+        ued.k = 922380
+
+        ued.xP_j = 0.05
+        ued.xW_j = 0.0025
+
+        ued.N0 = 30.0
+        ued.M0 = 10.0
 
