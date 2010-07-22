@@ -236,6 +236,11 @@ public:
     IsoFluenceDict                get_di_F_()               const {return di_F_;};
     std::map<int, IsoFluenceDict> get_Tij_F_()              const {return Tij_F_;};
 
+    IsoSet get_I() const {return I;};
+    IsoSet get_J() const {return J;};
+    std::map<int, double> get_sigma_a_therm() const {return sigma_a_therm;};
+    std::map<int, double> get_sigma_s_therm() const {return sigma_s_therm;};
+
     double                        get_A_IHM()               const {return A_IHM;};
     double                        get_MWF()                 const {return MWF;};
     double                        get_MWC()                 const {return MWC;};

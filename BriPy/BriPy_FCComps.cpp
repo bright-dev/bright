@@ -340,6 +340,13 @@ BOOST_PYTHON_MODULE(FCComps)
         .add_property("di_F_",               &Reactor1G::get_di_F_)
         .add_property("Tij_F_",              &Reactor1G::get_Tij_F_)
 
+        //The following attributes are read only!
+        .add_property("I", &Reactor1G::get_I)
+        .add_property("J", &Reactor1G::get_J)
+        .add_property("sigma_a_therm", &Reactor1G::get_sigma_a_therm)
+        .add_property("sigma_s_therm", &Reactor1G::get_sigma_s_therm)
+
+
         .add_property("A_IHM",               &Reactor1G::get_A_IHM,               &Reactor1G::set_A_IHM)
         .add_property("MWF",                 &Reactor1G::get_MWF,                 &Reactor1G::set_MWF)
         .add_property("MWC",                 &Reactor1G::get_MWC,                 &Reactor1G::set_MWC)

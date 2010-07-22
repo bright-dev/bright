@@ -262,6 +262,10 @@ void Reactor1G::foldMassWeights()
     double inverseA_IHM = 0.0;
     for (CompIter iso = IsosIn.comp.begin(); iso != IsosIn.comp.end(); iso++)
     {
+        //Ensure that the isotope is officially allowed.
+        if (0 == I.count(iso->first))
+            continue;
+
         inverseA_IHM = inverseA_IHM + (iso->second)/ isoname::nuc_weight(iso->first);
     };
     A_IHM = 1.0 / inverseA_IHM;
@@ -276,6 +280,10 @@ void Reactor1G::foldMassWeights()
         {
             for (CompIter iso = IsosIn.comp.begin(); iso != IsosIn.comp.end(); iso++)
             {
+                //Ensure that the isotope is officially allowed.
+                if (0 == I.count(iso->first))
+                    continue;
+
                 niF[iso->first] = FuelChemicalForm[key->first] * IsosIn.comp[iso->first];
             };
         }
@@ -442,9 +450,12 @@ void Reactor1G::mkMj_F_()
         Mj_F_[*j].assign( F.size(), 0.0 );
         for(CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
         {
-            for (int f = 0; f < Mj_F_[*j].size(); f++)
+            if (0 < I.count(i->first))
             {
-                Mj_F_[*j][f] = Mj_F_[*j][f] + (miF[i->first] * Tij_F_[i->first][*j][f]);
+                for (int f = 0; f < Mj_F_[*j].size(); f++)
+                {
+                    Mj_F_[*j][f] = Mj_F_[*j][f] + (miF[i->first] * Tij_F_[i->first][*j][f]);
+                };
             };
         };
     };
@@ -455,6 +466,7 @@ void Reactor1G::mkMj_Fd_()
     /** Calculates the output isotopics of Mj(Fd).
      *  NOTE: Mj(Fd) is effectively the same variable as IsosOut before normalization!
      */
+
     CompDict tempOut;
 
     //Checks to see if the discharge index in at the end of the fluence table
@@ -1086,9 +1098,9 @@ void Reactor1G::calcZeta()
     SigmaFtr_F_.clear();
     kappaF_F_.clear();
 
-        SigmaFa_F_.assign( F.size(), 0.0 );
-        SigmaFtr_F_.assign( F.size(), 0.0 );
-        kappaF_F_.assign( F.size(), 0.0 );
+    SigmaFa_F_.assign( F.size(), 0.0 );
+    SigmaFtr_F_.assign( F.size(), 0.0 );
+    kappaF_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
@@ -1128,9 +1140,9 @@ void Reactor1G::calcZeta()
     SigmaCtr_F_.clear();
     kappaC_F_.clear();
 
-        SigmaCa_F_.assign( F.size(), 0.0 );
-        SigmaCtr_F_.assign( F.size(), 0.0 );
-        kappaC_F_.assign( F.size(), 0.0 );
+    SigmaCa_F_.assign( F.size(), 0.0 );
+    SigmaCtr_F_.assign( F.size(), 0.0 );
+    kappaC_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
@@ -1163,7 +1175,6 @@ void Reactor1G::calcZeta()
         //Calculate kappa
         kappaC_F_[f]   = sqrt( 3.0 * SigmaCtr_F_[f] * SigmaCa_F_[f] );
     };
-
 
     //Calculate the Lattice Functions
     double a, b;
