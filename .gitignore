@@ -1,0 +1,33 @@
+# Ignore possible build & documentation
+doc/build/
+build/
+
+# Ignore temp files
+*.pyc
+*.save
+*.bak
+
+# Ignore MCNP output
+*mdat*
+*runtp*
+*srct*
+*.o
+*.s
+*.m
+*.r
+
+# Ignore LaTeX output
+*.aux
+*.dvi
+*.log
+
+# Ignore CHAR output
+*.i
+*.png
+*.eps
+*.h5
+
+# Ignore workspace files
+src/*/libs/*
+src/*/figs/*
+src/save/

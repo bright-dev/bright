@@ -1,0 +1,34 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage{epsfig}
+\usepackage{color}
+\begin{document}
+
+
+\setlength{\unitlength}{1cm} 
+\begin{picture}(1, 1)
+
+	\put(-0.2, 1.1){T0}
+	\put(2.8, 1.1){T1}
+	\put(5.8, 1.1){T2}
+
+	\color{red}
+	\put(1.5, 0.16){\line(0, 1){0.66}}
+	\put(4.5, 0.16){\line(0, 1){0.66}}
+
+	\put(0.0, 0.33){\vector(1, 0){1.5}}
+	\put(1.5, 0.33){\vector(1, 0){3.0}}
+	\put(4.5, 0.33){\vector(1, 0){1.5}}
+
+	\put(0.25, -0.5){Lib0}
+	\put(2.625, -0.5){Lib1}
+	\put(4.825, -0.5){Lib2}
+
+	\color{black}
+	\thicklines
+	\put(0, 0.5){\line(1, 0){6}} 
+	\put(0, 0){\line(0, 1){1}}
+	\put(3, 0){\line(0, 1){1}}
+	\put(6, 0){\line(0, 1){1}}
+\end{picture}
+
+\end{document}
