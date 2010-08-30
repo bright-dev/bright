@@ -1,6 +1,7 @@
 ##########################
 ### Standard Libraries ###
 ##########################
+from __future__ import print_function
 import os
 import subprocess
 from math import pi
@@ -21,19 +22,6 @@ from defchar import *
 ### Global Functions ###
 ########################
 
-def QPrint(s, quiet=False):
-    """Quick, Quiet Print override."""
-    global Quiet
-
-    if not (quiet or Quiet):
-        if type(s) == str:
-            print s
-        elif type(s) == list:
-            for el in s:
-                print el[:-1]
-        else:
-            pass
-    return s
 
 ##########################
 #### Global Variables ####
@@ -49,18 +37,22 @@ class RC:
         self.RemoteURL  = RemoteURL
         self.RemoteUser = RemoteUser
         self.RemoteDir  = RemoteDir
+
     def run(self, cmd):
-        return subprocess.call("ssh {rc.RemoteUser}@{rc.RemoteURL} \"{remcmd}\"".format(rc=self, remcmd=cmd), shell=True)
+        return subprocess.call("ssh {RemoteUser}@{RemoteURL} \"{remcmd}\"".format(remcmd=cmd, **self), shell=True)
+
     def put(self, loc_file, rem_file):
-        return subprocess.call("scp {lf} {rc.RemoteUser}@{rc.RemoteURL}:{rf}".format(rc=self, lf=loc_file, rf=rem_file), shell=True)
+        return subprocess.call("scp {lf} {RemoteUser}@{RemoteURL}:{rf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+
     def get(self, rem_file, loc_file):
-        return subprocess.call("scp {rc.RemoteUser}@{rc.RemoteURL}:{rf} {lf}".format(rc=self, lf=loc_file, rf=rem_file), shell=True)
+        return subprocess.call("scp {RemoteUser}@{RemoteURL}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+
 RemoteConnection = RC()
 
 ORIGEN_FASTorTHERM = ORIGEN_FASTorTHERM.lower()
 if not (ORIGEN_FASTorTHERM in ['fast', 'therm']):
-    print "ORIGEN_FASTorTHERM not properly set:", ORIGEN_FASTorTHERM
-    print "Setting to \'therm\'."
+    print("ORIGEN_FASTorTHERM not properly set: {0}".format(ORIGEN_FASTorTHERM))
+    print("Setting to 'therm'.")
 
 #########################
 ### Make Cell Volumes ###
@@ -108,30 +100,36 @@ metastableMCNP = isoname.zzaaam_2_MCNP_List(metastabletrak)
 InXSDIR = {}
 for iso in coreload:
     InXSDIR[iso] = False
-xsdir = open(os.getenv("DATAPATH") + "/xsdir", 'r' )
-for line in xsdir:
-    ls = line.split()
-    if ls == []:
-        continue
-    elif not ('.' in ls[0]):
-        continue
-    else:
-        i, p, l = ls[0].partition('.')
-        try:
-            xs_i = int(i)
-        except:
+
+try:
+    xsdir = open(os.getenv("DATAPATH") + "/xsdir", 'r' )
+    for line in xsdir:
+        ls = line.split()
+        if ls == []:
             continue
-        for iso in InXSDIR.keys():
-            if xs_i == int(iso):
-                InXSDIR[iso] = True
-xsdir.close()
+        elif not ('.' in ls[0]):
+            continue
+        else:
+            i, p, l = ls[0].partition('.')
+            try:
+                xs_i = int(i)
+            except:
+                continue
+            for iso in InXSDIR.keys():
+                if xs_i == int(iso):
+                    InXSDIR[iso] = True
+    xsdir.close()
+except:
+    pass
+
 coreload = []
 for iso in InXSDIR.keys():
     if InXSDIR[iso]:
         coreload.append(iso)
     else:
-        if Verbose:
-            QPrint("The following nuclide could not be found in $DATAPATH/xsdir: %s."%isoname.MCNP_2_LLAAAM(iso) )
+        if 0 < verbosity:
+            print("The following nuclide could not be found in $DATAPATH/xsdir: {0}.".format(isoname.MCNP_2_LLAAAM(iso)))
+
 CoreLoad_zzaaam = isoname.MCNP_2_zzaaam_List(coreload)
 CoreLoad_LLAAAM = isoname.MCNP_2_LLAAAM_List(coreload)
 CoreLoad_MCNP   = coreload
@@ -154,32 +152,6 @@ for iso in coretran:
         if not (N2NParent in coretran):
             coretran.append(N2NParent)
 coretran = isoname.zzaaam_2_MCNP_List(coretran)
-#InXSDIR = {}
-#for iso in coretran:
-#	InXSDIR[iso] = False
-#xsdir = open(os.getenv("DATAPATH") + "/xsdir", 'r' )
-#for line in xsdir:
-#	ls = line.split()
-#	if ls == []:
-#		continue
-#	elif not ('.' in ls[0]):
-#		continue
-#	else:
-#		i, p, l = ls[0].partition('.')
-#		try:
-#			xs_i = int(i)
-#		except:
-#			continue
-#		for iso in InXSDIR.keys():
-#			if xs_i == int(iso):
-#				InXSDIR[iso] = True
-#xsdir.close()
-#coretran = []
-#for iso in InXSDIR.keys():
-#	if InXSDIR[iso]:
-#		coretran.append(iso)
-#	else:
-#		libcom.QPrint("The following nuclide could not be found in $DATAPATH/xsdir: %s."%isoname.MCNP_2_LLAAAM(iso) )
 CoreTran_zzaaam = isoname.MCNP_2_zzaaam_List(coretran)
 CoreTran_LLAAAM = isoname.MCNP_2_LLAAAM_List(coretran)
 CoreTran_MCNP   = coretran

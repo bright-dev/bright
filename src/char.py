@@ -3,6 +3,7 @@
 ############################
 #### Standard Libraries ####
 ############################
+from __future__ import print_function
 import os
 import time
 import shutil
@@ -22,6 +23,8 @@ import isoname
 import metasci
 import metasci.nuke as msn
 import metasci.graph as msg
+
+from metasci.colortext import *
 
 #################
 ### CHAR Libs ###

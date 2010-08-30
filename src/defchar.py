@@ -14,8 +14,8 @@ email      = "scopatz@gmail.com"		    	#E-mail address to send job information t
 NumberCPUs  = 4									#Number of CPUs to run transport code on.
 CPUsPerNode = 4                                 #Processors per node
 
-Quiet   = False
-Verbose = False
+verbosity = 100
+verbosity = 0
 
 ################################
 ### Unit Cell Sepcifications ###

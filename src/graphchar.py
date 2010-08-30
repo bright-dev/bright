@@ -4,7 +4,7 @@
 from char import *
 
 def Make_Figs_MCNP(q=False):
-    "Make MCNP Graphs, for fun and learning"
+    """Make MCNP Graphs, for fun and learning"""
     t1 = time.time()
     if not ( 'figs' in os.listdir('.') ):
         os.mkdir('figs/')
@@ -16,7 +16,8 @@ def Make_Figs_MCNP(q=False):
     lfr = libfile.root
 
     #Flux Graphs
-    QPrint("\033[1;32mNow making Flux graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Flux graphs..."))
     msg.SimpleGraph(lfr.Coarse.time, lfr.Coarse.flux, xlabel="Burn Time [days]", 
         ylabel=r"Flux [n/s/cm$^2$]", scale='linear', name='Flux' )
 
@@ -24,7 +25,8 @@ def Make_Figs_MCNP(q=False):
         ylabel=r"CINDER Flux [n/s/cm$^2$]", scale='linear', name='Flux_Cinder' )
 
     #Group Flux Graphs
-    QPrint("\033[1;32mNow making Group Flux graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Group Flux graphs..."))
     group_flux_kwg = {
         'scale':  'log',
         'name':   'Group_Flux',
@@ -61,7 +63,7 @@ def Make_Figs_MCNP(q=False):
     for cgkey in RootGroups.keys():
         if not (cgkey[:5] == "sigma"):
             continue
-        QPrint("\033[1;32mNow making %s graphs...\033[0m"%cgkey)
+        print(message("Now making %s graphs...\033[0m"%cgkey)
         sigma = RootGroups[cgkey]._v_leaves
         for iso in sigma.keys():
             xs_kwg['name']   = '{0}_{1}'.format(iso, cgkey)
@@ -72,7 +74,8 @@ def Make_Figs_MCNP(q=False):
                 msg.StairStepEnergy(sigma[iso][t], **xs_kwg)
 
     #Chi Graphs
-    QPrint("\033[1;32mNow making Chi graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Chi graphs..."))
     chi_kwg = {
         'name':   'chi',
         'ylabel': r"$\chi$",
@@ -91,7 +94,8 @@ def Make_Figs_MCNP(q=False):
             msg.StairStepEnergy(chi[iso][t], **chi_kwg)
 
     #Nubar Graphs
-    QPrint("\033[1;32mNow making NuBar graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making NuBar graphs..."))
     nubar_kwg = {
         'name':   'nubar',
         'ylabel': r"$\bar{\nu}$",
@@ -112,7 +116,8 @@ def Make_Figs_MCNP(q=False):
     libfile.close()
     os.chdir('../') #Back to 'reactor' root directory
     t2 = time.time()
-    QPrint( "\n\033[1;32mMCNP Graphs generated in %G minutes.\033[0m"%( (t2-t1)/60.0), q )
+    if 0 < verbosity:
+        print(message("\nMCNP Graphs generated in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
 
     return
 
@@ -128,7 +133,8 @@ def Make_Figs_ORIGEN(q=False):
     try:
         libfile = tb.openFile('../libs/' + reactor + '.h5', 'r')
     except:
-        QPrint("\033[1;31mCould not find a valid HDF5 file!  Looking for: %s.h5\033[0m"%reactor, q)
+        if 0 < verbosity:
+            print(failure("Could not find a valid HDF5 file!  Looking for: {0}.h5", reactor))
         return
     lfr  = libfile.root
     lfrf = lfr.Fine
@@ -139,32 +145,38 @@ def Make_Figs_ORIGEN(q=False):
     try:
         BU = lfrf.Burnup._v_leaves
     except:
-        QPrint("\033[1;31mHDF5 file %s.h5 does not contain ORIGEN data!\033[0m"%reactor, q)
+        if 0 < verbosity:
+            print(failure("HDF5 file {0}.h5 does not contain ORIGEN data!", reactor))
         return
-    QPrint("\033[1;32mNow making Burnup graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Burnup graphs..."))
     for iso in BU.keys():
         graphlib.GraphForTime(lfrf.time, BU[iso], G=G, units = "[MWd/kgIHM]", figname='%s Burnup'%iso ) 
 
     #Make k graphs
     k = lfrf.k._v_leaves
-    QPrint("\033[1;32mNow making Multiplication Factor graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Multiplication Factor graphs..."))
     for iso in k.keys():
         graphlib.GraphForTime(lfrf.time[1:], k[iso][1:], G=G, figname='%s Multiplication Factor'%iso ) 
 
     #Make Production Rate grpahs
     Pro = lfrf.Production._v_leaves
-    QPrint("\033[1;32mNow making Neutron Production Rate graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Neutron Production Rate graphs..."))
     for iso in Pro.keys():
         graphlib.GraphForTime(lfrf.time[1:], Pro[iso][1:], G=G, figname='%s Neutron Production Rate'%iso ) 
 
     #Make Destruction Rate grpahs
     Des = lfrf.Destruction._v_leaves
-    QPrint("\033[1;32mNow making Neutron Destruction Rate graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Neutron Destruction Rate graphs..."))
     for iso in Des.keys():
         graphlib.GraphForTime(lfrf.time[1:], Des[iso][1:], G=G, figname='%s Neutron Destruction Rate'%iso ) 
 
     #Make Transmutation rate Graphs
-    QPrint("\033[1;32mNow making Transmutation graphs...\033[0m")
+    if 0 < verbosity:
+        print(message("Now making Transmutation graphs..."))
     CutOff = 10.0**-3	#Concentration Cutoff
     T = lfrf.Transmutation
     for g in range(G, 0, -1):
@@ -180,5 +192,6 @@ def Make_Figs_ORIGEN(q=False):
     libfile.close()
     os.chdir('../') #Back to 'reactor' root directory
     t2 = time.time()
-    QPrint( "\n\033[1;32mORIGEN Graphs generated in %G minutes.\033[0m"%( (t2-t1)/60.0), q )
+    if 0 < verbosity:
+        print( "\nORIGEN Graphs generated in {0} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
     return
