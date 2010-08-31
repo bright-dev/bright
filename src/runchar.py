@@ -9,92 +9,27 @@ import Make_Input_Deck
 from char import *
 
 
-def Make_MCNP_Input(NoBurnBool=False, NoPertBool=False):
-    """Make the MCNP input file."""
-    metasci.SafeRemove(reactor + ".i")
-    mcnp_fill = {
-        'FuelDensity': '{0:G}'.format(FuelDensity), 
-        'CladDensity': '{0:G}'.format(CladDensity), 
-        'CoolDensity': '{0:G}'.format(CoolDensity), 
-
-        'FuelCellVolume': '{0:G}'.format(FuelCellVolume), 
-
-        'FuelCellRadius':    '{0:G}'.format(FuelCellRadius), 
-        'CladCellRadius':    '{0:G}'.format(CladCellRadius), 
-        'UnitCellHalfPitch': '{0:G}'.format(UnitCellHalfPitch), 
-        'UnitCellHeight':    '{0:G}'.format(UnitCellHeight), 
-
-        'GroupStructure': GroupStructure, 
-
-        'kParticles':  '{0:G}'.format(kParticles),    
-        'kCycles':     '{0:G}'.format(kCycles),    
-        'kCyclesSkip': '{0:G}'.format(kCyclesSkip),    
-        }
-
-    #Make the MCNP input deck fill values
-    if NoBurnBool:
-        mcnp_fill['Burn'] = 'c No Burn Card'
-    else:
-        mcnp_fill['Burn'] = Make_Input_Deck.Make_Burn()
-
-    mcnp_fill['Mat1']     = Make_Input_Deck.Make_Mat1()
-    mcnp_fill['MatOther'] = Make_Input_Deck.Make_MatOther()
-
-    if NoPertBool:
-        mcnp_fill['Pert'] = 'c No Pert Cards'
-    else:
-        mcnp_fill['Pert'] = Make_Input_Deck.Make_Pert()
-
-    mcnp_fill['Tally'] = Make_Input_Deck.Make_Tally()
-
-    mcnp_fill['TallyScat'] = Make_Input_Deck.Make_ScatTally()
-
-    #Fill the template
-    with open(reactor + '.i.template', 'r') as f:
-        template_file = f.read()
-
-    with open(reactor + '.i', 'w') as f:
-        f.write(template_file.format(**mcnp_fill))
-
-    return
-
 def Make_Run_Script(runflag, localflag=True):
-    runfile = open(runscript, 'w')
+    run_fill = {}
 
     if runflag in ["PBS"]:
-        runfile.write("#!/bin/sh\n")
-        runfile.write("### PBS Settings\n")
-        runfile.write("#PBS -N CHAR_{0}\n".format(reactor))
+        run_fill["Run_Shell"] = "#!/bin/sh"
 
-        runfile.write("#PBS -l ncpus={0}".format(NumberCPUs))
-        runfile.write(",nodes={0}".format(NumberCPUs/CPUsPerNode))
-        runfile.write(":ppn={0}".format(CPUsPerNode))
-        #Walltime = 4 hr/burn-step * Num burn-steps (1 + Numb Particle / (3000 part/hr/cpu) / NumCpu )
-#        runfile.write(",walltime={0:02G}:00:00\n".format(4*len(CoarseTime)*(1 + kParticles*kCycles/3000/NumberCPUs)))
-        runfile.write(",walltime={0:02G}:00:00\n".format(36))
+        run_fill["PBS_General_Settings"] = "### PBS Settings\n"
+        run_fill["PBS_General_Settings"] = "#PBS -N CHAR_{0}\n".format(reactor)
 
-        runfile.write("#PBS -k oe\n")
-        runfile.write("#PBS -j oe\n")
+        run_fill["PBS_General_Settings"] = "#PBS -l ncpus={0}".format(NumberCPUs)
+        run_fill["PBS_General_Settings"] = ",nodes={0}".format(NumberCPUs/CPUsPerNode)
+        run_fill["PBS_General_Settings"] = ":ppn={0}".format(CPUsPerNode)
 
-        rdict = {
-            'RDir': RemoteDir,
-            'RGateway': RemoteGateway, 
-            'reactor': reactor, 
-            }        
-        runfile.write("#PBS -W stagein=./{reactor}.i@{RGateway}:{RDir}{reactor}.i\n".format(**rdict))
-        runfile.write("#PBS -W stageout=./{reactor}.o@{RGateway}:{RDir}{reactor}.o\n".format(**rdict))
-        runfile.write("#PBS -W stageout=./{reactor}.s@{RGateway}:{RDir}{reactor}.s\n".format(**rdict))
-        runfile.write("#PBS -W stageout=./{reactor}.m@{RGateway}:{RDir}{reactor}.m\n".format(**rdict))
-        runfile.write("#PBS -W stageout=./{reactor}.r@{RGateway}:{RDir}{reactor}.r\n".format(**rdict))
+        run_fill["PBS_General_Settings"] = "#PBS -k oe\n"
+        run_fill["PBS_General_Settings"] = "#PBS -j oe\n"
 
-        runfile.write("#PBS -W stageout=./CHAR_{reactor}.o*@{RGateway}:{RDir}CHAR_{reactor}.o*\n".format(**rdict))
-        runfile.write("#PBS -M {0}\n".format(email))
-        runfile.write("#PBS -m abe\n".format(email))
-        runfile.write("\n")
-
+        run_fill["PBS_General_Settings"] = "#PBS -M {0}\n".format(email)
+        run_fill["PBS_General_Settings"] = "#PBS -m abe\n".format(email)
     else:
-        runfile.write("#!/bin/bash\n")
-        runfile.write("\n")
+        run_fill["Run_Shell"] = "#!/bin/bash\n"
+        run_fill["PBS_General_Settings"] = ''
 
     runfile.write("### Display the job context\n")
     runfile.write("echo \"\"\n")

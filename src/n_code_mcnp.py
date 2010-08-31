@@ -4,6 +4,7 @@ from math import pi
 
 import isoname
 import metasci.nuke as msn
+from metasci import SafeRemove
 
 from char import UnitCellHeight, FuelCellRadius, CladCellRadius, UnitCellPitch, \
     FuelDensity, CladDensity, CoolDensity, FuelSpecificPower
@@ -17,6 +18,7 @@ from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
 from char import metastabletrak, metastableMCNP
 from char import mat_number, number_mat
 from char import InitialFuelStream
+from char import kParticles, kCycles, kCyclesSkip
 
 from n_code import NCode
 
@@ -168,6 +170,138 @@ class NCodeMCNP(NCode):
 
         return tline
 
+    def make_input(NoBurnBool=False, NoPertBool=False):
+        """Make the MCNP input file."""
 
-    def make_input(self):
-        pass
+        SafeRemove(reactor + ".i")
+        mcnp_fill = {
+            'FuelDensity': '{0:G}'.format(FuelDensity), 
+            'CladDensity': '{0:G}'.format(CladDensity), 
+            'CoolDensity': '{0:G}'.format(CoolDensity), 
+
+            'FuelCellVolume': '{0:G}'.format(self.FuelCellVolume), 
+
+            'FuelCellRadius':    '{0:G}'.format(FuelCellRadius), 
+            'CladCellRadius':    '{0:G}'.format(CladCellRadius), 
+            'UnitCellHalfPitch': '{0:G}'.format(self.UnitCellHalfPitch), 
+            'UnitCellHeight':    '{0:G}'.format(UnitCellHeight), 
+
+            'GroupStructure': GroupStructure, 
+
+            'kParticles':  '{0:G}'.format(kParticles),    
+            'kCycles':     '{0:G}'.format(kCycles),    
+            'kCyclesSkip': '{0:G}'.format(kCyclesSkip),    
+            }
+
+        # Make the MCNP input deck fill values
+        if NoBurnBool:
+            mcnp_fill['Burn'] = 'c No Burn Card'
+        else:
+            mcnp_fill['Burn'] = self.make_input_burn()
+
+        mcnp_fill['Mat1']     = self.make_input_mat1()
+        mcnp_fill['MatOther'] = self.make_input_mat_other()
+
+        if NoPertBool:
+            mcnp_fill['Pert'] = 'c No Pert Cards'
+        else:
+            mcnp_fill['Pert'] = self.make_input_pert()
+
+        mcnp_fill['Tally'] = self.make_input_tally()
+
+        mcnp_fill['TallyScat'] = self.make_input_scat_tally()
+
+        # Fill the template
+        with open(reactor + '.i.template', 'r') as f:
+            template_file = f.read()
+
+        with open(reactor + '.i', 'w') as f:
+            f.write(template_file.format(**mcnp_fill))
+
+    return
+
+
+    def run_script_fill_values(self):
+        """Fills the runscript with values appropriate to MCNP."""
+
+        rsfv = {}
+
+        # Set PBS_Walltime
+        if runflag in ["PBS"]:
+            #Walltime = 4 hr/burn-step * Num burn-steps (1 + Numb Particle / (3000 part/hr/cpu) / NumCpu )
+            #rsfv['PBS_Walltime'] = ",walltime={0:02G}:00:00\n".format(4*len(CoarseTime)*(1 + kParticles*kCycles/3000/NumberCPUs))
+            rsfv['PBS_Walltime'] = ",walltime={0:02G}:00:00\n".format(36)
+        else:
+            rsfv['PBS_Walltime'] = '\n'
+
+        # Set PBS_Stagein and PBS_Stageout
+        rdict = {
+            'RDir': RemoteDir,
+            'RGateway': RemoteGateway, 
+            'reactor': reactor, 
+            }        
+
+        if runflag in ["PBS"]:
+            rsfv['PBS_Stagein'] = "#PBS -W stagein=./{reactor}.i@{RGateway}:{RDir}{reactor}.i\n".format(**rdict)
+
+            rsfv['PBS_Stageout']  = "#PBS -W stageout=./{reactor}.o@{RGateway}:{RDir}{reactor}.o\n".format(**rdict)
+            rsfv['PBS_Stageout'] += "#PBS -W stageout=./{reactor}.s@{RGateway}:{RDir}{reactor}.s\n".format(**rdict)
+            rsfv['PBS_Stageout'] += "#PBS -W stageout=./{reactor}.m@{RGateway}:{RDir}{reactor}.m\n".format(**rdict)
+            rsfv['PBS_Stageout'] += "#PBS -W stageout=./{reactor}.r@{RGateway}:{RDir}{reactor}.r\n".format(**rdict)
+            rsfv['PBS_Stageout'] += "#PBS -W stageout=./CHAR_{reactor}.o*@{RGateway}:{RDir}CHAR_{reactor}.o*\n".format(**rdict)
+        else:
+            rsfv['PBS_Stagein']  = ''
+            rsfv['PBS_Stageout'] = ''
+    
+        # Set Transport Job Context
+        rsfv['Transport_Job_Context'] = "echo \"DATAPATH is ${DATAPATH}\""
+
+        # Set PBS_Job_Context
+        if runflag in ["PBS"]:
+            rsfv['PBS_Job_Context']  = "echo \"The master node of this job is: $PBS_O_HOST\"\n"
+            rsfv['PBS_Job_Context'] += "NPROCS=`wc -l < $PBS_NODEFILE`\n"
+            rsfv['PBS_Job_Context'] += "NNODES=`uniq $PBS_NODEFILE | wc -l`\n"
+            rsfv['PBS_Job_Context'] += "echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\n"
+            rsfv['PBS_Job_Context'] += "echo \"-----------------------\"\n"
+            rsfv['PBS_Job_Context'] += "uniq $PBS_NODEFILE | sort\n"
+            rsfv['PBS_Job_Context'] += "echo \"-----------------------\"\n"
+            rsfv['PBS_Job_Context'] += "echo \"\"\n"
+        else:
+            rsfv['PBS_Job_Context']  = ''
+
+        # Set Run_Commands 
+        rsfv['Run_Commands']  = ''
+
+        if runflag in ["PBS"]:
+            rsfv['Run_Commands'] += "### Set MCNPX datapath variable\n"
+            if localflag:
+                PathDATAPATH = os.getenv("DATAPATH")
+            else:
+                PathDATAPATH = RemoteDATAPATH
+            rsfv['Run_Commands'] += "export DATAPATH={0}\n".format(PathDATAPATH)
+            rsfv['Run_Commands'] += "\n"
+
+        if localflag:
+            PathMPI  = LocalPathMPI
+            PathMCNP = LocalPathMCNP
+        else:
+            PathMPI  = RemotePathMPI
+            PathMCNP = RemotePathMCNP
+
+        if runflag in ["MPI", "PBS"]:
+            rsfv['Run_Commands'] += "### Run MCNP with MPI\n"
+            rsfv['Run_Commands'] += "{0} \\\n".format(PathMPI)
+            rsfv['Run_Commands'] += "-machinefile $PBS_NODEFILE \\\n"
+            rsfv['Run_Commands'] += "{0} \\\n".format(PathMCNP)
+            rsfv['Run_Commands'] += "i={0}.i \\\n".format(reactor)
+            rsfv['Run_Commands'] += "o={0}.o \\\n".format(reactor)
+            rsfv['Run_Commands'] += "s={0}.s \\\n".format(reactor)
+            rsfv['Run_Commands'] += "m={0}.m \\\n".format(reactor)
+            rsfv['Run_Commands'] += "r={0}.r   \n".format(reactor)
+        else:
+            rsfv['Run_Commands'] += "{0} inp={1}.i n={1}. ".format(PathMCNP, reactor)
+            rsfv['Run_Commands'] += "\n"
+
+        return rsfv
+
+

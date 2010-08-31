@@ -7,6 +7,10 @@ class NCode(object):
         """A dummy method for making the neutronics code input."""
         pass
 
+    def run_script_fill_values(self):
+        """A dummy method for filling the run script."""
+        pass
+
     def run(self):
         """A dummy method for running the neutronics code."""
         pass
