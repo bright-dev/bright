@@ -63,7 +63,7 @@ def Make_Figs_MCNP(q=False):
     for cgkey in RootGroups.keys():
         if not (cgkey[:5] == "sigma"):
             continue
-        print(message("Now making %s graphs...\033[0m"%cgkey)
+        print(message("Now making {0} graphs...", cgkey))
         sigma = RootGroups[cgkey]._v_leaves
         for iso in sigma.keys():
             xs_kwg['name']   = '{0}_{1}'.format(iso, cgkey)
@@ -193,5 +193,5 @@ def Make_Figs_ORIGEN(q=False):
     os.chdir('../') #Back to 'reactor' root directory
     t2 = time.time()
     if 0 < verbosity:
-        print( "\nORIGEN Graphs generated in {0} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
+        print(message("\nORIGEN Graphs generated in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
     return

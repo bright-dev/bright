@@ -51,19 +51,8 @@ RemoteConnection = RC()
 
 ORIGEN_FASTorTHERM = ORIGEN_FASTorTHERM.lower()
 if not (ORIGEN_FASTorTHERM in ['fast', 'therm']):
-    print("ORIGEN_FASTorTHERM not properly set: {0}".format(ORIGEN_FASTorTHERM))
-    print("Setting to 'therm'.")
-
-#########################
-### Make Cell Volumes ###
-#########################
-#Division by 4 because template only looks at a quarter of the unit cell
-FuelCellVolume = 0.25 * UnitCellHeight * pi * (FuelCellRadius**2) 
-CladCellVolume = (0.25 * UnitCellHeight * pi * (CladCellRadius**2)) - FuelCellVolume
-UnitCellVolume = 0.25 * UnitCellHeight * (UnitCellPitch**2)
-CoolCellVolume = UnitCellVolume - FuelCellVolume - CladCellVolume
-
-UnitCellHalfPitch = UnitCellPitch / 2.0 
+    print(message("ORIGEN_FASTorTHERM not properly set: {0}", ORIGEN_FASTorTHERM))
+    print(message("Setting to 'therm'."))
 
 #######################
 ### Make Time Steps ###
