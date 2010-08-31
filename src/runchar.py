@@ -10,7 +10,7 @@ from char import *
 
 
 def Make_MCNP_Input(NoBurnBool=False, NoPertBool=False):
-    "Make the MCNP input file."
+    """Make the MCNP input file."""
     metasci.SafeRemove(reactor + ".i")
     mcnp_fill = {
         'FuelDensity': '{0:G}'.format(FuelDensity), 
@@ -159,15 +159,17 @@ def Run_Transport_Local(runflag):
     else:
         subprocess.call("./{0}".format(runscript), shell=True)
     t2 = time.time()
-    QPrint( "" )
-    QPrint( "MCNP executed in {0:.3G} minutes.".format((t2-t1)/60.0) )
-    QPrint( "" )
+    if 0 < verbosity:
+        print()
+        print(mesage("MCNP executed in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
+        print()
     return
 
 def Run_Transport_Remote(runflag):
     """Runs the transport calculation on a remote machine"""
     try:
-        QPrint("Copying files to remote server.")
+        if 0 < verbosity:
+            print(message("Copying files to remote server."))
         RemoteConnection.run("mkdir -p {rc.RemoteDir}".format(rc=RemoteConnection)) 
         RemoteConnection.run("rm {rc.RemoteDir}*".format(rc=RemoteConnection))
         RemoteConnection.put(inputfile,  RemoteConnection.RemoteDir + inputfile)
@@ -176,19 +178,22 @@ def Run_Transport_Remote(runflag):
             RemoteConnection.run("source /etc/profile; cd {rc.RemoteDir}; qsub {rs} > runlog.txt 2>&1 &".format(rc=RemoteConnection, rs=runscript))
         else:
             RemoteConnection.run("source /etc/profile; cd {rc.RemoteDir}; ./{rs} > runlog.txt 2>&1 &".format(rc=RemoteConnection, rs=runscript))
-        QPrint( "Running transport code remotely." )
+        if 0 < verbosity:
+            print(message("Running transport code remotely."))
         raise SystemExit
     except NameError:
-        QPrint( "Host, username, password, or directory not properly specified for remote machine." )
-        QPrint( "Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir." )
-        QPrint( "Nothing to do, quiting." )
+        if 0 < verbosity:
+            print(failure("Host, username, password, or directory not properly specified for remote machine."))
+            print(failure("Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir."))
+            print(failure("Nothing to do, quiting."))
         raise SystemExit
     return
 
 def Fetch_Remote_Files():
-    "Fetches files from remote server."
+    """Fetches files from remote server."""
     try:
-        QPrint("Fetching files from remote server.")
+        if 0 < verbosity:
+            print(message("Fetching files from remote server."))
         metasci.SafeRemove(reactor + ".i")
         metasci.SafeRemove(reactor + ".o")
         metasci.SafeRemove("runlog.txt")
@@ -197,29 +202,32 @@ def Fetch_Remote_Files():
         RemoteConnection.get(RemoteConnection.RemoteDir + "runlog.txt", "runlog.txt")
         RemoteConnection.get(RemoteConnection.RemoteDir + "run_{0}.*".format(reactor), ".")
     except NameError:
-        QPrint( "Host, username, password, or directory not properly specified for remote machine." )
-        QPrint( "Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir." )
-        QPrint( "Nothing to do, quiting." )
+        if 0 < verbosity:
+            print(message("Host, username, password, or directory not properly specified for remote machine."))
+            print(message("Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir."))
+            print(message("Nothing to do, quiting."))
         raise SystemExit
     return
 
 def Find_PID_Local(BoolKill = False):
-    "Finds (and kills?) the Local Transport Run Process"
+    """Finds (and kills?) the Local Transport Run Process"""
     sp = subprocess.Popen("ps ux | grep mcnp", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
     spout, sperr = sp.communicate() 
     spout = spout.split('\n')[:-1]
     pid =  spout[0].split()[1]
     prt =  spout[0].split()[9]
-    QPrint( "Process ID: {0}".format(pid) )
-    QPrint( "Process Runtime: {0} min.".format(prt) )
+    if 0 < verbosity:
+        print(message("Process ID: {0}".format(pid)))
+        print(message("Process Runtime: {0} min.".format(prt)))
     del sp, spout, sperr
 
     if BoolKill:
         sp = subprocess.Popen("kill {0}".format(pid), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
         spout, sperr = sp.communicate() 
         spout = spout.split('\n')[:-1]
-        QPrint(spout)
-        QPrint("Process Killed.")
+        if 0 < verbosity:
+            print(spout)
+            print(message("Process Killed."))
         del sp, spout, sperr
         raise SystemExit
     return
@@ -234,9 +242,10 @@ def Find_PID_Remote(runflag, BoolKill = False):
             rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"ps ux | grep mcnp\"".format(rc=RemoteConnection), 
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
     except NameError:
-        QPrint( "Host, username, password, or directory not properly specified for remote machine." )
-        QPrint( "Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir." )
-        QPrint( "Nothing to do, quiting." )
+        if 0 < verbosity:
+            print(failure("Host, username, password, or directory not properly specified for remote machine."))
+            print(failure("Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir."))
+            print(failure("Nothing to do, quiting."))
         raise SystemExit
 
     #grab and parse the remote process info
@@ -244,7 +253,8 @@ def Find_PID_Remote(runflag, BoolKill = False):
     if runflag in ["PBS"]:
         spl = spout.split('\n')
         if len(spl) < 2:
-            QPrint( "Remote Process Not Running." )
+            if 0 < verbosity:
+                print(message("Remote Process Not Running."))
             raise SystemExit
             return
         spll = spl[-2].split()
@@ -253,7 +263,8 @@ def Find_PID_Remote(runflag, BoolKill = False):
     else:
         spl = spout.split('\n')
         if len(spl) < 1:
-            QPrint( "Remote Process Not Running." )
+            if 0 < verbosity:
+                print(message("Remote Process Not Running."))
             raise SystemExit
             return
         spll = spl[:-1]
@@ -261,11 +272,12 @@ def Find_PID_Remote(runflag, BoolKill = False):
         prt =  spll[0].split()[9]
 
     #Print the process info
-    QPrint( "Remote Process ID: {0}".format(pid) )
-    QPrint( "Remote Process Runtime: {0} min.".format(prt) )
-    if runflag in ["PBS"]:
-        QPrint("")
-        QPrint(spout)
+    if 0 < verbosity:
+        print(message("Remote Process ID: {0}".format(pid)))
+        print(message("Remote Process Runtime: {0} min.".format(prt)))
+        if runflag in ["PBS"]:
+            print()
+            print(spout)
 
     #Kill the remote process if required...
     if BoolKill:
@@ -274,7 +286,9 @@ def Find_PID_Remote(runflag, BoolKill = False):
             RemoteConnection.run("cluster-kill mcnpx260") 
         else:
             RemoteConnection.run("kill {0}".format(pid)) 
-        QPrint("Remote Process Killed.")
+
+        if 0 < verbosity:
+            print(message("Remote Process Killed."))
 
     raise SystemExit
     return
@@ -288,7 +302,8 @@ def Run_ORIGEN():
     CoreLoadIsos = list(libfile.root.CoreLoad_zzaaam)
     libfile.close()
 
-    QPrint("\033[1;32mPreping the ORIGEN Directories...\033[0m")
+    if 0 < verbosity:
+        print(message("Preping the ORIGEN Directories..."))
     t1 = time.time()
     for t in FineTime[1:]:
         Make_Input_Deck.Make_TAPE5(t)
@@ -296,10 +311,12 @@ def Run_ORIGEN():
     for iso in CoreLoadIsos: 
         os.mkdir("{0}".format(iso))
     t2 = time.time()
-    QPrint("\033[1;32m...Done!  That only took \033[1;31m{0:.3G} min\033[1;32m.\033[0m\n".format((t2-t1)/60.0) )
+    if 0 < verbosity:
+        print(message("...Done!  That only took {0:time} min.\n", "{0:.3G}".format((t2-t1)/60.0) ))
 
 
-    QPrint("\033[1;32m  ~~~~~  Starting ORIGEN Runs  ~~~~~  \033[0m\n")
+    if 0 < verbosity:
+        print(message("  ~~~~~  Starting ORIGEN Runs  ~~~~~  "))
     orit1 = time.time()
 
     #Initialize that data structures
@@ -311,7 +328,8 @@ def Run_ORIGEN():
 
     for iso in CoreLoadIsos:
         isoLL = isoname.zzaaam_2_LLAAAM(iso)
-        QPrint("\033[1;32m  ~~~~~  Now on \033[1;33mIsotope {0}\033[1;32m  ~~~~~  \033[0m\n".format(isoLL))
+        if 0 < verbosity:
+            print(message("  ~~~~~  Now on {0:iso}  ~~~~~  \n", "Isotope {0}".format(isoLL)))
         isot1 = time.time()
 
         #Initilize iso data, for t = 0
@@ -322,7 +340,8 @@ def Run_ORIGEN():
         Tij[iso] = [{iso: 1000.0}]
 
         for t in FineTime[1:]:
-            QPrint("\033[1;32mStarting ORIGEN run for \033[1;33m{0}\033[1;32m at \033[1;35mTime {1}\033[1;32m...\033[0m".format(isoLL, t))
+            if 0 < verbosity:
+               print(message("Starting ORIGEN run for {0:iso} at {1:time}...", isoLL, "Time {0}".format(t)))
             t1 = time.time()
 
             os.chdir("{0}".format(iso))
@@ -350,10 +369,12 @@ def Run_ORIGEN():
             os.chdir('../') #Back to ORIGEN Directory
 
             t2 = time.time()
-            QPrint("\033[1;32mORIGEN run completed in \033[1;31m{0:.3G} min\033[1;32m!\033[0m\n".format((t2-t1)/60.0))
+            if 0 < verbosity:
+                print(message("ORIGEN run completed in {0:time} min!", "{0:.3G} min".format((t2-t1)/60.0) ))
     
         isot2 = time.time()
-        QPrint("\033[1;32m  ~~~~~  Isotope \033[1;33m{0}\033[1;32m took \033[1;31m{1:.3G} min\033[1;32m!  ~~~~~  \033[0m\n".format(isoLL, (isot2-isot1) / 60.0))
+        if 0 < verbosity:
+            print(message("  ~~~~~  Isotope {0:iso} took {1:time} min!  ~~~~~  \n", isoLL, "{0:.3G} min".format((isot2-isot1)/60.0) ))
 
 
     #Kludge to put Tij in the right units and form
@@ -372,7 +393,8 @@ def Run_ORIGEN():
                     Tij[iso][n_t][j] = 0.0
     
     orit2 = time.time()
-    QPrint("\033[1;32m  ~~~~~  ORIGEN took \033[1;31m{0:.3G} min\033[1;32m to run!  ~~~~~  \033[0m".format((orit2-orit1) / 60.0))
+    if 0 < verbosity:
+        print(message("  ~~~~~  ORIGEN took {0:time} to run!  ~~~~~  ", "{0:.3G} min".format((orit2-orit1)/60.0) ))
 
     os.chdir('../../') #Back to 'reactor' root
     return BU, k, Pro, Des, Tij
