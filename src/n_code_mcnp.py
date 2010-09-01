@@ -174,7 +174,7 @@ class NCodeMCNP(NCode):
 
         return tline
 
-    def make_input(NoBurnBool=False, NoPertBool=False):
+    def make_input(self, NoBurnBool=False, NoPertBool=False):
         """Make the MCNP input file."""
 
         SafeRemove(reactor + ".i")
@@ -295,4 +295,491 @@ class NCodeMCNP(NCode):
 
         return rsfv
 
+
+    def parse_init(self):
+        """Initializes variables for MCNP parsing"""
+
+        self.InFlux = False
+        self.InXS = False
+        self.InBurnSum = False
+        self.AtMult = False
+        self.AtBin = False
+        self.LibFileOpen = False
+        self.libfile = None
+        self.mat = None
+        self.fm = None
+        self.n = 0
+        self.flux_g = []
+        self.E_up = []
+        self.mult = {}
+        self.burn = {
+            "step":     [], 
+            "duration": [], 
+            "time":     [], 
+            "power":    [], 
+            "keff":     [], 
+            "flux":     [], 
+            "ave. nu":  [], 
+            "ave. q":   [], 
+            "burnup":   [], 
+            "source":   [],
+            }
+
+        self.InFluxCinder = False
+        self.E_up_cinder = []
+        self.flux_g_cinder = []
+        self.flux_cinder = []
+
+        self.BR_NG  = {}
+        self.BR_N2N = {}
+
+        return
+
+    def parse(self):
+        """Parse MCNPX Output"""
+
+        if not (self.mult == {}):
+            self.parse_init()
+
+        outfile = open(reactor + '.o', 'r')
+
+        for line in outfile:
+            ls = line.split()
+            lslen = len(ls)
+
+            if lslen == 0:
+                if (self.InFlux or self.InFluxCinder) and self.AtBin:
+                    self.InFlux = False
+                    self.InFluxCinder = False
+                    self.AtBin = False
+                    continue
+                elif self.AtMult and self.AtBin:
+                    self.AtMult = False
+                    self.AtBin = False
+                    self.mat = None
+                    self.fm = None
+                    self.n = 0
+                    continue
+                elif self.InBurnSum:
+                    self.InBurnSum = False
+                else:
+                    continue
+
+            # Get Flux Data
+            elif ls[0] == 'energy' and (self.InFlux or self.InFluxCinder):
+                self.AtBin = True
+                continue
+            elif (1 < lslen) and (ls[1] == 'flux'):
+                self.InFlux = True
+                self.flux_g.append([])
+                continue
+            elif (1 < lslen) and (ls[1] == 'cinderflux'):
+                self.InFluxCinder = True
+                self.flux_g_cinder.append([])
+                continue
+            elif self.InFlux and self.AtBin:
+                if len(self.flux_g) == 1:
+                    self.E_up.append(float(ls[0]))
+                self.flux_g[-1].append(float(ls[1]))
+                continue
+            elif self.InFluxCinder and self.AtBin:
+                if len(self.flux_g_cinder) == 1:
+                    self.E_up_cinder.append(float(ls[0]))
+                self.flux_g_cinder[-1].append(float(ls[1]))
+                continue
+
+            # Get Multiplier Data
+            elif (1 < lslen) and (ls[1] == 'XS'):
+                self.InXS = True
+                continue
+            elif InXS and (ls[0] == 'multiplier'):
+                self.AtMult = True
+                self.mat = isoname.MCNP_2_LLAAAM( number_mat[ ls[-2] ] )
+                self.fm = dicFM[ ls[-1] ]
+                lib = '{0}_{1}.lib'.format(mat, fm)
+                if lib in self.mult.keys():
+                    self.mult[lib].append([])
+                else:
+                    self.mult[lib] = [[]]
+                continue
+            elif ls[0] == 'energy' and self.AtMult:
+                self.AtBin = True
+                continue
+            elif self.AtMult and self.AtBin:
+                self.mult[lib][-1].append( float(ls[1]) / self.flux_g[-1][n] )
+                n = n + 1
+
+            # Get Burnup Summary Table
+            elif ls == ["(days)", "(days)", "(MW)", "(GWd/MTU)", "(nts/sec)"]:
+                self.InBurnSum = True
+                continue
+            elif self.InBurnSum and (0 == len(burn['step'])):
+                self.burn["step"].append( float(ls[0]) )
+                self.burn["duration"].append( float(ls[1]) )
+                self.burn["time"].append( float(ls[2]) )
+                self.burn["power"].append( float(ls[3]) )
+                self.burn["keff"].append( float(ls[4]) )
+                self.burn["flux"].append( float(ls[5]) )
+                self.burn["ave. nu"].append( float(ls[6]) )
+                self.burn["ave. q"].append( float(ls[7]) )
+                self.burn["burnup"].append( float(ls[8]) )
+                self.burn["source"].append( float(ls[9]) )
+            elif self.InBurnSum and (float(ls[0]) <= self.burn['step'][-1]):
+                continue
+            elif self.InBurnSum and (self.burn['step'][-1] < float(ls[0])):
+                # Half Step Data Interpolation
+                self.burn["step"].append( (self.burn["step"][-1] + float(ls[0])) / 2.0)
+                self.burn["duration"].append( (self.burn["duration"][-1] + float(ls[1])) / 2.0)
+                self.burn["time"].append( (self.burn["time"][-1] + float(ls[2])) / 2.0)
+                self.burn["power"].append( (self.burn["power"][-1] + float(ls[3])) /2.0)
+                self.burn["keff"].append( (self.burn["keff"][-1] + float(ls[4])) / 2.0)
+                self.burn["flux"].append( (self.burn["flux"][-1] + float(ls[5])) / 2.0)
+                self.burn["ave. nu"].append( (self.burn["ave. nu"][-1] + float(ls[6])) / 2.0)
+                self.burn["ave. q"].append( (self.burn["ave. q"][-1] + float(ls[7])) / 2.0)
+                self.burn["burnup"].append( (self.burn["burnup"][-1] + float(ls[8])) / 2.0)
+                self.burn["source"].append( (self.burn["source"][-1] + float(ls[9])) / 2.0)
+
+                # Full Step Data
+                self.burn["step"].append( float(ls[0]) )
+                self.burn["duration"].append( float(ls[1]) )
+                self.burn["time"].append( float(ls[2]) )
+                self.burn["power"].append( float(ls[3]) )
+                self.burn["keff"].append( float(ls[4]) )
+                self.burn["flux"].append( float(ls[5]) )
+                self.burn["ave. nu"].append( float(ls[6]) )
+                self.burn["ave. q"].append( float(ls[7]) )
+                self.burn["burnup"].append( float(ls[8]) )
+                self.burn["source"].append( float(ls[9]) )
+                continue
+
+        outfile.close()
+
+        # Calculate Total Fluxes	
+        # User-specified groups
+        for gth_flux_spectrum in self.flux_g:
+            f = 0.0
+            for f_g in gth_flux_spectrum:
+                f = f + f_g
+            self.flux.append(f)
+        # Cinder Energy Groups
+        for gth_flux_spectrum in self.flux_g_cinder:
+            f = 0.0
+            for f_g in gth_flux_spectrum:
+                f = f + f_g
+            self.flux_cinder.append(f)
+
+        # Renormalize Fluxes if burned...
+        if 0 < len( self.burn["step"] ):
+            # User-specified groups
+            for t in range(len(self.flux_g)):
+                for g in range(len(self.flux_g[t])):
+                    self.flux_g[t][g] = self.flux_g[t][g] * self.burn["flux"][t] / self.flux[t]
+            self.flux = self.burn["flux"]
+            # Cinder Energy Groups
+            for t in range(len(self.flux_g_cinder)):
+                for g in range(len(self.flux_g_cinder[t])):
+                    self.flux_g_cinder[t][g] = self.flux_g_cinder[t][g] * self.burn["flux"][t] / self.flux_cinder[t]
+            self.flux_cinder = self.burn["flux"]
+
+        # Calculate Meta-Stable to Ground State branch ratios, if metastables are suppossed to be tracked...
+        for iso in metastabletrak:
+            anum = (iso%10000)/10
+            znum = iso/10000
+            NG_grd_str  = "{0}{1:03d}0 produced by the following C-X  (g   )".format(anum, znum)
+            NG_mss_str  = "{0}{1:03d}1 produced by the following C-X  (g  *)".format(anum, znum)
+            N2N_grd_str = "{0}{1:03d}0 produced by the following C-X  (2n  )".format(anum, znum)
+            N2N_mss_str = "{0}{1:03d}1 produced by the following C-X  (2n *)".format(anum, znum)
+
+            InGrndNG  = False
+            InMetaNG  = False
+            InGrndN2N = False
+            InMetaN2N = False
+
+            GrndXS_NG  = []
+            MetaXS_NG  = []
+            GrndXS_N2N = []
+            MetaXS_N2N = []
+
+            cinderfile = open(CINDER_DAT, 'r')
+            for line in cinderfile:
+                if len(line) <= 4:
+                    continue
+                elif NG_grd_str in line:
+                    InGrndNG = True
+                    InMetaNG = False
+                    continue
+                elif NG_mss_str in line:
+                    InGrndNG = False
+                    InMetaNG = True
+                    continue
+                elif N2N_grd_str in line:
+                    InGrndN2N = True
+                    InMetaN2N = False
+                    continue
+                elif N2N_mss_str in line:
+                    InGrndN2N = False
+                    InMetaN2N = True
+                    continue
+                elif "_______________________" in line:
+                    InGrndNG  = False
+                    InMetaNG  = False
+                    InGrndN2N = False
+                    InMetaN2N = False
+                    continue
+                elif "   #" == line[:4]:
+                    InGrndNG  = False
+                    InMetaNG  = False
+                    InGrndN2N = False
+                    InMetaN2N = False
+                    continue
+                elif InGrndNG:
+                    for xs in line.split():
+                        GrndXS_NG.append( float(xs) )
+                elif InMetaNG:
+                    for xs in line.split():
+                        MetaXS_NG.append( float(xs) )
+                elif InGrndN2N:
+                    for xs in line.split():
+                        GrndXS_N2N.append( float(xs) )
+                elif InMetaN2N:
+                    for xs in line.split():
+                        MetaXS_N2N.append( float(xs) )
+            cinderfile.close()
+
+            if not (GrndXS_NG == []) and not (MetaXS_NG == []):
+                self.BR_NG[iso] = []
+                for t in range( len(flux_g_cinder) ):
+                    gXS_NG = msn.GroupCollapse(GrndXS_NG, flux_g_cinder[t], flux_cinder[t])
+                    mXS_NG = msn.GroupCollapse(MetaXS_NG, flux_g_cinder[t], flux_cinder[t])
+                    self.BR_NG[iso].append(mXS_NG / gXS_NG)
+
+            if not (GrndXS_N2N == []) and not (MetaXS_N2N == []):
+                self.BR_N2N[iso] = []
+                for t in range( len(flux_g_cinder) ):
+                    gXS_N2N = msn.GroupCollapse(GrndXS_N2N, flux_g_cinder[t], flux_cinder[t])
+                    mXS_N2N = msn.GroupCollapse(MetaXS_N2N, flux_g_cinder[t], flux_cinder[t])
+                    self.BR_N2N[iso].append(mXS_N2N / gXS_N2N)
+        return
+
+    def write_text_lib(self):
+        """Writes MCNP output to text libraries."""
+    
+        if self.mult == {}:
+            self.parse()
+
+        if not ( 'libs' in os.listdir('.') ):
+            os.mkdir('libs/')
+        os.chdir('libs/')
+        for lib in os.listdir('.'):
+            if lib[-4:] == ".lib":
+                metasci.SafeRemove(lib)
+
+        headline = "E_up"
+        for t in CoarseTime:
+            headline = headline + "\t\t" + str(t)
+        headline = headline + "\n"
+
+        ### Write Flux Files
+        # Group Fluxes
+        libfile = open('flux_g.lib', 'w')
+        libfile.write(headline)
+        for e in range(len(self.E_up)):
+            line = '%.5E'%E_up[e]
+            for f in range(len(self.flux_g)):
+                line = line + "\t{0:.6E}".format(self.flux_g[f][e])
+            libfile.write('{0}\n'.format(line))
+        libfile.close()	 
+
+        # Total Flux
+        libfile = open('flux.lib', 'w')
+        libfile.write('Time\t' + headline[5:])
+        line = "Flux"
+        for f in range(len(self.flux)):
+            line = line + "\t{0:.6E}".format(self.flux[f])
+        libfile.write('{0}\n'.format(line))
+        libfile.close()	 
+
+        # Cinder Group Fluxes
+        libfile = open('flux_g_cinder.lib', 'w')
+        libfile.write(headline)
+        for e in range(len(self.E_up_cinder)):
+            line = '{0:.5E}'.format(self.E_up_cinder[e])
+            for f in range(len(self.flux_g_cinder)):
+                line = line + "\t{0:.6E}".format(self.flux_g_cinder[f][e])
+            libfile.write('{0}\n'.format(line))
+        libfile.close()	 
+
+        # Cinder Total Flux
+        libfile = open('flux_cinder.lib', 'w')
+        libfile.write('Time\t' + headline[5:])
+        line = "Flux"
+        for f in range(len(self.flux_cinder)):
+            line = line + "\t{0:.6E}".format(self.flux_cinder[f])
+        libfile.write('{0}\n'.format(line))
+        libfile.close()	 
+
+        # Write Multiplier Files
+        for lib in mult.keys():
+            libfile = open(lib, 'w')
+            libfile.write(headline)
+            for e in range(len(self.E_up)):
+                line = '{0:.5E)'.format(self.E_up[e])
+                for ml in range(len(self.mult[lib])):
+                    line = line + "\t{0:.6E}".format(self.mult[lib][ml][e])
+                libfile.write('{0}\n'.format(line))
+            libfile.close()
+
+        # Meta-Stable Branch Ratio Files
+        for iso in BR_NG.keys():
+            libfile = open(isoname.zzaaam_2_LLAAAM(iso) + '_NGamma_Branch_Ratio.lib', 'w')
+            libfile.write('Time\t' + headline[5:])
+            line = "Ratio"
+            for br in range(len(self.BR_NG[iso])):
+                line = line + "\t{0:.6E}".format(self.BR_NG[iso][br])
+            libfile.write('{0}\n'.format(line))
+            libfile.close()	 
+        for iso in BR_N2N.keys():
+            libfile = open(isoname.zzaaam_2_LLAAAM(iso) + '_N2N_Branch_Ratio.lib', 'w')
+            libfile.write('Time\t' + headline[5:])
+            line = "Ratio"
+            for br in range(len(self.BR_N2N[iso])):
+                line = line + "\t{0:.6E}".format(self.BR_N2N[iso][br])
+            libfile.write('{0}\n'.format(line))
+            libfile.close()	 
+
+        os.chdir('..')
+        return 
+
+    def write_hdf5_lib(self):
+        """Writes MCNP output to an HDF5 library."""
+    
+        if self.mult == {}:
+            self.parse()
+
+        if not ( 'libs' in os.listdir('.') ):
+            os.mkdir('libs/')
+        os.chdir('libs/')
+        for h5 in os.listdir('.'):
+            if h5[-3:] == ".h5":
+                metasci.SafeRemove(h5)
+
+        # Initialize the HDF5 file
+        libfile = tb.openFile(reactor + ".h5", mode = "w", title = '[CHAR] %s'%reactor)
+        root = libfile.root
+
+        ##########################################
+        ### Make arrays that apply to all data ###
+        ##########################################
+        # Add Energy Group Array
+        libfile.createArray(root, "E_up", E_up, "Upper Energy Limit [MeV]") 					#Upper Energy Limit
+        libfile.createArray(root, "CoreLoad_zzaaam", CoreLoad_zzaaam, "Core Loading Isotopes [zzaaam]")		#Core load isotopes in zzaaam form
+        libfile.createArray(root, "CoreLoad_LLAAAM", CoreLoad_LLAAAM, "Core Loading Isotopes [LLAAAM]")		#Core load isotopes in LLAAAM form
+        libfile.createArray(root, "CoreLoad_MCNP",   CoreLoad_MCNP,   "Core Loading Isotopes [MCNP]")		#Core load isotopes in MCNP form
+        libfile.createArray(root, "CoreTran_zzaaam", CoreTran_zzaaam, "Core Transformation Isotopes [zzaaam]")	#Core transformation isotopes in zzaaam form
+        libfile.createArray(root, "CoreTran_LLAAAM", CoreTran_LLAAAM, "Core Transformation Isotopes [LLAAAM]")	#Core transformation isotopes in LLAAAM form
+        libfile.createArray(root, "CoreTran_MCNP",   CoreTran_MCNP,   "Core Transformation Isotopes [MCNP]")	#Core transformation isotopes in MCNP form
+
+        # Add Coarsely binned time and flux data
+        libfile.createGroup(root, "Coarse")
+        libfile.createArray("/Coarse", "time",   CoarseTime, "Burn Time, Coarse [days]")		#Burn up times
+        libfile.createArray("/Coarse", "flux",   flux,       "Neutron Flux, Coarse [n/s/cm2]")	 	#Flux
+        libfile.createArray("/Coarse", "flux_g", flux_g,     "Neutron Group Flux, Coarse [n/s/cm2]")	#Group fluxes
+
+        # Add Finely Binned time and flux data
+        libfile.createGroup(root, "Fine")
+        flux_fine = []
+        flux_g_fine = []
+        for t in FineTime:
+            n = 0
+            while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
+                n = n + 1
+            flux_fine.append( metasci.SolveLine(t, CoarseTime[n+1], flux[n+1], CoarseTime[n], flux[n]) )
+            flux_g_fine.append([])
+            for e in range( len(E_up) ):
+                flux_g_fine[-1].append( metasci.SolveLine(t, CoarseTime[n+1], flux_g[n+1][e], CoarseTime[n], flux_g[n][e]) )
+        libfile.createArray("/Fine", "time",   FineTime,    "Burn Time, Fine [days]")			#Burn up times
+        libfile.createArray("/Fine", "flux",   flux_fine,   "Neutron Flux, Fine [n/s/cm2]") 		#Flux
+        libfile.createArray("/Fine", "flux_g", flux_g_fine, "Neutron Group Flux, Fine [n/s/cm2]")	#Group fluxes
+
+
+        #############################################
+        ### Make arrays that apply to Cinder data ###
+        #############################################
+        libfile.createGroup(root, "CINDER")
+        libfile.createArray("/CINDER", "time",   CoarseTime,    "Cinder Burn Time [days]")			#Burn up times
+        libfile.createArray("/CINDER", "E_up",   E_up_cinder,   "Upper Energy Limit - Cinder [MeV]") 		#Upper Energy Limit
+        libfile.createArray("/CINDER", "flux_g", flux_g_cinder, "Neutron Group Flux - Cinder [n/s/cm2]")	#Group fluxes
+        libfile.createArray("/CINDER", "flux",   flux_cinder,   "Neutron Flux - Cinder [n/s/cm2]")		#Flux
+
+        ##########################################
+        ### Make Meta-Stable Branch Ratio Data ###
+        ##########################################
+        libfile.createGroup("/Coarse", "BranchRatio")
+        libfile.createGroup("/Coarse/BranchRatio", "NG")
+        libfile.createGroup("/Coarse/BranchRatio", "N2N")
+        libfile.createGroup("/Fine", "BranchRatio")
+        libfile.createGroup("/Fine/BranchRatio", "NG")
+        libfile.createGroup("/Fine/BranchRatio", "N2N")
+
+        # Coarse Data
+        for iso in BR_NG.keys():
+            iname = isoname.zzaaam_2_LLAAAM(iso)
+            libfile.createArray("/Coarse/BranchRatio/NG", iname, BR_NG[iso], "(n, gamma) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+        for iso in BR_N2N.keys():
+            iname = isoname.zzaaam_2_LLAAAM(iso)
+            libfile.createArray("/Coarse/BranchRatio/N2N", iname, BR_N2N[iso], "(n, 2n) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+
+        # Fine Data
+        BR_NG_Fine  = {}
+        for iso in BR_NG.keys():
+            finetemp = []
+            for t in FineTime:
+                n = 0
+                while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
+                    n = n + 1
+                    finetemp.append( metasci.SolveLine(t, CoarseTime[n+1], BR_NG[iso][n+1], CoarseTime[n], BR_NG[iso][n]) )
+            iname = isoname.zzaaam_2_LLAAAM(iso)
+            libfile.createArray("/Fine/BranchRatio/NG", iname, finetemp, "(n, gamma) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+        BR_N2N_Fine = {}
+        for iso in BR_N2N.keys():
+            finetemp = []
+            for t in FineTime:
+                n = 0
+                while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
+                    n = n + 1
+                    finetemp.append( metasci.SolveLine(t, CoarseTime[n+1], BR_N2N[iso][n+1], CoarseTime[n], BR_N2N[iso][n]) )
+            iname = isoname.zzaaam_2_LLAAAM(iso)
+            libfile.createArray("/Fine/BranchRatio/N2N", iname, finetemp, "(n, 2n) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+
+        ##############################
+        ### Make Multiplier Arrays ###
+        ##############################
+        for key in FMdic.keys():
+            libfile.createGroup("/Coarse", key)
+        for key in FMdic.keys():
+            libfile.createGroup("/Fine", key)
+
+        # Coarse Data
+        for key in mult.keys():
+            iso, nada, mult_type = key[:-4].partition("_")
+            if mult_type[:5] == "sigma":
+                mult_str = mult_type + " [barns]"
+            else:
+                mult_str = mult_type + " [unitless]"
+            libfile.createArray("/Coarse/"+mult_type, iso, mult[key], mult_str)
+
+            # Fine Data
+            finetemp = []
+            for t in FineTime:
+                n = 0
+                while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
+                     n = n + 1
+                    finetemp.append([])
+                    for e in range( len(E_up) ):
+                        finetemp[-1].append( metasci.SolveLine(t, CoarseTime[n+1], mult[key][n+1][e], CoarseTime[n], mult[key][n][e]) )
+            libfile.createArray("/Fine/"+mult_type, iso, finetemp, mult_str)
+    
+        libfile.close()
+        os.chdir('..')
+        return
 
