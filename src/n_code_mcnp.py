@@ -664,26 +664,26 @@ class NCodeMCNP(NCode):
                 metasci.SafeRemove(h5)
 
         # Initialize the HDF5 file
-        libfile = tb.openFile(reactor + ".h5", mode = "w", title = '[CHAR] %s'%reactor)
+        libfile = tb.openFile(reactor + ".h5", mode = "w", title = '[CHAR] {0}'.format(reactor))
         root = libfile.root
 
         ##########################################
         ### Make arrays that apply to all data ###
         ##########################################
         # Add Energy Group Array
-        libfile.createArray(root, "E_up", E_up, "Upper Energy Limit [MeV]") 					#Upper Energy Limit
-        libfile.createArray(root, "CoreLoad_zzaaam", CoreLoad_zzaaam, "Core Loading Isotopes [zzaaam]")		#Core load isotopes in zzaaam form
-        libfile.createArray(root, "CoreLoad_LLAAAM", CoreLoad_LLAAAM, "Core Loading Isotopes [LLAAAM]")		#Core load isotopes in LLAAAM form
-        libfile.createArray(root, "CoreLoad_MCNP",   CoreLoad_MCNP,   "Core Loading Isotopes [MCNP]")		#Core load isotopes in MCNP form
+        libfile.createArray(root, "E_up", E_up, "Upper Energy Limit [MeV]")                                     #Upper Energy Limit
+        libfile.createArray(root, "CoreLoad_zzaaam", CoreLoad_zzaaam, "Core Loading Isotopes [zzaaam]")         #Core load isotopes in zzaaam form
+        libfile.createArray(root, "CoreLoad_LLAAAM", CoreLoad_LLAAAM, "Core Loading Isotopes [LLAAAM]")         #Core load isotopes in LLAAAM form
+        libfile.createArray(root, "CoreLoad_MCNP",   CoreLoad_MCNP,   "Core Loading Isotopes [MCNP]")           #Core load isotopes in MCNP form
         libfile.createArray(root, "CoreTran_zzaaam", CoreTran_zzaaam, "Core Transformation Isotopes [zzaaam]")	#Core transformation isotopes in zzaaam form
         libfile.createArray(root, "CoreTran_LLAAAM", CoreTran_LLAAAM, "Core Transformation Isotopes [LLAAAM]")	#Core transformation isotopes in LLAAAM form
         libfile.createArray(root, "CoreTran_MCNP",   CoreTran_MCNP,   "Core Transformation Isotopes [MCNP]")	#Core transformation isotopes in MCNP form
 
         # Add Coarsely binned time and flux data
         libfile.createGroup(root, "Coarse")
-        libfile.createArray("/Coarse", "time",   CoarseTime, "Burn Time, Coarse [days]")		#Burn up times
-        libfile.createArray("/Coarse", "flux",   flux,       "Neutron Flux, Coarse [n/s/cm2]")	 	#Flux
-        libfile.createArray("/Coarse", "flux_g", flux_g,     "Neutron Group Flux, Coarse [n/s/cm2]")	#Group fluxes
+        libfile.createArray("/Coarse", "time",   CoarseTime,  "Burn Time, Coarse [days]")		        #Burn up times
+        libfile.createArray("/Coarse", "flux",   self.flux,   "Neutron Flux, Coarse [n/s/cm2]")	 	    #Flux
+        libfile.createArray("/Coarse", "flux_g", self.flux_g, "Neutron Group Flux, Coarse [n/s/cm2]")	#Group fluxes
 
         # Add Finely Binned time and flux data
         libfile.createGroup(root, "Fine")
@@ -693,11 +693,11 @@ class NCodeMCNP(NCode):
             n = 0
             while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
                 n = n + 1
-            flux_fine.append( metasci.SolveLine(t, CoarseTime[n+1], flux[n+1], CoarseTime[n], flux[n]) )
+            flux_fine.append( metasci.SolveLine(t, CoarseTime[n+1], self.flux[n+1], CoarseTime[n], self.flux[n]) )
             flux_g_fine.append([])
-            for e in range( len(E_up) ):
-                flux_g_fine[-1].append( metasci.SolveLine(t, CoarseTime[n+1], flux_g[n+1][e], CoarseTime[n], flux_g[n][e]) )
-        libfile.createArray("/Fine", "time",   FineTime,    "Burn Time, Fine [days]")			#Burn up times
+            for e in range( len(self.E_up) ):
+                flux_g_fine[-1].append(metasci.SolveLine(t, CoarseTime[n+1], self.flux_g[n+1][e], CoarseTime[n], self.flux_g[n][e]))
+        libfile.createArray("/Fine", "time",   FineTime,    "Burn Time, Fine [days]")			    #Burn up times
         libfile.createArray("/Fine", "flux",   flux_fine,   "Neutron Flux, Fine [n/s/cm2]") 		#Flux
         libfile.createArray("/Fine", "flux_g", flux_g_fine, "Neutron Group Flux, Fine [n/s/cm2]")	#Group fluxes
 
@@ -706,10 +706,10 @@ class NCodeMCNP(NCode):
         ### Make arrays that apply to Cinder data ###
         #############################################
         libfile.createGroup(root, "CINDER")
-        libfile.createArray("/CINDER", "time",   CoarseTime,    "Cinder Burn Time [days]")			#Burn up times
-        libfile.createArray("/CINDER", "E_up",   E_up_cinder,   "Upper Energy Limit - Cinder [MeV]") 		#Upper Energy Limit
-        libfile.createArray("/CINDER", "flux_g", flux_g_cinder, "Neutron Group Flux - Cinder [n/s/cm2]")	#Group fluxes
-        libfile.createArray("/CINDER", "flux",   flux_cinder,   "Neutron Flux - Cinder [n/s/cm2]")		#Flux
+        libfile.createArray("/CINDER", "time",   CoarseTime,         "Cinder Burn Time [days]")			        #Burn up times
+        libfile.createArray("/CINDER", "E_up",   self.E_up_cinder,   "Upper Energy Limit - Cinder [MeV]")       #Upper Energy Limit
+        libfile.createArray("/CINDER", "flux_g", self.flux_g_cinder, "Neutron Group Flux - Cinder [n/s/cm2]")   #Group fluxes
+        libfile.createArray("/CINDER", "flux",   self.flux_cinder,   "Neutron Flux - Cinder [n/s/cm2]")		    #Flux
 
         ##########################################
         ### Make Meta-Stable Branch Ratio Data ###
@@ -724,10 +724,10 @@ class NCodeMCNP(NCode):
         # Coarse Data
         for iso in BR_NG.keys():
             iname = isoname.zzaaam_2_LLAAAM(iso)
-            libfile.createArray("/Coarse/BranchRatio/NG", iname, BR_NG[iso], "(n, gamma) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+            libfile.createArray("/Coarse/BranchRatio/NG", iname, self.BR_NG[iso], "(n, gamma) Meta-Stable to Ground {0} Branch Ratio".format(iname))	#Meta-Stable Branch Ratio Data
         for iso in BR_N2N.keys():
             iname = isoname.zzaaam_2_LLAAAM(iso)
-            libfile.createArray("/Coarse/BranchRatio/N2N", iname, BR_N2N[iso], "(n, 2n) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+            libfile.createArray("/Coarse/BranchRatio/N2N", iname, self.BR_N2N[iso], "(n, 2n) Meta-Stable to Ground {0} Branch Ratio".format(iname))	#Meta-Stable Branch Ratio Data
 
         # Fine Data
         BR_NG_Fine  = {}
@@ -737,9 +737,9 @@ class NCodeMCNP(NCode):
                 n = 0
                 while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
                     n = n + 1
-                    finetemp.append( metasci.SolveLine(t, CoarseTime[n+1], BR_NG[iso][n+1], CoarseTime[n], BR_NG[iso][n]) )
+                    finetemp.append( metasci.SolveLine(t, CoarseTime[n+1], self.BR_NG[iso][n+1], CoarseTime[n], self.BR_NG[iso][n]) )
             iname = isoname.zzaaam_2_LLAAAM(iso)
-            libfile.createArray("/Fine/BranchRatio/NG", iname, finetemp, "(n, gamma) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+            libfile.createArray("/Fine/BranchRatio/NG", iname, finetemp, "(n, gamma) Meta-Stable to Ground {0} Branch Ratio".format(iname))	#Meta-Stable Branch Ratio Data
         BR_N2N_Fine = {}
         for iso in BR_N2N.keys():
             finetemp = []
@@ -747,9 +747,9 @@ class NCodeMCNP(NCode):
                 n = 0
                 while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
                     n = n + 1
-                    finetemp.append( metasci.SolveLine(t, CoarseTime[n+1], BR_N2N[iso][n+1], CoarseTime[n], BR_N2N[iso][n]) )
+                    finetemp.append( metasci.SolveLine(t, CoarseTime[n+1], self.BR_N2N[iso][n+1], CoarseTime[n], self.BR_N2N[iso][n]) )
             iname = isoname.zzaaam_2_LLAAAM(iso)
-            libfile.createArray("/Fine/BranchRatio/N2N", iname, finetemp, "(n, 2n) Meta-Stable to Ground %s Branch Ratio"%iname)	#Meta-Stable Branch Ratio Data
+            libfile.createArray("/Fine/BranchRatio/N2N", iname, finetemp, "(n, 2n) Meta-Stable to Ground {0} Branch Ratio".format(iname))	#Meta-Stable Branch Ratio Data
 
         ##############################
         ### Make Multiplier Arrays ###
@@ -766,7 +766,7 @@ class NCodeMCNP(NCode):
                 mult_str = mult_type + " [barns]"
             else:
                 mult_str = mult_type + " [unitless]"
-            libfile.createArray("/Coarse/"+mult_type, iso, mult[key], mult_str)
+            libfile.createArray("/Coarse/"+mult_type, iso, self.mult[key], mult_str)
 
             # Fine Data
             finetemp = []
@@ -776,7 +776,7 @@ class NCodeMCNP(NCode):
                      n = n + 1
                     finetemp.append([])
                     for e in range( len(E_up) ):
-                        finetemp[-1].append( metasci.SolveLine(t, CoarseTime[n+1], mult[key][n+1][e], CoarseTime[n], mult[key][n][e]) )
+                        finetemp[-1].append( metasci.SolveLine(t, CoarseTime[n+1], self.mult[key][n+1][e], CoarseTime[n], self.mult[key][n][e]) )
             libfile.createArray("/Fine/"+mult_type, iso, finetemp, mult_str)
     
         libfile.close()
