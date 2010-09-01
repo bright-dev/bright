@@ -1,4 +1,4 @@
-"""An class to setup, run, and parse MCNP."""
+"""A class to setup, run, and parse MCNP."""
 
 from math import pi
 
@@ -13,6 +13,7 @@ from char import ENDF_FLAG
 from char import GroupStructure
 from char import FMdic, dicFM
 
+from char import FineTimeIndex, FineTime
 from char import CoarseTimeIndex, CoarseTime
 from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
 from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
