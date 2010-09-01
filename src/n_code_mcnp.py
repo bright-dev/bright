@@ -6,6 +6,7 @@ import isoname
 import metasci.nuke as msn
 from metasci import SafeRemove
 
+from char import reactor
 from char import UnitCellHeight, FuelCellRadius, CladCellRadius, UnitCellPitch, \
     FuelDensity, CladDensity, CoolDensity, FuelSpecificPower
 from char import ENDF_FLAG
@@ -28,7 +29,7 @@ class NCodeMCNP(NCode):
 
     def __init__(self):
         self.name    = "MCNP"
-        self.run_str = "mcnpx"
+        self.run_str = "mcnp"
 
         ### Calculate Cell Volumes ###
         # Division by 4 because template only looks at a quarter of the unit cell
@@ -39,6 +40,9 @@ class NCodeMCNP(NCode):
 
         self.UnitCellHalfPitch = UnitCellPitch / 2.0 
 
+        # Remote file lists
+        self.place_remote_files = [reactor + '.i']
+        self.fetch_remote_files = [reactor + '.i', reactor + '.o', 'runlog.txt', "run_{0}.*".format(reactor)]
 
     def make_input_burn(self):
         """Generates the Burn card string for an MCNP inputfile."""
@@ -255,19 +259,6 @@ class NCodeMCNP(NCode):
     
         # Set Transport Job Context
         rsfv['Transport_Job_Context'] = "echo \"DATAPATH is ${DATAPATH}\""
-
-        # Set PBS_Job_Context
-        if runflag in ["PBS"]:
-            rsfv['PBS_Job_Context']  = "echo \"The master node of this job is: $PBS_O_HOST\"\n"
-            rsfv['PBS_Job_Context'] += "NPROCS=`wc -l < $PBS_NODEFILE`\n"
-            rsfv['PBS_Job_Context'] += "NNODES=`uniq $PBS_NODEFILE | wc -l`\n"
-            rsfv['PBS_Job_Context'] += "echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\n"
-            rsfv['PBS_Job_Context'] += "echo \"-----------------------\"\n"
-            rsfv['PBS_Job_Context'] += "uniq $PBS_NODEFILE | sort\n"
-            rsfv['PBS_Job_Context'] += "echo \"-----------------------\"\n"
-            rsfv['PBS_Job_Context'] += "echo \"\"\n"
-        else:
-            rsfv['PBS_Job_Context']  = ''
 
         # Set Run_Commands 
         rsfv['Run_Commands']  = ''

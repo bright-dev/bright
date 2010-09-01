@@ -9,7 +9,7 @@ import Make_Input_Deck
 from char import *
 
 
-def Make_Run_Script(runflag, localflag=True):
+def make_run_script(runflag, localflag=True):
     run_fill = {}
 
     if runflag in ["PBS"]:
@@ -31,63 +31,32 @@ def Make_Run_Script(runflag, localflag=True):
         run_fill["Run_Shell"] = "#!/bin/bash\n"
         run_fill["PBS_General_Settings"] = ''
 
-    runfile.write("### Display the job context\n")
-    runfile.write("echo \"\"\n")
-    runfile.write("echo \"Running on host\" `hostname`\n")
-    runfile.write("echo \"Time is\" `date`\n")
-    runfile.write("echo \"Directory is\" `pwd`\n")
-    runfile.write("echo \"DATAPATH is ${DATAPATH}\"\n")
+    # Set PBS_Job_Context
     if runflag in ["PBS"]:
-        runfile.write("echo \"The master node of this job is: $PBS_O_HOST\"\n")
-        runfile.write("NPROCS=`wc -l < $PBS_NODEFILE`\n")
-        runfile.write("NNODES=`uniq $PBS_NODEFILE | wc -l`\n")
-        runfile.write("echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\n")
-        runfile.write("echo \"-----------------------\"\n")
-        runfile.write("uniq $PBS_NODEFILE | sort\n")
-        runfile.write("echo \"-----------------------\"\n")
-        runfile.write("echo \"\"\n")
-        runfile.write("\n")
+        run_fill['PBS_Job_Context']  = "echo \"The master node of this job is: $PBS_O_HOST\"\n"
+        run_fill['PBS_Job_Context'] += "NPROCS=`wc -l < $PBS_NODEFILE`\n"
+        run_fill['PBS_Job_Context'] += "NNODES=`uniq $PBS_NODEFILE | wc -l`\n"
+        run_fill['PBS_Job_Context'] += "echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\n"
+        run_fill['PBS_Job_Context'] += "echo \"-----------------------\"\n"
+        run_fill['PBS_Job_Context'] += "uniq $PBS_NODEFILE | sort\n"
+        run_fill['PBS_Job_Context'] += "echo \"-----------------------\"\n"
+        run_fill['PBS_Job_Context'] += "echo \"\"\n"
     else:
-        runfile.write("echo \"\"\n")
-        runfile.write("\n")
+        run_fill['PBS_Job_Context']  = ''
 
-    if runflag in ["PBS"]:
-        runfile.write("### Set MCNPX datapath variable\n")
-        if localflag:
-            PathDATAPATH = os.getenv("DATAPATH")
-        else:
-            PathDATAPATH = RemoteDATAPATH
-        runfile.write("export DATAPATH={0}\n".format(PathDATAPATH))
-        runfile.write("\n")
+    run_fill.update(n_transporter.run_script_fill_values())
 
-    if localflag:
-        PathMPI  = LocalPathMPI
-        PathMCNP = LocalPathMCNP
-    else:
-        PathMPI  = RemotePathMPI
-        PathMCNP = RemotePathMCNP
+    # Fill the template
+    with open('templates/run_script.sh.template', 'r') as f:
+        run_script_template = f.read()
 
-    if runflag in ["MPI", "PBS"]:
-        runfile.write("### Run MCNP with MPI\n")
-        runfile.write("{0} \\\n".format(PathMPI))
-        runfile.write("-machinefile $PBS_NODEFILE \\\n")
-        runfile.write("{0} \\\n".format(PathMCNP))
-        runfile.write("i={0}.i \\\n".format(reactor))
-        runfile.write("o={0}.o \\\n".format(reactor))
-        runfile.write("s={0}.s \\\n".format(reactor))
-        runfile.write("m={0}.m \\\n".format(reactor))
-        runfile.write("r={0}.r   \n".format(reactor))
-    else:
-        runfile.write("{0} inp={1}.i n={1}. ".format(PathMCNP, reactor))
-        runfile.write("\n")
-
-    runfile.close()
-    os.chmod(runscript, 0755)
+    with open(runscript, 'w') as f:
+        f.write(run_script_template.format(**run_fill))
 
     return
 
-def Run_Transport_Local(runflag):
-    """Runs the transport calculation on the local machine"""
+def run_transport_local(runflag):
+    """Runs the transport calculation on the local machine."""
     t1 = time.time()
     if runflag == "PBS":
         subprocess.call("qsub {0}".format(runscript), shell=True)
@@ -96,23 +65,27 @@ def Run_Transport_Local(runflag):
     t2 = time.time()
     if 0 < verbosity:
         print()
-        print(mesage("MCNP executed in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
+        print(mesage("Transport executed in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
         print()
     return
 
-def Run_Transport_Remote(runflag):
+def run_transport_remote(runflag):
     """Runs the transport calculation on a remote machine"""
     try:
         if 0 < verbosity:
             print(message("Copying files to remote server."))
+
         RemoteConnection.run("mkdir -p {rc.RemoteDir}".format(rc=RemoteConnection)) 
         RemoteConnection.run("rm {rc.RemoteDir}*".format(rc=RemoteConnection))
-        RemoteConnection.put(inputfile,  RemoteConnection.RemoteDir + inputfile)
         RemoteConnection.put(runscript,  RemoteConnection.RemoteDir + runscript)
+        for inputfile in n_transporter.place_remote_files:
+            RemoteConnection.put(inputfile,  RemoteConnection.RemoteDir + inputfile)
+
         if runflag == "PBS":
             RemoteConnection.run("source /etc/profile; cd {rc.RemoteDir}; qsub {rs} > runlog.txt 2>&1 &".format(rc=RemoteConnection, rs=runscript))
         else:
             RemoteConnection.run("source /etc/profile; cd {rc.RemoteDir}; ./{rs} > runlog.txt 2>&1 &".format(rc=RemoteConnection, rs=runscript))
+
         if 0 < verbosity:
             print(message("Running transport code remotely."))
         raise SystemExit
@@ -124,18 +97,15 @@ def Run_Transport_Remote(runflag):
         raise SystemExit
     return
 
-def Fetch_Remote_Files():
+def fetch_remote_files():
     """Fetches files from remote server."""
     try:
         if 0 < verbosity:
             print(message("Fetching files from remote server."))
-        metasci.SafeRemove(reactor + ".i")
-        metasci.SafeRemove(reactor + ".o")
-        metasci.SafeRemove("runlog.txt")
-        RemoteConnection.get(RemoteConnection.RemoteDir + reactor + ".i", reactor + ".i")
-        RemoteConnection.get(RemoteConnection.RemoteDir + reactor + ".o", reactor + ".o")
-        RemoteConnection.get(RemoteConnection.RemoteDir + "runlog.txt", "runlog.txt")
-        RemoteConnection.get(RemoteConnection.RemoteDir + "run_{0}.*".format(reactor), ".")
+        for outputfile in n_transporter.fetch_remote_files:
+            metasci.SafeRemove(outputfile)
+        for outputfile in n_transporter.fetch_remote_files:
+            RemoteConnection.get(RemoteConnection.RemoteDir + outputfile, ".")
     except NameError:
         if 0 < verbosity:
             print(message("Host, username, password, or directory not properly specified for remote machine."))
@@ -144,16 +114,17 @@ def Fetch_Remote_Files():
         raise SystemExit
     return
 
-def Find_PID_Local(BoolKill = False):
+def find_pid_local(BoolKill = False):
     """Finds (and kills?) the Local Transport Run Process"""
-    sp = subprocess.Popen("ps ux | grep mcnp", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
+    sp = subprocess.Popen("ps ux | grep {0}".format(n_transporter.run_str), stdout=subprocess.PIPE, 
+        stderr=subprocess.PIPE, shell=True) 
     spout, sperr = sp.communicate() 
     spout = spout.split('\n')[:-1]
     pid =  spout[0].split()[1]
     prt =  spout[0].split()[9]
     if 0 < verbosity:
         print(message("Process ID: {0}".format(pid)))
-        print(message("Process Runtime: {0} min.".format(prt)))
+        print(message("Process Runtime: {0:time} min.".format(prt)))
     del sp, spout, sperr
 
     if BoolKill:
@@ -167,15 +138,15 @@ def Find_PID_Local(BoolKill = False):
         raise SystemExit
     return
 
-def Find_PID_Remote(runflag, BoolKill = False):
+def find_pid_remote(runflag, BoolKill = False):
     """Finds (and kills?) the Remote Transport Run Process"""
     try:
         if runflag in ["PBS"]:
             rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"qstat -u {rc.RemoteUser}\"".format(rc=RemoteConnection), 
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
         else:
-            rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"ps ux | grep mcnp\"".format(rc=RemoteConnection), 
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
+            rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"ps ux | grep {0}\"".format(n_transporter.run_str, 
+                rc=RemoteConnection), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
     except NameError:
         if 0 < verbosity:
             print(failure("Host, username, password, or directory not properly specified for remote machine."))
@@ -209,7 +180,7 @@ def Find_PID_Remote(runflag, BoolKill = False):
     #Print the process info
     if 0 < verbosity:
         print(message("Remote Process ID: {0}".format(pid)))
-        print(message("Remote Process Runtime: {0} min.".format(prt)))
+        print(message("Remote Process Runtime: {0:time} min.".format(prt)))
         if runflag in ["PBS"]:
             print()
             print(spout)
