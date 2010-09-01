@@ -49,11 +49,6 @@ class RC:
 
 RemoteConnection = RC()
 
-ORIGEN_FASTorTHERM = ORIGEN_FASTorTHERM.lower()
-if not (ORIGEN_FASTorTHERM in ['fast', 'therm']):
-    print(message("ORIGEN_FASTorTHERM not properly set: {0}", ORIGEN_FASTorTHERM))
-    print(message("Setting to 'therm'."))
-
 #######################
 ### Make Time Steps ###
 #######################
@@ -157,15 +152,3 @@ del mnum
 number_mat = metasci.ReverseDic(mat_number)
 
 InitialFuelStream = MassStream.MassStream(InitialFuelForm)
-
-
-######################
-### ORIGEN Options ###
-######################
-
-#Format/Set Concentration cut off
-try:
-    ORIGEN_Cut_Off = "{0:.3E}".format(ORIGEN_Concentration_Cut_Off)
-except NameError:
-    ORIGEN_Cut_Off = '1.-10'
-

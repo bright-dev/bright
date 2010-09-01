@@ -2,7 +2,6 @@
 #### CHAR Libraries ####
 ########################
 from char import *
-import Make_Input_Deck 
 
 def Write_ORIGEN_Libs():
     """Writes MCNP output to Coarse ORIGEN libraries."""
