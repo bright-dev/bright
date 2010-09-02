@@ -1,4 +1,5 @@
 """A class to setup, run, and parse ORIGEN."""
+import shutil
 
 import isoname
 import metasci.nuke as msn
@@ -174,3 +175,108 @@ class NCodeORIGEN(NCode):
         msno.writeTAPE9(**tape9_kw)
 
         return
+
+    def run(self):
+        """Runs the ORIGEN Burnup Calculations."""
+        os.chdir('libs/ORIGEN/')
+
+        # Grab General Data from the HDF5 File
+        libfile = tb.openFile("../{0}.h5".format(reactor), 'r')
+        CoreLoadIsos = list(libfile.root.CoreLoad_zzaaam)
+        libfile.close()
+
+        if 0 < verbosity:
+            print(message("Preping the ORIGEN Directories..."))
+        t1 = time.time()
+        for t in FineTime[1:]:
+            self.make_input_tape5(t)
+            self.make_input_tape9(t)
+        for iso in CoreLoadIsos: 
+            os.mkdir("{0}".format(iso))
+        t2 = time.time()
+        if 0 < verbosity:
+            print(message("...Done!  That only took {0:time} min.\n", "{0:.3G}".format((t2-t1)/60.0) ))
+
+        if 0 < verbosity:
+            print(message("  ~~~~~  Starting ORIGEN Runs  ~~~~~  "))
+        orit1 = time.time()
+
+        # Initialize the data structures
+        self.BU  = {}
+        self.k   = {}
+        self.Pro = {}
+        self.Des = {}
+        self.Tij = {}
+
+        for iso in CoreLoadIsos:
+            isoLL = isoname.zzaaam_2_LLAAAM(iso)
+            if 0 < verbosity:
+                print(message("  ~~~~~  Now on {0:iso}  ~~~~~  \n", "Isotope {0}".format(isoLL)))
+            isot1 = time.time()
+
+            # Initilize iso data, for t = 0
+            self.BU[iso]  = [0.0]
+            self.k[iso]   = [0.0]
+            self.Pro[iso] = [0.0]
+            self.Des[iso] = [0.0]
+            self.Tij[iso] = [{iso: 1000.0}]
+
+            for t in FineTime[1:]:
+                if 0 < verbosity:
+                   print(message("Starting ORIGEN run for {0:iso} at {1:time}...", isoLL, "Time {0}".format(t)))
+                t1 = time.time()
+
+                os.chdir("{0}".format(iso))
+
+                # Make/Get Input Decks
+                self.make_input_tape4(Tij[iso][-1])
+                shutil.copy("../{0}_T{1}.tape5".format(reactor, t), "TAPE5.INP")
+                shutil.copy("../{0}_T{1}.tape9".format(reactor, t), "TAPE9.INP")
+
+                # Run ORIGEN
+                subprocess.call("o2_{0}_linux.exe".format(ORIGEN_FASTorTHERM), shell=True)
+
+                # Parse Output
+                parsed = parsechar.Parse_TAPE6()
+                self.BU[iso].append(  BU[iso][-1] + parsed[0] )
+                self.k[iso].append(   parsed[1] )
+                self.Pro[iso].append( parsed[2] )
+                self.Des[iso].append( parsed[3] )
+                self.Tij[iso].append( parsed[4] )
+
+                # Clean up the directory
+                for f in os.listdir('.'):
+                    if f[-4:] in ['.INP', '.OUT']:
+                        metasci.SafeRemove(f)
+                os.chdir('../') # Back to ORIGEN Directory
+
+                t2 = time.time()
+                if 0 < verbosity:
+                    print(message("ORIGEN run completed in {0:time} min!", "{0:.3G} min".format((t2-t1)/60.0) ))
+    
+            isot2 = time.time()
+            if 0 < verbosity:
+                print(message("  ~~~~~  Isotope {0:iso} took {1:time} min!  ~~~~~  \n", isoLL, "{0:.3G} min".format((isot2-isot1)/60.0) ))
+
+
+        # Kludge to put Tij in the right units and form
+        allORIGENisoList = []
+        for iso in CoreLoadIsos:
+            for t in Tij[iso]:
+                for j in t.keys():
+                    if (j not in allORIGENisoList):
+                        allORIGENisoList.append(j)
+        for iso in CoreLoadIsos:
+            for n_t in range(len(Tij[iso])):
+                for j in allORIGENisoList:
+                    if j in Tij[iso][n_t].keys():
+                        Tij[iso][n_t][j] = Tij[iso][n_t][j] / (10.0**3)
+                    else:
+                        Tij[iso][n_t][j] = 0.0
+    
+        orit2 = time.time()
+        if 0 < verbosity:
+            print(message("  ~~~~~  ORIGEN took {0:time} to run!  ~~~~~  ", "{0:.3G} min".format((orit2-orit1)/60.0) ))
+
+        os.chdir('../../') #Back to 'reactor' root
+        return 
