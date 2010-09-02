@@ -13,6 +13,7 @@ from char import FineTimeIndex, FineTime
 from char import CoarseTimeIndex, CoarseTime
 from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
 from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
+from char import n_transporter 
 
 from n_code import NCode
 
@@ -237,12 +238,12 @@ class NCodeORIGEN(NCode):
                 subprocess.call("o2_{0}_linux.exe".format(ORIGEN_FASTorTHERM), shell=True)
 
                 # Parse Output
-                parsed = parsechar.Parse_TAPE6()
-                self.BU[iso].append(  BU[iso][-1] + parsed[0] )
-                self.k[iso].append(   parsed[1] )
-                self.Pro[iso].append( parsed[2] )
-                self.Des[iso].append( parsed[3] )
-                self.Tij[iso].append( parsed[4] )
+                self.parse_tape6()
+                self.BU[iso].append(  BU[iso][-1] + self.tape6_BU )
+                self.k[iso].append(   self.tape6_k )
+                self.Pro[iso].append( self.tape6_Pro )
+                self.Des[iso].append( self.tape6_Des )
+                self.Tij[iso].append( self.tape6_outvec )
 
                 # Clean up the directory
                 for f in os.listdir('.'):
@@ -280,3 +281,181 @@ class NCodeORIGEN(NCode):
 
         os.chdir('../../') #Back to 'reactor' root
         return 
+
+    def write_input_libs(self):
+        """Writes transport output to Coarse ORIGEN libraries."""
+
+        try: 
+            n_transporter.parse()
+        except:
+            pass
+
+        if not ( 'libs' in os.listdir('.') ):
+            os.mkdir('libs/')
+        os.chdir('libs/')
+        if ( 'ORIGEN' in os.listdir('.') ):
+            metasci.SafeRemove('ORIGEN', IsDir=True)
+            os.removedirs('ORIGEN')
+        os.mkdir('ORIGEN/')
+        os.chdir('ORIGEN/')
+
+        for t in CoarseTime:
+            self.make_input_tape9(t)
+
+        os.chdir('../../')
+        return
+
+    def parse_tape6(self, p = ""):
+        """Parses an ORIGEN TAPE6.OUT file that is in the current directory + path p."""
+        InTable5 = False
+
+        # (Re-)Initialize data structures
+        if hasattr(self, "tape6_BU"):
+            del self.tape6_BU, self.tape6_k, self.tape6_Pro, self.tape6_Des, self.tape6_outvec
+        self.tape6_BU     = -1.0
+        self.tape6_k      = -1.0
+        self.tape6_Pro    = -1.0
+        self.tape6_Des    = -1.0
+        self.tape6_outvec = {}
+
+        tape6 = open("%sTAPE6.OUT"%p, 'r')
+        for line in tape6:
+            if "BURNUP,MWD" in line:
+                ls = line.split()
+                self.tape6_BU = float(ls[-1])
+                continue
+            elif "K INFINITY" in line:
+                ls = line.split()
+                self.tape6_k = float(ls[-1])
+                continue
+            elif "NEUT PRODN" in line:
+                ls = line.split()
+                self.tape6_Pro = float(ls[-1])
+                continue
+            elif "NEUT DESTN" in line:
+                ls = line.split()
+                self.tape6_Des = float(ls[-1])
+                continue
+            elif "5 SUMMARY TABLE:  CONCENTRATIONS, GRAMS" in line:
+                InTable5 = True
+                continue
+            elif InTable5 and ("OUTPUT UNIT =  6" in line):
+                InTable5 = False
+                continue
+            elif InTable5:
+                ls = line.split()
+                try:
+                    iso = isoname.LLAAAM_2_zzaaam(ls[0])
+                except:
+                    try:
+                        iso = isoname.LLAAAM_2_zzaaam(ls[0] + ls[1])
+                    except:
+                        continue
+                self.tape6_outvec[iso] = float(ls[-1])
+            else:
+                continue
+        tape6.close()
+        return 
+
+    def write_text_lib(self):
+        """Writes ORIGEN output to text libraries.
+        Not Really helpful.
+        Inputs are dictionaries of tables."""
+
+        os.chdir('libs/ORIGEN/')
+
+        G = len(self.BU[self.BU.keys()[0]][0])
+
+        for iso in self.BU.keys():
+            for n_g in range(G):
+                os.chdir('E{0}'.format(G - n_g) )
+                os.chdir('{0}'.format(iso))
+
+                # Write Burnup
+                BUfile = open('Burnup.lib', 'w')
+                BUfile.write("Time\tBurnup\n")
+                for n_t in FineTimeIndex:
+                    BUfile.write('{0}\t{1:.6E}\n'.format(FineTime[n_t], self.BU[iso][n_t][n_g]) )
+                BUfile.close()
+
+                # Write Multiplication factor
+                kfile = open('k.lib', 'w')
+                kfile.write("Time\tk\n")
+                for n_t in FineTimeIndex:
+                    kfile.write('{0}\t{1:.6E}\n'.format(FineTime[n_t], self.k[iso][n_t][n_g]) )
+                kfile.close()
+
+                # Write Neutron Production Rate 
+                Profile = open('Pro.lib', 'w')
+                Profile.write("Time\tPro\n")
+                for n_t in FineTimeIndex:
+                    Profile.write('{0}\t{1:.6E}\n'.format(FineTime[n_t], self.Pro[iso][n_t][n_g]) )
+                Profile.close()
+
+                # Write Neutron Destruction Rate 
+                Desfile = open('Des.lib', 'w')
+                Desfile.write("Time\tDes\n")
+                for n_t in FineTimeIndex:
+                    Desfile.write('{0}\t{1:.6E}\n'.format(FineTime[n_t], self.Des[iso][n_t][n_g]) )
+                Desfile.close()
+
+                # Write Transformation Matrix
+                Tijfile = open('Tij.lib', 'w')
+                Tijfile.write("Time")
+                for n_t in FineTimeIndex:
+                    Tijfile.write('\t{0}\t'.format(FineTime[n_t]))
+                Tijfile.write('\n')
+                for j in CoreTran_zzaaam:
+                    if not (j in self.Tij[iso][n_t][n_g].keys() ):
+                        continue
+                    Tijfile.write(CoreTran_LLAAAM[CoreTran_zzaaam.index(j)])
+                    for n_t in FineTimeIndex:
+                        Tijfile.write('\t{0:.6E}'.format(Tij[iso][n_t][n_g][j]))
+                    Tijfile.write('\n')
+                Tijfile.close()
+
+                os.chdir('../') # Returns to the Energy Directory
+                os.chdir('../') # Returns to the ORIGEN Directory
+
+        os.chdir('../../') # Return to 'reactor' root
+        return 
+
+
+    def write_hdf5_lib(self):
+        """Writes ORIGEN output to the HDF5 library."""
+        os.chdir('libs/')
+        libfile = tb.openFile(reactor + ".h5", mode = "r+")
+        lfrf = libfile.root.Fine
+
+        # Write Data
+        libfile.createGroup("/Fine", "Burnup")
+        libfile.createGroup("/Fine", "k")
+        libfile.createGroup("/Fine", "Production")
+        libfile.createGroup("/Fine", "Destruction")
+        libfile.createGroup("/Fine", "Transmutation")
+        for iso in BU.keys(): 
+            isoLL = isoname.zzaaam_2_LLAAAM(iso)
+
+            # Writes the easy data
+            libfile.createArray("/Fine/Burnup",      isoLL, self.BU[iso],  "Burnup BU(F) for {0}".format(isoLL))                     # Burnup Data
+            libfile.createArray("/Fine/k",           isoLL, self.k[iso],   "Multiplication Factor k(F) for {0}".format(isoLL))       # Multiplication Factor Data
+            libfile.createArray("/Fine/Production",  isoLL, self.Pro[iso], "Neutron Production Rate p(F) for {0}".format(isoLL))     # Production Rate Data
+            libfile.createArray("/Fine/Destruction", isoLL, self.Des[iso], "Neutron Destruction Rate d(F) for {0}".format(isoLL))    # Destruction Rate Data
+
+            # Writes the transmutation matrices
+            libfile.createGroup("/Fine/Transmutation", isoLL)
+            for jso in CoreTran_zzaaam:
+                if (jso not in self.Tij[iso][0].keys()):
+                    continue
+                jsoLL = isoname.zzaaam_2_LLAAAM(jso)
+    
+                M = []
+                for n_t in FineTimeIndex:
+                    M.append(self.Tij[iso][n_t][jso])
+                # Transmutation Matrix
+                libfile.createArray("/Fine/Transmutation/{0}".format(isoLL), jsoLL, M, 
+                    "Transmutation Matrix Tij(F) from {0} to {1}".format(isoLL, jsoLL) )	
+
+        libfile.close()
+        os.chdir('../') # Returns to 'reactor' root directory
+        return
