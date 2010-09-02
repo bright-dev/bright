@@ -15,7 +15,7 @@ class NCode(object):
 
     def run_script_fill_values(self):
         """A dummy method for filling the run script."""
-        pass
+        return {}
 
     def run(self):
         """A dummy method for running the neutronics code."""

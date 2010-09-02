@@ -36,7 +36,7 @@ class NCodeORIGEN(NCode):
             print(message("Setting to 'therm'."))
             self.fast_or_therm = 'therm'
 
-        self.run_str = "o2"
+        self.run_str = "o2_{0}_linux.exe".format(self.fast_or_therm)
 
         # Try to find and set the origenc conectration cut-off
         try:
@@ -235,7 +235,7 @@ class NCodeORIGEN(NCode):
                 shutil.copy("../{0}_T{1}.tape9".format(reactor, t), "TAPE9.INP")
 
                 # Run ORIGEN
-                subprocess.call("o2_{0}_linux.exe".format(ORIGEN_FASTorTHERM), shell=True)
+                subprocess.call(self.run_str, shell=True)
 
                 # Parse Output
                 self.parse_tape6()

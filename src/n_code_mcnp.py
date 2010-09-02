@@ -26,7 +26,7 @@ from n_code import NCode
 
 
 class NCodeMCNP(NCode):
-    """An MCNP neutronics code wrapper class."""
+    """A MCNP neutronics code wrapper class."""
 
     def __init__(self):
         self.name    = "MCNP"
