@@ -1,0 +1,79 @@
+set title "[CHAR] {reactor}"
+
+set acelib "/usr/share/serpent/xsdata/endf7.xsdata"
+
+% --- Matrial Definitions ---
+
+% Initial Fuel Stream
+mat fuel -{FuelDensity}
+{fuel}
+
+% Cladding Stream
+mat cladding   -{CladDensity}
+{cladding}
+
+% Coolant Stream
+mat coolant  -{CoolDensity} moder lwtr 1001
+{coolant}
+
+therm lwtr lwj3.20t
+
+% --- Run Specification ---
+
+% Periodic boundary conditions
+set bc 3
+
+% Fuel universe
+set gcu 100
+
+% 1/8 square symetry
+set sym 8
+
+% Group Stucture
+%set nfg 5 1.0E-8 1.0E-5 1.0E-2  10.0
+set nfg 2 0.625E-6
+
+% Criticality calc
+set pop {kParticle} {kCycles} {kCyclesSkip}
+
+
+% --- Geometry ---
+pin 1
+fill 100 {FuelRadius}
+void     4.42000E-01
+cladding {CladRadius}
+coolant  
+
+pin 2
+coolant
+
+surf 100 inf
+cell 110 100 fuel   -100
+
+lat 10 1 0.0 0.0 17 17 {CellPitch}
+
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 
+1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 
+1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+
+surf 3000  sqc  0.0 0.0 12.75
+cell 300   0  fill 10   -3000
+cell 301   0  outside    3000
+
+% --- Graphs ---
+plot 3 800 800
+mesh 3 800 800

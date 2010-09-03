@@ -9,7 +9,7 @@ from metasci import SafeRemove
 from char import reactor
 from char import UnitCellHeight, FuelCellRadius, CladCellRadius, UnitCellPitch, \
     FuelDensity, CladDensity, CoolDensity, FuelSpecificPower
-from char import ENDF_FLAG
+from char import ISO_FLAG
 from char import GroupStructure
 from char import FMdic, dicFM
 
@@ -75,10 +75,10 @@ class NCodeMCNP(NCode):
         # writes m1, the initial fuel composition
         m1line = "m1 "
         for key in InitialFuelStream.comp.keys():
-            m1line = m1line + '{0}{1} -{2:G} '.format(isoname.zzaaam_2_MCNP( key ), ENDF_FLAG, InitialFuelStream.comp[key])
+            m1line = m1line + '{0}{1} -{2:G} '.format(isoname.zzaaam_2_MCNP( key ), ISO_FLAG, InitialFuelStream.comp[key])
         for iso in CoreLoad_MCNP:
             if not (iso in isoname.zzaaam_2_MCNP_List(InitialFuelStream.comp.keys()) ) and not (iso in metastableMCNP):
-                m1line = m1line + '{0}{1} -{2:G} '.format(iso, ENDF_FLAG, 1.0E-36)
+                m1line = m1line + '{0}{1} -{2:G} '.format(iso, ISO_FLAG, 1.0E-36)
         m1line = msn.Line2MCNP(m1line)
 
         return m1line
@@ -91,7 +91,7 @@ class NCodeMCNP(NCode):
         for mnum in range(moffset+1, moffset+1+len(mat_number)):
             for iso in mat_number.keys():
                 if mat_number[iso] == mnum:
-                    moline = moline + "m{0} {1}{2} 1.0\n".format(mat_number[iso], iso, ENDF_FLAG) 
+                    moline = moline + "m{0} {1}{2} 1.0\n".format(mat_number[iso], iso, ISO_FLAG) 
                     break
         return moline[:-1]
 

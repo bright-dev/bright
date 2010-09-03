@@ -21,6 +21,7 @@ verbosity = 0
 ### Unit Cell Sepcifications ###
 ################################
 FuelCellRadius = 0.410
+VoidCellRadius = 0.4185
 CladCellRadius = 0.475
 UnitCellPitch  = 0.65635 * 2.0 
 UnitCellHeight = 10.0
@@ -56,9 +57,9 @@ FMdic = {"sigma_t": -1}
 #FMdic = {"sigma_t": -1, "sigma_f": -2, "nubar": -3, "chi": -4, "sigma_a": -5, "sigma_e": 2, "sigma_i": 4}
 #FMdic = {"sigma_t": -1, "sigma_f": -2, "nubar": -3, "chi": -4, "sigma_a": -5, "sigma_e": 2, "sigma_i": 4, "sigma_2n": 16, "sigma_3n": 17, "sigma_gamma": 102, "sigma_proton": 103, "sigma_alpha": 107}
 
-#ENDF_FLAG = ".60c"
-#ENDF_FLAG = ".70c"
-ENDF_FLAG = "" 
+#ISO_FLAG = ".60c"
+#ISO_FLAG = ".70c"
+ISO_FLAG = "" 
 
 ############################
 ### ORIGEN Specification ###
