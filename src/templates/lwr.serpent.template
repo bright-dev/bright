@@ -26,12 +26,12 @@ set bc 3
 % Fuel universe
 set gcu 100
 
-% 1/8 square symetry
-set sym 8
+% 1/8 square symmetry
+{SymFlag}set sym 8
 
 % Group Stucture
-%set nfg 5 1.0E-8 1.0E-5 1.0E-2  10.0
-set nfg 2 0.625E-6
+set nfg {NGroups} {GroupStructure}
+
 
 % Criticality calc
 set pop {kParticle} {kCycles} {kCyclesSkip}
@@ -40,7 +40,7 @@ set pop {kParticle} {kCycles} {kCyclesSkip}
 % --- Geometry ---
 pin 1
 fill 100 {FuelRadius}
-void     4.42000E-01
+void     {VoidRadius}
 cladding {CladRadius}
 coolant  
 
@@ -50,27 +50,11 @@ coolant
 surf 100 inf
 cell 110 100 fuel   -100
 
-lat 10 1 0.0 0.0 17 17 {CellPitch}
+lat 10 1 0.0 0.0 {LatticeXY} {LatticeXY} {CellPitch}
 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 
-1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 
-1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+{Lattice}
 
-surf 3000  sqc  0.0 0.0 12.75
+surf 3000  sqc  0.0 0.0 {HalfLatticePitch}
 cell 300   0  fill 10   -3000
 cell 301   0  outside    3000
 

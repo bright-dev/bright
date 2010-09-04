@@ -1,6 +1,7 @@
 """A class to setup, run, and parse Serpent."""
 
 import isoname
+import numpy as np
 import metasci.nuke as msn
 from metasci import SafeRemove
 from MassStream import MassStream
@@ -158,12 +159,91 @@ class NCodeSerpent(NCode):
         return self.make_input_material_weights(CoolStream.comp, mass_weighted)
 
     def make_input_geometry(self):
+        # Require
         geom = {
             'FuelRadius': FuelCellRadius,
             'CladRadius': CladCellRadius,
             'CellPitch':  UnitCellPitch,
             }
-STOPPED HERE
+
+        # Tries to add a void region, 
+        # If there isn't space, cladding is used instead.
+        try:
+            from defchar import VoidCellRadius
+             goem['VoidRadius'] = VoidCellRadius
+        except ImportError:
+            goem['VoidRadius'] = FuelCellRadius + 0.0085
+            if CladCellRadius <= geom['VoidRadius']:
+                geom['VoidRadius'] = FuelCellRadius
+
+        # Tries to get the lattice specification
+        # If it isn't present, use a default 17x17 PWR lattice
+        try:
+            from defchar import Lattice
+            from defchar import LatticeXY
+            goem['Lattice']   = Lattice
+            goem['LatticeXY'] = LatticeXY
+        except ImportError:
+            if 0 < verbosity:
+                print(message("Lattice specification not found."))
+                print(message("Using a default 17x17 PWR lattice."))
+            goem['LatticeXY'] = 17
+            goem['Lattice']   = "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" + \
+                                "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" + \
+                                "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+
+        # Determine if lattice is symetric
+        lat = np.array(geom['Lattice'].split(), dtype='int')
+        lat = lat.reshape((geom['LatticeXY'], geom['LatticeXY']))
+        lat_trans = lat.transpose()
+        if (lat == lat_trans).all():    # Condition for symmetry; A = A^T
+            geom['SymFlag'] = ''
+        else:
+            geom['SymFlag'] = '% The lattice is not symmetric! Forced to use whole geometry.\n%'
+
+        # Set half of the lattice pitch.
+        half_lat_pitch = (float(geom['LatticeXY']) * CellPitch) / 2.0
+        geom['HalfLatticePitch'] = "{0:.5G}".format(half_lat_pitch)
+
+        return geom
+
+    def make_input_energy_groups(self):
+        """Makes the energy group structure.
+
+        CHAR and most other neutronics codes sepecify this using 
+        upper energy bounds.  That way the number of bounds equals the number
+        of groups G. Serpent, however, uses only the internal boundaries, so there
+        are G-1 energies given for G groups.  Additionally, the highest energy group 
+        has the range Bound[G-1] <= Group 1 < inifinity.  The lowest energy group 
+        thus covers 0.0 MeV <= Group G < Bound[1].
+        """
+        e = {}
+
+        # Set number of (serpent) groups
+        e['NGroups'] = len(GroupStructure) + 1
+
+        # Set serpent energy group bounds.
+        gs = list(GroupStructure)
+        gs = str(gs)
+        gs = gs[1:-1]
+        gs = gs.replace(',', '')
+        e['GroupStructure'] = gs
+
+        return e        
 
     def make_input(self):
         serpent_fill = {
@@ -178,10 +258,18 @@ STOPPED HERE
             'kCyclesSkip': kCyclesSkip,
             }
 
+        # Set the material lines
         serpent_fill['fuel']     = self.make_input_fuel()
         serpent_fill['cladding'] = self.make_input_cladding()
         serpent_fill['coolant']  = self.make_input_coolant()
 
+        # Add the geometry information
+        serpent_fill.update(self.make_input_geometry())
+
+        # Set the energy group structure
+        serpent_fill.update(self.make_input_energy_groups())
+
+        # Fill the template
         with open('templates/{0}.serpent.template'.format(reactor), 'r') as f:
             template_file = f.read()
 
