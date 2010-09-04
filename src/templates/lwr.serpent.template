@@ -34,7 +34,7 @@ set nfg {NGroups} {GroupStructure}
 
 
 % Criticality calc
-set pop {kParticle} {kCycles} {kCyclesSkip}
+set pop {kParticles} {kCycles} {kCyclesSkip}
 
 
 % --- Geometry ---

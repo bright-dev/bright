@@ -11,11 +11,12 @@ FineStep   = 30         						#Shorter time step for ORIGEN runs [days]
 #FineStep   = 150								#Shorter time step for ORIGEN runs [days]
 email      = "scopatz@gmail.com"		    	#E-mail address to send job information to.
 
+TransportCode = "Serpent"
+
 NumberCPUs  = 4									#Number of CPUs to run transport code on.
 CPUsPerNode = 4                                 #Processors per node
 
 verbosity = 100
-verbosity = 0
 
 ################################
 ### Unit Cell Sepcifications ###
@@ -59,7 +60,7 @@ FMdic = {"sigma_t": -1}
 
 #ISO_FLAG = ".60c"
 #ISO_FLAG = ".70c"
-ISO_FLAG = "" 
+ISO_FLAG = "09c" 
 
 ############################
 ### ORIGEN Specification ###

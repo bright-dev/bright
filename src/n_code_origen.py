@@ -13,7 +13,6 @@ from char import FineTimeIndex, FineTime
 from char import CoarseTimeIndex, CoarseTime
 from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
 from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
-from char import n_transporter 
 
 from n_code import NCode
 
@@ -286,6 +285,7 @@ class NCodeORIGEN(NCode):
         """Writes transport output to Coarse ORIGEN libraries."""
 
         try: 
+            from char import n_transporter 
             n_transporter.parse()
         except:
             pass

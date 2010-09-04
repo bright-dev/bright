@@ -223,7 +223,7 @@ class NCodeMCNP(NCode):
         with open(reactor + '.i', 'w') as f:
             f.write(template_file.format(**mcnp_fill))
 
-    return
+        return
 
 
     def run_script_fill_values(self):
@@ -774,7 +774,7 @@ class NCodeMCNP(NCode):
             for t in FineTime:
                 n = 0
                 while (CoarseTime[n] <= t) and not (t <= CoarseTime[n+1]):
-                     n = n + 1
+                    n = n + 1
                     finetemp.append([])
                     for e in range( len(E_up) ):
                         finetemp[-1].append( metasci.SolveLine(t, CoarseTime[n+1], self.mult[key][n+1][e], CoarseTime[n], self.mult[key][n][e]) )

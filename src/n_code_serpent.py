@@ -1,15 +1,20 @@
 """A class to setup, run, and parse Serpent."""
+from __future__ import print_function
 
 import isoname
 import numpy as np
 import metasci.nuke as msn
 from metasci import SafeRemove
 from MassStream import MassStream
+from metasci.colortext import *
 
 from char import reactor
 from char import GroupStructure
 from char import FMdic, dicFM
+from char import verbosity
 
+from char import FuelDensity, CladDensity, CoolDensity
+from char import FuelCellRadius, CladCellRadius, UnitCellPitch
 from char import FineTimeIndex, FineTime
 from char import CoarseTimeIndex, CoarseTime
 from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
@@ -65,7 +70,6 @@ class NCodeSerpent(NCode):
                 comp_str += "  -{0:.5G}\n".format(comp[iso])
             else:
                 comp_str += "   {0:.5G}\n".format(comp[iso])
-
         return comp_str
             
 
@@ -84,7 +88,9 @@ class NCodeSerpent(NCode):
             from defchar import CladForm
             CladStream = MassStream(CladForm)
         except ImportError:
-            print(message("Cladding not found.  Proceeding with standard zircaloy mixture."))
+            if 0 < verbosity:
+                print(message("Cladding not found.  Proceeding with standard zircaloy mixture."))
+                print()
             CladForm = {
                 # Natural Zirconium
                 400900: 0.98135 * 0.5145,
@@ -139,7 +145,9 @@ class NCodeSerpent(NCode):
             from defchar import CoolForm
             CoolStream = MassStream(CoolForm)
         except ImportError:
-            print(message("Coolant not found.  Proceeding with borated light water."))
+            if 0 < verbosity:
+                print(message("Coolant not found.  Proceeding with borated light water."))
+                print()
             MW = (2 * 1.0) + (1 * 16.0) + (0.199 * 550 * 10.0**-6 * 10.0) + (0.801 * 550 * 10.0**-6 * 11.0)
             CoolForm = {
                 10010: (2 * 1.0) / MW,
@@ -170,9 +178,9 @@ class NCodeSerpent(NCode):
         # If there isn't space, cladding is used instead.
         try:
             from defchar import VoidCellRadius
-             goem['VoidRadius'] = VoidCellRadius
+            geom['VoidRadius'] = VoidCellRadius
         except ImportError:
-            goem['VoidRadius'] = FuelCellRadius + 0.0085
+            geom['VoidRadius'] = FuelCellRadius + 0.0085
             if CladCellRadius <= geom['VoidRadius']:
                 geom['VoidRadius'] = FuelCellRadius
 
@@ -181,14 +189,15 @@ class NCodeSerpent(NCode):
         try:
             from defchar import Lattice
             from defchar import LatticeXY
-            goem['Lattice']   = Lattice
-            goem['LatticeXY'] = LatticeXY
+            geom['Lattice']   = Lattice
+            geom['LatticeXY'] = LatticeXY
         except ImportError:
             if 0 < verbosity:
                 print(message("Lattice specification not found."))
                 print(message("Using a default 17x17 PWR lattice."))
-            goem['LatticeXY'] = 17
-            goem['Lattice']   = "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
+                print()
+            geom['LatticeXY'] = 17
+            geom['Lattice']   = "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
                                 "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
                                 "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" + \
                                 "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" + \
@@ -213,10 +222,10 @@ class NCodeSerpent(NCode):
         if (lat == lat_trans).all():    # Condition for symmetry; A = A^T
             geom['SymFlag'] = ''
         else:
-            geom['SymFlag'] = '% The lattice is not symmetric! Forced to use whole geometry.\n%'
+            geom['SymFlag'] = '% The lattice is not symmetric! Forced to use whole geometry...\n%'
 
         # Set half of the lattice pitch.
-        half_lat_pitch = (float(geom['LatticeXY']) * CellPitch) / 2.0
+        half_lat_pitch = (float(geom['LatticeXY']) * UnitCellPitch) / 2.0
         geom['HalfLatticePitch'] = "{0:.5G}".format(half_lat_pitch)
 
         return geom
@@ -249,9 +258,9 @@ class NCodeSerpent(NCode):
         serpent_fill = {
             'reactor':     reactor,
 
-            'FuelDensity': '{0:.5G}'.fromat(FuelDensity),
-            'CladDensity': '{0:.5G}'.fromat(CladDensity),
-            'CoolDensity': '{0:.5G}'.fromat(CoolDensity),
+            'FuelDensity': '{0:.5G}'.format(FuelDensity),
+            'CladDensity': '{0:.5G}'.format(CladDensity),
+            'CoolDensity': '{0:.5G}'.format(CoolDensity),
 
             'kParticles':  kParticles,
             'kCycles':     kCycles,
@@ -270,10 +279,10 @@ class NCodeSerpent(NCode):
         serpent_fill.update(self.make_input_energy_groups())
 
         # Fill the template
-        with open('templates/{0}.serpent.template'.format(reactor), 'r') as f:
+        with open('../templates/{0}.serpent.template'.format(reactor), 'r') as f:
             template_file = f.read()
 
-        with open(reactor, 'r') as f:
+        with open(reactor, 'w') as f:
             f.write(template_file.format(**serpent_fill))
 
         return

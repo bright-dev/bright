@@ -31,9 +31,11 @@ from metasci.colortext import *
 #################
 from glbchar import *
 
-import parsechar
 import graphchar
 import runchar
+from n_code_mcnp    import NCodeMCNP
+from n_code_origen  import NCodeORIGEN
+from n_code_serpent import NCodeSerpent
 
 def main():
     ###########################
@@ -49,7 +51,7 @@ def main():
         default=False, help="Gives extra info while running.")
 
     parser.add_option("-i", "--input", action="store_true", dest="MakeInput", 
-        help="Makes the MCNP input deck.")
+        help="Makes the transport calculation input deck.")
 
     parser.add_option("-r", "--run", action="store_true", dest="RunTransport", 
         default=False, help="Run the transport calculation.")
@@ -58,7 +60,10 @@ def main():
         help="Dry Run. Do NOT run the transport calculation.")
 
     parser.add_option("-w", "--with", dest="RunWith", default="NONE", metavar="PROG", 
-        help="Dictates what PROG to run transport calculation with. PROG = [MCNP | MPI | PBS].")
+        help="Dictates what PROG to run transport calculation with. PROG = [MCNP | Serpent].")
+
+    parser.add_option("-m", "--multi-core", dest="RunParallel", default="Single", metavar="PARA", 
+        help="Dictates what PROG to run parallel transport calculation with. PARA = [Single | MPI | PBS].")
 
     parser.add_option("-O", "--ORIGEN", action="store_true", dest="RunORIGEN", 
         default=False, help="Run ORIGEN Burnup calculations.")
@@ -113,29 +118,54 @@ def main():
         options.Local = False                   #Ensures that ssh package is loaded.
     if options.RunORIGEN:
         options.MakeTape9 = True
-    if options.RunWith == "NONE":               #Sets defualt run behaviour
-        if options.Local:
-            options.RunWith = "MCNP"
-        else:
-            options.RunWith = "PBS"
 
     ################
     #### Script ####
     ################
 
     #Prep work
+    if reactor not in os.listdir('.'):
+        os.mkdir(reactor)
     os.chdir(reactor)
+
+    # Set the transport code type
+    if options.RunWith == "NONE":
+        try:
+            transport_code = TransportCode.lower()
+        except:
+            print(failure("Transport code type not set!"))
+            print(failure("  Use either the '-w' command line option, or"))
+            print(failure("  use the 'TransportCode' flag in defchar.py."))
+            print(failure("Currently, 'MCNP' and 'Serpent' are accpeted values."))
+            print()
+            print(failure("Note: you must have the appropriate code installed on"))
+            print(failure("your machine for this to work."))
+            raise SystemExit
+    else:
+        transport_code = options.RunWith.lower()
+
+    if ('serpent' in transport_code) and ('mcnp' not in transport_code):
+        n_transporter = NCodeSerpent()
+    elif ('mcnp' in transport_code) and ('serpent' not in transport_code):
+        n_transporter = NCodeMCNP()
+    else:
+        print(failure("The transport code given is not valid: {0:yellow}", transport_code))
+        print(failure("Currently, 'MCNP' and 'Serpent' are accpeted values."))
+        raise SystemExit
 
     #Make the input file unless otherwise specified.
     if (options.MakeInput) and (not options.FetchFiles) and (not options.PID):
-        runchar.Make_MCNP_Input(options.NoBurnBool, options.NoPertBool)
+        if isinstance(n_transporter, NCodeSerpent):
+            n_transporter.make_input()
+        elif isinstance(n_transporter, NCodeMCNP):
+            n_transporter.make_input(options.NoBurnBool, options.NoPertBool)
 
     #Run MCNP
     if options.RunTransport:
-        metasci.SafeRemove(reactor + ".o")
-        metasci.SafeRemove(reactor + ".m")
-        metasci.SafeRemove(reactor + ".r")
-        metasci.SafeRemove(reactor + ".s")
+#        metasci.SafeRemove(reactor + ".o")
+#        metasci.SafeRemove(reactor + ".m")
+#        metasci.SafeRemove(reactor + ".r")
+#        metasci.SafeRemove(reactor + ".s")
 
         runchar.Make_Run_Script(options.RunWith, options.Local)
         if options.Local:
