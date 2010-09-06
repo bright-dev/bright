@@ -51,7 +51,9 @@ kCyclesSkip = 30        #Number of kcode cycles to run but not tally at the begi
 CINDER_DAT = "/usr/share/MCNPX/v260/Data/cinder.dat" 	#path to cinder.dat file, needed for metastables...
 
 #GroupStructure = "1.0e-9 98log 10.0"						#Any Valid MCNP Group structure.  Remember, these are upper energy bounds.
-GroupStructure = "1.0e-9 4log 10.0"						#Any Valid MCNP Group structure.  Remember, these are upper energy bounds.
+GroupStructure = [1.0000000000000001e-09, 1e-08, 9.9999999999999995e-08, 9.9999999999999995e-07, 1.0000000000000001e-05,
+     0.0001, 0.001, 0.01, 0.10000000000000001, 1.0, 10.0]
+
 
 FMdic = {"sigma_t": -1}
 #FMdic = {"sigma_t": -1, "sigma_f": -2, "nubar": -3, "chi": -4, "sigma_a": -5}
