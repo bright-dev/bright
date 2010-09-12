@@ -21,7 +21,7 @@ MassStream_ext_kwargs = deepcopy(ext_kwargs)
 if os.name == 'posix':
 	MassStream_ext_kwargs["libraries"].extend( ["z", "m", "hdf5_cpp", "hdf5_hl_cpp"] )
 elif os.name == 'nt':
-        FCComps_ext_kwargs["extra_link_args"] = [
+        MassStream_ext_kwargs["extra_link_args"] = [
                 "/DEFAULTLIB:zlib1.lib",
 
                 #For Dynamic Libs (dll)
@@ -31,7 +31,7 @@ elif os.name == 'nt':
                 "/DEFAULTLIB:hdf5_cppdll.lib",
                 "/DEFAULTLIB:hdf5_hl_cppdll.lib"
                 ] 
-        FCComps_ext_kwargs["define_macros"].extend( [("_HDF5USEDLL_", None)] )
+        MassStream_ext_kwargs["define_macros"].extend( [("_HDF5USEDLL_", None)] )
 
 #For FCComps
 FCComps_ext_kwargs = deepcopy(ext_kwargs)
@@ -79,7 +79,7 @@ if os.name == "nt":
 ### Call setup! ###
 ###################
 setup(name="BriPy",
-	version = '0.21',
+	version = '0.23',
 	description = 'Bright/Python',
 	author = 'Anthony Scopatz',
 	author_email = 'scopatz@gmail.com',
