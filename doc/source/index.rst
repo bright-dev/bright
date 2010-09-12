@@ -46,6 +46,7 @@ Contents
     isoname   
     MassStream
     BriPy
+    DevNotes
 
 =============
 Helpful Links
