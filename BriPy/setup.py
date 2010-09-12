@@ -19,7 +19,12 @@ elif os.name == 'nt':
 #For MassStream
 MassStream_ext_kwargs = deepcopy(ext_kwargs)
 if os.name == 'posix':
-	MassStream_ext_kwargs["libraries"].extend( ["z", "m", "hdf5_cpp", "hdf5_hl_cpp"] )
+	MassStream_ext_kwargs["libraries"].extend( [
+        "z", 
+        "m", 
+        "hdf5_cpp", 
+        "hdf5_hl_cpp",
+        ] )
 elif os.name == 'nt':
         MassStream_ext_kwargs["extra_link_args"] = [
                 "/DEFAULTLIB:zlib1.lib",
@@ -36,7 +41,14 @@ elif os.name == 'nt':
 #For FCComps
 FCComps_ext_kwargs = deepcopy(ext_kwargs)
 if os.name == 'posix':
-	FCComps_ext_kwargs["libraries"].extend( ["hdf5", "z", "m", "hdf5_hl", "hdf5_cpp", "hdf5_hl_cpp"] )
+	FCComps_ext_kwargs["libraries"].extend( [
+        "hdf5", 
+        "z", 
+        "m", 
+        "hdf5_hl", 
+        "hdf5_cpp", 
+        "hdf5_hl_cpp", 
+        ] )
 elif os.name == 'nt':
         FCComps_ext_kwargs["extra_link_args"] = [
                 "/DEFAULTLIB:zlib1.lib",
