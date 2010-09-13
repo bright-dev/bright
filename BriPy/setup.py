@@ -11,8 +11,10 @@ from copy import deepcopy
 ###########################################
 ext_kwargs = {}
 if os.name == 'posix':
+    src_dir = 'src/'
     ext_kwargs["libraries"] = ["boost_python"]
 elif os.name == 'nt':
+    src_dir = '../FCComps/'
     ext_kwargs["extra_compile_args"] = ["/EHsc"]
     ext_kwargs["define_macros"] = [("_WIN32", None)]
 
@@ -101,25 +103,26 @@ setup(name="BriPy",
     package_data = pack_data,
     #py_modules=["BriPy.__init__"],
     ext_modules=[
-        Extension("isoname.isoname",    
-            ["src/isoname.cpp", "src/bright.cpp", "BriPy_isoname.cpp"], 
-            **ext_kwargs),
-        Extension("MassStream.MassStream", 
-            ["src/MassStream.cpp", "src/isoname.cpp", "src/bright.cpp", 
-                "BriPy_MassStream.cpp"], 
-            **MassStream_ext_kwargs),
-        Extension("BriPy.FCComps",    
-            ["src/bright.cpp", 
-                "src/isoname.cpp", 
-                "src/MassStream.cpp", 
-                "src/FCComp.cpp", 
-                "src/Reprocess.cpp", 
-                "src/Storage.cpp", 
-                "src/Enrichment.cpp", 
-                "src/Reactor1G.cpp", 
-                "src/LightWaterReactor1G.cpp", 
-                "src/FastReactor1G.cpp", 
-                "BriPy_FCComps.cpp"], 
-            **FCComps_ext_kwargs),
+        Extension("isoname.isoname", [
+            src_dir + "isoname.cpp", 
+            src_dir + "bright.cpp", 
+            "BriPy_isoname.cpp"], **ext_kwargs),
+        Extension("MassStream.MassStream", [ 
+            src_dir + "MassStream.cpp", 
+            src_dir + "isoname.cpp", 
+            src_dir + "bright.cpp", 
+            "BriPy_MassStream.cpp"], **MassStream_ext_kwargs),
+        Extension("BriPy.FCComps", [
+            src_dir + "bright.cpp", 
+            src_dir + "isoname.cpp", 
+            src_dir + "MassStream.cpp", 
+            src_dir + "FCComp.cpp", 
+            src_dir + "Reprocess.cpp", 
+            src_dir + "Storage.cpp", 
+            src_dir + "Enrichment.cpp", 
+            src_dir + "Reactor1G.cpp", 
+            src_dir + "LightWaterReactor1G.cpp", 
+            src_dir + "FastReactor1G.cpp", 
+            "BriPy_FCComps.cpp"], **FCComps_ext_kwargs),
         ],
     )
