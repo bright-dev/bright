@@ -12,9 +12,6 @@
 #include <iostream>
 #include <math.h>
 
-//Boost libraries
-#include <boost/math/special_functions/bessel.hpp>
-
 /*** Macros ***/
 #define length_array(a) ( sizeof ( a ) / sizeof ( *a ) )
 

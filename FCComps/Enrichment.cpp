@@ -623,7 +623,7 @@ void Enrichment::MstarOptimize()
 	while (xpn < ooe)
     {
         //Check that parameters are still well-formed
-        if ( std::isnan(currMstar) || std::isnan(currLoverF) || std::isnan(lastMstar) || std::isnan(lastLoverF))
+        if ( isnan(currMstar) || isnan(currLoverF) || isnan(lastMstar) || isnan(lastLoverF) )
             throw EnrichmentIterationNaN();
 
         lastMstar  = currMstar;

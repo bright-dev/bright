@@ -16,6 +16,9 @@
 #include "hdf5.h"
 #include "hdf5_hl.h"
 
+//Boost
+#include <boost/math/special_functions/bessel.hpp>
+
 //Bright Libs
 #include "FCComp.h"
 #include "MassStream.h"
