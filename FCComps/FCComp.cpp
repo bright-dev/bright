@@ -32,25 +32,6 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
 {
     //Load values into isos2track from an hdf5 file.
     //If the dataspace name is not given, try some defaults.
-/*
-    int dslen = 14;
-    std::string defaultsets [dslen];
-    defaultsets[0]  = "/isos2track";  
-    defaultsets[1]  = "/Isos2Track";
-    defaultsets[2]  = "/isostrack";   
-    defaultsets[3]  = "/IsosTrack";
-    defaultsets[4]  = "/isotrack";   
-    defaultsets[5]  = "/IsoTrack";    
-    defaultsets[6]  = "/ToIso";
-    defaultsets[7]  = "/ToIsos";
-    defaultsets[8]  = "/ToIso_zz";
-    defaultsets[9]  = "/ToIso_MCNP";  
-    defaultsets[10] = "/FromIso";    
-    defaultsets[11] = "/FromIsos";  
-    defaultsets[12] = "/FromIso_zz"; 
-    defaultsets[13] = "/FromIso_MCNP";
-*/
-
     int dslen = 14;
     std::string defaultsets [14] = {
         "/isos2track",
@@ -105,7 +86,13 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
     int isodim = isospace.getSimpleExtentDims(isolen, NULL);
 
     //Try native int data type first
-    int         iso_out_int [isolen[0]];
+    #ifdef _WIN32
+        // Windows VC++ doesn't accept variable length arrays!
+        // So let's make the read in array greater than the number of known isotopes...
+        int         iso_out_int [5000];
+    #else
+        int         iso_out_int [isolen[0]];
+    #endif
     isoset.read(iso_out_int, H5::PredType::NATIVE_INT);
     //Maybe add other data types in the future... 
 
