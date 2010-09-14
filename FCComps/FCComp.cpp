@@ -32,6 +32,7 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
 {
     //Load values into isos2track from an hdf5 file.
     //If the dataspace name is not given, try some defaults.
+/*
     int dslen = 14;
     std::string defaultsets [dslen];
     defaultsets[0]  = "/isos2track";  
@@ -48,6 +49,25 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
     defaultsets[11] = "/FromIsos";  
     defaultsets[12] = "/FromIso_zz"; 
     defaultsets[13] = "/FromIso_MCNP";
+*/
+
+    int dslen = 14;
+    std::string defaultsets [14] = {
+        "/isos2track",
+        "/Isos2Track",
+        "/isostrack",   
+        "/IsosTrack",
+        "/isotrack",   
+        "/IsoTrack",    
+        "/ToIso",
+        "/ToIsos",
+        "/ToIso_zz",
+        "/ToIso_MCNP",  
+        "/FromIso",  
+        "/FromIsos",  
+        "/FromIso_zz",
+        "/FromIso_MCNP"
+        };
 
     //Open file
     H5::H5File isofile(filename, H5F_ACC_RDONLY);
