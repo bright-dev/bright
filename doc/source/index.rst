@@ -25,6 +25,7 @@ BriPy requires these additional dependencies:
    #. `NumPy <http://numpy.scipy.org/>`_
    #. `SciPy <http://www.scipy.org/>`_
    #. `MatPlotLib <http://matplotlib.sourceforge.net/>`_
+   #. `numexpr <http://code.google.com/p/numexpr/>`_ (now needed for Pytables).
    #. `PyTables <http://www.pytables.org/>`_
 
 The source code for Bright and BriPy may be found at the 
@@ -33,7 +34,9 @@ Or you may simply branch from the trunk using git::
 
     git clone git://github.com/bright-dev/bright.git
 
-Additionally, you can join up as a Bright developer at 
+Additionally, a `Windows build is provided here <http://github.com/bright-dev/bright/raw/master/BriPy/dist/BriPy-0.23.win32-py2.6.msi>`_ (Right-click, 'Save Link As').
+
+Lastly, you can join up as a Bright developer at 
 `the Google groups page <http://groups.google.com/group/bright-dev>`_.
 
 --------
