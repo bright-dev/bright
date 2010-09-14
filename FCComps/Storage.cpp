@@ -14,7 +14,11 @@ void Storage::initialize ()
 {
     char Decay_File[500];
     strcpy(Decay_File, getenv("BRIGHT_DATA") );
-    strcat(Decay_File, "/decay.h5");
+    #ifdef _WIN32
+        strcat(Decay_File, "\\decay.h5");
+    #else
+        strcat(Decay_File, "/decay.h5");
+    #endif
 
     //NOTE: The 'decay.h5' librray probably should be rewritten more heirarchically! Changing the following...
     //open the 'decay.h5' file

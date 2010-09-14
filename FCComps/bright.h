@@ -15,6 +15,10 @@
 /*** Macros ***/
 #define length_array(a) ( sizeof ( a ) / sizeof ( *a ) )
 
+#ifdef _WIN32
+    #define isnan(x) ((x) != (x))
+#endif
+
 namespace bright {
 
 //Bright Globals

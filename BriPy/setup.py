@@ -29,7 +29,8 @@ if os.name == 'posix':
         ] )
 elif os.name == 'nt':
     MassStream_ext_kwargs["extra_link_args"] = [
-#        "/DEFAULTLIB:zlib1.lib",
+        "/DEFAULTLIB:szip.lib",
+        "/DEFAULTLIB:zlib1.lib",
 
         # For Dynamic Libs (dll)
 #        "/DEFAULTLIB:szlibdll.lib",
@@ -56,6 +57,7 @@ if os.name == 'posix':
         ] )
 elif os.name == 'nt':
     FCComps_ext_kwargs["extra_link_args"] = [
+        "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
         # For Static Libs (lib)
@@ -82,18 +84,26 @@ elif os.name == 'nt':
 ##########################
 pack_data = {'BriPy': ['decay.h5', 'KaeriData.h5', 'FR.h5', 'LWR.h5']}
 
+pack_dlls_boost= ["boost_python-vc90-mt-1_44.dll"]
+pack_dlls_hdf5  = [
+    "szip.dll",
+    "zlib1.dll",
+    "hdf5dll.dll",
+    "hdf5_cppdll.dll",
+    "hdf5_hldll.dll",
+    "hdf5_hl_cppdll.dll",
+    ]
+
 if os.name == "nt":
-    pack_data['isoname']    = ["boost_python-vc90-mt-1_42.dll"]
-    pack_data['MassStream'] = ["boost_python-vc90-mt-1_42.dll"]
-    pack_data['BriPy'].extend( [
-        "boost_python-vc90-mt-1_42.dll",
-        "hdf5dll.dll",
-        "hdf5_cppdll.dll",
-        "hdf5_hldll.dll",
-        "hdf5_hl_cppdll.dll",
-#        "szlibdll.dll",
-#        "szlib1.dll",
-        ])
+    pack_data['isoname'] = []
+    pack_data['isoname'].extend(pack_dlls_boost)
+
+    pack_data['MassStream'] = []
+    pack_data['MassStream'].extend(pack_dlls_boost)
+    pack_data['MassStream'].extend(pack_dlls_hdf5)
+
+    pack_data['BriPy'].extend(pack_dlls_boost)
+    pack_data['BriPy'].extend(pack_dlls_hdf5)
 
 ###################
 ### Call setup! ###
