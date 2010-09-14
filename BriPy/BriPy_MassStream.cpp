@@ -8,7 +8,12 @@
 
 //My Files
 #include "BriPyHelper.h"
-#include "src/MassStream.h"
+
+#ifdef _WIN32
+    #include "../FCComps/MassStream.h"
+#else
+    #include "src/MassStream.h"
+#endif
 
 //Need to keep Boost::Python in its own namespace.
 //      NO: using namespace boost::python;

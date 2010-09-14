@@ -8,13 +8,24 @@
 
 //My Files
 #include "BriPyHelper.h"
-#include "src/FCComp.h"
-#include "src/Reprocess.h"
-#include "src/Storage.h"
-#include "src/Enrichment.h"
-#include "src/Reactor1G.h"
-#include "src/FastReactor1G.h"
-#include "src/LightWaterReactor1G.h"
+
+#ifdef _WIN32
+    #include "../FCComps/FCComp.h"
+    #include "../FCComps/Reprocess.h"
+    #include "../FCComps/Storage.h"
+    #include "../FCComps/Enrichment.h"
+    #include "../FCComps/Reactor1G.h"
+    #include "../FCComps/FastReactor1G.h"
+    #include "../FCComps/LightWaterReactor1G.h"
+#else
+    #include "src/FCComp.h"
+    #include "src/Reprocess.h"
+    #include "src/Storage.h"
+    #include "src/Enrichment.h"
+    #include "src/Reactor1G.h"
+    #include "src/FastReactor1G.h"
+    #include "src/LightWaterReactor1G.h"
+#endif
 
 //Need to keep Boost::Python in its own namespace.
 //	NO: using namespace boost::python;

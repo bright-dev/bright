@@ -8,7 +8,12 @@
 
 //My Files
 #include "BriPyHelper.h"
-#include "src/isoname.h"
+
+#ifdef _WIN32
+    #include "../FCComps/isoname.h"
+#else
+    #include "src/isoname.h"
+#endif
 
 //Need to keep Boost::Python in its own namespace.
 //      NO: using namespace boost::python;
