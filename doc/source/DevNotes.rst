@@ -17,6 +17,7 @@ First, make sure that you have the following programs installed with the appropr
     #. Microsoft Visual Studio (2008, not 2010)
     #. Boost C++ Libraries (Should be available from your distribution's package manager.  
        `You can find window's binaries here. <http://www.boostpro.com/download/>`_)
+    #. `HDF5 <http://www.hdfgroup.org/HDF5/>`_ 
     #. `NumPy <http://numpy.scipy.org/>`_
     #. `SciPy <http://scipy.org/>`_
     #. `MatPlotLib <http://matplotlib.sourceforge.net/>`_
@@ -29,5 +30,10 @@ to somethign similar to the following::
 
     LIB     = C:\Program Files (x86)\boost\boost_1_44\lib
     INCLUDE = C:\Program Files (x86)\boost\boost_1_44;%INCLUDE%
+
+Also you will need to add HDF5 information to the variables above::
+
+    LIB     += C:\hdf5\lib
+    INCLUDE += C:\hdf5\include
 
 Enjoy!

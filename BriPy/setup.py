@@ -29,10 +29,10 @@ if os.name == 'posix':
         ] )
 elif os.name == 'nt':
     MassStream_ext_kwargs["extra_link_args"] = [
-        "/DEFAULTLIB:zlib1.lib",
+#        "/DEFAULTLIB:zlib1.lib",
 
         # For Dynamic Libs (dll)
-        "/DEFAULTLIB:szlibdll.lib",
+#        "/DEFAULTLIB:szlibdll.lib",
         "/DEFAULTLIB:hdf5dll.lib",
         "/DEFAULTLIB:hdf5_hldll.lib",
         "/DEFAULTLIB:hdf5_cppdll.lib",
@@ -63,7 +63,7 @@ elif os.name == 'nt':
         #"/DEFAULTLIB:hdf5_hl_cpp.lib",
 
         #For Dynamic Libs (dll)
-        "/DEFAULTLIB:szlibdll.lib",
+#        "/DEFAULTLIB:szlibdll.lib",
         "/DEFAULTLIB:hdf5dll.lib",
         "/DEFAULTLIB:hdf5_hldll.lib",
         "/DEFAULTLIB:hdf5_cppdll.lib",
@@ -85,8 +85,8 @@ if os.name == "nt":
         "hdf5_cppdll.dll",
         "hdf5_hldll.dll",
         "hdf5_hl_cppdll.dll",
-        "szlibdll.dll",
-        "szlib1.dll",
+#        "szlibdll.dll",
+#        "szlib1.dll",
         ])
 
 ###################
