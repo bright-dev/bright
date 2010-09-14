@@ -18,7 +18,7 @@ elif os.name == 'nt':
     ext_kwargs["extra_compile_args"] = ["/EHsc"]
     ext_kwargs["define_macros"] = [("_WIN32", None)]
 
-#For MassStream
+# For MassStream
 MassStream_ext_kwargs = deepcopy(ext_kwargs)
 if os.name == 'posix':
     MassStream_ext_kwargs["libraries"].extend( [
@@ -36,9 +36,12 @@ elif os.name == 'nt':
         "/DEFAULTLIB:hdf5dll.lib",
         "/DEFAULTLIB:hdf5_hldll.lib",
         "/DEFAULTLIB:hdf5_cppdll.lib",
-        "/DEFAULTLIB:hdf5_hl_cppdll.lib"
+        "/DEFAULTLIB:hdf5_hl_cppdll.lib",
         ] 
-    MassStream_ext_kwargs["define_macros"].extend( [("_HDF5USEDLL_", None)] )
+    MassStream_ext_kwargs["define_macros"].extend([
+        ("_HDF5USEDLL_", None),
+        ("HDF5CPP_USEDLL", None),
+        ])
 
 #For FCComps
 FCComps_ext_kwargs = deepcopy(ext_kwargs)
@@ -55,21 +58,24 @@ elif os.name == 'nt':
     FCComps_ext_kwargs["extra_link_args"] = [
         "/DEFAULTLIB:zlib1.lib",
 
-        #For Static Libs (lib)
+        # For Static Libs (lib)
         #"/DEFAULTLIB:szlib.lib",
         #"/DEFAULTLIB:hdf5.lib",
         #"/DEFAULTLIB:hdf5_hl.lib",
         #"/DEFAULTLIB:hdf5_cpp.lib",
         #"/DEFAULTLIB:hdf5_hl_cpp.lib",
 
-        #For Dynamic Libs (dll)
-#        "/DEFAULTLIB:szlibdll.lib",
+        # For Dynamic Libs (dll)
+        #"/DEFAULTLIB:szlibdll.lib",
         "/DEFAULTLIB:hdf5dll.lib",
         "/DEFAULTLIB:hdf5_hldll.lib",
         "/DEFAULTLIB:hdf5_cppdll.lib",
         "/DEFAULTLIB:hdf5_hl_cppdll.lib"
         ] 
-    FCComps_ext_kwargs["define_macros"].extend( [("_HDF5USEDLL_", None)] )
+    FCComps_ext_kwargs["define_macros"].extend([
+        ("_HDF5USEDLL_", None),
+        ("HDF5CPP_USEDLL", None),        
+        ])
 
 ##########################
 ### Setup Package Data ###
