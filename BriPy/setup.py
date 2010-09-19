@@ -1,10 +1,12 @@
 #!/usr/bin/env python
  
-from distutils.core import setup
-from distutils.extension import Extension
-import subprocess
 import os
 from copy import deepcopy
+
+from distutils.core import setup
+from distutils.extension import Extension
+from distutils.file_util import copy_file, move_file
+from distutils.dir_util import mkpath, remove_tree
 
 ###########################################
 ### Set compiler options for extensions ###
@@ -12,11 +14,16 @@ from copy import deepcopy
 ext_kwargs = {}
 if os.name == 'posix':
     src_dir = 'src/'
+    dat_dir = 'src/BriPy/'
     ext_kwargs["libraries"] = ["boost_python"]
 elif os.name == 'nt':
     src_dir = '../FCComps/'
+    dat_dir = '../data/'
     ext_kwargs["extra_compile_args"] = ["/EHsc"]
     ext_kwargs["define_macros"] = [("_WIN32", None)]
+
+# Path to user's home directory
+user_home = os.path.expanduser('~')
 
 # For MassStream
 MassStream_ext_kwargs = deepcopy(ext_kwargs)
@@ -82,8 +89,21 @@ elif os.name == 'nt':
 ##########################
 ### Setup Package Data ###
 ##########################
-pack_data = {'BriPy': ['decay.h5', 'KaeriData.h5', 'FR.h5', 'LWR.h5']}
+pack_dir = {
+    'BriPy': 'src/BriPy', 
+    'MassStream': 'src/MassStream', 
+    'isoname': 'src/isoname'
+    }
+    
+pack_data = {'BriPy': []}
 
+BriPy_data_files = [
+    'decay.h5', 
+    'KaeriData.h5', 
+    'FR.h5', 
+    'LWR.h5',
+    ]
+        
 pack_dlls_boost= ["boost_python-vc90-mt-1_44.dll"]
 pack_dlls_hdf5  = [
     "szip.dll",
@@ -94,7 +114,9 @@ pack_dlls_hdf5  = [
     "hdf5_hl_cppdll.dll",
     ]
 
-if os.name == "nt":
+if os.name == 'posix':
+    pack_data['BriPy'].extend(BriPy_data_files)
+elif os.name == "nt":
     pack_data['isoname'] = []
     pack_data['isoname'].extend(pack_dlls_boost)
 
@@ -102,8 +124,23 @@ if os.name == "nt":
     pack_data['MassStream'].extend(pack_dlls_boost)
     pack_data['MassStream'].extend(pack_dlls_hdf5)
 
+    pack_data['BriPy'].extend(BriPy_data_files)
     pack_data['BriPy'].extend(pack_dlls_boost)
     pack_data['BriPy'].extend(pack_dlls_hdf5)
+
+    # Copy over actual data files, instead of symlinks
+    cp_symlinks = True
+    if 'build' in os.listdir('.'):
+        if 'temp' in os.listdir('build/'):
+            cp_symlinks = False
+
+    if cp_symlinks:
+        mkpath('build/temp/')
+        for f in BriPy_data_files:
+            copy_file(pack_dir['BriPy'] + '/' + f, 'build/temp/' + f, verbose=True)
+
+        for f in BriPy_data_files:
+            copy_file(dat_dir + f, pack_dir['BriPy'] + '/' + f, verbose=True)
 
 ###################
 ### Call setup! ###
@@ -115,7 +152,7 @@ setup(name="BriPy",
     author_email = 'scopatz@gmail.com',
     url = 'http://www.scopatz.com/',
     packages = ['BriPy', 'MassStream', 'isoname'],
-    package_dir = {'BriPy': 'src/BriPy', 'MassStream': 'src/MassStream', 'isoname': 'src/isoname'},
+    package_dir = pack_dir,
     package_data = pack_data,
     #py_modules=["BriPy.__init__"],
     ext_modules=[
@@ -142,3 +179,15 @@ setup(name="BriPy",
             "BriPy_FCComps.cpp"], **FCComps_ext_kwargs),
         ],
     )
+
+if os.name == 'posix':
+    pass
+elif os.name == "nt":
+    print "Cleaning Windows specific files."
+
+    # Copy symlinks over data files. 
+    # Hopefully, leaving the repository in the previous state.
+    for f in BriPy_data_files:
+        copy_file('build/temp/' + f, pack_dir['BriPy'] + '/' + f, verbose=True)
+
+    remove_tree('build/temp/', verbose=True)
