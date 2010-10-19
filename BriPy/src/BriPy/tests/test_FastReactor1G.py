@@ -22,7 +22,7 @@ def general_teardown():
             os.remove(f)
         elif "Params.txt" in f:
             os.remove(f)
-        elif f in [".h5", "fr.h5"]:
+        elif f in [".h5", "fr.h5", "fuel_cycle.h5"]:
             os.remove(f)
 
 class TestFastReactorConstructors(TestCase):

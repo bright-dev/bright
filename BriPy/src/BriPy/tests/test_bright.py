@@ -53,6 +53,11 @@ class TestBright(TestCase):
         assert_true(BriPy.write_text())
         BriPy.write_text(old_write)
         
+    def test_output_filename(self):
+        assert_equal( BriPy.output_filename(), 'fuel_cycle.h5')
+        BriPy.output_filename('new_name.h5')
+        assert_equal( BriPy.output_filename(), 'new_name.h5')
+        
 
 class TestLoadFromHDF5(TestCase):
     """Tests isos2track can be loaded from an HDF5 file."""

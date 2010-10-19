@@ -25,7 +25,7 @@ class TestFCCompConstructors(TestCase):
                 os.remove(f)
             elif "Params.txt" in f:
                 os.remove(f)
-            elif f in [".h5", "fcc.h5"]:
+            elif f in [".h5", "fcc.h5", "fuel_cycle.h5"]:
                 os.remove(f)
 
     def test_FCComp_1(self):
@@ -54,7 +54,7 @@ class TestFCCompAttributes(TestCase):
                 os.remove(f)
             elif "Params.txt" in f:
                 os.remove(f)
-            elif f in [".h5", "fcc.h5"]:
+            elif f in [".h5", "fcc.h5", "fuel_cycle.h5"]:
                 os.remove(f)
 
     def test_IsosIn_Empty(self):
@@ -115,6 +115,22 @@ class TestFCCompAttributes(TestCase):
         fcc.name = "fcc"
         assert_equal(fcc.name, 'fcc')
 
+    def test_natural_name1(self):
+        fcc = FCComp([], "Word")
+        assert_equal(fcc.natural_name, 'Word')
+
+    def test_natural_name2(self):
+        fcc = FCComp([], "Word to your mother")
+        assert_equal(fcc.natural_name, 'Word_to_your_mother')
+
+    def test_natural_name3(self):
+        fcc = FCComp([], "1 isthe ")
+        assert_equal(fcc.natural_name, '_1_isthe_')
+
+    def test_natural_name4(self):
+        fcc = FCComp([], "\t Try\nMe...$")
+        assert_equal(fcc.natural_name, '__Try_Me')
+
     def test_params2track(self):
         fcc = FCComp()
         assert_equal(fcc.params2track, [])
@@ -132,7 +148,7 @@ class TestFCCompMethods(TestCase):
                 os.remove(f)
             elif "Params.txt" in f:
                 os.remove(f)
-            elif f in [".h5", "fcc.h5"]:
+            elif f in [".h5", "fcc.h5", "fuel_cycle.h5"]:
                 os.remove(f)
 
     def test_setParams(self):
@@ -169,7 +185,6 @@ class TestFCCompMethods(TestCase):
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.PassNum = 1
         fcc.writeHDF5()
-        os.remove('fcc.h5')
 
     def test_writeHDF5_2(self):
         BriPy.isos2track([922350])
@@ -180,7 +195,6 @@ class TestFCCompMethods(TestCase):
         fcc.setParams()
         fcc.PassNum = 1
         fcc.writeHDF5()
-        os.remove('fcc.h5')
 
     def test_writeout_1(self):
         """Text only."""
@@ -199,7 +213,6 @@ class TestFCCompMethods(TestCase):
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.writeout()
-        os.remove('fcc.h5')
 
     def test_writeout_3(self):
         """HDF5 & Text output."""
@@ -210,7 +223,6 @@ class TestFCCompMethods(TestCase):
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.writeout()
-        os.remove('fcc.h5')
 
 
 if __name__ == "__main__":
