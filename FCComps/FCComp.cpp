@@ -2,6 +2,10 @@
 
 #include "FCComp.h"
 
+/*********************************************/
+/*** Fuel Cycle Components Namespace Stuff ***/
+/*********************************************/
+
 #ifdef _WIN32
     int null_set [1] = {922350};
     std::set<int> FCComps::isos2track (null_set, null_set+1);
@@ -9,10 +13,6 @@
     int null_set [0] = {};
     std::set<int> FCComps::isos2track (null_set, null_set+0);
 #endif
-
-/*********************************************/
-/*** Fuel Cycle Components Namespace Stuff ***/
-/*********************************************/
 
 int FCComps::verbosity  = 0;
 int FCComps::write_text = 1;
@@ -27,6 +27,10 @@ void FCComps::set_isos2track(std::set<int> i2t) {FCComps::isos2track = i2t;};
 void FCComps::set_verbosity(int v)              {FCComps::verbosity = v;};
 void FCComps::set_write_text(int wt)            {FCComps::write_text = wt;};
 void FCComps::set_write_hdf5(int wh)            {FCComps::write_hdf5 = wh;};
+
+std::string FCComps::output_filename = "fuel_cycle.h5";
+std::string FCComps::get_output_filename() {return FCComps::output_filename;};
+void FCComps::set_output_filename(std::string of) {FCComps::output_filename = of;};
 
 void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname, bool clear_prev)
 {

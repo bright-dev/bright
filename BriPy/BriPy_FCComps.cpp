@@ -98,6 +98,11 @@ BOOST_PYTHON_MODULE(FCComps)
     bp::def("write_hdf5", write_hdf51, write_hdf5__doc__);
     bp::def("write_hdf5", write_hdf52, write_hdf5__doc__);
 
+    char output_filename__doc__ []               = "Gets/Sets the fuel cycle output file name for HDF5.";
+    std::string (*output_filename1)()            = &FCComps::get_output_filename;
+    void        (*output_filename2)(std::string) = &FCComps::set_output_filename;
+    bp::def("output_filename", output_filename1, output_filename__doc__);
+    bp::def("output_filename", output_filename2, output_filename__doc__);
 
     //Basic to- and from-converters
     dict2map<Iso, Weight>();

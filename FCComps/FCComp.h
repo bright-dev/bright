@@ -40,6 +40,10 @@ namespace FCComps {
     extern void set_write_text(int wt);
     extern void set_write_hdf5(int wh);
 
+    extern std::string output_filename;
+    extern std::string get_output_filename();
+    extern void set_output_filename(std::string of);
+
 };
 
 /**************************************************/
