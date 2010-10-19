@@ -99,7 +99,6 @@ namespace isoname
         };
         virtual const char* what() const throw()
         {
-            std::cout << nucwas << " --> " << nucnow << "\n";
             std::string NaNEstr ("Not a Nuclide! ");
             if (!nucwas.empty())
                 NaNEstr += nucwas;
