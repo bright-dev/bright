@@ -152,7 +152,11 @@ void FCComp::initialize (std::set<std::string> ptrack, std::string n)
 
     //Public Variables
     name = n;
-    PassNum = 0;	
+    natural_name = bright::natural_naming(n);
+    if (natural_name.length() == 0)
+        natural_name = "this_is_not_a_name";
+    
+    PassNum = 0;
 
     if (FCComps::write_text)
         initialize_Text();
@@ -198,7 +202,7 @@ void FCComp::initialize_HDF5 ()
     H5::DataSpace ext_1D_space(RANK, dims, maxdims);
 
     //Create new/overwrite datafile.
-    H5::H5File dbFCComp(name + ".h5", H5F_ACC_TRUNC);
+    H5::H5File dbFile (FCComps::output_filename, H5F_ACC_TRUNC);
 
     //Modify dataset creation properties.
     H5::DSetCreatPropList double_params;
@@ -209,38 +213,42 @@ void FCComp::initialize_HDF5 ()
     double fill_val = -1.0;
     double_params.setFillValue(H5::PredType::NATIVE_DOUBLE, &fill_val);
 
+    //Create group for this FCComp
+    std::string comp_path ("/" + natural_name);
+    H5::Group gFCComp  = dbFile.createGroup(comp_path);
+
     //Initialize the IsoStreams 
     if (!FCComps::isos2track.empty())
     {
-        H5::Group gIsosIn  = dbFCComp.createGroup("/IsosIn");
-        H5::Group gIsosOut = dbFCComp.createGroup("/IsosOut");
+        H5::Group gIsosIn  = dbFile.createGroup(comp_path + "/IsosIn");
+        H5::Group gIsosOut = dbFile.createGroup(comp_path + "/IsosOut");
 
-        dbFCComp.createDataSet("/IsosIn/Mass",  H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
-        dbFCComp.createDataSet("/IsosOut/Mass", H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+        dbFile.createDataSet(comp_path + "/IsosIn/Mass",  H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+        dbFile.createDataSet(comp_path + "/IsosOut/Mass", H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
 
         for (std::set<int>::iterator iso = FCComps::isos2track.begin(); iso != FCComps::isos2track.end(); iso++)
         {
             std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
-            dbFCComp.createDataSet("/IsosIn/"  + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
-            dbFCComp.createDataSet("/IsosOut/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+            dbFile.createDataSet(comp_path + "/IsosIn/"  + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+            dbFile.createDataSet(comp_path + "/IsosOut/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
         }
     }
 
     //Initiallize the Parameters
     if (!params2track.empty())
     {	
-        H5::Group gParamsIn  = dbFCComp.createGroup("/ParamsIn");
-        H5::Group gParamsOut = dbFCComp.createGroup("/ParamsOut");
+        H5::Group gParamsIn  = dbFile.createGroup(comp_path + "/ParamsIn");
+        H5::Group gParamsOut = dbFile.createGroup(comp_path + "/ParamsOut");
 
         for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
         {
-            dbFCComp.createDataSet("/ParamsIn/"  + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
-            dbFCComp.createDataSet("/ParamsOut/" + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+            dbFile.createDataSet(comp_path + "/ParamsIn/"  + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+            dbFile.createDataSet(comp_path + "/ParamsOut/" + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
         }
     }
 
     //Close out thr HDF5 database file
-    dbFCComp.close();
+    dbFile.close();
 }
 
 /***************************/
@@ -394,19 +402,20 @@ void FCComp::writeHDF5 ()
     hsize_t ext_size[1] = {PassNum};
         
     //Open the HDF5 file
-    H5::H5File dbFCComp (name + ".h5", H5F_ACC_RDWR);
+    H5::H5File dbFile (FCComps::output_filename, H5F_ACC_RDWR);
+    std::string comp_path ("/" + natural_name);
 
     //Write the isotopic component input and output streams
     if (!FCComps::isos2track.empty())
     {
-        appendHDF5array(&dbFCComp, "/IsosIn/Mass",  &(IsosIn.mass),  &RANK, dims, offset, ext_size);
-        appendHDF5array(&dbFCComp, "/IsosOut/Mass", &(IsosOut.mass), &RANK, dims, offset, ext_size);
+        appendHDF5array(&dbFile, comp_path + "/IsosIn/Mass",  &(IsosIn.mass),  &RANK, dims, offset, ext_size);
+        appendHDF5array(&dbFile, comp_path + "/IsosOut/Mass", &(IsosOut.mass), &RANK, dims, offset, ext_size);
 
         for (std::set<int>::iterator iso = FCComps::isos2track.begin(); iso != FCComps::isos2track.end(); iso++)
         {
             std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
-            appendHDF5array(&dbFCComp, "/IsosIn/"  + isoLL, &(IsosIn.comp[*iso]),  &RANK, dims, offset, ext_size);
-            appendHDF5array(&dbFCComp, "/IsosOut/" + isoLL, &(IsosOut.comp[*iso]), &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/IsosIn/"  + isoLL, &(IsosIn.comp[*iso]),  &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/IsosOut/" + isoLL, &(IsosOut.comp[*iso]), &RANK, dims, offset, ext_size);
         }
     }    
 
@@ -415,13 +424,13 @@ void FCComp::writeHDF5 ()
     {
         for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
         {
-            appendHDF5array(&dbFCComp, "/ParamsIn/"  + (*p), &(ParamsIn[*p]),  &RANK, dims, offset, ext_size);
-            appendHDF5array(&dbFCComp, "/ParamsOut/" + (*p), &(ParamsOut[*p]), &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/ParamsIn/"  + (*p), &(ParamsIn[*p]),  &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/ParamsOut/" + (*p), &(ParamsOut[*p]), &RANK, dims, offset, ext_size);
         }
     }
 
     //close the HDF5 File
-    dbFCComp.close();   
+    dbFile.close();   
 }
 
 void FCComp::writeout ()

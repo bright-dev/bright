@@ -110,6 +110,17 @@ std::string bright::MultiStrip(std::string strToConvert, std::string strMultiStr
     return strToConvert;
 }
 
+std::string bright::StrictReplaceAll(std::string strToAlter, std::string subToRemove, std::string subToPlace)
+{
+    int n_found = strToAlter.find(subToRemove);
+    while ( 0 <= n_found )
+    {
+        strToAlter.replace( n_found , subToRemove.length(), subToPlace );
+        n_found = strToAlter.find(subToRemove);
+    }
+    return strToAlter;
+};
+
 std::string bright::LastChar(std::string s)
 {
     //Returns the last character in a string.
@@ -134,6 +145,36 @@ bool bright::SubInString(std::string s, std::string sub)
     int n = s.find(sub);
     return ( 0 <= n && n < s.length() );
 }
+
+std::string bright::natural_naming(std::string name)
+{
+    std::string nat_name (name);
+
+    //Replace Whitespace characters with underscores
+    nat_name = bright::StrictReplaceAll(nat_name, " ",  "_");
+    nat_name = bright::StrictReplaceAll(nat_name, "\t", "_");
+    nat_name = bright::StrictReplaceAll(nat_name, "\n", "_");
+
+    //Remove non-word characters
+    int n = 0;
+    while ( n < nat_name.length() )
+    {
+        if ( bright::words.find(nat_name[n]) == std::string::npos )
+            nat_name.erase(n, 1);
+        else
+            n++;
+    }
+
+    //Make sure that the name in non-empty before continuing
+    if (nat_name.length() == 0)
+        return nat_name;
+
+    // Make sure that the name doesn't begin with a number.
+    if ( bright::digits.find(nat_name[0]) != std::string::npos)
+        nat_name.insert(0, "_"); 
+
+    return nat_name;
+};
 
 //Array Helpers
 int bright::find_index_char(char * val, char ** arr, int arr_len)

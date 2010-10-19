@@ -70,10 +70,11 @@ protected:
 public:
     //Public access data
     std::string name;			//Component name
+    std::string natural_name;   //Component natural name
     MassStream IsosIn;			//Nuclides flowing into the component.
     MassStream IsosOut;			//Nuclides flowing out of the component.
     ParamDict ParamsIn;			//Input paramater values.
-    ParamDict ParamsOut;			//Output parameter values.
+    ParamDict ParamsOut;		//Output parameter values.
     int PassNum;				//Cycle Number currently on [int].
 
     //FCComp Constructors
@@ -84,22 +85,24 @@ public:
     //Get Functions
     std::set<std::string> get_params2track() const {return params2track;};
 
-    std::string get_name()      const {return name;};
-    MassStream  get_IsosIn()    const {return IsosIn;};
-    MassStream  get_IsosOut()   const {return IsosOut;};
-    ParamDict   get_ParamsIn()  const {return ParamsIn;};
-    ParamDict   get_ParamsOut() const {return ParamsOut;};
-    int         get_PassNum()   const {return PassNum;};
+    std::string get_name()         const {return name;};
+    std::string get_natural_name() const {return natural_name;};
+    MassStream  get_IsosIn()       const {return IsosIn;};
+    MassStream  get_IsosOut()      const {return IsosOut;};
+    ParamDict   get_ParamsIn()     const {return ParamsIn;};
+    ParamDict   get_ParamsOut()    const {return ParamsOut;};
+    int         get_PassNum()      const {return PassNum;};
 
     //Set Functions
     void set_params2track(std::set<std::string> sset) {params2track = sset;};
 
-    void set_name(std::string s)     {name      = s;};
-    void set_IsosIn(MassStream ms)   {IsosIn    = ms;};
-    void set_IsosOut(MassStream ms)  {IsosOut   = ms;};
-    void set_ParamsIn(ParamDict pd)  {ParamsIn  = pd;};
-    void set_ParamsOut(ParamDict pd) {ParamsOut = pd;};
-    void set_PassNum(int i)          {PassNum   = i;};
+    void set_name(std::string s)         {name      = s;};
+    void set_natural_name(std::string s) {natural_name = s;};
+    void set_IsosIn(MassStream ms)       {IsosIn    = ms;};
+    void set_IsosOut(MassStream ms)      {IsosOut   = ms;};
+    void set_ParamsIn(ParamDict pd)      {ParamsIn  = pd;};
+    void set_ParamsOut(ParamDict pd)     {ParamsOut = pd;};
+    void set_PassNum(int i)              {PassNum   = i;};
 
     //Public access functions
     virtual void setParams ();

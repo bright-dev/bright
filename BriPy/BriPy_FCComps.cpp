@@ -127,12 +127,13 @@ BOOST_PYTHON_MODULE(FCComps)
         //Basic FCComp Properties
         .add_property("params2track", &FCComp::get_params2track, &FCComp::set_params2track)
 
-        .add_property("name",      &FCComp::get_name,      &FCComp::set_name)
-        .add_property("IsosIn",    &FCComp::get_IsosIn,    &FCComp::set_IsosIn)
-        .add_property("IsosOut",   &FCComp::get_IsosOut,   &FCComp::set_IsosOut)
-        .add_property("ParamsIn",  &FCComp::get_ParamsIn,  &FCComp::set_ParamsIn)
-        .add_property("ParamsOut", &FCComp::get_ParamsOut, &FCComp::set_ParamsOut)
-        .add_property("PassNum",   &FCComp::get_PassNum,   &FCComp::set_PassNum)
+        .add_property("name",         &FCComp::get_name,         &FCComp::set_name)
+        .add_property("natural_name", &FCComp::get_natural_name, &FCComp::set_natural_name)
+        .add_property("IsosIn",       &FCComp::get_IsosIn,       &FCComp::set_IsosIn)
+        .add_property("IsosOut",      &FCComp::get_IsosOut,      &FCComp::set_IsosOut)
+        .add_property("ParamsIn",     &FCComp::get_ParamsIn,     &FCComp::set_ParamsIn)
+        .add_property("ParamsOut",    &FCComp::get_ParamsOut,    &FCComp::set_ParamsOut)
+        .add_property("PassNum",      &FCComp::get_PassNum,      &FCComp::set_PassNum)
 
         //FCComp Constructor Overloads
         .def(bp::init< bp::optional<std::string> >("Fuel Cycle Component tracking isotopes."))

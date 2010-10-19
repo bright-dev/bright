@@ -29,6 +29,8 @@ extern std::string BRIGHT_DATA;
 //String Transformations
 static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static std::string digits = "0123456789";
+static std::string words = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+
 
 std::string to_str (int);
 std::string to_str (double);
@@ -48,6 +50,8 @@ std::string Strip(std::string, std::string);
 
 std::string MultiStrip(std::string, std::string);
 
+std::string StrictReplaceAll(std::string, std::string, std::string);
+
 std::string LastChar(std::string);
 
 std::string SubFromEnd(std::string, int = -1, int = 1);
@@ -55,6 +59,8 @@ std::string SubFromEnd(std::string, int = -1, int = 1);
 bool ChainGreaterCompare(int, int, int);
 
 bool SubInString(std::string, std::string);
+
+std::string natural_naming(std::string);
 
 //Array Methods
 template <class T>
