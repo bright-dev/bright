@@ -69,14 +69,9 @@ double MassStream::getArrayNthEntry(H5::DataSet * ds, int n)
 
 void MassStream::load_from_hdf5 (std::string filename, std::string groupname, int row)
 {
-    //Check to see if the file exists.
-    struct stat FileInfoStats; 
-    int intStat = stat(filename.c_str(), &FileInfoStats);
-    if(intStat != 0)
-    {
-        std::cout << "!!!Warning!!! Cannot find " << filename << "!\n";
-        return;
-    };
+    // Check that the file is there
+    if (!bright::FileExists(filename))
+        throw bright::FileNotFound(filename);
 
     //Check to see if the file is in HDF5 format.
     bool isH5 = H5::H5File::isHdf5(filename);
@@ -137,6 +132,12 @@ void MassStream::load_from_hdf5 (std::string filename, std::string groupname, in
 
 void MassStream::load_from_text (char * fchar)
 {
+    // Check that the file is there
+    std::string filename (fchar);
+    if (!bright::FileExists(filename))
+        throw bright::FileNotFound(filename);
+
+    // New filestream
     std::ifstream f;
 
     //Make sure that the file we are reading the mass stream from is really there.

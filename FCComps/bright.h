@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <math.h>
+#include <exception>
+#include <sys/stat.h> 
 
 /*** Macros ***/
 #define length_array(a) ( sizeof ( a ) / sizeof ( *a ) )
@@ -62,6 +64,7 @@ bool SubInString(std::string, std::string);
 
 std::string natural_naming(std::string);
 
+
 //Array Methods
 template <class T>
 int find_index(T val, T * arr, int arr_len = -1)
@@ -95,6 +98,36 @@ double SolveLine (double, double, double, double, double);
 double TANH(double);
 double COTH(double);
 
+// File Helpers
+bool FileExists(std::string); 
+
+class FileNotFound : public std::exception
+{
+public:
+    FileNotFound () {};
+
+    ~FileNotFound () throw () {};
+
+    FileNotFound(std::string fname)
+    {
+            filename = fname;
+    };
+
+    virtual const char* what() const throw()
+    {
+        std::string FNFstr ("File not found: ");
+        if (!filename.empty())
+            FNFstr += filename;
+
+        return (const char *) FNFstr.c_str();
+    };
+
+private:
+    std::string filename;
+};
+
+
+// End bright namespace
 };
 
 #endif

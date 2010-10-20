@@ -34,6 +34,10 @@ void FCComps::set_output_filename(std::string of) {FCComps::output_filename = of
 
 void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname, bool clear_prev)
 {
+    // Check that the file is there
+    if (!bright::FileExists(filename))
+        throw bright::FileNotFound(filename);
+
     //Load values into isos2track from an hdf5 file.
     //If the dataspace name is not given, try some defaults.
     int dslen = 14;
@@ -114,6 +118,10 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
 
 void FCComps::load_isos2track_text(std::string filename, bool clear_prev)
 {
+    // Check that the file is there
+    if (!bright::FileExists(filename))
+        throw bright::FileNotFound(filename);
+
     //Clear previous entries
     if (clear_prev)
         isos2track.clear();

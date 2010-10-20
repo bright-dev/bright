@@ -72,7 +72,6 @@ namespace isoname
     /******************/
 
     class NotANuclide : public std::exception
-
     {
     public:
         NotANuclide () {};
