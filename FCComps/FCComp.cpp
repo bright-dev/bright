@@ -203,14 +203,21 @@ void FCComp::initialize_Text ()
 
 void FCComp::initialize_HDF5 ()
 {
+    // Turn off annoying HDF5 errors
+    H5::Exception::dontPrint();
+
     //Create 1D arrays of doubles.
     const int     RANK = 1;
     hsize_t dims[1]    = {0};               // dataset dimensions at creation
     hsize_t maxdims[1] = {H5S_UNLIMITED};
     H5::DataSpace ext_1D_space(RANK, dims, maxdims);
 
-    //Create new/overwrite datafile.
-    H5::H5File dbFile (FCComps::output_filename, H5F_ACC_TRUNC);
+    //Create new/open datafile.
+    H5::H5File dbFile;
+    if (bright::FileExists(FCComps::output_filename))
+        dbFile = H5::H5File(FCComps::output_filename, H5F_ACC_RDWR);
+    else
+        dbFile = H5::H5File(FCComps::output_filename, H5F_ACC_TRUNC);
 
     //Modify dataset creation properties.
     H5::DSetCreatPropList double_params;
@@ -221,37 +228,102 @@ void FCComp::initialize_HDF5 ()
     double fill_val = -1.0;
     double_params.setFillValue(H5::PredType::NATIVE_DOUBLE, &fill_val);
 
-    //Create group for this FCComp
+    /***
+     NOTE!  All of the stupid try/catch, open/create stuff is simply to test 
+            if a group or dataset already exist.  If it does, open() passes.
+            If it doesn't exist, open() fails and a default group/dataset
+            is created in its place.
+     ***/
+
+    // Open/Create group for this FCComp
     std::string comp_path ("/" + natural_name);
-    H5::Group gFCComp  = dbFile.createGroup(comp_path);
+    H5::Group gFCComp;
+    try 
+        { gFCComp = dbFile.openGroup(comp_path); }
+    catch (H5::Exception fgerror) 
+        { gFCComp = dbFile.createGroup(comp_path); }
 
     //Initialize the IsoStreams 
     if (!FCComps::isos2track.empty())
     {
-        H5::Group gIsosIn  = dbFile.createGroup(comp_path + "/IsosIn");
-        H5::Group gIsosOut = dbFile.createGroup(comp_path + "/IsosOut");
+        // Open/Create IsosIn group
+        H5::Group gIsosIn;
+        try
+          { gIsosIn = dbFile.openGroup(comp_path + "/IsosIn"); }
+        catch (H5::Exception fgerror)
+          { gIsosIn = dbFile.createGroup(comp_path + "/IsosIn"); }
 
-        dbFile.createDataSet(comp_path + "/IsosIn/Mass",  H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
-        dbFile.createDataSet(comp_path + "/IsosOut/Mass", H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+        // Open/Create IsosOut group
+        H5::Group gIsosOut;
+        try
+            { gIsosOut = dbFile.openGroup(comp_path + "/IsosOut"); }
+        catch (H5::Exception fgerror)
+            { gIsosOut = dbFile.createGroup(comp_path + "/IsosOut"); }
 
+        // Open/Create /IsosIn/Mass Dataset
+        H5::DataSet dsIsosInMass;
+        try 
+            { dsIsosInMass = dbFile.openDataSet(comp_path + "/IsosIn/Mass"); }
+        catch (H5::Exception fgerror)
+            { dsIsosInMass = dbFile.createDataSet(comp_path + "/IsosIn/Mass",  H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+
+        // Open/Create /IsosOut/Mass Dataset
+        H5::DataSet dsIsosOutMass;
+        try
+            { dsIsosOutMass = dbFile.openDataSet(comp_path + "/IsosOut/Mass"); }
+        catch (H5::Exception fgerror)
+            { dsIsosOutMass = dbFile.createDataSet(comp_path + "/IsosOut/Mass", H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+
+        // Open/Create /Isos[In|Out]/iso Datasets
+        H5::DataSet dsIsosInIso;
+        H5::DataSet dsIsosOutIso;
         for (std::set<int>::iterator iso = FCComps::isos2track.begin(); iso != FCComps::isos2track.end(); iso++)
         {
             std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
-            dbFile.createDataSet(comp_path + "/IsosIn/"  + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
-            dbFile.createDataSet(comp_path + "/IsosOut/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+
+            try
+                { dsIsosInIso = dbFile.openDataSet(comp_path + "/IsosIn/" + isoLL); }
+            catch (H5::Exception fgerror)
+                { dsIsosInIso = dbFile.createDataSet(comp_path + "/IsosIn/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+
+            try
+                { dsIsosOutIso = dbFile.openDataSet(comp_path + "/IsosOut/" + isoLL); }
+            catch (H5::Exception fgerror)
+                { dsIsosOutIso = dbFile.createDataSet(comp_path + "/IsosOut/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
         }
     }
 
     //Initiallize the Parameters
     if (!params2track.empty())
     {	
-        H5::Group gParamsIn  = dbFile.createGroup(comp_path + "/ParamsIn");
-        H5::Group gParamsOut = dbFile.createGroup(comp_path + "/ParamsOut");
+        // Open/Create ParamsIn group
+        H5::Group gParamsIn;
+        try
+          { gParamsIn = dbFile.openGroup(comp_path + "/ParamsIn"); }
+        catch (H5::Exception fgerror)
+          { gParamsIn = dbFile.createGroup(comp_path + "/ParamsIn"); }
 
+        // Open/Create ParamsOut group
+        H5::Group gParamsOut;
+        try
+            { gParamsOut = dbFile.openGroup(comp_path + "/ParamsOut"); }
+        catch (H5::Exception fgerror)
+            { gParamsOut = dbFile.createGroup(comp_path + "/ParamsOut"); }
+
+        // Open/Create /Params[In|Out]/param Datasets
+        H5::DataSet dsParamsInParam;
+        H5::DataSet dsParamsOutParam;
         for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
         {
-            dbFile.createDataSet(comp_path + "/ParamsIn/"  + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
-            dbFile.createDataSet(comp_path + "/ParamsOut/" + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params);
+            try
+                { dsParamsInParam = dbFile.openDataSet(comp_path + "/ParamsIn/"  + *p); }
+            catch (H5::Exception fgerror)
+                { dsParamsInParam = dbFile.createDataSet(comp_path + "/ParamsIn/"  + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+
+            try
+                { dsParamsOutParam = dbFile.openDataSet(comp_path + "/ParamsOut/" + *p); }
+            catch (H5::Exception fgerror)
+                { dsParamsOutParam = dbFile.createDataSet(comp_path + "/ParamsOut/" + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
         }
     }
 
