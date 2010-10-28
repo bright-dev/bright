@@ -117,6 +117,11 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     # Set-up pointer to reactor database
     data_dir = os.getenv("BRIGHT_DATA")
     lwr_data = data_dir + "/LWR.h5"
+
+    # Customize output
+    BriPy.write_text(False)
+    BriPy.write_hdf5(True)
+    BriPy.load_isos2track_hdf5(lwr_data)
     
     # Enrichment Calculation
     nu = BriPy.MassStream({922340 : 0.000055, 922350 : 0.0072, 922380: 0.992745})
@@ -128,7 +133,8 @@ The complete program of this nuclear fuel cycle simulation is provided below::
 
     # Reactor Calculation
     lwrd = BriPy.LWRDefaults()
-    lwrd.BUt = 40.0
+    lwrd.BUt = 35.0
+    lwrd.batches = 3
     lwr = BriPy.LightWaterReactor1G(lwr_data, lwrd, "LWR")
     lwr.doCalc(enr.IsosOut)
     lwr.writeout()
