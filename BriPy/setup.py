@@ -31,6 +31,8 @@ if os.name == 'posix':
     MassStream_ext_kwargs["libraries"].extend( [
         "z", 
         "m", 
+        "hdf5", 
+        "hdf5_hl", 
         "hdf5_cpp", 
         "hdf5_hl_cpp",
         ] )
