@@ -470,8 +470,8 @@ BOOST_PYTHON_MODULE(FCComps)
 
 
     // Fuel Fabrication to- and from-converters
-    dict2map<std::string, &MassStream>();
-    bp::to_python_converter< MassStreams, map2dict<std::string, &MassStream> >();
+    dict2map<std::string, MassStream *>();
+    bp::to_python_converter< MassStreams, map2dict<std::string, MassStream *> >();
 
     // Fuel Fabrication Facility
     bp::class_< FuelFabrication, bp::bases<FCComp> >("FuelFabrication", "Fuel Fabrication Facility", bp::init<>() )
@@ -483,12 +483,12 @@ BOOST_PYTHON_MODULE(FCComps)
         .add_property("reactor", &FuelFabrication::get_reactor, &FuelFabrication::set_reactor)
 
         // Fuel Fabrication Component Constructor
-        .def(bp::init< std::string, bp::optional<std::string> >())
-        .def(bp::init< MassStreams, MassWeights, &Reactor1G, bp::optional<std::string> >())
+        .def(bp::init< std::string >())
+        .def(bp::init< std::set<std::string>, bp::optional<std::string> >())
+        .def(bp::init< MassStreams, MassWeights, Reactor1G *, bp::optional< std::set<std::string>, std::string > >())
 
         // Useful Functions
-        .def("initialize", &Reactor1G::initialize)
+        .def("initialize", &FuelFabrication::initialize)
     ;
-
 
 };
