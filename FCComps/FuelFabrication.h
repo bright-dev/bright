@@ -27,7 +27,7 @@ typedef std::map<std::string, double> MassDeltaRs;
 
 namespace bright 
 {
-    std::set<std::string> empty_string_set;
+    static std::set<std::string> empty_string_set;
     std::set<std::string> make_fuel_fab_params_set(MassStreams *, std::set<std::string> = empty_string_set);
 };
 
@@ -51,7 +51,9 @@ public:
     FuelFabrication ();
     FuelFabrication (std::string);
     FuelFabrication (std::set<std::string>, std::string = "");
+    FuelFabrication (MassStreams, MassWeights, Reactor1G, std::string = "");
     FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::string = "");
+    FuelFabrication (MassStreams, MassWeights, Reactor1G, std::set<std::string>, std::string = "");
     FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::set<std::string>, std::string = "");
     ~FuelFabrication ();
     
@@ -60,14 +62,14 @@ public:
     MassWeights get_mass_weights() const {return mass_weights;};
     MassDeltaRs get_mass_deltaRs() const {return mass_deltaRs;};
 
-    Reactor1G * get_reactor() const {return reactor;};
+    Reactor1G get_reactor() const {return *reactor;};
 
     //Set Functions
     void set_mass_streams(MassStreams mss) {mass_streams = mss;};
     void set_mass_weights(MassWeights mws) {mass_weights = mws;};
     void set_mass_deltaRs(MassDeltaRs drs) {mass_deltaRs = drs;};
 
-    void set_reactor(Reactor1G * r) {reactor = r;};
+    void set_reactor(Reactor1G r) {reactor = &r;};
 
 
     //Public access functions

@@ -485,7 +485,7 @@ BOOST_PYTHON_MODULE(FCComps)
         // Fuel Fabrication Component Constructor
         .def(bp::init< std::string >())
         .def(bp::init< std::set<std::string>, bp::optional<std::string> >())
-        .def(bp::init< MassStreams, MassWeights, Reactor1G *, bp::optional< std::set<std::string>, std::string > >())
+        .def(bp::init< MassStreams, MassWeights, Reactor1G, bp::optional< std::set<std::string>, std::string > >())
 
         // Useful Functions
         .def("initialize", &FuelFabrication::initialize)

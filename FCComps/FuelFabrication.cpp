@@ -39,10 +39,22 @@ FuelFabrication::FuelFabrication(std::set<std::string> paramtrack, std::string n
 //    initialize(mss, mws, &r);
 };
 
+FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws, Reactor1G r, std::string n) : \
+    FCComp(bright::make_fuel_fab_params_set(&mss), n)
+{
+    initialize(mss, mws, &r);
+};
+
 FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws, Reactor1G * r, std::string n) : \
     FCComp(bright::make_fuel_fab_params_set(&mss), n)
 {
     initialize(mss, mws, r);
+};
+
+FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws, Reactor1G r, std::set<std::string> paramtrack, std::string n) : \
+    FCComp(bright::make_fuel_fab_params_set(&mss, paramtrack), n)
+{
+    initialize(mss, mws, &r);
 };
 
 FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws, Reactor1G * r, std::set<std::string> paramtrack, std::string n) : \
