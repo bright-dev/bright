@@ -17,6 +17,7 @@
     #include "../FCComps/Reactor1G.h"
     #include "../FCComps/FastReactor1G.h"
     #include "../FCComps/LightWaterReactor1G.h"
+    #include "../FCComps/FuelFabrication.h"
 #else
     #include "src/FCComp.h"
     #include "src/Reprocess.h"
@@ -25,6 +26,7 @@
     #include "src/Reactor1G.h"
     #include "src/FastReactor1G.h"
     #include "src/LightWaterReactor1G.h"
+    #include "src/FuelFabrication.h"
 #endif
 
 //Need to keep Boost::Python in its own namespace.
@@ -463,6 +465,29 @@ BOOST_PYTHON_MODULE(FCComps)
 
         //Useful Functions
         .def("setParams",  &LightWaterReactor1G::setParams)
+    ;
+
+
+
+    // Fuel Fabrication to- and from-converters
+    dict2map<std::string, &MassStream>();
+    bp::to_python_converter< MassStreams, map2dict<std::string, &MassStream> >();
+
+    // Fuel Fabrication Facility
+    bp::class_< FuelFabrication, bp::bases<FCComp> >("FuelFabrication", "Fuel Fabrication Facility", bp::init<>() )
+        // Class Attributes
+        .add_property("mass_streams", &FuelFabrication::get_mass_streams, &FuelFabrication::set_mass_streams)
+        .add_property("mass_weights", &FuelFabrication::get_mass_weights, &FuelFabrication::set_mass_weights)
+        .add_property("mass_deltaRs", &FuelFabrication::get_mass_deltaRs, &FuelFabrication::set_mass_deltaRs)
+
+        .add_property("reactor", &FuelFabrication::get_reactor, &FuelFabrication::set_reactor)
+
+        // Fuel Fabrication Component Constructor
+        .def(bp::init< std::string, bp::optional<std::string> >())
+        .def(bp::init< MassStreams, MassWeights, &Reactor1G, bp::optional<std::string> >())
+
+        // Useful Functions
+        .def("initialize",          &Reactor1G::initialize)
     ;
 
 

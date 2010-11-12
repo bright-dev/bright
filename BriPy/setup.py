@@ -178,6 +178,7 @@ setup(name="BriPy",
             src_dir + "Reactor1G.cpp", 
             src_dir + "LightWaterReactor1G.cpp", 
             src_dir + "FastReactor1G.cpp", 
+            src_dir + "FuelFabrication.cpp", 
             "BriPy_FCComps.cpp"], **FCComps_ext_kwargs),
         ],
     )
