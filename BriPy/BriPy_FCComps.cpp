@@ -487,7 +487,7 @@ BOOST_PYTHON_MODULE(FCComps)
         .def(bp::init< MassStreams, MassWeights, &Reactor1G, bp::optional<std::string> >())
 
         // Useful Functions
-        .def("initialize",          &Reactor1G::initialize)
+        .def("initialize", &Reactor1G::initialize)
     ;
 
 

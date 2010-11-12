@@ -21,12 +21,15 @@
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/
 
-typedef map<std::string, &MassStream> MassStreams;
-typedef map<std::string, double> MassWeights;
-typedef map<std::string, double> MassDeltaRs;
+typedef std::map<std::string, MassStream *> MassStreams;
+typedef std::map<std::string, double> MassWeights;
+typedef std::map<std::string, double> MassDeltaRs;
 
-std::set<std::string> empty_string_set;
-std::set<std::string> make_fuel_fab_params_set(&MassStreams, std::set<std::string> = empty_string_set);
+namespace bright 
+{
+    std::set<std::string> empty_string_set;
+    std::set<std::string> make_fuel_fab_params_set(MassStreams *, std::set<std::string> = empty_string_set);
+};
 
 class FuelFabrication : public FCComp
 {
@@ -42,14 +45,14 @@ public:
     MassWeights mass_weights;
     MassDeltaRs mass_deltaRs;
 
-    &Reactor1G reactor;
+    Reactor1G * reactor;
 
     //Reactor1G Constructors
     FuelFabrication ();
     FuelFabrication (std::string);
     FuelFabrication (std::set<std::string>, std::string = "");
-    FuelFabrication (MassStreams, MassWeights, &Reactor1G, std::string = "");
-    FuelFabrication (MassStreams, MassWeights, &Reactor1G, std::set<std::string>, std::string = "");
+    FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::string = "");
+    FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::set<std::string>, std::string = "");
     ~FuelFabrication ();
     
     //Get Functions
@@ -57,18 +60,18 @@ public:
     MassWeights get_mass_weights() const {return mass_weights;};
     MassDeltaRs get_mass_deltaRs() const {return mass_deltaRs;};
 
-    &Reactor1G get_reactor() const {return reactor;};
+    Reactor1G * get_reactor() const {return reactor;};
 
     //Set Functions
-    void set_mass_streams(MassStreams ms) {mass_streams = ms;};
-    void set_mass_weights(MassWeights mw) {mass_weights = mw;};
-    void set_mass_deltaRs(MassDeltaRs dr) {mass_deltaRs = dr;};
+    void set_mass_streams(MassStreams mss) {mass_streams = mss;};
+    void set_mass_weights(MassWeights mws) {mass_weights = mws;};
+    void set_mass_deltaRs(MassDeltaRs drs) {mass_deltaRs = drs;};
 
-    void set_reactor(&Reactor1G r) {reactor = r;};
+    void set_reactor(Reactor1G * r) {reactor = r;};
 
 
     //Public access functions
-    void initialize(MassStreams, MassWeights, &Reactor1G);
+    void initialize(MassStreams, MassWeights, Reactor1G *);
 };
 
 #endif
