@@ -33,8 +33,8 @@ public:
     //LightWaterReactor1G Constructors
     LightWaterReactor1G();
     LightWaterReactor1G(std::string, std::string = "");
-        LightWaterReactor1G(ReactorParameters, std::string = "");
-        LightWaterReactor1G(std::string, ReactorParameters, std::string = "");
+    LightWaterReactor1G(ReactorParameters, std::string = "");
+    LightWaterReactor1G(std::string, ReactorParameters, std::string = "");
     ~LightWaterReactor1G();
 
     //Get Functions
