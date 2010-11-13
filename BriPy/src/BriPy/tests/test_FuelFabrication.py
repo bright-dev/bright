@@ -97,7 +97,7 @@ class TestFuelFabricationConstructors(TestCase):
             assert_equal(ff.mass_streams[iso].mass, 1.0)
             assert_equal(ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
 
-        assert_equal(ff.mass_weights, mws)
+        assert_equal(ff.mass_weights_in, mws)
 
         assert_equal(set(ff.params2track), set(["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
@@ -125,7 +125,7 @@ class TestFuelFabricationConstructors(TestCase):
             assert_equal(ff.mass_streams[iso].mass, 1.0)
             assert_equal(ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
 
-        assert_equal(ff.mass_weights, mws)
+        assert_equal(ff.mass_weights_in, mws)
 
         assert_equal(set(ff.params2track), set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
@@ -152,7 +152,7 @@ class TestFuelFabricationConstructors(TestCase):
             assert_equal(ff.mass_streams[iso].mass, 1.0)
             assert_equal(ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
 
-        assert_equal(ff.mass_weights, mws)
+        assert_equal(ff.mass_weights_in, mws)
 
         assert_equal(set(ff.params2track), set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
@@ -184,10 +184,10 @@ class TestFuelFabricationAttributes(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_mass_weights(self):
-        assert_equal(self.ff.mass_weights, self.mws)
-        self.ff.mass_weights = {"U235": -1.0, "U238": -1.0, "O16": 0.125}
-        assert_equal(self.ff.mass_weights, {"U235": -1.0, "U238": -1.0, "O16": 0.125})
+    def test_mass_weights_in(self):
+        assert_equal(self.ff.mass_weights_in, self.mws)
+        self.ff.mass_weights_in = {"U235": -1.0, "U238": -1.0, "O16": 0.125}
+        assert_equal(self.ff.mass_weights_in, {"U235": -1.0, "U238": -1.0, "O16": 0.125})
 
     def test_mass_streams(self):
         keys = ["U235", "U238"]

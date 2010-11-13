@@ -486,8 +486,9 @@ BOOST_PYTHON_MODULE(FCComps)
     bp::class_< FuelFabrication, bp::bases<FCComp> >("FuelFabrication", "Fuel Fabrication Facility", bp::init<>() )
         // Class Attributes
         .add_property("mass_streams", &FuelFabrication::get_mass_streams, &FuelFabrication::set_mass_streams)
-        .add_property("mass_weights", &FuelFabrication::get_mass_weights, &FuelFabrication::set_mass_weights)
-        .add_property("mass_deltaRs", &FuelFabrication::get_mass_deltaRs, &FuelFabrication::set_mass_deltaRs)
+        .add_property("mass_weights_in", &FuelFabrication::get_mass_weights_in, &FuelFabrication::set_mass_weights_in)
+        .add_property("mass_weights_out", &FuelFabrication::get_mass_weights_out, &FuelFabrication::set_mass_weights_out)
+        .add_property("deltaRs", &FuelFabrication::get_deltaRs, &FuelFabrication::set_deltaRs)
 
         // FIXME
         // Can't get reactor object back easily....
@@ -500,6 +501,7 @@ BOOST_PYTHON_MODULE(FCComps)
 
         // Useful Functions
         .def("initialize", &FuelFabrication::initialize)
+        .def("calc_deltaRs", &FuelFabrication::calc_deltaRs)
     ;
 
 };
