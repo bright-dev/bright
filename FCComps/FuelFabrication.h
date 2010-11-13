@@ -75,8 +75,9 @@ public:
 
     //Public access functions
     void initialize(MassStreams, MassWeights, Reactor1G);
-    void calc_deltaRs();
+    void setParams ();
 
+    void calc_deltaRs();
     MassStream calc_core_input();
     void calc_mass_ratios();
 

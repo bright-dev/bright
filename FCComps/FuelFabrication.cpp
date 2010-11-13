@@ -220,7 +220,8 @@ void FuelFabrication::calc_mass_ratios()
 MassStream FuelFabrication::doCalc()
 {
     calc_core_input();
-    return calc_core_input();
+    IsosOut = calc_core_input();
+    return IsosOut;
 };
 
 
@@ -229,3 +230,20 @@ MassStream FuelFabrication::doCalc(MassStreams mss, MassWeights mws_in, Reactor1
     initialize(mss, mws_in, r);
     return doCalc();
 };
+
+
+void FuelFabrication::setParams ()
+{
+    for ( MassWeights::iterator mws = mass_weights_in.begin(); mws != mass_weights_in.end(); mws++ )
+    {
+        std::string mw_key ("Weight_" + (*mws).first);
+        std::string dR_key ("deltaR_" + (*mws).first);
+
+        ParamsIn[mw_key]  = mass_weights_in[(*mws).first];
+        ParamsOut[mw_key] = mass_weights_out[(*mws).first];
+
+        ParamsIn[dR_key]  = deltaRs[(*mws).first];
+        ParamsOut[dR_key] = deltaRs[(*mws).first];
+    };
+};
+

@@ -503,8 +503,9 @@ BOOST_PYTHON_MODULE(FCComps)
 
         // Useful Functions
         .def("initialize", &FuelFabrication::initialize)
-        .def("calc_deltaRs", &FuelFabrication::calc_deltaRs) 
+        .def("setParams",  &FuelFabrication::setParams)
 
+        .def("calc_deltaRs", &FuelFabrication::calc_deltaRs) 
         .def("calc_core_input",  &FuelFabrication::calc_core_input)
         .def("calc_mass_ratios", &FuelFabrication::calc_mass_ratios)
 
