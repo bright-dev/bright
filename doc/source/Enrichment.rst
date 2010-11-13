@@ -25,7 +25,7 @@ and H. Wood.
           cascade should be set up.  It is a :class:`BriPy.EnrichmentParameters`
           helper object.  If ``enrich_params`` is not specified, then the cascade 
           is initialized with ``UraniumEnrichmentDefaults``.
-        * `name` (str): The name of the reprocessing fuel cycle component instance.
+        * `name` (str): The name of the enrichment fuel cycle component instance.
 
     Note that this automatically calls the public :meth:`initialize` C function.
 

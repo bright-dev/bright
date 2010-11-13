@@ -18,6 +18,7 @@ For a listing of isonames raw docstrings (helpful if you need to know C++ signat
    Reprocess
    Storage
    Reactor1G
+   FuelFabrication
 
 Currently, all fuel cycle objects inherit from a common `FCComp` class.  This takes care of all of the bookkeeping, 
 input, and output for all component instances.  Below is a a diagram of the how all of the comonents inheret 

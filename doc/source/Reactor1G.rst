@@ -397,9 +397,18 @@ The easiest way to set these attributes is through the :meth:`Reactor1G.calcSubS
     The output actinide mass stream, ``Reactor1G.IsosOut.getACT()``.
 
 
---------------------------------------
-Transuranic Conversion Ratio Attribute
---------------------------------------
+----------------
+Other Attributes
+----------------
+
+.. attribute:: Reactor1G.deltaR
+
+    The :math:`\delta R` value of the core with ``IsosIn``.  This is equal to the 
+    production rate minus the destruction rate at the target burnup::
+
+        deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+
+    This is computed via the ``Reactor1G.calc_deltaR()`` method.
 
 .. attribute:: Reactor1G.TruCR
 
@@ -556,6 +565,21 @@ The following functions represent basic calculations common to most reactor type
 
     Returns:
         * `TruCR` (float): The value of the transuranic conversion ratio just calculated.
+
+.. method:: Reactor1G.calc_deltaR([input])
+
+    Calculates and sets the :math:`\delta R` (:attr:`deltaR`) value of the reactor.  
+    This is equal to the production rate minus the destruction rate at the target burnup::
+
+        deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+
+    Args:
+        * `input` (dict or MassStream): If input is present, it set as the component's 
+          :attr:`IsosIn <BriPy.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+
+    Returns:
+        * `deltaR` (float): :attr:`deltaR`.
 
 
 --------------
