@@ -36,32 +36,16 @@ FuelFabrication::FuelFabrication(std::set<std::string> paramtrack, std::string n
 FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws_in, Reactor1G r, std::string n) : \
     FCComp(bright::make_fuel_fab_params_set(&mss), n)
 {
-    //initialize(mss, mws_in, &r);
     initialize(mss, mws_in, r);
 };
 
-/*
-FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws_in, Reactor1G * r, std::string n) : \
-    FCComp(bright::make_fuel_fab_params_set(&mss), n)
-{
-    initialize(mss, mws_in, r);
-};
-*/
 
 FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws_in, Reactor1G r, std::set<std::string> paramtrack, std::string n) : \
     FCComp(bright::make_fuel_fab_params_set(&mss, paramtrack), n)
 {
-    //initialize(mss, mws_in, &r);
     initialize(mss, mws_in, r);
 };
 
-/*
-FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws_in, Reactor1G * r, std::set<std::string> paramtrack, std::string n) : \
-    FCComp(bright::make_fuel_fab_params_set(&mss, paramtrack), n)
-{
-    initialize(mss, mws_in, r);
-};
-*/
 
 FuelFabrication::~FuelFabrication()
 {
@@ -69,7 +53,6 @@ FuelFabrication::~FuelFabrication()
 
 
 
-//void FuelFabrication::initialize(MassStreams mss, MassWeights mws_in, Reactor1G * r)
 void FuelFabrication::initialize(MassStreams mss, MassWeights mws_in, Reactor1G r)
 {
     /** Sets the fuel fabrication specific parameters.
@@ -94,7 +77,6 @@ void FuelFabrication::calc_deltaRs()
         MassStream ms = (*(*mss).second);
         ms.Normalize();
 
-        //double dR = (*reactor).calc_deltaR(ms);
         double dR = reactor.calc_deltaR(ms);
 
         deltaRs[(*mss).first] = dR;
@@ -147,13 +129,11 @@ void FuelFabrication::calc_mass_ratios()
     // deltaR for key a
     MassStream ms_a = *mass_streams[key_a];
     ms_a.Normalize();
-    //double dR_a = (*reactor).calc_deltaR( ms_a );
     double dR_a = reactor.calc_deltaR( ms_a );
 
     // deltaR for key b
     MassStream ms_b = *mass_streams[key_b];
     ms_b.Normalize();
-    //double dR_b = (*reactor).calc_deltaR( ms_b );
     double dR_b = reactor.calc_deltaR( ms_b );
 
     //First Guess for key mass stream masses; each get half of the remaining mass space.
@@ -182,8 +162,6 @@ void FuelFabrication::calc_mass_ratios()
     mass_weights_out[key_a] = top_up_mass_space;
     mass_weights_out[key_b] = 0.0;
     core_input = calc_core_input();
-    //dR_guess = (*reactor).calc_deltaR( core_input );
-    //k_a = (*reactor).batchAveK( (*reactor).TargetBU );
     dR_guess = reactor.calc_deltaR( core_input );
     k_a = reactor.batchAveK( reactor.TargetBU );
     sign_a = (1.0 - k_a) / fabs(1.0 - k_a);
@@ -192,8 +170,6 @@ void FuelFabrication::calc_mass_ratios()
     mass_weights_out[key_a] = 0.0;
     mass_weights_out[key_b] = top_up_mass_space;
     core_input = calc_core_input();
-    //dR_guess = (*reactor).calc_deltaR( core_input );
-    //k_b = (*reactor).batchAveK( (*reactor).TargetBU );
     dR_guess = reactor.calc_deltaR( core_input );
     k_b = reactor.batchAveK( reactor.TargetBU );
     sign_b = (1.0 - k_b) / fabs(1.0 - k_b);
@@ -208,14 +184,12 @@ void FuelFabrication::calc_mass_ratios()
 
     //Calculate delta R for the Guess
     core_input = calc_core_input();
-    //dR_guess = (*reactor).calc_deltaR( core_input );
     dR_guess = reactor.calc_deltaR( core_input );
 
     int n;
     double k;
     double dMass;
     
-    //k = (*reactor).batchAveK( (*reactor).TargetBU );
     k = reactor.batchAveK( reactor.TargetBU );
     n = 0;
     if (0 < FCComps::verbosity)
@@ -230,8 +204,6 @@ void FuelFabrication::calc_mass_ratios()
 
         //Recalculate core parameters for new masses guess
         core_input = calc_core_input();
-        //dR_guess = (*reactor).calc_deltaR( core_input );
-        //k = (*reactor).batchAveK( (*reactor).TargetBU );
         dR_guess = reactor.calc_deltaR( core_input );
         k = reactor.batchAveK( reactor.TargetBU );
         n = n+1;

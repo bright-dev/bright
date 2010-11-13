@@ -34,7 +34,7 @@ namespace bright
 class FuelFabrication : public FCComp
 {
 /** Fule Fabrication class
- *  Computes the value of different MMassStreams inside of a reactor.  
+ *  Computes the value of different MassStreams inside of a reactor.  
  *  From here an optimum fuel for this reactor may be found.
  */
 protected:
@@ -53,9 +53,7 @@ public:
     FuelFabrication (std::string);
     FuelFabrication (std::set<std::string>, std::string = "");
     FuelFabrication (MassStreams, MassWeights, Reactor1G, std::string = "");
-    //FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::string = "");
     FuelFabrication (MassStreams, MassWeights, Reactor1G, std::set<std::string>, std::string = "");
-    //FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::set<std::string>, std::string = "");
     ~FuelFabrication ();
     
     //Get Functions
@@ -76,7 +74,6 @@ public:
     void set_reactor(Reactor1G r) {reactor = r;};
 
     //Public access functions
-    //void initialize(MassStreams, MassWeights, Reactor1G *);
     void initialize(MassStreams, MassWeights, Reactor1G);
     void calc_deltaRs();
 
