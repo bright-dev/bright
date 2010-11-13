@@ -480,7 +480,9 @@ BOOST_PYTHON_MODULE(FCComps)
         .add_property("mass_weights", &FuelFabrication::get_mass_weights, &FuelFabrication::set_mass_weights)
         .add_property("mass_deltaRs", &FuelFabrication::get_mass_deltaRs, &FuelFabrication::set_mass_deltaRs)
 
-        .add_property("reactor", &FuelFabrication::get_reactor, &FuelFabrication::set_reactor)
+        // FIXME
+        // Can't get reactor object back easily....
+        //.add_property("reactor", &FuelFabrication::get_reactor, &FuelFabrication::set_reactor)
 
         // Fuel Fabrication Component Constructor
         .def(bp::init< std::string >())

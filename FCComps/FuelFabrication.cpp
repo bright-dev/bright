@@ -31,12 +31,6 @@ FuelFabrication::FuelFabrication(std::string n) : FCComp(n)
 
 FuelFabrication::FuelFabrication(std::set<std::string> paramtrack, std::string n) : FCComp(paramtrack, n)
 {
-//    MassStreams mss ();
-//    MassWeights mws ();
-
-//    Reactor1G r ();
-
-//    initialize(mss, mws, &r);
 };
 
 FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws, Reactor1G r, std::string n) : \
