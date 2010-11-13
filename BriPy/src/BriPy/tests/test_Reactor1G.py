@@ -38,9 +38,9 @@ default_rp.total_slots = 180
 
 def general_teardown():
     for f in os.listdir('.'):
-        if "Isor1g.txt" in f:
+        if "Isos.txt" in f:
             or1g.remove(f)
-        elif "Paramr1g.txt" in f:
+        elif "Params.txt" in f:
             os.remove(f)
         elif f in [".h5", "r1g.h5"]:
             os.remove(f)
@@ -621,6 +621,10 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
         tmp_TruCR = (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 935.0)
         assert_almost_equal(self.r1g.TruCR / tmp_TruCR, 1.0)
 
+    def test_deltaR(self):
+        self.r1g.calc_deltaR()
+        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
 
 class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
@@ -801,6 +805,22 @@ class TestReactor1GBasicCalculationMethods(TestCase):
         self.r1g.doCalc()
         tmp_TruCR = (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 935.0)
         assert_almost_equal(self.r1g.calcTruCR() / tmp_TruCR, 1.0)
+
+    def test_deltaR1(self):
+        self.r1g.calc_deltaR()
+        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
+
+    def test_deltaR2(self):
+        self.r1g.calc_deltaR({922350: 0.5, 922380: 0.5, 80160: 0.125})
+        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
+
+    def test_deltaR3(self):
+        ms = MassStream({922350: 0.5, 922380: 0.5, 80160: 0.125})
+        self.r1g.calc_deltaR(ms)
+        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
 
 class TestReactor1GBurnupMethods(TestCase):

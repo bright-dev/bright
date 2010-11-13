@@ -533,12 +533,38 @@ void Reactor1G::calcSubStreams()
     OutACT = IsosOut.getACT();
 };
 
+
+double Reactor1G::calc_deltaR()
+{
+    //Calculates the deltaR of the reactor with the current IsosIn
+    foldMassWeights();
+    deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D");
+    return deltaR;
+};
+
+double Reactor1G::calc_deltaR(CompDict cd)
+{
+    //Calculates the deltaR of the reactor with the current IsosIn
+    IsosIn = MassStream (cd);
+    return calc_deltaR();
+};
+
+double Reactor1G::calc_deltaR(MassStream ms)
+{
+    //Calculates the deltaR of the reactor with the current IsosIn
+    IsosIn = ms;
+    return calc_deltaR();
+};
+
+
 double Reactor1G::calcTruCR()
 {
     //Calculates the reactor's transuranic conversion ratio.
     TruCR = (InTRU.mass - OutTRU.mass) / (BUd/935.0);
     return TruCR;
 };
+
+
 
 FluencePoint Reactor1G::FluenceAtBU(double BU)
 {

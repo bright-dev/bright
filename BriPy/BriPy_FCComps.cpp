@@ -330,6 +330,10 @@ BOOST_PYTHON_MODULE(FCComps)
     MassStream (Reactor1G::*Reactor1G_doCalc_CD)(CompDict)   = &Reactor1G::doCalc;
     MassStream (Reactor1G::*Reactor1G_doCalc_MS)(MassStream) = &Reactor1G::doCalc;
         
+    double (Reactor1G::*Reactor1G_calc_deltaR_NA)()           = &Reactor1G::calc_deltaR;
+    double (Reactor1G::*Reactor1G_calc_deltaR_CD)(CompDict)   = &Reactor1G::calc_deltaR;
+    double (Reactor1G::*Reactor1G_calc_deltaR_MS)(MassStream) = &Reactor1G::calc_deltaR;
+        
     bp::class_< Reactor1G, bp::bases<FCComp> >("Reactor1G", "One-Group Nuclear Reactor Fuel Cycle Component",  bp::init<>() )
         //Basic MassStream Properties
         .add_property("B",                   &Reactor1G::get_B,                   &Reactor1G::set_B)
@@ -400,6 +404,7 @@ BOOST_PYTHON_MODULE(FCComps)
         .add_property("OutLAN",              &Reactor1G::get_OutLAN,             &Reactor1G::set_OutLAN)
         .add_property("OutACT",              &Reactor1G::get_OutACT,             &Reactor1G::set_OutACT)
 
+        .add_property("deltaR",              &Reactor1G::get_deltaR,             &Reactor1G::set_deltaR)
         .add_property("TruCR",               &Reactor1G::get_TruCR,              &Reactor1G::set_TruCR)
 
         //The following attributes are read only!
@@ -435,6 +440,10 @@ BOOST_PYTHON_MODULE(FCComps)
         .def("BUd_BisectionMethod", &Reactor1G::BUd_BisectionMethod)
         .def("Run_PNL",             &Reactor1G::Run_PNL)
         .def("Calibrate_PNL_2_BUd", &Reactor1G::Calibrate_PNL_2_BUd)
+
+        .def("calc_deltaR", Reactor1G_calc_deltaR_NA)
+        .def("calc_deltaR", Reactor1G_calc_deltaR_CD)
+        .def("calc_deltaR", Reactor1G_calc_deltaR_MS)
 
         .def("doCalc", Reactor1G_doCalc_NA)
         .def("doCalc", Reactor1G_doCalc_CD)

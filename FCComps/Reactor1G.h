@@ -191,6 +191,7 @@ public:
     MassStream OutLAN; 						//Output Lanthinide MassStream
     MassStream OutACT; 						//Output Actinide MassStream
 
+    double deltaR;                          // The production rate subtracted by the destruction rate at TargetBU
     double TruCR;							//Transuranic Conversion Ratio
 
     Data_F_ SigmaFa_F_;						//Fuel Macro Absorption XS, Sigma^F_a(F)
@@ -277,6 +278,7 @@ public:
     MassStream                    get_OutLAN()              const {return OutLAN;};
     MassStream                    get_OutACT()              const {return OutACT;};
 
+    double                        get_deltaR()              const {return deltaR;};
     double                        get_TruCR()               const {return TruCR;};
 
     Data_F_                       get_SigmaFa_F_()          const {return SigmaFa_F_;};
@@ -336,6 +338,7 @@ public:
     void set_OutLAN(MassStream ms)                                  {OutLAN = ms;};
     void set_OutACT(MassStream ms)                                  {OutACT = ms;};
 
+    void set_deltaR(double dR)                                      {deltaR = dR;};
     void set_TruCR(double tcr)                                      {TruCR = tcr;};
 
     //Public access functions
@@ -349,6 +352,10 @@ public:
     void         calcOutIso();
     void         calcSubStreams();
     double       calcTruCR();
+
+    double       calc_deltaR();
+    double       calc_deltaR(CompDict);
+    double       calc_deltaR(MassStream);
 
     FluencePoint FluenceAtBU(double);
     double       batchAve(double, std::string = "K");
