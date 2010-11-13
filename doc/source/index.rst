@@ -34,7 +34,7 @@ Or you may simply branch from the trunk using git::
 
     git clone git://github.com/bright-dev/bright.git
 
-Additionally, a `Windows build is provided here <http://github.com/bright-dev/bright/raw/master/BriPy/dist/BriPy-0.23.win32-py2.6.msi>`_ (Right-click, 'Save Link As').
+Additionally, a `Windows build is provided here <http://nukestar.me.utexas.edu/scopatz/BriPy/BriPy-0.23.win32-py2.6.msi>`_.
 
 Lastly, you can join up as a Bright developer at 
 `the Google groups page <http://groups.google.com/group/bright-dev>`_.
