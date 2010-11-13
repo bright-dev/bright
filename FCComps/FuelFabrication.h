@@ -78,6 +78,40 @@ public:
     //Public access functions
     void initialize(MassStreams, MassWeights, Reactor1G *);
     void calc_deltaRs();
+
+    MassStream calc_core_input();
+    void calc_mass_ratio();
 };
+
+
+class BadFuelWeights : public std::exception
+{
+//Exception for valid fuel weights.
+public:
+    double k_a;
+    double k_b;
+    
+    BadFuelWeights () {};
+    ~BadFuelWeights () throw () {};
+
+    BadFuelWeights (double ka, double kb)
+    {
+        k_a = ka;
+        k_b = kb;
+    };    
+    
+    static char * name ()
+    {
+        return (char *) "BadFuelWeights";
+    };
+    
+    virtual const char* what() const throw()
+    {
+        std::string BFWstr ("BadFuelWeights: Multiplication Factor Opperates on Range [");
+        BFWstr + k_a + ", " + k_b + "]";
+        return (const char *) BFWstr.c_str();
+    };
+};
+
 
 #endif

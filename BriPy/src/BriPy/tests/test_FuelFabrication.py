@@ -101,7 +101,6 @@ class TestFuelFabricationConstructors(TestCase):
 
         assert_equal(set(ff.params2track), set(["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
-
     def test_FuelFabrication_6(self):
         # Reactor to use
         rp = ReactorParameters()
@@ -211,6 +210,42 @@ class TestFuelFabricationAttributes(TestCase):
             assert_equal(self.ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
 
 
+
+class TestFuelFabricationMethodss(TestCase):
+    """Tests that the FuelFabrication methods work."""
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        BriPy.load_isos2track_hdf5(libfile)
+
+        r1g = Reactor1G(default_rp)
+        r1g.loadLib(libfile)
+        cls.r1g = r1g
+
+        u235 = MassStream({922350: 1.0}, 1.0, "U-235")
+        u238 = MassStream({922380: 1.0}, 1.0, "U-238")
+        mss = {"U235": u235, "U238": u238}
+        cls.mss = mss
+
+        mws = {"U235": -1.0, "U238": -1.0}
+        cls.mws = mws
+
+        cls.ff = FuelFabrication(mss, mws, cls.r1g)
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+    def test_calc_deltaRs(self):
+        #self.ff.calc_deltaRs()
+
+        keys = ["U235", "U238"]
+        assert_equal(set(self.ff.deltaRs.keys()), set(keys))
+
+        assert(self.ff.deltaRs["U238"] <= self.ff.deltaRs["U235"])
+
+        print self.ff.deltaRs
         
 
 if __name__ == "__main__":

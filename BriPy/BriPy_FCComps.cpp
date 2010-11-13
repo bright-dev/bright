@@ -501,7 +501,9 @@ BOOST_PYTHON_MODULE(FCComps)
 
         // Useful Functions
         .def("initialize", &FuelFabrication::initialize)
-        .def("calc_deltaRs", &FuelFabrication::calc_deltaRs)
+        .def("calc_mass_ratio", &FuelFabrication::calc_mass_ratio)
+
+        //.def("calc_deltaRs", &FuelFabrication::calc_deltaRs) // Segfaulting in Python tests for some unknown reason
     ;
 
 };
