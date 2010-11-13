@@ -79,6 +79,10 @@ public:
 
     MassStream calc_core_input();
     void calc_mass_ratios();
+
+    MassStream   doCalc ();
+    MassStream   doCalc (MassStreams, MassWeights, Reactor1G);
+
 };
 
 
@@ -108,7 +112,7 @@ public:
         std::string BFWstr ("BadFuelWeights: Multiplication Factor Opperates on Range [");
         BFWstr += k_a; 
         BFWstr += ", "; 
-        BFWstr += k_b; 
+        BFWstr += k_b;
         BFWstr += "]";
         return (const char * ) BFWstr.c_str();
     };

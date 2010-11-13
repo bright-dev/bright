@@ -279,6 +279,29 @@ class TestFuelFabricationMethodss(TestCase):
         assert_almost_equal(core_input.comp[922350], self.ff.mass_weights_out["U235"])
         assert_almost_equal(core_input.comp[922380], self.ff.mass_weights_out["U238"])
 
+    def test_doCalc1(self):
+        core_input = self.ff.doCalc()
+
+        assert_equal(core_input.mass, 1.0)
+        assert_equal(core_input.name, "CoreInput")
+
+        assert_almost_equal(core_input.comp[922350], self.ff.mass_weights_out["U235"])
+        assert_almost_equal(core_input.comp[922380], self.ff.mass_weights_out["U238"])
+
+    def test_doCalc2(self):
+        r1g = self.r1g
+        r1g.name = "r1g name"
+
+        core_input = self.ff.doCalc(self.mss, self.mws, r1g)
+
+        assert_equal(self.ff.reactor.name, "r1g name")
+
+        assert_equal(core_input.mass, 1.0)
+        assert_equal(core_input.name, "CoreInput")
+
+        assert_almost_equal(core_input.comp[922350], self.ff.mass_weights_out["U235"])
+        assert_almost_equal(core_input.comp[922380], self.ff.mass_weights_out["U238"])
+
 
 
 if __name__ == "__main__":

@@ -482,6 +482,10 @@ BOOST_PYTHON_MODULE(FCComps)
     dict2map<std::string, MassStream *>();
     bp::to_python_converter< MassStreams, map2dict<std::string, MassStream *> >();
 
+    // FuelFabrication Method Function Overloads
+    MassStream (FuelFabrication::*FuelFabrication_doCalc_NA)()                                    = &FuelFabrication::doCalc;
+    MassStream (FuelFabrication::*FuelFabrication_doCalc_RI)(MassStreams, MassWeights, Reactor1G) = &FuelFabrication::doCalc;
+
     // Fuel Fabrication Facility
     bp::class_< FuelFabrication, bp::bases<FCComp> >("FuelFabrication", "Fuel Fabrication Facility", bp::init<>() )
         // Class Attributes
@@ -504,6 +508,8 @@ BOOST_PYTHON_MODULE(FCComps)
         .def("calc_core_input",  &FuelFabrication::calc_core_input)
         .def("calc_mass_ratios", &FuelFabrication::calc_mass_ratios)
 
+        .def("doCalc", FuelFabrication_doCalc_NA)
+        .def("doCalc", FuelFabrication_doCalc_RI)
     ;
 
 };

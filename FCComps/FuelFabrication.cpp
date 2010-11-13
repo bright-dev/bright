@@ -215,3 +215,17 @@ void FuelFabrication::calc_mass_ratios()
         std::cout << "\n\n";
     
 };
+
+
+MassStream FuelFabrication::doCalc()
+{
+    calc_core_input();
+    return calc_core_input();
+};
+
+
+MassStream FuelFabrication::doCalc(MassStreams mss, MassWeights mws_in, Reactor1G r)
+{
+    initialize(mss, mws_in, r);
+    return doCalc();
+};
