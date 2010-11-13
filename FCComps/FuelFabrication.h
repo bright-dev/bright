@@ -106,8 +106,11 @@ public:
     virtual const char* what() const throw()
     {
         std::string BFWstr ("BadFuelWeights: Multiplication Factor Opperates on Range [");
-        BFWstr + k_a + ", " + k_b + "]";
-        return (const char *) BFWstr.c_str();
+        BFWstr += k_a; 
+        BFWstr += ", "; 
+        BFWstr += k_b; 
+        BFWstr += "]";
+        return (const char * ) BFWstr.c_str();
     };
 };
 

@@ -269,6 +269,17 @@ class TestFuelFabricationMethodss(TestCase):
 
         assert(self.ff.mass_weights_out["U235"] <= self.ff.mass_weights_out["U238"])
 
+    def test_calc_mass_ratios(self):
+        self.ff.calc_mass_ratios()
+        core_input = self.ff.calc_core_input()
+
+        assert_equal(core_input.mass, 1.0)
+        assert_equal(core_input.name, "CoreInput")
+
+        assert_almost_equal(core_input.comp[922350], self.ff.mass_weights_out["U235"])
+        assert_almost_equal(core_input.comp[922380], self.ff.mass_weights_out["U238"])
+
+
 
 if __name__ == "__main__":
     nose.main()
