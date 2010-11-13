@@ -101,6 +101,11 @@ class TestFuelFabricationConstructors(TestCase):
 
         assert_equal(set(ff.params2track), set(["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
+        assert_equal(ff.reactor.name, "r1g")
+        r1g.name = "r1g name"
+        ff.initialize(mss, mws, r1g)
+        assert_equal(ff.reactor.name, "r1g name")
+
     def test_FuelFabrication_6(self):
         # Reactor to use
         rp = ReactorParameters()
@@ -127,6 +132,11 @@ class TestFuelFabricationConstructors(TestCase):
         assert_equal(ff.mass_weights_in, mws)
 
         assert_equal(set(ff.params2track), set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
+
+        assert_equal(ff.reactor.name, "r1g")
+        r1g.name = "r1g name"
+        ff.initialize(mss, mws, r1g)
+        assert_equal(ff.reactor.name, "r1g name")
 
     def test_FuelFabrication_7(self):
         # Reactor to use
@@ -156,6 +166,11 @@ class TestFuelFabricationConstructors(TestCase):
         assert_equal(set(ff.params2track), set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
         assert_equal(ff.name, "ff")
+
+        assert_equal(ff.reactor.name, "r1g")
+        r1g.name = "r1g name"
+        ff.initialize(mss, mws, r1g)
+        assert_equal(ff.reactor.name, "r1g name")
 
 class TestFuelFabricationAttributes(TestCase):
     """Tests that the FuelFabrication basic data attributes work."""
@@ -238,15 +253,22 @@ class TestFuelFabricationMethodss(TestCase):
         general_teardown()
 
     def test_calc_deltaRs(self):
-        #self.ff.calc_deltaRs()
+        self.ff.calc_deltaRs()
 
         keys = ["U235", "U238"]
         assert_equal(set(self.ff.deltaRs.keys()), set(keys))
 
         assert(self.ff.deltaRs["U238"] <= self.ff.deltaRs["U235"])
 
-        print self.ff.deltaRs
-        
+
+    def test_calc_mass_ratios(self):
+        self.ff.calc_mass_ratios()
+
+        keys = ["U235", "U238"]
+        assert_equal(set(self.ff.mass_weights_out.keys()), set(keys))
+
+        assert(self.ff.mass_weights_out["U235"] <= self.ff.mass_weights_out["U238"])
+
 
 if __name__ == "__main__":
     nose.main()

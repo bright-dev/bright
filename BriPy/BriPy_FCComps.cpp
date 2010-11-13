@@ -490,9 +490,7 @@ BOOST_PYTHON_MODULE(FCComps)
         .add_property("mass_weights_out", &FuelFabrication::get_mass_weights_out, &FuelFabrication::set_mass_weights_out)
         .add_property("deltaRs", &FuelFabrication::get_deltaRs, &FuelFabrication::set_deltaRs)
 
-        // FIXME
-        // Can't get reactor object back easily....
-        //.add_property("reactor", &FuelFabrication::get_reactor, &FuelFabrication::set_reactor)
+        .add_property("reactor", &FuelFabrication::get_reactor, &FuelFabrication::set_reactor)
 
         // Fuel Fabrication Component Constructor
         .def(bp::init< std::string >())
@@ -501,9 +499,9 @@ BOOST_PYTHON_MODULE(FCComps)
 
         // Useful Functions
         .def("initialize", &FuelFabrication::initialize)
-        .def("calc_mass_ratio", &FuelFabrication::calc_mass_ratio)
+        .def("calc_mass_ratios", &FuelFabrication::calc_mass_ratios)
 
-        //.def("calc_deltaRs", &FuelFabrication::calc_deltaRs) // Segfaulting in Python tests for some unknown reason
+        .def("calc_deltaRs", &FuelFabrication::calc_deltaRs) 
     ;
 
 };

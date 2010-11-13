@@ -46,16 +46,16 @@ public:
     MassWeights mass_weights_out;
     MassDeltaRs deltaRs;
 
-    Reactor1G * reactor;
+    Reactor1G reactor;
 
     //Reactor1G Constructors
     FuelFabrication ();
     FuelFabrication (std::string);
     FuelFabrication (std::set<std::string>, std::string = "");
     FuelFabrication (MassStreams, MassWeights, Reactor1G, std::string = "");
-    FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::string = "");
+    //FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::string = "");
     FuelFabrication (MassStreams, MassWeights, Reactor1G, std::set<std::string>, std::string = "");
-    FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::set<std::string>, std::string = "");
+    //FuelFabrication (MassStreams, MassWeights, Reactor1G *, std::set<std::string>, std::string = "");
     ~FuelFabrication ();
     
     //Get Functions
@@ -65,7 +65,7 @@ public:
 
     MassDeltaRs get_deltaRs() const {return deltaRs;};
 
-    Reactor1G get_reactor() const {return *reactor;};
+    Reactor1G get_reactor() const {return reactor;};
 
     //Set Functions
     void set_mass_streams(MassStreams mss) {mass_streams = mss;};
@@ -73,14 +73,15 @@ public:
     void set_mass_weights_out(MassWeights mws_out) {mass_weights_out = mws_out;};
     void set_deltaRs(MassDeltaRs drs) {deltaRs = drs;};
 
-    void set_reactor(Reactor1G r) {reactor = &r;};
+    void set_reactor(Reactor1G r) {reactor = r;};
 
     //Public access functions
-    void initialize(MassStreams, MassWeights, Reactor1G *);
+    //void initialize(MassStreams, MassWeights, Reactor1G *);
+    void initialize(MassStreams, MassWeights, Reactor1G);
     void calc_deltaRs();
 
     MassStream calc_core_input();
-    void calc_mass_ratio();
+    void calc_mass_ratios();
 };
 
 
