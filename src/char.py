@@ -123,7 +123,7 @@ def main():
     #### Script ####
     ################
 
-    #Prep work
+    # Prep work
     if reactor not in os.listdir('.'):
         os.mkdir(reactor)
     os.chdir(reactor)
@@ -153,25 +153,20 @@ def main():
         print(failure("Currently, 'MCNP' and 'Serpent' are accpeted values."))
         raise SystemExit
 
-    #Make the input file unless otherwise specified.
+    # Make the input file unless otherwise specified.
     if (options.MakeInput) and (not options.FetchFiles) and (not options.PID):
         if isinstance(n_transporter, NCodeSerpent):
             n_transporter.make_input()
         elif isinstance(n_transporter, NCodeMCNP):
             n_transporter.make_input(options.NoBurnBool, options.NoPertBool)
 
-    #Run MCNP
+    # Run Transport code
     if options.RunTransport:
-#        metasci.SafeRemove(reactor + ".o")
-#        metasci.SafeRemove(reactor + ".m")
-#        metasci.SafeRemove(reactor + ".r")
-#        metasci.SafeRemove(reactor + ".s")
-
-        runchar.Make_Run_Script(options.RunWith, options.Local)
+        runchar.make_run_script(n_transporter, options.RunWith, options.Local)
         if options.Local:
-            runchar.Run_Transport_Local(options.RunWith)
+            runchar.run_transport_local(options.RunWith)
         else:
-            runchar.Run_Transport_Remote(options.RunWith)
+            runchar.run_transport_remote(options.RunWith)
 
     #Fetches files from remote server
     if options.FetchFiles:

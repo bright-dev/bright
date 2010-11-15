@@ -43,7 +43,8 @@ class NCodeMCNP(NCode):
 
         # Remote file lists
         self.place_remote_files = [reactor + '.i']
-        self.fetch_remote_files = [reactor + '.i', reactor + '.o', 'runlog.txt', "run_{0}.*".format(reactor)]
+        self.fetch_remote_files = [reactor + '.i', reactor + '.o', 'runlog.txt', "run_{0}.*".format(reactor), 
+            reactor + '.m', reactor + '.r', reactor + '.s']
 
     def make_input_burn(self):
         """Generates the Burn card string for an MCNP inputfile."""
@@ -226,7 +227,7 @@ class NCodeMCNP(NCode):
         return
 
 
-    def run_script_fill_values(self):
+    def run_script_fill_values(self, runflag=''):
         """Fills the runscript with values appropriate to MCNP."""
 
         rsfv = {}

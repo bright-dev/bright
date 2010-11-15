@@ -289,8 +289,8 @@ class NCodeSerpent(NCode):
         return
 
 
-    def run_script_fill_values(self):
-        """"Sets the fill values for running serpent.""
+    def run_script_fill_values(self, runflag=''):
+        """Sets the fill values for running serpent."""
 
         rsfv = {}
 
@@ -301,15 +301,15 @@ class NCodeSerpent(NCode):
             rsfv['PBS_Walltime'] = '\n'
         
         # Set Schedular input an output files
-        rsfv['PBS_Stagein']  = ''
-        rsfv['PBS_Stageout'] = ''
+        rsfv['PBS_Stagein_Settings']  = ''
+        rsfv['PBS_Stageout_Settings'] = ''
         if runflag in ["PBS"]:
             for f in self.place_remote_files:
-                rsfv['PBS_Stagein'] += "#PBS -W stagein=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
+                rsfv['PBS_Stagein_Settings'] += "#PBS -W stagein=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
 
             for f in self.fetch_remote_files:
                 if f not in self.place_remote_files:
-                    rsfv['PBS_Stageout']  = "#PBS -W stageout=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
+                    rsfv['PBS_Stageout_Settings']  = "#PBS -W stageout=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
 
         # Set Transport Job Context
         rsfv['Transport_Job_Context'] = self.run_str + " -version"
@@ -325,7 +325,6 @@ class NCodeSerpent(NCode):
                 NumberCPUs = 1
             mpi_flag = '-mpi {0}'.format(NumberCPUs)
 
-        rsfv['Run_Commands'] += "{0} {1} {2}\n".format(self.run_str, reactor, mpi_flag)
+        rsfv['Run_Commands'] = "{0} {1} {2}\n".format(self.run_str, reactor, mpi_flag)
 
         return rsfv
-

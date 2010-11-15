@@ -1,10 +1,12 @@
+import os
+
 ######################
 ### CHAR Libraries ###
 ######################
 from char import *
 
 
-def make_run_script(runflag, localflag=True):
+def make_run_script(n_transporter, runflag, localflag=True):
     run_fill = {}
 
     if runflag in ["PBS"]:
@@ -39,14 +41,16 @@ def make_run_script(runflag, localflag=True):
     else:
         run_fill['PBS_Job_Context']  = ''
 
-    run_fill.update(n_transporter.run_script_fill_values())
+    run_fill.update(n_transporter.run_script_fill_values(runflag))
 
     # Fill the template
-    with open('templates/run_script.sh.template', 'r') as f:
+    with open('../templates/run_script.sh.template', 'r') as f:
         run_script_template = f.read()
 
     with open(runscript, 'w') as f:
         f.write(run_script_template.format(**run_fill))
+
+    os.chmod(runscript, 0755)
 
     return
 
@@ -60,7 +64,7 @@ def run_transport_local(runflag):
     t2 = time.time()
     if 0 < verbosity:
         print()
-        print(mesage("Transport executed in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
+        print(message("Transport executed in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
         print()
     return
 
