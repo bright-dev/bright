@@ -30,8 +30,8 @@ from metasci.colortext import failure
 #################
 ### CHAR Libs ###
 #################
-#import glbchar
 defchar = None
+import glbchar
 
 import graphchar
 import runchar
@@ -110,12 +110,20 @@ def main():
 
     (options, args) = parser.parse_args()
 
+    # Make sure we have a configureation file before proceeding
+    if len(args) == 0:
+        print(failure("Please specify a configuration file for CHAR."))
+        raise SystemExit
+
     # Load the CHAR definition file early, into its own namespace
     absolute_path = os.path.abspath(args[0])
     dir, file = os.path.split(absolute_path)
     sys.path.append(dir)
     mod_name = file.rpartition('.')[0]
     defchar = __import__(mod_name)
+
+    # Update defchar adding more useful values.
+    defchar = glbchar.defchar_update(defchar)
 
     #intial command-line options protocol.
     Quiet = options.Quiet
@@ -135,22 +143,22 @@ def main():
     ################
 
     # Prep work
-    if reactor not in os.listdir('.'):
-        os.mkdir(reactor)
-    os.chdir(reactor)
+    if defchar.reactor not in os.listdir('.'):
+        os.mkdir(defchar.reactor)
+    os.chdir(defchar.reactor)
 
     # Set the transport code type
     if options.RunWith == "NONE":
         try:
-            transport_code = TransportCode.lower()
+            transport_code = defchar.transport_code.lower()
         except:
-            print(failure("Transport code type not set!"))
-            print(failure("  Use either the '-w' command line option, or"))
-            print(failure("  use the 'TransportCode' flag in defchar.py."))
-            print(failure("Currently, 'MCNP' and 'Serpent' are accpeted values."))
-            print()
-            print(failure("Note: you must have the appropriate code installed on"))
-            print(failure("your machine for this to work."))
+            print(failure("Transport code type not set!\n"
+                          "  Use either the '-w' command line option, or\n"
+                          "  use the 'TransportCode' flag in defchar.py.\n"
+                          "Currently, 'MCNP' and 'Serpent' are accpeted values.\n"
+                          "\n"
+                          "Note: you must have the appropriate neutronics code\n"
+                          "installed on your machine for this to work."))
             raise SystemExit
     else:
         transport_code = options.RunWith.lower()
@@ -223,9 +231,9 @@ def main():
 
 
     #Clean up
-    metasci.SafeRemove(reactor + ".m")
-    metasci.SafeRemove(reactor + ".r")
-    metasci.SafeRemove(reactor + ".s")
+    metasci.SafeRemove(defchar.reactor + ".m")
+    metasci.SafeRemove(defchar.reactor + ".r")
+    metasci.SafeRemove(defchar.reactor + ".s")
     os.chdir('..')
 
 

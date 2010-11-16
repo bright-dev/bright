@@ -6,23 +6,6 @@ import isoname
 import metasci.nuke as msn
 from metasci import SafeRemove
 
-""" 
-from char import reactor
-from char import UnitCellHeight, FuelCellRadius, CladCellRadius, UnitCellPitch, \
-    FuelDensity, CladDensity, CoolDensity, FuelSpecificPower
-from char import ISO_FLAG
-from char import GroupStructure
-from char import FMdic, dicFM
-
-from char import FineTimeIndex, FineTime
-from char import CoarseTimeIndex, CoarseTime
-from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
-from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
-from char import metastabletrak, metastableMCNP
-from char import mat_number, number_mat
-from char import InitialFuelStream
-from char import kParticles, kCycles, kCyclesSkip
-"""
 from char import defchar
 
 from n_code import NCode
@@ -32,6 +15,10 @@ class NCodeMCNP(NCode):
     """A MCNP neutronics code wrapper class."""
 
     def __init__(self):
+        # Reload defchar, just in case.
+        global defchar
+        from char import defchar
+
         self.name    = "MCNP"
         self.run_str = "mcnp"
 
@@ -127,7 +114,7 @@ class NCodeMCNP(NCode):
         tline += "FC24 XS\n"
         l2w = "fm24 "
         for mnum in sorted(mat_number.values()):
-            for fm in FMdic.values():
+            for fm in defchar.tallies.values():
                 l2w = l2w + "(1 {0:d} {1:d}) ".format(mnum, fm)
         tline += msn.Line2MCNP(l2w) 
         tline += "\n" 
@@ -400,7 +387,7 @@ class NCodeMCNP(NCode):
             elif InXS and (ls[0] == 'multiplier'):
                 self.AtMult = True
                 self.mat = isoname.MCNP_2_LLAAAM( number_mat[ ls[-2] ] )
-                self.fm = dicFM[ ls[-1] ]
+                self.fm = defchar.tallies_reversed[ ls[-1] ]
                 lib = '{0}_{1}.lib'.format(mat, fm)
                 if lib in self.mult.keys():
                     self.mult[lib].append([])
@@ -759,9 +746,10 @@ class NCodeMCNP(NCode):
         ##############################
         ### Make Multiplier Arrays ###
         ##############################
-        for key in FMdic.keys():
+        for key in defchar.tallies.keys():
             libfile.createGroup("/Coarse", key)
-        for key in FMdic.keys():
+
+        for key in defchar.tallies.keys():
             libfile.createGroup("/Fine", key)
 
         # Coarse Data

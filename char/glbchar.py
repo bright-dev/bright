@@ -16,7 +16,7 @@ import metasci
 ######################
 ### CHAR Libraries ###
 ######################
-from defchar import *
+from char import defchar
 
 ########################
 ### Global Functions ###
@@ -26,28 +26,22 @@ from defchar import *
 ##########################
 #### Global Variables ####
 ##########################
-dicFM = metasci.ReverseDic(FMdic)
 
-inputfile = reactor + ".i"
-runscript = 'run_{0}.sh'.format(reactor)
-RemoteDir = RemoteDir + "runchar/{0}/".format(reactor)
-
-class RC:
-    def __init__(self):
-        self.RemoteURL  = RemoteURL
-        self.RemoteUser = RemoteUser
-        self.RemoteDir  = RemoteDir
+class RemoteConnection(object):
+    def __init__(self, url='', user='', dir=''):
+        self.url  = url
+        self.user = user
+        self.dir  = dir
 
     def run(self, cmd):
-        return subprocess.call("ssh {RemoteUser}@{RemoteURL} \"{remcmd}\"".format(remcmd=cmd, **self), shell=True)
+        return subprocess.call("ssh {user}@{url} \"{remcmd}\"".format(remcmd=cmd, **self), shell=True)
 
     def put(self, loc_file, rem_file):
-        return subprocess.call("scp {lf} {RemoteUser}@{RemoteURL}:{rf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+        return subprocess.call("scp {lf} {user}@{url}:{rf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
 
     def get(self, rem_file, loc_file):
-        return subprocess.call("scp {RemoteUser}@{RemoteURL}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+        return subprocess.call("scp {user}@{url}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
 
-RemoteConnection = RC()
 
 #######################
 ### Make Time Steps ###
@@ -151,4 +145,27 @@ for iso in CoreLoad_MCNP:
 del mnum 
 number_mat = metasci.ReverseDic(mat_number)
 
-InitialFuelStream = MassStream.MassStream(InitialFuelForm)
+
+def defchar_update(defchar):
+    """Takes the defchar namespace, updates it, and returns it."""
+    defchar.tallies_reversed = metasci.ReverseDic(defchar.tallies)
+
+    # Name some files and directories
+    defchar.input_file = defchar.reactor + ".i"
+    defchar.run_script = 'run_{0}.sh'.format(defchar.reactor)
+
+    if hasattr(defchar, 'remote_dir'):
+        defchar.remote_dir = defchar.remote_dir + "runchar/{0}/".format(defchar.reactor)
+
+    # Setup a remote connection instance
+    rckw = {}
+    if hasattr(defchar, 'remote_url'):
+        rckw['url'] = defcahr.remote_url
+    if hasattr(defchar, 'remote_user'):
+        rckw['user'] = defcahr.remote_user
+    if hasattr(defchar, 'remote_dir'):
+        rckw['dir'] = defcahr.remote_dir
+    defchar.remote_connection = RemoteConnection(**rckw)
+
+    defchar.initial_fuel_stream = MassStream.MassStream(defchar.initial_fuel_form)
+    return defchar

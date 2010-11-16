@@ -5,15 +5,9 @@ import isoname
 import metasci.nuke as msn
 import metasci.nuke.Origen as msno
 from metasci import SafeRemove
-from metasci.colortext import *
+from metasci.colortext import message
 
-""" 
-from char import reactor
-from char import FineTimeIndex, FineTime
-from char import CoarseTimeIndex, CoarseTime
-from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
-from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
-"""
+from char import defchar
 
 from n_code import NCode
 
@@ -22,6 +16,10 @@ class NCodeORIGEN(NCode):
     """An ORIGEN neutronics code wrapper class."""
 
     def __init__(self):
+        # Reload defchar, just in case.
+        global defchar
+        from char import defchar
+
         self.name    = "ORIGEN"
 
         # Try to find & set the origen fast or therm flag.

@@ -6,25 +6,8 @@ import numpy as np
 import metasci.nuke as msn
 from metasci import SafeRemove
 from MassStream import MassStream
-from metasci.colortext import *
+from metasci.colortext import message, failure
 
-""" 
-from char import reactor
-from char import GroupStructure
-from char import FMdic, dicFM
-from char import verbosity
-
-from char import FuelDensity, CladDensity, CoolDensity
-from char import FuelCellRadius, CladCellRadius, UnitCellPitch
-from char import FineTimeIndex, FineTime
-from char import CoarseTimeIndex, CoarseTime
-from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
-from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
-from char import metastabletrak, metastableMCNP
-from char import mat_number, number_mat
-from char import InitialFuelStream
-from char import kParticles, kCycles, kCyclesSkip
-"""
 from char import defchar
 
 from n_code import NCode
@@ -34,19 +17,26 @@ class NCodeSerpent(NCode):
     """A Serpent neutronics code wrapper class."""
 
     def __init__(self):
+        # Reload defchar, just in case.
+        global defchar
+        from char import defchar
+
         self.name    = "Serpent"
         self.run_str = "sss-dev"
 
-        try:
-            from defchar import ISO_FLAG
-            self.iso_flag = ISO_FLAG
-        except ImportError:
+        if hasattr(defchar, 'ISO_FLAG'):
+            self.iso_flag = defchar.ISO_FLAG
+        else:
             self.iso_flag = ''
 
         # Remote file lists
-        self.place_remote_files = [reactor]
-        self.fetch_remote_files = [reactor, reactor + '.seed', reactor + '_geom1.png', reactor + '_mesh1.png', 
-            reactor + '_lat_res.m']
+        self.place_remote_files = [defchar.reactor]
+        self.fetch_remote_files = [defchar.reactor, 
+                                   defchar.reactor + '.seed', 
+                                   defchar.reactor + '_geom1.png', 
+                                   defchar.reactor + '_mesh1.png', 
+                                   defchar.reactor + '_lat_res.m', 
+                                   ]
 
     def make_input_material_weights(self, comp, mass_weighted=True):
         """This function takes an isotopic vector, comp, and returns a serpent string representation.
@@ -78,13 +68,12 @@ class NCodeSerpent(NCode):
             
 
     def make_input_fuel(self):
-        try:
-            from defchar import FuelForm_MassWeighted
-            mass_weighted = FuelForm_MassWeighted
-        except ImportError:
+        if hasattr(defchar, 'fuel_form_mass_weighted'):
+            mass_weighted = defchar.fuel_form_mass_weighted
+        else:
             mass_weighted = True
         
-        return self.make_input_material_weights(InitialFuelStream.comp, mass_weighted)
+        return self.make_input_material_weights(defchar.initial_fuel_stream.comp, mass_weighted)
 
     def make_input_cladding(self):
         # Try to load cladding stream
@@ -260,15 +249,15 @@ class NCodeSerpent(NCode):
 
     def make_input(self):
         serpent_fill = {
-            'reactor':     reactor,
+            'reactor':     defchar.reactor,
 
-            'FuelDensity': '{0:.5G}'.format(FuelDensity),
-            'CladDensity': '{0:.5G}'.format(CladDensity),
-            'CoolDensity': '{0:.5G}'.format(CoolDensity),
+            'fuel_density': '{0:.5G}'.format(defchar.fuel_density),
+            'clad_density': '{0:.5G}'.format(defchar.clad_density),
+            'cool_density': '{0:.5G}'.format(defchar.cool_density),
 
-            'kParticles':  kParticles,
-            'kCycles':     kCycles,
-            'kCyclesSkip': kCyclesSkip,
+            'k_particles':  defchar.k_particles,
+            'k_cycles':     defchar.k_cycles,
+            'k_cycles_skip': defchar.k_cycles_skip,
             }
 
         # Set the material lines
@@ -283,10 +272,10 @@ class NCodeSerpent(NCode):
         serpent_fill.update(self.make_input_energy_groups())
 
         # Fill the template
-        with open('../templates/{0}.serpent.template'.format(reactor), 'r') as f:
+        with open('../templates/{0}.serpent.template'.format(defchat.reactor), 'r') as f:
             template_file = f.read()
 
-        with open(reactor, 'w') as f:
+        with open(defchar.reactor, 'w') as f:
             f.write(template_file.format(**serpent_fill))
 
         return
