@@ -5,6 +5,7 @@
 ############################
 from __future__ import print_function
 import os
+import sys
 import time
 import shutil
 import subprocess
@@ -24,12 +25,13 @@ import metasci
 import metasci.nuke as msn
 import metasci.graph as msg
 
-from metasci.colortext import *
+from metasci.colortext import failure
 
 #################
 ### CHAR Libs ###
 #################
-from glbchar import *
+#import glbchar
+defchar = None
 
 import graphchar
 import runchar
@@ -38,10 +40,12 @@ from n_code_origen  import NCodeORIGEN
 from n_code_serpent import NCodeSerpent
 
 def main():
+    global defchar
+
     ###########################
     ### Command Line Parser ###
     ###########################
-    usage = "usage: %prog [options]"
+    usage = "usage: %prog [options] confchar"
     parser = OptionParser(usage)
 
     parser.add_option("-q", "--quiet", action="store_true", dest="Quiet", 
@@ -105,6 +109,13 @@ def main():
         help="Removes the perturbation cards from the MCNP deck.")
 
     (options, args) = parser.parse_args()
+
+    # Load the CHAR definition file early, into its own namespace
+    absolute_path = os.path.abspath(args[0])
+    dir, file = os.path.split(absolute_path)
+    sys.path.append(dir)
+    mod_name = file.rpartition('.')[0]
+    defchar = __import__(mod_name)
 
     #intial command-line options protocol.
     Quiet = options.Quiet

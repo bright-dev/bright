@@ -1,6 +1,7 @@
 #!/usr/bin/env python
  
 from distutils.core import setup
+from setuptools.command.develop import develop
 #from distutils.extension import Extension
 
 setup(name="CHAR",
@@ -10,8 +11,8 @@ setup(name="CHAR",
 	author_email='scopatz@gmail.com',
 	url='http://www.scopatz.com/',
 	packages=['char'],
-	package_dir={'char': 'src'}, 
+	package_dir={'char': 'char'}, 
 	package_data={'char': ['templates/*', ' *.txt']},
-    scripts=['src/scripts/char'],
+    scripts=['char/scripts/char'],
 	)
 

@@ -7,12 +7,13 @@ import metasci.nuke.Origen as msno
 from metasci import SafeRemove
 from metasci.colortext import *
 
+""" 
 from char import reactor
-
 from char import FineTimeIndex, FineTime
 from char import CoarseTimeIndex, CoarseTime
 from char import CoreLoad_zzaaam, CoreLoad_LLAAAM, CoreLoad_MCNP
 from char import CoreTran_zzaaam, CoreTran_LLAAAM, CoreTran_MCNP
+"""
 
 from n_code import NCode
 

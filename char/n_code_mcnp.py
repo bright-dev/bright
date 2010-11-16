@@ -6,6 +6,7 @@ import isoname
 import metasci.nuke as msn
 from metasci import SafeRemove
 
+""" 
 from char import reactor
 from char import UnitCellHeight, FuelCellRadius, CladCellRadius, UnitCellPitch, \
     FuelDensity, CladDensity, CoolDensity, FuelSpecificPower
@@ -21,6 +22,8 @@ from char import metastabletrak, metastableMCNP
 from char import mat_number, number_mat
 from char import InitialFuelStream
 from char import kParticles, kCycles, kCyclesSkip
+"""
+from char import defchar
 
 from n_code import NCode
 
