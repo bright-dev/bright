@@ -2,9 +2,7 @@
 ### Standard Libraries ###
 ##########################
 from __future__ import print_function
-import os
 import subprocess
-from math import pi
 
 ##########################
 #### Custom Libraries ####
@@ -125,7 +123,8 @@ class RemoteConnection(object):
 
 def defchar_update(defchar):
     """Takes the defchar namespace, updates it, and returns it."""
-    defchar.tallies_reversed = metasci.ReverseDic(defchar.tallies)
+    if hasattr(defchar, 'tallies'):
+        defchar.tallies_reversed = metasci.ReverseDic(defchar.tallies)
 
     # Name some files and directories
     defchar.input_file = defchar.reactor + ".i"
@@ -137,11 +136,11 @@ def defchar_update(defchar):
     # Setup a remote connection instance
     rckw = {}
     if hasattr(defchar, 'remote_url'):
-        rckw['url'] = defcahr.remote_url
+        rckw['url'] = defchar.remote_url
     if hasattr(defchar, 'remote_user'):
-        rckw['user'] = defcahr.remote_user
+        rckw['user'] = defchar.remote_user
     if hasattr(defchar, 'remote_dir'):
-        rckw['dir'] = defcahr.remote_dir
+        rckw['dir'] = defchar.remote_dir
     defchar.remote_connection = RemoteConnection(**rckw)
 
     # Make Time Steps 

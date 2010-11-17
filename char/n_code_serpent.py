@@ -77,14 +77,13 @@ class NCodeSerpent(NCode):
 
     def make_input_cladding(self):
         # Try to load cladding stream
-        try:
-            from defchar import CladForm
-            CladStream = MassStream(CladForm)
-        except ImportError:
-            if 0 < verbosity:
+        if hasattr(defchar, 'clad_form'):
+            clad_stream = MassStream(defchar.clad_form)
+        else:
+            if 0 < defchar.verbosity:
                 print(message("Cladding not found.  Proceeding with standard zircaloy mixture."))
                 print()
-            CladForm = {
+            clad_form = {
                 # Natural Zirconium
                 400900: 0.98135 * 0.5145,
                 400910: 0.98135 * 0.1122,
@@ -121,105 +120,99 @@ class NCodeSerpent(NCode):
                 # We Need Oxygen!
                 80160:  0.00125,
                 }
-            CladStream = MassStream(CladForm)
+            clad_stream = MassStream(clad_form)
 
         # Try to find if the cladding form is mass or atomic weighted
-        try:
-            from defchar import CladForm_MassWeighted
-            mass_weighted = CladForm_MassWeighted
-        except ImportError:
+        if hasattr(defchar, 'clad_form_mass_weighted'):
+            mass_weighted = defchar.clad_form_mass_weighted
+        else:
             mass_weighted = True
         
-        return self.make_input_material_weights(CladStream.comp, mass_weighted)
+        return self.make_input_material_weights(clad_stream.comp, mass_weighted)
 
     def make_input_coolant(self):
         # Try to load coolant stream
-        try:
-            from defchar import CoolForm
-            CoolStream = MassStream(CoolForm)
-        except ImportError:
-            if 0 < verbosity:
+        if hasattr(defchar, 'cool_form'):
+            cool_stream = MassStream(defchar.cool_form)
+        else:
+            if 0 < defchar.verbosity:
                 print(message("Coolant not found.  Proceeding with borated light water."))
                 print()
             MW = (2 * 1.0) + (1 * 16.0) + (0.199 * 550 * 10.0**-6 * 10.0) + (0.801 * 550 * 10.0**-6 * 11.0)
-            CoolForm = {
+            cool_form = {
                 10010: (2 * 1.0) / MW,
                 80160: (1 * 16.0) / MW,
                 50100: (0.199 * 550 * 10.0**-6 * 10.0) / MW,
                 50110: (0.801 * 550 * 10.0**-6 * 11.0) / MW,
                 }
-            CoolStream = MassStream(CoolForm)
+            cool_stream = MassStream(cool_form)
 
         # Try to find if the coolant form is mass or atomic weighted
-        try:
-            from defchar import CoolForm_MassWeighted
-            mass_weighted = CoolForm_MassWeighted
-        except ImportError:
+        if hasattr(defchar, 'cool_form_mass_weighted'):
+            mass_weighted = defchar.cool_form_mass_weighted
+        else:
             mass_weighted = True
         
-        return self.make_input_material_weights(CoolStream.comp, mass_weighted)
+        return self.make_input_material_weights(cool_stream.comp, mass_weighted)
 
     def make_input_geometry(self):
         # Require
         geom = {
-            'FuelRadius': FuelCellRadius,
-            'CladRadius': CladCellRadius,
-            'CellPitch':  UnitCellPitch,
+            'fuel_radius': defchar.fuel_cell_radius,
+            'clad_radius': defchar.clad_cell_radius,
+            'cell_pitch':  defchar.unit_cell_pitch,
             }
 
         # Tries to add a void region, 
         # If there isn't space, cladding is used instead.
-        try:
-            from defchar import VoidCellRadius
-            geom['VoidRadius'] = VoidCellRadius
-        except ImportError:
-            geom['VoidRadius'] = FuelCellRadius + 0.0085
-            if CladCellRadius <= geom['VoidRadius']:
-                geom['VoidRadius'] = FuelCellRadius
+        if hasattr(defchar, 'void_cell_radius'):
+            geom['void_radius'] = defchar.void_cell_radius
+        else:
+            geom['void_radius'] = defchar.fuel_cell_radius + 0.0085
+            if defchar.clad_cell_radius <= geom['void_radius']:
+                geom['void_radius'] = defchar.fuel_cell_radius
 
         # Tries to get the lattice specification
         # If it isn't present, use a default 17x17 PWR lattice
-        try:
-            from defchar import Lattice
-            from defchar import LatticeXY
-            geom['Lattice']   = Lattice
-            geom['LatticeXY'] = LatticeXY
-        except ImportError:
-            if 0 < verbosity:
+        if hasattr(defchar, 'lattice') and hasattr(defchar, 'lattice_xy'):
+            geom['lattice']    = defchar.lattice
+            geom['lattice_xy'] = defchar.lattice_xy
+        else:
+            if 0 < defchar.verbosity:
                 print(message("Lattice specification not found."))
                 print(message("Using a default 17x17 PWR lattice."))
                 print()
-            geom['LatticeXY'] = 17
-            geom['Lattice']   = "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" + \
-                                "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" + \
-                                "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" + \
-                                "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+            geom['lattice_xy'] = 17
+            geom['lattice']    = ("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" 
+                                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" 
+                                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n")
 
         # Determine if lattice is symetric
-        lat = np.array(geom['Lattice'].split(), dtype='int')
-        lat = lat.reshape((geom['LatticeXY'], geom['LatticeXY']))
+        lat = np.array(geom['lattice'].split(), dtype='int')
+        lat = lat.reshape((geom['lattice_xy'], geom['lattice_xy']))
         lat_trans = lat.transpose()
         if (lat == lat_trans).all():    # Condition for symmetry; A = A^T
-            geom['SymFlag'] = ''
+            geom['sym_flag'] = ''
         else:
-            geom['SymFlag'] = '% The lattice is not symmetric! Forced to use whole geometry...\n%'
+            geom['sym_flag'] = '% The lattice is not symmetric! Forced to use whole geometry...\n%'
 
         # Set half of the lattice pitch.
-        half_lat_pitch = (float(geom['LatticeXY']) * UnitCellPitch) / 2.0
-        geom['HalfLatticePitch'] = "{0:.5G}".format(half_lat_pitch)
+        half_lat_pitch = (float(geom['lattice_xy']) * defchar.unit_cell_pitch) / 2.0
+        geom['half_lattice_pitch'] = "{0:.5G}".format(half_lat_pitch)
 
         return geom
 
@@ -236,20 +229,21 @@ class NCodeSerpent(NCode):
         e = {}
 
         # Set number of (serpent) groups
-        e['NGroups'] = len(GroupStructure) + 1
+        e['n_groups'] = len(defchar.group_structure) + 1
 
         # Set serpent energy group bounds.
-        gs = list(GroupStructure)
+        gs = list(defchar.group_structure)
         gs = str(gs)
         gs = gs[1:-1]
         gs = gs.replace(',', '')
-        e['GroupStructure'] = gs
+        e['group_structure'] = gs
 
         return e        
 
     def make_input(self):
         serpent_fill = {
-            'reactor':     defchar.reactor,
+            'reactor': defchar.reactor,
+            'xsdata':  defchar.serpent_xsdata,
 
             'fuel_density': '{0:.5G}'.format(defchar.fuel_density),
             'clad_density': '{0:.5G}'.format(defchar.clad_density),
@@ -272,11 +266,8 @@ class NCodeSerpent(NCode):
         serpent_fill.update(self.make_input_energy_groups())
 
         # Fill the template
-        with open('../templates/{0}.serpent.template'.format(defchat.reactor), 'r') as f:
-            template_file = f.read()
-
         with open(defchar.reactor, 'w') as f:
-            f.write(template_file.format(**serpent_fill))
+            f.write(defchar.template.format(**serpent_fill))
 
         return
 

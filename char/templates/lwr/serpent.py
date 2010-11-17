@@ -1,20 +1,20 @@
 template = """\
 set title "[CHAR] {reactor}"
 
-set acelib "/usr/share/serpent/xsdata/endf7.xsdata"
+set acelib "{xsdata}"
 
 % --- Matrial Definitions ---
 
 % Initial Fuel Stream
-mat fuel -{FuelDensity}
+mat fuel -{fuel_density}
 {fuel}
 
 % Cladding Stream
-mat cladding   -{CladDensity}
+mat cladding   -{clad_density}
 {cladding}
 
 % Coolant Stream
-mat coolant  -{CoolDensity} moder lwtr 1001
+mat coolant  -{cool_density} moder lwtr 1001
 {coolant}
 
 therm lwtr lwj3.20t
@@ -28,21 +28,21 @@ set bc 3
 set gcu 100
 
 % 1/8 square symmetry
-{SymFlag}set sym 8
+{sym_flag}set sym 8
 
 % Group Stucture
-set nfg {NGroups} {GroupStructure}
+set nfg {n_groups} {group_structure}
 
 
 % Criticality calc
-set pop {kParticles} {kCycles} {kCyclesSkip}
+set pop {k_particles} {k_cycles} {k_cycles_skip}
 
 
 % --- Geometry ---
 pin 1
-fill 100 {FuelRadius}
-void     {VoidRadius}
-cladding {CladRadius}
+fill 100 {fuel_radius}
+void     {void_radius}
+cladding {clad_radius}
 coolant  
 
 pin 2
@@ -51,11 +51,11 @@ coolant
 surf 100 inf
 cell 110 100 fuel   -100
 
-lat 10 1 0.0 0.0 {LatticeXY} {LatticeXY} {CellPitch}
+lat 10 1 0.0 0.0 {lattice_xy} {lattice_xy} {cell_pitch}
 
-{Lattice}
+{lattice}
 
-surf 3000  sqc  0.0 0.0 {HalfLatticePitch}
+surf 3000  sqc  0.0 0.0 {half_lattice_pitch}
 cell 300   0  fill 10   -3000
 cell 301   0  outside    3000
 
