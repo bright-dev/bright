@@ -43,17 +43,6 @@ class RemoteConnection(object):
         return subprocess.call("scp {user}@{url}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
 
 
-#######################
-### Make Time Steps ###
-#######################
-CoarseTime = range(0, BurnTime, CoarseStep/2)
-CoarseTime.append(BurnTime)
-CoarseTimeIndex = range(len(CoarseTime))
-
-FineTime = range(0, BurnTime, FineStep)
-FineTime.append(BurnTime)
-FineTimeIndex = range(len(FineTime))
-
 ######################################################
 ### Makes the Core Loading isotopic tracking lists ###
 ######################################################
@@ -167,5 +156,16 @@ def defchar_update(defchar):
         rckw['dir'] = defcahr.remote_dir
     defchar.remote_connection = RemoteConnection(**rckw)
 
+    # Make Time Steps 
+    defchar.coarse_time = range(0, defchar.burn_time, defchar.coarse_step/2)
+    defchar.coarse_time.append(defchar.burn_time)
+    defchar.coarse_time_index = range(len(defchar.coarse_time))
+
+    defchar.fine_time = range(0, defchar.burn_time, defchar.fine_step)
+    defchar.fine_time.append(defchar.burn_time)
+    defchar.fine_time_index = range(len(defchar.fine_time))
+
+    # Make fuel stream
     defchar.initial_fuel_stream = MassStream.MassStream(defchar.initial_fuel_form)
+
     return defchar
