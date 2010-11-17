@@ -279,35 +279,36 @@ class NCodeSerpent(NCode):
 
         # Set PBS_Walltime
         if runflag in ["PBS"]:
-            rsfv['PBS_Walltime'] = ",walltime={0:02G}:00:00\n".format(36)
+            rsfv['PBS_walltime'] = ",walltime={0:02G}:00:00\n".format(36)
         else:
-            rsfv['PBS_Walltime'] = '\n'
+            rsfv['PBS_walltime'] = '\n'
         
         # Set Schedular input an output files
-        rsfv['PBS_Stagein_Settings']  = ''
-        rsfv['PBS_Stageout_Settings'] = ''
+        rsfv['PBS_stagein_settings']  = ''
+        rsfv['PBS_stageout_settings'] = ''
         if runflag in ["PBS"]:
             for f in self.place_remote_files:
-                rsfv['PBS_Stagein_Settings'] += "#PBS -W stagein=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
+                rsfv['PBS_stagein_settings'] += "#PBS -W stagein=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
 
             for f in self.fetch_remote_files:
                 if f not in self.place_remote_files:
-                    rsfv['PBS_Stageout_Settings']  = "#PBS -W stageout=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
+                    rsfv['PBS_stageout_settings']  = "#PBS -W stageout=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
 
         # Set Transport Job Context
-        rsfv['Transport_Job_Context'] = self.run_str + " -version"
+        rsfv['transport_job_context'] = self.run_str + " -version"
 
         # Set Run_Commands 
         mpi_flag = ''
         if runflag in ["MPI", "PBS"]:
-            try: 
-                from defchar import NumberCPUs
-            except ImportError:
+            if hasattr(defchar, 'number_cpus'):
+                num_cpus = defchar.number_cpus
+            else:
                 print(message("The number of cpus was not specified even though a multicore calculation was requested."))
                 print(message("Setting the number of cpus to 1 for this calculation."))
-                NumberCPUs = 1
+                num_cpus = 1
+
             mpi_flag = '-mpi {0}'.format(NumberCPUs)
 
-        rsfv['Run_Commands'] = "{0} {1} {2}\n".format(self.run_str, reactor, mpi_flag)
+        rsfv['run_commands'] = "{0} {1} {2}\n".format(self.run_str, defchar.reactor, mpi_flag)
 
         return rsfv

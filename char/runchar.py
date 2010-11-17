@@ -1,56 +1,62 @@
+from __future__ import print_function
+
 import os
+import time
+import subprocess
+
+from metasci.colortext import message, failure
 
 ######################
 ### CHAR Libraries ###
 ######################
-from char import *
-
+from char import defchar
+from templates.run_script import template as run_script_template
 
 def make_run_script(n_transporter, runflag, localflag=True):
+    global defchar
+    from char import defchar
+
     run_fill = {}
 
     if runflag in ["PBS"]:
-        run_fill["Run_Shell"] = "#!/bin/sh"
+        run_fill["run_shell"] = "#!/bin/sh"
 
-        run_fill["PBS_General_Settings"] = "### PBS Settings\n"
-        run_fill["PBS_General_Settings"] = "#PBS -N CHAR_{0}\n".format(reactor)
+        run_fill["PBS_general_settings"] = "### PBS Settings\n"
+        run_fill["PBS_general_settings"] = "#PBS -N CHAR_{0}\n".format(reactor)
 
-        run_fill["PBS_General_Settings"] = "#PBS -l ncpus={0}".format(NumberCPUs)
-        run_fill["PBS_General_Settings"] = ",nodes={0}".format(NumberCPUs/CPUsPerNode)
-        run_fill["PBS_General_Settings"] = ":ppn={0}".format(CPUsPerNode)
+        run_fill["PBS_general_settings"] = "#PBS -l ncpus={0}".format(NumberCPUs)
+        run_fill["PBS_general_settings"] = ",nodes={0}".format(NumberCPUs/CPUsPerNode)
+        run_fill["PBS_general_settings"] = ":ppn={0}".format(CPUsPerNode)
 
-        run_fill["PBS_General_Settings"] = "#PBS -k oe\n"
-        run_fill["PBS_General_Settings"] = "#PBS -j oe\n"
+        run_fill["PBS_general_settings"] = "#PBS -k oe\n"
+        run_fill["PBS_general_settings"] = "#PBS -j oe\n"
 
-        run_fill["PBS_General_Settings"] = "#PBS -M {0}\n".format(email)
-        run_fill["PBS_General_Settings"] = "#PBS -m abe\n".format(email)
+        run_fill["PBS_general_settings"] = "#PBS -M {0}\n".format(email)
+        run_fill["PBS_general_settings"] = "#PBS -m abe\n".format(email)
     else:
-        run_fill["Run_Shell"] = "#!/bin/bash\n"
-        run_fill["PBS_General_Settings"] = ''
+        run_fill["run_shell"] = "#!/bin/bash\n"
+        run_fill["PBS_general_settings"] = ''
 
     # Set PBS_Job_Context
     if runflag in ["PBS"]:
-        run_fill['PBS_Job_Context']  = "echo \"The master node of this job is: $PBS_O_HOST\"\n"
-        run_fill['PBS_Job_Context'] += "NPROCS=`wc -l < $PBS_NODEFILE`\n"
-        run_fill['PBS_Job_Context'] += "NNODES=`uniq $PBS_NODEFILE | wc -l`\n"
-        run_fill['PBS_Job_Context'] += "echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\n"
-        run_fill['PBS_Job_Context'] += "echo \"-----------------------\"\n"
-        run_fill['PBS_Job_Context'] += "uniq $PBS_NODEFILE | sort\n"
-        run_fill['PBS_Job_Context'] += "echo \"-----------------------\"\n"
-        run_fill['PBS_Job_Context'] += "echo \"\"\n"
+        run_fill['PBS_job_context']  = "echo \"The master node of this job is: $PBS_O_HOST\"\n"
+        run_fill['PBS_job_context'] += "NPROCS=`wc -l < $PBS_NODEFILE`\n"
+        run_fill['PBS_job_context'] += "NNODES=`uniq $PBS_NODEFILE | wc -l`\n"
+        run_fill['PBS_job_context'] += "echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\n"
+        run_fill['PBS_job_context'] += "echo \"-----------------------\"\n"
+        run_fill['PBS_job_context'] += "uniq $PBS_NODEFILE | sort\n"
+        run_fill['PBS_job_context'] += "echo \"-----------------------\"\n"
+        run_fill['PBS_job_context'] += "echo \"\"\n"
     else:
-        run_fill['PBS_Job_Context']  = ''
+        run_fill['PBS_job_context']  = ''
 
     run_fill.update(n_transporter.run_script_fill_values(runflag))
 
     # Fill the template
-    with open('../templates/run_script.sh.template', 'r') as f:
-        run_script_template = f.read()
-
-    with open(runscript, 'w') as f:
+    with open(defchar.run_script, 'w') as f:
         f.write(run_script_template.format(**run_fill))
 
-    os.chmod(runscript, 0755)
+    os.chmod(defchar.run_script, 0755)
 
     return
 
@@ -58,11 +64,11 @@ def run_transport_local(runflag):
     """Runs the transport calculation on the local machine."""
     t1 = time.time()
     if runflag == "PBS":
-        subprocess.call("qsub {0}".format(runscript), shell=True)
+        subprocess.call("qsub {0}".format(defchar.run_script), shell=True)
     else:
-        subprocess.call("./{0}".format(runscript), shell=True)
+        subprocess.call("./{0}".format(defchar.run_script), shell=True)
     t2 = time.time()
-    if 0 < verbosity:
+    if 0 < defchar.verbosity:
         print()
         print(message("Transport executed in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
         print()
