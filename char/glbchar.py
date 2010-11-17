@@ -64,30 +64,10 @@ def iso_file_conversions(filename):
     iso_dict = iso_list_conversions(iso_list)
     return iso_dict
 
-
-##########################
-#### Global Variables ####
-##########################
-
-class RemoteConnection(object):
-    def __init__(self, url='', user='', dir=''):
-        self.url  = url
-        self.user = user
-        self.dir  = dir
-
-    def run(self, cmd):
-        return subprocess.call("ssh {user}@{url} \"{remcmd}\"".format(remcmd=cmd, **self), shell=True)
-
-    def put(self, loc_file, rem_file):
-        return subprocess.call("scp {lf} {user}@{url}:{rf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
-
-    def get(self, rem_file, loc_file):
-        return subprocess.call("scp {user}@{url}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
-
-
-######################################################
-### Makes the Core Loading isotopic tracking lists ###
-######################################################
+# Old code that masked isotopes that are not present in the MCNP xsdir file.
+# I longer think that this is the right design pattern.  If an isotope should 
+# not be included, the user simply shouldn't include it!
+""" 
 InXSDIR = {}
 for iso in coreload:
     InXSDIR[iso] = False
@@ -120,32 +100,29 @@ for iso in InXSDIR.keys():
     else:
         if 0 < verbosity:
             print("The following nuclide could not be found in $DATAPATH/xsdir: {0}.".format(isoname.MCNP_2_LLAAAM(iso)))
+"""
 
-CoreLoad_zzaaam = isoname.MCNP_2_zzaaam_List(coreload)
-CoreLoad_LLAAAM = isoname.MCNP_2_LLAAAM_List(coreload)
-CoreLoad_MCNP   = coreload
 
-#############################################################
-### Makes the Core Transformation isotopic tracking lists ###
-#############################################################
-coretran = []
-f = open(coretrantrackfile, 'r')
-for line in f:
-    coretran.append(line.split()[0])
-f.close()
-coretran = sorted( isoname.mixed_2_zzaaam_List(coretran) )
-for iso in coretran:
-    if not (iso%10 == 0):
-        NGammaParent = ((iso/10) - 1) * 10 
-        if not (NGammaParent in coretran):
-            coretran.append(NGammaParent)
-        N2NParent = ((iso/10) + 1) * 10
-        if not (N2NParent in coretran):
-            coretran.append(N2NParent)
-coretran = isoname.zzaaam_2_MCNP_List(coretran)
-CoreTran_zzaaam = isoname.MCNP_2_zzaaam_List(coretran)
-CoreTran_LLAAAM = isoname.MCNP_2_LLAAAM_List(coretran)
-CoreTran_MCNP   = coretran
+##########################
+#### Global Variables ####
+##########################
+
+class RemoteConnection(object):
+    def __init__(self, url='', user='', dir=''):
+        self.url  = url
+        self.user = user
+        self.dir  = dir
+
+    def run(self, cmd):
+        return subprocess.call("ssh {user}@{url} \"{remcmd}\"".format(remcmd=cmd, **self), shell=True)
+
+    def put(self, loc_file, rem_file):
+        return subprocess.call("scp {lf} {user}@{url}:{rf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+
+    def get(self, rem_file, loc_file):
+        return subprocess.call("scp {user}@{url}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+
+
 
 ############################################
 ### Map from isotopes to material number ###
