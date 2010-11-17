@@ -123,19 +123,6 @@ class RemoteConnection(object):
         return subprocess.call("scp {user}@{url}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
 
 
-
-############################################
-### Map from isotopes to material number ###
-############################################
-mat_number = {}		
-mnum = moffset
-for iso in CoreLoad_MCNP:
-    mnum = mnum + 1
-    mat_number[iso] = mnum
-del mnum 
-number_mat = metasci.ReverseDic(mat_number)
-
-
 def defchar_update(defchar):
     """Takes the defchar namespace, updates it, and returns it."""
     defchar.tallies_reversed = metasci.ReverseDic(defchar.tallies)

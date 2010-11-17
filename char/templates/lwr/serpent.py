@@ -1,3 +1,4 @@
+template = """\
 set title "[CHAR] {reactor}"
 
 set acelib "/usr/share/serpent/xsdata/endf7.xsdata"
@@ -61,3 +62,4 @@ cell 301   0  outside    3000
 % --- Graphs ---
 plot 3 800 800
 mesh 3 800 800
+"""

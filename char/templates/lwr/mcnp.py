@@ -1,3 +1,6 @@
+import metsci
+
+template = """\
 [CHAR] LWR Fuel Cell
 C 
 C ********************
@@ -74,4 +77,22 @@ C **********************
 C 
 print -10 -20 -30 -35 -40 -50 -60 -62 -72 -85 -90 -98
       -100 -102 -110 -120 -126 -128 -130 -140 -150 -160 
-      -161 -162 -170 -175 -178 -180 -190 -198 -200 
+      -161 -162 -170 -175 -178 -180 -190 -198 -200 """
+
+
+def template_extras(moffset=3):
+    """Computes extra fields for the template that must be computed dymaically."""
+    from char import defchar
+
+    mat_number = {}
+
+    mnum = moffset
+    for iso in defchar.core_load["MCNP"]:
+        mnum = mnum + 1
+        mat_number[iso] = mnum
+
+    number_mat = metasci.ReverseDic(mat_number)
+
+    extra_fill = {'mat_number': mat_number, 'number_mat': number_mat}
+
+    return extra_fill

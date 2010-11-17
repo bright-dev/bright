@@ -1,3 +1,26 @@
+tape5 = """\
+  -1
+  -1
+  -1
+  CUT     5 {CUT_OFF} -1
+  RDA     FIND CROSS SECTION LIBRARY IDENTIFIER NUMBERS IN YOUR LIBRARY FILE
+  LIB     0 1 2 3 {NLB1} {NLB2} {NLB3} 9 3 0 3 0
+  OPTL    8 8 8 8 7 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+  OPTA    8 8 8 8 7 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+  OPTF    8 8 8 8 7 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+  INP     1 -1  0  -1  4  4
+  HED     1     IN FUEL
+  RDA     ALL IRRADIATION (IRF and IRP) CARDS MUST TAKE PLACE IN BETWEEN BURNUP (BUP) CARDS
+  BUP
+  RDA     IRP CARDS:  .. TIME .. POWER [MW] .. INPUT VECTOR .. OUTPUT VECTOR .. TIME UNIT FLAG .. TIME BASIS FLAG
+  RDA     TIME UNIT: 4 = DAYS, 5 = YEARS.
+  RDA     TIME BASIS: 0 = RELATIVE TO TIME = ZERO.  1 = RELATIVE TO PREVIOUS TIME.  2 = RELATIVE TO T = 0.  RESET T=0
+  IRF     {IRFtime}  {IRFflux}   1   2   4  2
+  BUP
+  OUT     2  1 1 0
+  END"""
+
+tape9 = """\
    1      DECAY LIBRARY: ACTIVATION PRODUCTS
    1   10010  6     0.0       0.0       0.0       0.0       0.0       0.0
    1                0.0       0.0       0.0       9.998E+01 1.000E+00 1.000E+00
@@ -5508,4 +5531,4 @@
  221  691710 3.262E 00 0.0       0.0       0.0       0.0       0.0         -1.0 
  221  701710 1.167E 01 0.0       3.124E-06 0.0       0.0       0.0         -1.0 
  221  701720 7.143E-01 0.0       2.335E-06 0.0       0.0       0.0         -1.0 
-  -1                                                                            
+  -1                                                                            """

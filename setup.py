@@ -12,7 +12,6 @@ setup(name="CHAR",
 	url='http://www.scopatz.com/',
 	packages=['char'],
 	package_dir={'char': 'char'}, 
-	package_data={'char': ['templates/*']},
     scripts=['char/scripts/char'],
 	)
 
