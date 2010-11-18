@@ -122,6 +122,10 @@ def main():
     mod_name = file.rpartition('.')[0]
     defchar = __import__(mod_name)
 
+    # Add command line arguments to defchar
+    defchar.options = options
+    defchar.args = args
+
     # Update defchar adding more useful values.
     defchar = glbchar.defchar_update(defchar)
 

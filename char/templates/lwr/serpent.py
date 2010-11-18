@@ -6,7 +6,7 @@ set acelib "{xsdata}"
 % --- Matrial Definitions ---
 
 % Initial Fuel Stream
-mat fuel -{fuel_density}
+mat fuel -{fuel_density} {num_burn_regions}
 {fuel}
 
 % Cladding Stream
@@ -62,4 +62,8 @@ cell 301   0  outside    3000
 % --- Graphs ---
 plot 3 800 800
 mesh 3 800 800
+
+% --- Burnup ---
+
+{burnup}
 """

@@ -13,6 +13,30 @@ from char import defchar
 from n_code import NCode
 
 
+burnup_template = """\
+% Decay and fission yield libraries
+ 
+set declib "{decay_lib}"
+set nfylib "{fission_yield_lib}"
+ 
+% Burnup calculation options
+ 
+set bumode  2  % CRAM method
+set pcc     1  % Predictor-corrector calculation on
+set xscalc  2  % Calc cross sections from spectrum (fast)
+
+% Depletion cycle
+dep daytot
+
+{depletion_times}
+
+% Nuclide inventory
+ 
+set inventory
+
+{transmute_inventory}
+"""
+
 class NCodeSerpent(NCode):
     """A Serpent neutronics code wrapper class."""
 
@@ -56,9 +80,9 @@ class NCodeSerpent(NCode):
                 iso_serp = "{0}-{1}m".format(iso_LL, iso_aaa)
 
             if self.iso_flag == '':
-                comp_str += " {0}".format(iso_serp)
+                comp_str += "{0:>11}".format( "{0}".format(iso_serp) )
             else:
-                comp_str += " {0}.{1}".format(iso_serp, self.iso_flag)
+                comp_str += "{0:>11}".format( "{0}.{1}".format(iso_serp, self.iso_flag) )
 
             if mass_weighted:
                 comp_str += "  -{0:.5G}\n".format(comp[iso])
@@ -240,6 +264,22 @@ class NCodeSerpent(NCode):
 
         return e        
 
+    def make_burnup(self):
+        """Generates a dictionary of values that fill the burnup portion of the serpent template."""
+        bu = {'decay_lib': defchar.serpent_decay_lib,
+              'fission_yield_lib': defchar.serpent_fission_yield_lib,
+              }
+
+        bu['depletion_times'] = ''
+        for ct in defchar.coarse_time:
+            bu['depletion_times'] += '{0:>8.4G}\n'.format(ct)
+
+        bu['transmute_inventory'] = ''
+        for iso in defchar.core_transmute['zzaaam']:
+            bu['transmute_inventory'] += '{0:>8}\n'.format(iso)
+
+        return bu
+
     def make_input(self):
         serpent_fill = {
             'reactor': defchar.reactor,
@@ -264,6 +304,14 @@ class NCodeSerpent(NCode):
 
         # Set the energy group structure
         serpent_fill.update(self.make_input_energy_groups())
+
+        # Add burnup information
+        if defchar.options.NoBurnBool:
+            serpent_fill['num_burn_regions'] = ''
+            serpent_fill['burnup'] = "% Burnup calculation not performed."
+        else:
+            serpent_fill['num_burn_regions'] = 'burn {0}'.format(int(defchar.burn_regions))
+            serpent_fill['burnup'] = burnup_template.format(**self.make_burnup())
 
         # Fill the template
         with open(defchar.reactor, 'w') as f:
