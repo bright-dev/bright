@@ -212,7 +212,7 @@ class NCodeSerpent(NCode):
 
         # Set half of the lattice pitch.
         half_lat_pitch = (float(geom['lattice_xy']) * defchar.unit_cell_pitch) / 2.0
-        geom['half_lattice_pitch'] = "{0:.5G}".format(half_lat_pitch)
+        geom['half_lattice_pitch'] = "{0}".format(half_lat_pitch)
 
         return geom
 
