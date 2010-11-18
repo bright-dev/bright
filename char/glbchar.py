@@ -146,10 +146,12 @@ def defchar_update(defchar):
     # Make Time Steps 
     defchar.coarse_time = range(0, defchar.burn_time, defchar.coarse_step/2)
     defchar.coarse_time.append(defchar.burn_time)
+    defchar.coarse_time[0] = defchar.coarse_time[1] / 10.0
     defchar.coarse_time_index = range(len(defchar.coarse_time))
 
     defchar.fine_time = range(0, defchar.burn_time, defchar.fine_step)
     defchar.fine_time.append(defchar.burn_time)
+    defchar.fine_time[0] = defchar.fine_time[1] / 10.0
     defchar.fine_time_index = range(len(defchar.fine_time))
 
     # Make isotopic lists
