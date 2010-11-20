@@ -1,7 +1,6 @@
 import numpy as np
 import re
 
-
 if_idx_str = ("""if (exist("idx", "var"));\n"""
               """  idx = idx + 1;\n"""
               """else;\n"""
@@ -19,6 +18,8 @@ comment_line_pattern = r"([\d\s\tEe+-.]*)\s*([%#]*)\s*([#\w\s]*\n)"
 
 lhs_variable_pattern = r"(\w+)\s*(\(idx.*?\))"
 rhs_variable_pattern = r"(\w+)\s*\(idx.*?\)\s*=\s*(.*)"
+
+zeros_pattern = r"(zeros)\((.*)\)"
 
 def convert_res(filename):
     """Convert a matlab *_res.m file to a python file."""
@@ -133,6 +134,13 @@ def convert_dep(filename):
 
     # Indent close of array
     f = f.replace("\n] )", "\n    ] )")
+
+    # Replace MatLab zeros with numpy zeros
+    f = re.sub(zeros_pattern, lambda mo: "np.zeros((" + mo.group(2) + "))", f)
+
+    # Replace some math operators
+    f = f.replace('.*', "*")
+    f = f.replace('./', "/")
 
     # Add imports to header
     header = "import numpy as np\n\n"
