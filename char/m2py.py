@@ -15,8 +15,9 @@ numpy_array_pattern = r"\[[0-9\sEe+-.,%]*\]"
 matlab_array_pattern = r"\[[0-9\sEe+-.%]*\]"
 
 lhs_variable_pattern = r"(\w+)\s*(\(idx.*?\))"
+rhs_variable_pattern = r"(\w+)\s*\(idx.*?\)\s*=\s*(.*)"
 
-def convert(filename):
+def convert_res(filename):
     """Convert a matlab *.m file to a python file."""
     with open(filename, 'r') as mfile:
         f = mfile.read()
@@ -47,9 +48,11 @@ def convert(filename):
 
     # Find all variables and shape
     vars_shape = np.unique( re.findall(lhs_variable_pattern, f) )
+    vars_dtype = dict( re.findall(rhs_variable_pattern, f) )
     # Initialize variables to zero
     header = header + "# Initialize variables\n"
     for vs in vars_shape:
+        # Determine shape
         s = re.search(r'\[.*:(.*?)\]', vs[1])
         if s == None:
             vs_shape = ""
@@ -58,8 +61,18 @@ def convert(filename):
             vs_shape = vs_shape.split()
             vs_shape = ", ".join(vs_shape)
 
-        line = "{0} = np.zeros([{1}, {2}])\n".format(vs[0], IDX, vs_shape)
-        header = header + line
+        # Determine Data type
+        rhs = vars_dtype[vs[0]]
+        if ("\'" in rhs) or ("\"" in rhs):
+            dt = "'S{0}'".format(int( s.group(1) ))
+            vs_shape = ""
+        elif ('.' in rhs) or ('E' in rhs) or ('e' in rhs):
+            dt = "float"
+        else:
+            dt = "int"
+
+        zero_line = "{0} = np.zeros([{1}, {2}], dtype={3})\n".format(vs[0], IDX, vs_shape, dt)
+        header = header + zero_line
 
     # Add IDx to file
     if 0 < IDX:
@@ -75,7 +88,7 @@ def convert(filename):
 
     # Write the file out
     new_filename = filename.rpartition('.')[0] + '.py'
-    with open(new_filename, 'w') as pymfile:
-        pymfile.write(f)
+    with open(new_filename, 'w') as pyfile:
+        pyfile.write(f)
 
     return f
