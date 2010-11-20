@@ -63,10 +63,19 @@ def convert(filename):
 
     # Add IDx to file
     if 0 < IDX:
-        header = header + "IDX = {0}\n\n".format(IDX)
+        header = header + "\n\n# Maximum Index\n\nIDX = {0}\n\n".format(IDX)
 
     # Add header to file
     f = header + f
 
+    # Replace variable overrides
+    vars = np.unique( re.findall("(" + lhs_variable_pattern + ")", f) )
+    for v in vars:
+        f = f.replace(v[0], "{0}[idx] ".format(v[1]))
 
-    print f
+    # Write the file out
+    new_filename = filename.rpartition('.')[0] + '.py'
+    with open(new_filename, 'w') as pymfile:
+        pymfile.write(f)
+
+    return f
