@@ -13,30 +13,6 @@ from char import defchar
 from n_code import NCode
 
 
-burnup_template = """\
-% Decay and fission yield libraries
- 
-set declib "{decay_lib}"
-set nfylib "{fission_yield_lib}"
- 
-% Burnup calculation options
- 
-set bumode  2  % CRAM method
-set pcc     1  % Predictor-corrector calculation on
-set xscalc  2  % Calc cross sections from spectrum (fast)
-
-% Depletion cycle
-dep daytot
-
-{depletion_times}
-
-% Nuclide inventory
- 
-set inventory
-
-{transmute_inventory}
-"""
-
 class NCodeSerpent(NCode):
     """A Serpent neutronics code wrapper class."""
 
@@ -268,6 +244,8 @@ class NCodeSerpent(NCode):
         """Generates a dictionary of values that fill the burnup portion of the serpent template."""
         bu = {'decay_lib': defchar.serpent_decay_lib,
               'fission_yield_lib': defchar.serpent_fission_yield_lib,
+              'num_burn_regions':  int(defchar.burn_regions), 
+              'fuel_specific_power': defchar.fuel_specific_power,
               }
 
         bu['depletion_times'] = ''
@@ -307,15 +285,17 @@ class NCodeSerpent(NCode):
 
         # Add burnup information
         if defchar.options.NoBurnBool:
-            serpent_fill['num_burn_regions'] = ''
-            serpent_fill['burnup'] = "% Burnup calculation not performed."
+            pass
         else:
-            serpent_fill['num_burn_regions'] = 'burn {0}'.format(int(defchar.burn_regions))
-            serpent_fill['burnup'] = burnup_template.format(**self.make_burnup())
+            serpent_fill.update(self.make_burnup())
 
-        # Fill the template
-        with open(defchar.reactor, 'w') as f:
-            f.write(defchar.template.format(**serpent_fill))
+            # Fill the burnup template
+            with open(defchar.reactor + "_burnup", 'w') as f:
+                f.write(defchar.burnup_template.format(**serpent_fill))
+
+        # Fill the XS template
+        with open(defchar.reactor + "_xs_gen", 'w') as f:
+            f.write(defchar.xs_gen_template.format(**serpent_fill))
 
         return
 
@@ -357,6 +337,11 @@ class NCodeSerpent(NCode):
 
             mpi_flag = '-mpi {0}'.format(NumberCPUs)
 
-        rsfv['run_commands'] = "{0} {1} {2}\n".format(self.run_str, defchar.reactor, mpi_flag)
+        rsfv['run_commands'] = "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, mpi_flag)
 
         return rsfv
+
+
+    def parse_burnup(self):
+        """Parses the burnup/depletion file """
+        pass
