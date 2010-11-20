@@ -14,11 +14,14 @@ num_pattern = "([0-9]+[.]?[0-9]*[Ee]?[+-]?[0-9]*)"
 numpy_array_pattern = r"\[[0-9\sEe+-.,%]*\]"
 matlab_array_pattern = r"\[[0-9\sEe+-.%]*\]"
 
+comment_array_pattern = r"\[([\d\sEe+-.,]*\s*[%#]+\s*[%#\w\s.,+-]*)\]"
+comment_line_pattern = r"([\d\s\tEe+-.]*)\s*([%#]*)\s*([#\w\s]*\n)"
+
 lhs_variable_pattern = r"(\w+)\s*(\(idx.*?\))"
 rhs_variable_pattern = r"(\w+)\s*\(idx.*?\)\s*=\s*(.*)"
 
 def convert_res(filename):
-    """Convert a matlab *.m file to a python file."""
+    """Convert a matlab *_res.m file to a python file."""
     with open(filename, 'r') as mfile:
         f = mfile.read()
 
@@ -41,7 +44,6 @@ def convert_res(filename):
 
     # Encapsulate python lists in numpy arrays
     f = re.sub(numpy_array_pattern, lambda mo: 'np.array(' + mo.group(0) + ')', f)
-
 
     # Add imports to header
     header = "import numpy as np\n\n"
@@ -85,6 +87,58 @@ def convert_res(filename):
     vars = np.unique( re.findall("(" + lhs_variable_pattern + ")", f) )
     for v in vars:
         f = f.replace(v[0], "{0}[idx] ".format(v[1]))
+
+    # Write the file out
+    new_filename = filename.rpartition('.')[0] + '.py'
+    with open(new_filename, 'w') as pyfile:
+        pyfile.write(f)
+
+    return f
+
+
+
+def convert_dep(filename):
+    """Convert a matlab *_dep.m file to a python file."""
+    with open(filename, 'r') as mfile:
+        f = mfile.read()
+
+    # Keep comments around
+    f = f.replace('%', '#')
+
+    # Replace matlab arrays with python lists
+    arrays = re.findall(matlab_array_pattern, f)
+    for a in arrays:
+        new_a = re.sub(num_pattern, lambda mo: mo.group(0) + ',', a)
+        f = f.replace(a, new_a)
+
+    # Encapsulate python lists in numpy arrays
+    f = re.sub(numpy_array_pattern, lambda mo: 'np.array(' + mo.group(0) + ')', f)
+
+    # Now to find and convert arrays that have comments in them
+    comment_arrays = re.findall("(" + comment_array_pattern + ")", f)
+    for ca in comment_arrays:
+        new_ca = ca[0]
+        comment_lines = re.findall("(" + comment_line_pattern + ")", ca[1])
+        for cl in comment_lines:
+            new_cl = re.sub(num_pattern, lambda mo: mo.group(0) + ',', cl[1])
+            if new_cl[0] == '\n':
+                new_cl = "\n    [" + new_cl.strip() + "], "
+            else:
+                new_cl = "    [" + new_cl.strip() + "], "
+
+            new_ca = new_ca.replace(cl[1], new_cl)
+
+        new_ca = 'np.array( ' + new_ca + ' )'    
+        f = f.replace(ca[0], new_ca)
+
+    # Indent close of array
+    f = f.replace("\n] )", "\n    ] )")
+
+    # Add imports to header
+    header = "import numpy as np\n\n"
+
+    # Add header to file
+    f = header + f
 
     # Write the file out
     new_filename = filename.rpartition('.')[0] + '.py'
