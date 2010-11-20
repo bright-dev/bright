@@ -1,17 +1,19 @@
 """A class to setup, run, and parse Serpent."""
 from __future__ import print_function
+import os
+import sys
 
 import isoname
 import numpy as np
+import tables as tb
 import metasci.nuke as msn
 from metasci import SafeRemove
 from MassStream import MassStream
 from metasci.colortext import message, failure
 
 from char import defchar
-
 from n_code import NCode
-
+from m2py import convert_res, convert_dep
 
 class NCodeSerpent(NCode):
     """A Serpent neutronics code wrapper class."""
@@ -342,6 +344,34 @@ class NCodeSerpent(NCode):
         return rsfv
 
 
+    def parse(self):
+        """Convienence function to parse results."""
+        self.parse_burnup()
+
+
     def parse_burnup(self):
-        """Parses the burnup/depletion file """
-        pass
+        """Parse the burnup/depletion files into an equivelent python modules.
+        Writes the output to hdf5."""
+
+        # Convert files
+        convert_res(defchar.reactor + "_burnup_res.m")
+        convert_dep(defchar.reactor + "_burnup_dep.m")
+
+        self.write_burnup()
+
+
+    def write_burnup(self):
+        """Writes the results of the burnup calculation to an hdf5 file."""
+
+        # Add current working directory to path
+        sys.path.insert(0, os.getcwd())
+
+        # Import data
+        rx_res = __import__(defchar.reactor + "_burnup_res")
+        rx_dep = __import__(defchar.reactor + "_burnup_dep")
+
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
+
+
+        rx_h5.close()

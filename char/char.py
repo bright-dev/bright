@@ -84,9 +84,6 @@ def main():
     parser.add_option("-p", "--parse", action="store_true", dest="ParseData", 
         default=False, help="Parses output and stores it an HDF5 library.")
 
-    parser.add_option("-t", "--text", action="store_true", dest="MakeText", 
-        default=False, help="Parses output and makes text-based libraries.")
-
     parser.add_option("-9", "--tape9", action="store_true", dest="MakeTape9", 
         default=False, help="Parses output and makes a ORIGEN tape9 libraries for each burn step.")
 
@@ -204,11 +201,7 @@ def main():
 
     #Parse MCNPX Output & Make HDF5 Data Library
     if options.ParseData:
-        parsechar.Write_HDF5_Lib_MCNP()
-
-        #Parse MCNPX Output & Make Text-based Data Libraries
-        if options.MakeText:
-            parsechar.Write_TXT_Lib_MCNP()
+        n_transporter.parse()
 
     #Parse MCNPX Output & Make ORIGEN TAPE9 Libraries
     if options.MakeTape9:
@@ -235,9 +228,6 @@ def main():
 
 
     #Clean up
-    metasci.SafeRemove(defchar.reactor + ".m")
-    metasci.SafeRemove(defchar.reactor + ".r")
-    metasci.SafeRemove(defchar.reactor + ".s")
     os.chdir('..')
 
 
