@@ -374,28 +374,53 @@ class NCodeSerpent(NCode):
 
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
+        base_group = "/"
 
         # Add the isotope tracking arrays.  
-        rx_h5.createArray('/', 'isostrack', np.array(defchar.core_transmute['zzaaam']), "Isotopes to track, copy of transmute_isos_zz")
+        rx_h5.createArray(base_group, 'isostrack', np.array(defchar.core_transmute['zzaaam']), 
+                          "Isotopes to track, copy of transmute_isos_zz")
 
-        rx_h5.createArray('/', 'load_isos_zz', np.array(defchar.core_load['zzaaam']), "Core loading isotopes [zzaaam]")
-        rx_h5.createArray('/', 'load_isos_LL', np.array(defchar.core_load['LLAAAM']), "Core loading isotopes [LLAAAM]")
+        rx_h5.createArray(base_group, 'load_isos_zz', np.array(defchar.core_load['zzaaam']), 
+                          "Core loading isotopes [zzaaam]")
+        rx_h5.createArray(base_group, 'load_isos_LL', np.array(defchar.core_load['LLAAAM']), 
+                          "Core loading isotopes [LLAAAM]")
 
-        rx_h5.createArray('/', 'transmute_isos_zz', np.array(defchar.core_transmute['zzaaam']), "Core transmute isotopes [zzaaam]")
-        rx_h5.createArray('/', 'transmute_isos_LL', np.array(defchar.core_transmute['LLAAAM']), "Core transmute isotopes [LLAAAM]")
+        rx_h5.createArray(base_group, 'transmute_isos_zz', np.array(defchar.core_transmute['zzaaam']), 
+                          "Core transmute isotopes [zzaaam]")
+        rx_h5.createArray(base_group, 'transmute_isos_LL', np.array(defchar.core_transmute['LLAAAM']), 
+                          "Core transmute isotopes [LLAAAM]")
 
         # Add basic BU information
-        rx_h5.createArray('/', 'BU0', rx_dep.BU, "Burnup of the initial core loading [MWd/kg]")
-        rx_h5.createArray('/', 'time0', rx_dep.DAYS, "Time after initial core loading [days]")
+        rx_h5.createArray(base_group, 'BU0', rx_dep.BU, "Burnup of the initial core loading [MWd/kg]")
+        rx_h5.createArray(base_group, 'time0', rx_dep.DAYS, "Time after initial core loading [days]")
 
         phi = rx_res.TOT_FLUX[:, ::2].flatten()
-        rx_h5.createArray('/', 'phi', phi, "Total flux [n/cm2/s]")
-        rx_h5.createArray('/', 'phi_g', rx_res.FLUX[:,::2][:, 1:], "Group fluxes [n/cm2/s]")
+        rx_h5.createArray(base_group, 'phi', phi, "Total flux [n/cm2/s]")
+        rx_h5.createArray(base_group, 'phi_g', rx_res.FLUX[:,::2][:, 1:], "Group fluxes [n/cm2/s]")
 
         # Create Fluence array
         Phi = np.zeros(len(phi))
         Phi[1:] = cumtrapz(phi * (10.0**-21), rx_dep.DAYS * (3600.0 * 24.0))
-        rx_h5.createArray('/', 'Phi', Phi, "Fluence [n/kb]")
+        rx_h5.createArray(base_group, 'Phi', Phi, "Fluence [n/kb]")
+
+        # Energy Group bounds
+        rx_h5.createArray(base_group, 'energy', rx_res.GC_BOUNDS[0], "Energy boundaries [MeV]")
+
+        # Calculate and store weight percents per IHM
+        mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * defchar.fuel_density)
+        mw = rx_dep.TOT_MASS * mw_conversion 
+
+        Ti0_group = rx_h5.createGroup(base_group, 'Ti0', "Transmutation matrix from initial core loading [kg_i/kgIHM]")
+
+        for iso_zz in rx_dep.ZAI:
+            try: 
+                iso_LL = isoname.mixed_2_LLAAAM(int(iso_zz))
+            except:
+                continue
+
+            i = getattr(rx_dep, 'i{0}'.format(iso_zz)) - 1
+
+            rx_h5.createArray(Ti0_group, iso_LL, mw[i], "Mass weight of {0} [kg/kgIHM]".format(iso_LL))
 
         # close the file before returning
         rx_h5.close()
