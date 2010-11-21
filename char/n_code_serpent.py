@@ -11,6 +11,8 @@ from metasci import SafeRemove
 from MassStream import MassStream
 from metasci.colortext import message, failure
 
+from scipy.integrate import cumtrapz
+
 from char import defchar
 from n_code import NCode
 from m2py import convert_res, convert_dep
@@ -373,5 +375,27 @@ class NCodeSerpent(NCode):
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
 
+        # Add the isotope tracking arrays.  
+        rx_h5.createArray('/', 'isostrack', np.array(defchar.core_transmute['zzaaam']), "Isotopes to track, copy of transmute_isos_zz")
 
+        rx_h5.createArray('/', 'load_isos_zz', np.array(defchar.core_load['zzaaam']), "Core loading isotopes [zzaaam]")
+        rx_h5.createArray('/', 'load_isos_LL', np.array(defchar.core_load['LLAAAM']), "Core loading isotopes [LLAAAM]")
+
+        rx_h5.createArray('/', 'transmute_isos_zz', np.array(defchar.core_transmute['zzaaam']), "Core transmute isotopes [zzaaam]")
+        rx_h5.createArray('/', 'transmute_isos_LL', np.array(defchar.core_transmute['LLAAAM']), "Core transmute isotopes [LLAAAM]")
+
+        # Add basic BU information
+        rx_h5.createArray('/', 'BU0', rx_dep.BU, "Burnup of the initial core loading [MWd/kg]")
+        rx_h5.createArray('/', 'time0', rx_dep.DAYS, "Time after initial core loading [days]")
+
+        phi = rx_res.TOT_FLUX[:, ::2].flatten()
+        rx_h5.createArray('/', 'phi', phi, "Total flux [n/cm2/s]")
+        rx_h5.createArray('/', 'phi_g', rx_res.FLUX[:,::2][:, 1:], "Group fluxes [n/cm2/s]")
+
+        # Create Fluence array
+        Phi = np.zeros(len(phi))
+        Phi[1:] = cumtrapz(phi * (10.0**-21), rx_dep.DAYS * (3600.0 * 24.0))
+        rx_h5.createArray('/', 'Phi', Phi, "Fluence [n/kb]")
+
+        # close the file before returning
         rx_h5.close()
