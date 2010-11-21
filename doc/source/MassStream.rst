@@ -178,30 +178,41 @@ MassStream Methods
 
           .. math:: \mbox{isovec[iso]} = \mbox{ms.comp[iso]} \times \mbox{ms.mass}
 
+.. method:: MassStream.atomic_weight()
+
+    This method returns the atomic weight of the comp of this MassStream.  Note that this is 
+    only a rough estimate since this function is not yet coupled with measured atomic weights.
+
+    Returns:
+        * `atomic_weight` (float): Atomic weight in [amu], 
+
 
 Once again, we'll use the natural uranium stream from before as an example::
 
-    nu.Normalize()
-    print( str(nu) )
-    #Mass Stream: NU
-    #        Mass: 1
-    #        ---------
-    #        U234    5.5e-05
-    #        U235    0.0072
-    #        U238    0.992745
+    >>> nu.Normalize()
+    >>> print( str(nu) )
+    Mass Stream: NU
+            Mass: 1
+            ---------
+            U234    5.5e-05
+            U235    0.0072
+            U238    0.992745
 
-    nu.mass = nu.mass * 30.0
-    nu.Print()
-    #Mass Stream: NU
-    #        Mass: 30
-    #        ---------
-    #        U234    5.5e-05
-    #        U235    0.0072
-    #        U238    0.992745
+    >>> nu.mass = nu.mass * 30.0
+    >>> nu.Print()
+    Mass Stream: NU
+            Mass: 30
+            ---------
+            U234    5.5e-05
+            U235    0.0072
+            U238    0.992745
 
-    unnorm_nu = nu.multByMass()
-    print("Unnormalized = ", unnorm_nu )
-    #Unnormalized = {922340: 0.00165, 922350: 0.216, 922380: 29.782350000000001}
+    >>> unnorm_nu = nu.multByMass()
+    >>> print("Unnormalized = ", unnorm_nu )
+    Unnormalized = {922340: 0.00165, 922350: 0.216, 922380: 29.782350000000001}
+
+    >>> unnorm_nu.atomic_weight()
+    237.97790254649584
 
 
 .. _SubStream_Methods:

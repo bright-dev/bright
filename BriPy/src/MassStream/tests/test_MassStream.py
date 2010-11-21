@@ -59,7 +59,7 @@ class TestMassStreamConstructor(TestCase):
         f = tb.openFile("ms.h5", "w")
         f.createGroup("/", "ms", "Mass Stream Test")
         f.createArray("/ms", "Mass",  np.array([1.0, 0.5,  0.0]), "Mass Test")
-        f.createArray("/ms", "U235",  np.array([1.0, 0.25, 0.0]), "U235 Test")
+        f.createArray("/ms", "U235",  np.array([1.0, 0.75, 0.0]), "U235 Test")
         f.createArray("/ms", "PU239", np.array([0.0, 0.25, 0.0]), "PU239 Test")
         f.close()
 
@@ -75,7 +75,7 @@ class TestMassStreamConstructor(TestCase):
 
         ms.load_from_hdf5("ms.h5", "/ms", 1)
         assert_equal(ms.mass, 0.5)
-        assert_equal(ms.comp, {922350: 0.25, 942390: 0.25})
+        assert_equal(ms.comp, {922350: 0.75, 942390: 0.25})
 
         ms.load_from_hdf5("ms.h5", "/ms", 2)
         assert_equal(ms.mass, 0.0)
@@ -87,7 +87,7 @@ class TestMassStreamConstructor(TestCase):
 
         ms.load_from_hdf5("ms.h5", "/ms", -2)
         assert_equal(ms.mass, 0.5)
-        assert_equal(ms.comp, {922350: 0.25, 942390: 0.25})
+        assert_equal(ms.comp, {922350: 0.75, 942390: 0.25})
 
         ms.load_from_hdf5("ms.h5", "/ms", -3)
         assert_equal(ms.mass, 1.0)
@@ -114,6 +114,16 @@ class TestMassStreamMethods(TestCase):
         ms = MassStream.MassStream({922350: 0.05, 922380: 0.95}, 15)
         isovec = ms.multByMass()
         assert_equal(isovec, {922350: 0.75, 922380: 14.25})
+
+    def test_atomic_weight(self):
+        ms_empty = MassStream.MassStream({})
+        assert_equal(ms_empty.atomic_weight(), 0.0)
+
+        ms_u238 = MassStream.MassStream({922380: 1.0})
+        assert_equal(ms_u238.atomic_weight(), 238.0)
+
+        ms_mixed = MassStream.MassStream({922350: 0.5, 922380: 0.5})
+        assert_almost_equal(ms_mixed.atomic_weight()/236.5, 1.0, 4)
 
 
 class TestMassSubStreamMethods(TestCase):

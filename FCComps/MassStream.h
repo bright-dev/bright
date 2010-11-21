@@ -66,6 +66,7 @@ public:
     void Print (); 
     void Normalize ();
     CompDict multByMass();
+    double atomic_weight();
 
     //Sub-Stream Computation
     MassStream getSubStream (std::set<int>,  std::string n = "");

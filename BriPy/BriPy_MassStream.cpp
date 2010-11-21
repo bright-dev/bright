@@ -73,9 +73,10 @@ BOOST_PYTHON_MODULE(MassStream)
         .def("load_from_text", &MassStream::load_from_text, "Loads data into the MassStream from a text file.")
 
         //Useful Functions
-        .def("Print",      &MassStream::Print, "Print MassStream to std::out.")
-        .def("Normalize",  &MassStream::Normalize, "Normalize MassStream by setting mass = 1.")
-        .def("multByMass", &MassStream::multByMass, "Return Isotopic Component Dictionary whose values = comp[iso] * mass.")
+        .def("Print",         &MassStream::Print,         "Print MassStream to std::out.")
+        .def("Normalize",     &MassStream::Normalize,     "Normalize MassStream by setting mass = 1.")
+        .def("multByMass",    &MassStream::multByMass,    "Return Isotopic Component Dictionary whose values = comp[iso] * mass.")
+        .def("atomic_weight", &MassStream::atomic_weight, "Calculates the atomic weight of the mass stream.")
 
         //Sub-Stream Generators
         .def("getSubStreamInt", getSubStreamInt, gSS_overloads( "Obtains a sub-stream from this MassStream.\nSub-stream contains only the isotopes (int) in the list passed.\nUsage:\n\tthis_ms.getSubStream([92, 942390, ...])" ))

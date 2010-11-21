@@ -21,7 +21,7 @@ double MassStream::get_comp_sum ()
 void MassStream::norm_comp_dict ()
 {
     double sum = get_comp_sum();
-    if (sum != 1.0) 
+    if (sum != 1.0 && sum != 0.0)
     {
         for (CompIter i = comp.begin(); i != comp.end(); i++)
         {
@@ -264,6 +264,23 @@ CompDict MassStream::multByMass()
     }
     return cd;
 }
+
+double MassStream::atomic_weight()
+{
+    // Calculate the atomic weight of the MassStream
+    double inverseA = 0.0;
+    for (CompIter iso = comp.begin(); iso != comp.end(); iso++)
+    {
+        inverseA = inverseA + (iso->second) / isoname::nuc_weight(iso->first);
+    };
+
+    if (inverseA == 0.0)
+        return inverseA;
+
+    double A = 1.0 / inverseA;
+    return A;
+};
+
 
 /*--- Stub-Stream Computation ---*/
 
