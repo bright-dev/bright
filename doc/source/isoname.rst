@@ -291,7 +291,26 @@ Other isoname functions
 .. autofunction:: isoname.RearRemoveDuplicates
 
 
+.. function:: isoname.nuc_weight(nuc)
 
+    Calculates the weight of a nuclide in [amu].
+
+   Args:
+      * `nuc` (int or str): Input nuclide of any valid form.
+
+   Returns:
+      * `weight` (float): Atomic weight of this nuclide.  
+
+.. function:: isoname.nuc_weight_zzaaam(nuc)
+
+    Calculates the weight of a nuclide in zzaaam form in [amu].  This function is implicitly 
+    called by :func:`nuc_weight <isoname.nuc_weight>`.
+
+   Args:
+      * `nuc` (int): Input nuclide in zzaaam form.
+
+   Returns:
+      * `weight` (float): Atomic weight of this nuclide.  
 
 .. toctree::
    :hidden:

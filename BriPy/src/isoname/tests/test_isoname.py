@@ -229,6 +229,42 @@ class TestIsovecKeysFunctions(TestCase):
             95642: 1.0,             
             })
 
+class TestHelperFunctions(TestCase):
+    """Tests the isoname module helper functions."""
+
+    def test_nuc_weight_zzaaam(self):
+        assert_equal(isoname.nuc_weight_zzaaam(80160),  16.0)
+        assert_equal(isoname.nuc_weight_zzaaam(922350), 235.0)
+        assert_equal(isoname.nuc_weight_zzaaam(952421), 242.0)
+
+    def test_nuc_weight_int(self):
+        # zzaam form
+        assert_equal(isoname.nuc_weight(80160),  16.0)
+        assert_equal(isoname.nuc_weight(922350), 235.0)
+        assert_equal(isoname.nuc_weight(952421), 242.0)
+
+        # MCNP form
+        assert_equal(isoname.nuc_weight(8016),  16.0)
+        assert_equal(isoname.nuc_weight(92235), 235.0)
+        assert_equal(isoname.nuc_weight(95642), 242.0)
+
+    def test_nuc_weight_string(self):
+        # zzaam form
+        assert_equal(isoname.nuc_weight("80160"),  16.0)
+        assert_equal(isoname.nuc_weight("922350"), 235.0)
+        assert_equal(isoname.nuc_weight("952421"), 242.0)
+
+        # zzaam form
+        assert_equal(isoname.nuc_weight("O-16"),   16.0)
+        assert_equal(isoname.nuc_weight("U235"),   235.0)
+        assert_equal(isoname.nuc_weight("Am242M"), 242.0)
+
+        # MCNP form
+        assert_equal(isoname.nuc_weight("8016"),  16.0)
+        assert_equal(isoname.nuc_weight("92235"), 235.0)
+        assert_equal(isoname.nuc_weight("95642"), 242.0)
+
 
 if __name__ == "__main__":
     nose.main()
+

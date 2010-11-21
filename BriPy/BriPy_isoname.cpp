@@ -99,4 +99,13 @@ BOOST_PYTHON_MODULE(isoname)
     int (*mixed_2_MCNP2)(int)         = &isoname::mixed_2_MCNP;
     bp::def("mixed_2_MCNP", mixed_2_MCNP1, mixed_2_MCNP__doc__);
     bp::def("mixed_2_MCNP", mixed_2_MCNP2, mixed_2_MCNP__doc__);
+
+    // Helper functions
+    bp::def("nuc_weight_zzaaam", &isoname::nuc_weight_zzaaam, "Calculates the atomic weight of a nuclide in zzaaam form.");
+
+    char nuc_weight__doc__ [] = "Calculates the atomic weight of a nuclide.";
+    double (*nuc_weight1)(int)         = &isoname::nuc_weight;
+    double (*nuc_weight2)(std::string) = &isoname::nuc_weight;
+    bp::def("nuc_weight", nuc_weight1, nuc_weight__doc__);
+    bp::def("nuc_weight", nuc_weight2, nuc_weight__doc__);
 };

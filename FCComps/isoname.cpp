@@ -429,7 +429,20 @@ int isoname::mixed_2_MCNP(int nuc)
 /************************/
 /*** Helper Functions ***/
 /************************/
-double isoname::nuc_weight(int nuc)
+double isoname::nuc_weight_zzaaam(int nuc)
 {
     return (double) ((nuc/10)%1000);
 };
+
+double isoname::nuc_weight(int nuc)
+{
+    int nuc_zz = isoname::mixed_2_zzaaam(nuc);
+    return isoname::nuc_weight_zzaaam(nuc_zz);
+};
+
+double isoname::nuc_weight(std::string nuc)
+{
+    int nuc_zz = isoname::mixed_2_zzaaam(nuc);
+    return isoname::nuc_weight_zzaaam(nuc_zz);
+};
+

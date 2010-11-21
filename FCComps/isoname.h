@@ -158,7 +158,9 @@ namespace isoname
     /************************/
     /*** Helper Functions ***/
     /************************/
+    double nuc_weight_zzaaam(int);
     double nuc_weight(int);
+    double nuc_weight(std::string);
 }
 
 #endif
