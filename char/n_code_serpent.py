@@ -407,20 +407,33 @@ class NCodeSerpent(NCode):
         rx_h5.createArray(base_group, 'energy', rx_res.GC_BOUNDS[0], "Energy boundaries [MeV]")
 
         # Calculate and store weight percents per IHM
+        # Serepent masses somehow unnoprmalize themselves in all of these conversions, which is annoying.
+        # This eefect is of order 1E-5, which is large enough to be noticable.
+        # Thus we have to go through two bouts of normalization here.
         mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * defchar.fuel_density)
         mw = rx_dep.TOT_MASS * mw_conversion 
 
         Ti0_group = rx_h5.createGroup(base_group, 'Ti0', "Transmutation matrix from initial core loading [kg_i/kgIHM]")
 
+        iso_LL = {}
+        iso_index = {}
         for iso_zz in rx_dep.ZAI:
+            # Find valid isotope indeces
             try: 
-                iso_LL = isoname.mixed_2_LLAAAM(int(iso_zz))
+                iso_LL[iso_zz] = isoname.mixed_2_LLAAAM(int(iso_zz))
             except:
                 continue
+            iso_index[iso_zz] = getattr(rx_dep, 'i{0}'.format(iso_zz)) - 1
 
-            i = getattr(rx_dep, 'i{0}'.format(iso_zz)) - 1
+        mass = mw[iso_index.values()].sum(axis=0)   # Caclulate actual mass of isotopes present
 
-            rx_h5.createArray(Ti0_group, iso_LL, mw[i], "Mass weight of {0} [kg/kgIHM]".format(iso_LL))
+        for iso_zz in iso_index:
+            # Store normalized mass vector for this isotope
+            mw_i =  mw[iso_index[iso_zz]] / mass[0]
+            rx_h5.createArray(Ti0_group, iso_LL[iso_zz], mw_i, "Mass weight of {0} [kg/kgIHM]".format(iso_LL[iso_zz]))
+
+        mass = mass / mass[0]   # Renormalize mass
+        rx_h5.createArray(Ti0_group, 'Mass', mass, "Mass fraction of fuel [kg/kgIHM]")
 
         # close the file before returning
         rx_h5.close()

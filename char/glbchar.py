@@ -10,6 +10,7 @@ import subprocess
 import isoname
 import MassStream
 import metasci
+import metasci.nuke as msn
 
 ######################
 ### CHAR Libraries ###
@@ -170,6 +171,11 @@ def defchar_update(defchar):
         raise TypeError("The core_transmute_isos type was not correct.")
 
     # Make fuel stream
-    defchar.initial_fuel_stream = MassStream.MassStream(defchar.initial_fuel_form)
+    defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)
+    isovec, AW, MW = msn.convolve_initial_fuel_form(defchar.IHM_stream, defchar.fuel_chemical_form)
+
+    defchar.initial_fuel_stream = MassStream.MassStream(isovec)
+    defchar.IHM_weight = AW
+    defchar.fuel_weight = MW
 
     return defchar
