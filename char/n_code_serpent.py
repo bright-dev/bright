@@ -286,7 +286,7 @@ class NCodeSerpent(NCode):
 
         # Setup detectors to calculate XS for
         det['xsdet'] = ''
-        det_format = "det {tally_name} dm fuel dr {tally_type} xsmat dt 3 phi\n"
+        det_format = "det {tally_name} de energies dm fuel dr {tally_type} xsmat dt 3 phi\n"
 
         if hasattr(defchar, 'tallies'):
             tallies = defchar.tallies

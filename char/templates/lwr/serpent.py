@@ -37,7 +37,6 @@ set nfg {n_groups} {group_structure}
 % Criticality calc
 set pop {k_particles} {k_cycles} {k_cycles_skip}
 
-
 % --- Geometry ---
 pin 1
 fill 100 {fuel_radius}
@@ -65,8 +64,11 @@ mesh 3 800 800
 
 % --- Group Constant Generation ---
 
+% Energy group structure
+ene energies 1 {group_structure}
+
 % Total flux in fuel
-det phi dm fuel
+det phi de energies dm fuel
 
 % Group constant material
 mat xsmat 1.0 {xsiso} 1.0
