@@ -18,6 +18,21 @@ from char import defchar
 from n_code import NCode
 from m2py import convert_res, convert_dep
 
+
+def zzaaam_2_serpent(iso):
+    """Makes an isotope in serpent form."""
+    if 0 == iso%10:
+        iso_serp = iso/10
+    else:
+        iso_zz = iso/10000
+        iso_LL = isoname.zzLL[iso_zz]
+        iso_LL.capitalize()
+        iso_aaa = (iso/10)%1000
+        iso_serp = "{0}-{1}m".format(iso_LL, iso_aaa)
+
+    return iso_serp
+
+
 class NCodeSerpent(NCode):
     """A Serpent neutronics code wrapper class."""
 
@@ -50,15 +65,7 @@ class NCodeSerpent(NCode):
 
         for iso in comp.keys():
             iso_serp = isoname.mixed_2_zzaaam(iso)
-
-            if 0 == iso_serp%10:
-                iso_serp = iso_serp/10
-            else:
-                iso_zz = iso_serp/10000
-                iso_LL = isoname.zzLL[iso_zz]
-                iso_LL.capitalize()
-                iso_aaa = (iso_serp/10)%1000
-                iso_serp = "{0}-{1}m".format(iso_LL, iso_aaa)
+            iso_serp = zzaaam_2_serpent(iso_serp)
 
             if self.iso_flag == '':
                 comp_str += "{0:>11}".format( "{0}".format(iso_serp) )
@@ -268,14 +275,14 @@ class NCodeSerpent(NCode):
         the serpent template.  Requires the isotope to be specified."""
         det = {}
 
-        iso_zz = isoname.mixed_2_zzaaam(iso)
-        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+        iso_zz   = isoname.mixed_2_zzaaam(iso)
+        iso_serp = zzaaam_2_serpent(iso_zz)
 
         # Set the isotope to calculate XS for
         if self.iso_flag == '':
-            det['xsiso'] = "{0}".format(iso_zz) 
+            det['xsiso'] = "{0}".format(iso_serp) 
         else:
-            det['xsiso'] = "{0}.{1}".format(iso_zz, self.iso_flag)
+            det['xsiso'] = "{0}.{1}".format(iso_serp, self.iso_flag)
 
         # Setup detectors to calculate XS for
         det['xsdet'] = ''
