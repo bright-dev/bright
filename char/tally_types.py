@@ -1,6 +1,13 @@
 # General sets
 
-total_only = {"sigma_t": -1}
+total_only = {"sigma_t": 1}
+
+no_scattering = {"sigma_t": 1, "sigma_f": 18, "sigma_a": 27}
+
+basic = {"sigma_t": 1, "sigma_f": 18, "sigma_a": 27, "sigma_e": 2, "sigma_i": 4}
+
+advanced = {"sigma_t": 1, "sigma_f": 18, "sigma_a": 27, "sigma_e": 2, "sigma_i": 4, 
+            "sigma_2n": 16, "sigma_3n": 17, "sigma_gamma": 102, "sigma_proton": 103, "sigma_alpha": 107}
 
 # MCNP sets
 
@@ -20,3 +27,4 @@ serpent_basic = {"sigma_t": -1, "sigma_f": -6, "nubar": -7,  "sigma_a": -2, "sig
 serpent_advanced = {"sigma_t": -1, "sigma_f": -6, "nubar": -7, "sigma_a": -2, "sigma_e": 2, "sigma_i": 4, 
             "sigma_2n": 16, "sigma_3n": 17, "sigma_gamma": 102, "sigma_proton": 103, "sigma_alpha": 107}
 
+serpent_default = {"sigma_f": 18, "nubar": -7,  "sigma_a": 27, "sigma_e": 2, "sigma_i": 4}

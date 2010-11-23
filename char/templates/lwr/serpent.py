@@ -62,6 +62,20 @@ cell 301   0  outside    3000
 % --- Graphs ---
 plot 3 800 800
 mesh 3 800 800
+
+% --- Group Constant Generation ---
+
+% Total flux in fuel
+det phi dm fuel
+
+% Group constant material
+mat xsmat 1.0 {xsiso} 1.0
+
+% Set group transfer probability to this material
+set gtpmat xsmat
+
+% Specify the detectors
+{xsdet}
 """
 
 burnup = """\

@@ -13,6 +13,7 @@ from metasci.colortext import message, failure
 
 from scipy.integrate import cumtrapz
 
+import tally_types
 from char import defchar
 from n_code import NCode
 from m2py import convert_res, convert_dep
@@ -262,6 +263,34 @@ class NCodeSerpent(NCode):
 
         return bu
 
+    def make_detector(self, iso):
+        """Generates a dictionary of values that fill the detector/cross-section portion of 
+        the serpent template.  Requires the isotope to be specified."""
+        det = {}
+
+        iso_zz = isoname.mixed_2_zzaaam(iso)
+        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+
+        # Set the isotope to calculate XS for
+        if self.iso_flag == '':
+            det['xsiso'] = "{0}".format(iso_zz) 
+        else:
+            det['xsiso'] = "{0}.{1}".format(iso_zz, self.iso_flag)
+
+        # Setup detectors to calculate XS for
+        det['xsdet'] = ''
+        det_format = "det {tally_name} dm fuel dr {tally_type} xsmat dt 3 phi\n"
+
+        if hasattr(defchar, 'tallies'):
+            tallies = defchar.tallies
+        else:
+            tallies = tally_types.serpent_default
+
+        for tally in tallies:
+            det['xsdet'] += det_format.format(tally_name=tally, tally_type=tallies[tally])
+
+        return det
+
     def make_input(self):
         serpent_fill = {
             'reactor': defchar.reactor,
@@ -296,6 +325,8 @@ class NCodeSerpent(NCode):
             # Fill the burnup template
             with open(defchar.reactor + "_burnup", 'w') as f:
                 f.write(defchar.burnup_template.format(**serpent_fill))
+
+        serpent_fill.update( self.make_detector("U235") )
 
         # Fill the XS template
         with open(defchar.reactor + "_xs_gen", 'w') as f:
