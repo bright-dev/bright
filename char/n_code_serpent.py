@@ -359,17 +359,25 @@ class NCodeSerpent(NCode):
         self.make_xs_gen_input()
 
 
-    def get_mpi_flag(self)
+    def get_mpi_flag(self):
         mpi_flag = ''
-        if runflag in ["MPI", "PBS"]:
+
+        if hasattr(defchar, 'run_parallel'):
+            run_flag = defchar.run_parallel.upper()
+        elif hasattr(defchar.options, 'RunParallel'):
+            run_flag = defchar.options.RunParallel.upper()
+        else:
+            run_flag = ''
+
+        if run_flag in ["MPI", "PBS"]:
             if hasattr(defchar, 'number_cpus'):
                 num_cpus = defchar.number_cpus
             else:
-                print(message("The number of cpus was not specified even though a multicore calculation was requested."))
-                print(message("Setting the number of cpus to 1 for this calculation."))
+                print(message("The number of cpus was not specified even though a multicore calculation was requested.\n"
+                              "Setting the number of cpus to 1 for this calculation."))
                 num_cpus = 1
 
-            mpi_flag = '-mpi {0}'.format(NumberCPUs)
+            mpi_flag = '-mpi {0}'.format(defchar.number_cpus)
 
         return mpi_flag
 
@@ -423,6 +431,8 @@ class NCodeSerpent(NCode):
             # Grab the MassStream at this time.
             ms = MassStream()
             ms.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", t)
+            isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
+            ms = MassStream(isovec)
 
             # Update fuel in serpent_fill
             self.serpent_fill['fuel'] = self.make_input_fuel(ms)
@@ -469,7 +479,7 @@ class NCodeSerpent(NCode):
 
         # Convert files
         convert_res(defchar.reactor + "_xs_gen_res.m")
-        convert_det(defchar.reactor + "_burnup_det0.m")
+        convert_det(defchar.reactor + "_xs_gen_det0.m")
 
 
     #
