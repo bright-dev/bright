@@ -21,13 +21,41 @@ rhs_variable_pattern = r"(\w+)\s*\(idx.*?\)\s*=\s*(.*)"
 
 zeros_pattern = r"(zeros)\((.*)\)"
 
+detector_pattern = r"(DET\w+)\s*=\s*np.array\("
+
+def replace_comments(s):
+    """Replaces matlab comments with python arrays in string s."""
+    s = s.replace('%', '#')
+    return s
+
+def replace_semicolons(s):
+    """Replaces matlab semicolons with nothing in string s."""
+    s = s.replace(';', '')
+    return s
+
+def replace_arrays(s):
+    """Replaces matlab arrays with numpy arrays in string s."""
+
+    # Replace matlab arrays with python lists
+    arrays = re.findall(matlab_array_pattern, s)
+    for a in arrays:
+        new_a = re.sub(num_pattern, lambda mo: mo.group(0) + ',', a)
+        s = s.replace(a, new_a)
+
+    print s
+    # Encapsulate python lists in numpy arrays
+    s = re.sub(numpy_array_pattern, lambda mo: 'np.array(' + mo.group(0) + ')', s)
+
+    return s
+
+
 def convert_res(filename):
     """Convert a matlab *_res.m file to a python file."""
     with open(filename, 'r') as mfile:
         f = mfile.read()
 
     # Keep comments around
-    f = f.replace('%', '#')
+    f = replace_comments(f)
 
     # Grab the number of 'if' statements
     IDX = f.count(if_idx_str)
@@ -37,14 +65,8 @@ def convert_res(filename):
     f = fpart[0] + "idx = 0" + fpart[2]
     f = f.replace(if_idx_str, 'idx += 1')
 
-    # Replace matlab arrays with python lists
-    arrays = re.findall(matlab_array_pattern, f)
-    for a in arrays:
-        new_a = re.sub(num_pattern, lambda mo: mo.group(0) + ',', a)
-        f = f.replace(a, new_a)
-
-    # Encapsulate python lists in numpy arrays
-    f = re.sub(numpy_array_pattern, lambda mo: 'np.array(' + mo.group(0) + ')', f)
+    # Replace matlab Arrays
+    f = replace_arrays(f)
 
     # Add imports to header
     header = "import numpy as np\n\n"
@@ -89,6 +111,9 @@ def convert_res(filename):
     for v in vars:
         f = f.replace(v[0], "{0}[idx] ".format(v[1]))
 
+    # Remove semicolons
+    f = replace_semicolons(f)
+
     # Write the file out
     new_filename = filename.rpartition('.')[0] + '.py'
     with open(new_filename, 'w') as pyfile:
@@ -104,16 +129,10 @@ def convert_dep(filename):
         f = mfile.read()
 
     # Keep comments around
-    f = f.replace('%', '#')
+    f = replace_comments(f)
 
-    # Replace matlab arrays with python lists
-    arrays = re.findall(matlab_array_pattern, f)
-    for a in arrays:
-        new_a = re.sub(num_pattern, lambda mo: mo.group(0) + ',', a)
-        f = f.replace(a, new_a)
-
-    # Encapsulate python lists in numpy arrays
-    f = re.sub(numpy_array_pattern, lambda mo: 'np.array(' + mo.group(0) + ')', f)
+    # Replace matlab Arrays
+    f = replace_arrays(f)
 
     # Now to find and convert arrays that have comments in them
     comment_arrays = re.findall("(" + comment_array_pattern + ")", f)
@@ -147,6 +166,50 @@ def convert_dep(filename):
 
     # Add header to file
     f = header + f
+
+    # Remove semicolons
+    f = replace_semicolons(f)
+
+    # Write the file out
+    new_filename = filename.rpartition('.')[0] + '.py'
+    with open(new_filename, 'w') as pyfile:
+        pyfile.write(f)
+
+    return f
+
+
+
+def convert_det(filename):
+    """Convert a matlab *_det*.m file to a python file."""
+    with open(filename, 'r') as mfile:
+        f = mfile.read()
+
+    # Keep comments around
+    f = replace_comments(f)
+
+    # Replace matlab Arrays
+    f = replace_arrays(f)
+
+    # Find detector variable names 
+    det_names = re.findall(detector_pattern, f)
+    det_names = np.unique(det_names)
+
+    # Append detector reshaping
+    f += "\n\n# Reshape detectors\n"
+    for dn in det_names:
+        if dn + "E" in det_names:
+            f += "{name} = {name}.reshape(({name}_VALS, 13))\n".format(name=dn)
+        else:
+            f += "{name} = {name}.reshape(({name_min_E}_EBINS, 3))\n".format(name=dn, name_min_E=dn[:-1])
+
+    # Add imports to header
+    header = "import numpy as np\n\n"
+
+    # Add header to file
+    f = header + f
+
+    # Remove semicolons
+    f = replace_semicolons(f)
 
     # Write the file out
     new_filename = filename.rpartition('.')[0] + '.py'
