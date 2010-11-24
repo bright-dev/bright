@@ -42,7 +42,6 @@ def replace_arrays(s):
         new_a = re.sub(num_pattern, lambda mo: mo.group(0) + ',', a)
         s = s.replace(a, new_a)
 
-    print s
     # Encapsulate python lists in numpy arrays
     s = re.sub(numpy_array_pattern, lambda mo: 'np.array(' + mo.group(0) + ')', s)
 
