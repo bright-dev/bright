@@ -60,6 +60,9 @@ def main():
     parser.add_option("-r", "--run", action="store_true", dest="RunTransport", 
         default=False, help="Run the transport calculation.")
 
+    parser.add_option("-x", "--xs",  action="store_true", dest="RunXSGen", 
+        default=False, help="Run the cross-section generation calculation.")
+
     parser.add_option("-d", "--dry-run", action="store_false", dest="RunTransport", 
         help="Dry Run. Do NOT run the transport calculation.")
 
@@ -86,12 +89,6 @@ def main():
 
     parser.add_option("-9", "--tape9", action="store_true", dest="MakeTape9", 
         default=False, help="Parses output and makes a ORIGEN tape9 libraries for each burn step.")
-
-    parser.add_option("-g", "--graph", action="store_true", dest="MakeGraphs", 
-        default=False, help="Graphs data from libraries. Sets -p.")
-
-    parser.add_option("-G", "--graph-ORIGEN", action="store_true", dest="MakeOrigenGraphs", 
-        default=False, help="Graphs ORIGEN data only.")
 
     parser.add_option("-P", "--pid", action="store_true", dest="PID", default=False, 
         help="Finds the process identification number of a current transport run. Sets -d.")
@@ -131,11 +128,16 @@ def main():
     options.RunWith = options.RunWith.upper()   #Ensures that RunWith is uppercase (nice for flags).
     if options.KillTransport:
         options.PID = True                      #Ensures that the PID is found in order that it mak be killed.
+
     if options.PID:
+        options.RunXSGen = False
         options.RunTransport = False            #Ensures that transport calculation is not initiated while fetching files.
+
     if options.FetchFiles:
+        options.RunXSGen = False
         options.RunTransport = False            #Ensures that transport calculation is not initiated while fetching files.
         options.Local = False                   #Ensures that ssh package is loaded.
+
     if options.RunORIGEN:
         options.MakeTape9 = True
 
@@ -199,9 +201,13 @@ def main():
         else:
             runchar.Find_PID_Remote(options.RunWith, options.KillTransport)
 
-    #Parse MCNPX Output & Make HDF5 Data Library
+    # Parse transporter output & make HDF5 data library
     if options.ParseData:
         n_transporter.parse()
+
+    # Make Cross-sections as a separate step from the burnup calculation
+    if options.RunXSGen:
+        n_transporter.run_xs_gen()
 
     #Parse MCNPX Output & Make ORIGEN TAPE9 Libraries
     if options.MakeTape9:
@@ -214,18 +220,6 @@ def main():
 
         if options.MakeText:
             parsechar.Write_TXT_Lib_ORIGEN( BU, k, Pro, Des, Tij )
-
-    #Make Graphs, for fun and learning
-    if options.MakeGraphs:
-        graphchar.Make_Figs_MCNP(options.Quiet)
-
-        if options.RunORIGEN:
-            graphchar.Make_Figs_ORIGEN(options.Quiet)
-
-    #Make only the ORIGEN figures
-    if options.MakeOrigenGraphs and not (options.MakeGraphs and options.RunORIGEN):
-        graphchar.Make_Figs_ORIGEN(options.Quiet)
-
 
     #Clean up
     os.chdir('..')

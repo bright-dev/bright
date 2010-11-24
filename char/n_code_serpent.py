@@ -298,7 +298,7 @@ class NCodeSerpent(NCode):
 
         return det
 
-    def make_input(self):
+    def make_common_input(self):
         serpent_fill = {
             'reactor': defchar.reactor,
             'xsdata':  defchar.serpent_xsdata,
@@ -323,23 +323,34 @@ class NCodeSerpent(NCode):
         # Set the energy group structure
         serpent_fill.update(self.make_input_energy_groups())
 
+        # Assign serpent_fill to the class
+        self.serpent_fill = serpent_fill
+
+
+    def make_burnup_input(self):
         # Add burnup information
         if defchar.options.NoBurnBool:
             pass
         else:
-            serpent_fill.update(self.make_burnup())
+            self.serpent_fill.update(self.make_burnup())
 
             # Fill the burnup template
             with open(defchar.reactor + "_burnup", 'w') as f:
-                f.write(defchar.burnup_template.format(**serpent_fill))
+                f.write(defchar.burnup_template.format(**self.serpent_fill))
 
-        serpent_fill.update( self.make_detector("U235") )
+
+    def make_xs_gen_input(self, iso="U235"):
+        self.serpent_fill.update( self.make_detector(iso) )
 
         # Fill the XS template
         with open(defchar.reactor + "_xs_gen", 'w') as f:
-            f.write(defchar.xs_gen_template.format(**serpent_fill))
+            f.write(defchar.xs_gen_template.format(**self.serpent_fill))
 
-        return
+
+    def make_input(self):
+        self.make_common_input()
+        self.make_burnup_input()
+        self.make_xs_gen_input()
 
 
     def run_script_fill_values(self, runflag=''):
@@ -382,6 +393,11 @@ class NCodeSerpent(NCode):
         rsfv['run_commands'] = "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, mpi_flag)
 
         return rsfv
+
+
+    def run_xs_gen(self):
+        """Runs the cross-section genaration portion of CHAR."""
+        if 
 
 
     def parse(self):
