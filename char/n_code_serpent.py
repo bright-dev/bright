@@ -2,6 +2,7 @@
 from __future__ import print_function
 import os
 import sys
+import subprocess
 
 import isoname
 import numpy as np
@@ -16,7 +17,7 @@ from scipy.integrate import cumtrapz
 import tally_types
 from char import defchar
 from n_code import NCode
-from m2py import convert_res, convert_dep
+from m2py import convert_res, convert_dep, convert_det
 
 
 def zzaaam_2_serpent(iso):
@@ -79,13 +80,18 @@ class NCodeSerpent(NCode):
         return comp_str
             
 
-    def make_input_fuel(self):
+    def make_input_fuel(self, ms=None):
         if hasattr(defchar, 'fuel_form_mass_weighted'):
             mass_weighted = defchar.fuel_form_mass_weighted
         else:
             mass_weighted = True
-        
-        return self.make_input_material_weights(defchar.initial_fuel_stream.comp, mass_weighted)
+
+        if ms == None:
+            comp_str = self.make_input_material_weights(defchar.initial_fuel_stream.comp, mass_weighted)
+        else:
+            comp_str = self.make_input_material_weights(ms.multByMass(), True)
+
+        return comp_str
 
     def make_input_cladding(self):
         # Try to load cladding stream
@@ -353,6 +359,21 @@ class NCodeSerpent(NCode):
         self.make_xs_gen_input()
 
 
+    def get_mpi_flag(self)
+        mpi_flag = ''
+        if runflag in ["MPI", "PBS"]:
+            if hasattr(defchar, 'number_cpus'):
+                num_cpus = defchar.number_cpus
+            else:
+                print(message("The number of cpus was not specified even though a multicore calculation was requested."))
+                print(message("Setting the number of cpus to 1 for this calculation."))
+                num_cpus = 1
+
+            mpi_flag = '-mpi {0}'.format(NumberCPUs)
+
+        return mpi_flag
+
+
     def run_script_fill_values(self, runflag=''):
         """Sets the fill values for running serpent."""
 
@@ -379,30 +400,58 @@ class NCodeSerpent(NCode):
         rsfv['transport_job_context'] = self.run_str + " -version"
 
         # Set Run_Commands 
-        mpi_flag = ''
-        if runflag in ["MPI", "PBS"]:
-            if hasattr(defchar, 'number_cpus'):
-                num_cpus = defchar.number_cpus
-            else:
-                print(message("The number of cpus was not specified even though a multicore calculation was requested."))
-                print(message("Setting the number of cpus to 1 for this calculation."))
-                num_cpus = 1
-
-            mpi_flag = '-mpi {0}'.format(NumberCPUs)
-
-        rsfv['run_commands'] = "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, mpi_flag)
+        rsfv['run_commands'] = "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
 
         return rsfv
 
 
     def run_xs_gen(self):
         """Runs the cross-section genaration portion of CHAR."""
-        if 
+        # Initializa the common serpent_fill values
+        self.make_common_input()
+        run_command = "{0} {1}_xs_gen {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
 
+        # Open the hdf5 library
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = "/"
+
+        # Get the number of time points from the file
+        ntimes = len(rx_h5.root.time0)
+
+        # Loop over all times
+        for t in range(ntimes):
+            # Grab the MassStream at this time.
+            ms = MassStream()
+            ms.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", t)
+
+            # Update fuel in serpent_fill
+            self.serpent_fill['fuel'] = self.make_input_fuel(ms)
+
+            # Loop over all output isotopes
+#            for iso in defchar.core_transmute['zzaaam']:
+            for iso in ['U235']:
+                # Make new input file
+                self.make_xs_gen_input(iso)
+
+                # Run serpent on this input file as a subprocess
+                rtn = subprocess.check_call(run_command, shell=True)
+
+                # Parse & write this output to HDF5
+                self.parse_xs_gen()
+#                self.write_xs_gen()
+
+        # close the file before returning
+        rx_h5.close()
+
+
+    #
+    # Parsing functions
+    #
 
     def parse(self):
         """Convienence function to parse results."""
         self.parse_burnup()
+        self.write_burnup()
 
 
     def parse_burnup(self):
@@ -413,8 +462,19 @@ class NCodeSerpent(NCode):
         convert_res(defchar.reactor + "_burnup_res.m")
         convert_dep(defchar.reactor + "_burnup_dep.m")
 
-        self.write_burnup()
 
+    def parse_xs_gen(self):
+        """Parse the burnup/depletion files into an equivelent python modules.
+        Writes the output to hdf5."""
+
+        # Convert files
+        convert_res(defchar.reactor + "_xs_gen_res.m")
+        convert_det(defchar.reactor + "_burnup_det0.m")
+
+
+    #
+    # Writing functions
+    #
 
     def write_burnup(self):
         """Writes the results of the burnup calculation to an hdf5 file."""
