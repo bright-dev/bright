@@ -69,9 +69,6 @@ def main():
     parser.add_option("-w", "--with", dest="RunWith", default="NONE", metavar="PROG", 
         help="Dictates what PROG to run transport calculation with. PROG = [MCNP | Serpent].")
 
-    parser.add_option("-m", "--multi-core", dest="RunParallel", default="Single", metavar="PARA", 
-        help="Dictates what PROG to run parallel transport calculation with. PARA = [Single | MPI | PBS].")
-
     parser.add_option("-O", "--ORIGEN", action="store_true", dest="RunORIGEN", 
         default=False, help="Run ORIGEN Burnup calculations.")
 

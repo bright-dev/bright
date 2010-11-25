@@ -364,8 +364,6 @@ class NCodeSerpent(NCode):
 
         if hasattr(defchar, 'run_parallel'):
             run_flag = defchar.run_parallel.upper()
-        elif hasattr(defchar.options, 'RunParallel'):
-            run_flag = defchar.options.RunParallel.upper()
         else:
             run_flag = ''
 
