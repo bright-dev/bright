@@ -639,9 +639,15 @@ class NCodeSerpent(NCode):
         # Init aggregate tallies
 
         # nubar
-        if ('sigma_f' in tallies) and ('nubar_sigmam_f' in tallies):
+        if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies):
             self.init_tally_group(rx_h5, base_group, 'nubar', neg1, 
                                   "{tally} [unitless]", "{tally} for {iso} [unitless]")
+
+        # sigma_i
+        if np.array(['sigma_i' in tally  for tally in tallies]).any() and ('sigma_i' not in tallies):
+            self.init_tally_group(rx_h5, base_group, 'sigma_i', neg1, 
+                                  "Microscopic Cross Section {tally} [barns]", 
+                                  "Microscopic Cross Section {tally} for {iso} [barns]")
 
         # close the file before returning
         rx_h5.close()
@@ -681,7 +687,7 @@ class NCodeSerpent(NCode):
         # Write aggregate tallies
 
         # nubar
-        if ('sigma_f' in tallies) and ('nubar_sigmam_f' in tallies):
+        if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies):
             tally_hdf5_group = getattr(base_group, 'nubar')
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
@@ -691,9 +697,29 @@ class NCodeSerpent(NCode):
             nubar_sigma_f = getattr(rx_det, 'DETnubar_sigma_f')
             nubar_sigma_f = nubar_sigma_f[::-1, 10] 
 
-            nubar = nubar_sigma_f_array / sigma_f
+            nubar = nubar_sigma_f / sigma_f
 
             tally_hdf5_array[t] = nubar
+
+        # sigma_i
+        if not ('sigma_i' in tallies):
+            tally_hdf5_group = getattr(base_group, 'sigma_i')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            sigma_i = None
+
+            # Sum all sigma_iN's together
+            for tally in tallies:
+                tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
+
+                if ('sigma_i' in tally) and (sigma_i == None):
+                    sigma_i = tally_serp_array[::-1, 10]
+                elif ('sigma_i' in tally) and (sigma_i != None):
+                    sigma_i += tally_serp_array[::-1, 10]
+                else:
+                    pass
+
+            tally_hdf5_array[t] = sigma_i
 
         # close the file before returning
         rx_h5.close()
