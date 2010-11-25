@@ -429,17 +429,42 @@ class NCodeSerpent(NCode):
         # Loop over all times
         for t in range(ntimes):
             # Grab the MassStream at this time.
-            ms = MassStream()
-            ms.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", t)
-            isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
-            ms = MassStream(isovec)
-
-            # Update fuel in serpent_fill
-            self.serpent_fill['fuel'] = self.make_input_fuel(ms)
+            ms_t = MassStream()
+            ms_t.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", t)
 
             # Loop over all output isotopes
 #            for iso in defchar.core_transmute['zzaaam']:
-            for iso in ['U235']:
+            for iso in [922350]:
+                # Add filler fision product
+                # If iso is not zirconium, add Zr-90
+                # If is zirconium, add Sr-90
+                # These two isotopes have almost the same mass
+                # and neutronic profile:
+                #     http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Zr-90&n=2
+                #     http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Sr-90&n=2
+                # We need to do this to preseve the atom density of the fuel, 
+                # while not inducing errors through self-shielding and strong absorbers.
+                # Basically, Zr-90 and Sr-90 become representative fision product pairs.
+                #
+                # WARNING: This is only suppossed to be a first order correction!
+                # Make sure that you include enough FP in core_transmute.
+                top_up_mass = 1.0 - ms_t.mass
+                if top_up_mass == 0.0:
+                    top_up = 0.0
+                elif isoname.zzLL[iso//10000] == 'ZR':
+                    top_up = MassStream({380900: 90.0, 621480: 148.0}, top_up_mass)
+                elif isoname.zzLL[iso//10000] == 'SM':
+                    top_up = MassStream({400900: 90.0, 601480: 148.0}, top_up_mass)
+                else:
+                    top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
+
+                ms = ms_t + top_up
+                isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
+                ms = MassStream(isovec)
+
+                # Update fuel in serpent_fill
+                self.serpent_fill['fuel'] = self.make_input_fuel(ms)
+
                 # Make new input file
                 self.make_xs_gen_input(iso)
 
