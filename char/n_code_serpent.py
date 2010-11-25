@@ -599,6 +599,20 @@ class NCodeSerpent(NCode):
         rx_h5.close()
 
 
+    def init_tally_group(self, rx_h5, base_group, tally, init_array, 
+                         gstring='Group {tally}', astring='Array {tally} {iso}'):
+        """Inits a tally group in an hdf5 file."""
+
+        # Remove existing group, create new group of same name.
+        if hasattr(rx_h5.getNode(base_group), tally):
+            rx_h5.removeNode(base_group, tally, recursive=True)
+        tally_group = rx_h5.createGroup(base_group, tally, gstring.format(tally=tally))
+
+        # Add isotopic arrays for this tally to this group.
+        for iso_LL in defchar.core_transmute['LLAAAM']: 
+            rx_h5.createArray(tally_group, iso_LL, init_array, astring.format(tally=tally, iso=iso_LL))
+
+
     def init_h5_xs_gen(self, ntimes=1):
         """Initialize the hdf5 file for writing for the XS Gen stage.
         The shape of these arrays is dependent on the number of time steps."""
@@ -609,21 +623,25 @@ class NCodeSerpent(NCode):
         # Numbe of energy groups
         G = self.serpent_fill['n_groups']
 
-        # Init the raw tally arrays
-        neg1 = -1.0 * np.ones( (ntimes, G) )
-
+        # Grab the tallies
         if hasattr(defchar, 'tallies'):
             tallies = defchar.tallies
         else:
             tallies = tally_types.serpent_default
 
+        # Init the raw tally arrays
+        neg1 = -1.0 * np.ones( (ntimes, G) )
         for tally in tallies:
-            if hasattr(rx_h5.getNode(base_group), tally):
-                rx_h5.removeNode(base_group, tally, recursive=True)
-            tally_group = rx_h5.createGroup(base_group, tally, "Microscopic Cross Section {0} [barns]".format(tally))
+            self.init_tally_group(rx_h5, base_group, tally, neg1, 
+                                  "Microscopic Cross Section {tally} [barns]", 
+                                  "Microscopic Cross Section {tally} for {iso} [barns]")
 
-            for iso_LL in defchar.core_transmute['LLAAAM']: 
-                rx_h5.createArray(tally_group, iso_LL, neg1, "Microscopic Cross Section {0} for {1} [barns]".format(tally, iso_LL))
+        # Init aggregate tallies
+
+        # nubar
+        if ('sigma_f' in tallies) and ('nubar_sigmam_f' in tallies):
+            self.init_tally_group(rx_h5, base_group, 'nubar', neg1, 
+                                  "{tally} [unitless]", "{tally} for {iso} [unitless]")
 
         # close the file before returning
         rx_h5.close()
@@ -645,19 +663,37 @@ class NCodeSerpent(NCode):
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = rx_h5.root
 
-        # Write the raw tally arrays for this time and this iso        
+        # Grab the tallies
         if hasattr(defchar, 'tallies'):
             tallies = defchar.tallies
         else:
             tallies = tally_types.serpent_default
 
+        # Write the raw tally arrays for this time and this iso        
         for tally in tallies:
             tally_hdf5_group = getattr(base_group, tally)
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
             tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
 
-            tally_hdf5_array[t] = tally_serp_array[:, 10]
+            tally_hdf5_array[t] = tally_serp_array[::-1, 10]
+
+        # Write aggregate tallies
+
+        # nubar
+        if ('sigma_f' in tallies) and ('nubar_sigmam_f' in tallies):
+            tally_hdf5_group = getattr(base_group, 'nubar')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            sigma_f = getattr(rx_det, 'DETsigma_f')
+            sigma_f = sigma_f[::-1, 10]
+
+            nubar_sigma_f = getattr(rx_det, 'DETnubar_sigma_f')
+            nubar_sigma_f = nubar_sigma_f[::-1, 10] 
+
+            nubar = nubar_sigma_f_array / sigma_f
+
+            tally_hdf5_array[t] = nubar
 
         # close the file before returning
         rx_h5.close()
