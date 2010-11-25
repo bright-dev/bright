@@ -639,13 +639,19 @@ class NCodeSerpent(NCode):
         # Init aggregate tallies
 
         # nubar
-        if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies):
+        if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies) and ('nubar' not in tallies):
             self.init_tally_group(rx_h5, base_group, 'nubar', neg1, 
                                   "{tally} [unitless]", "{tally} for {iso} [unitless]")
 
         # sigma_i
         if np.array(['sigma_i' in tally  for tally in tallies]).any() and ('sigma_i' not in tallies):
             self.init_tally_group(rx_h5, base_group, 'sigma_i', neg1, 
+                                  "Microscopic Cross Section {tally} [barns]", 
+                                  "Microscopic Cross Section {tally} for {iso} [barns]")
+
+        # sigma_s
+        if ('sigma_s' not in tallies):
+            self.init_tally_group(rx_h5, base_group, 'sigma_s', neg1, 
                                   "Microscopic Cross Section {tally} [barns]", 
                                   "Microscopic Cross Section {tally} for {iso} [barns]")
 
@@ -687,7 +693,7 @@ class NCodeSerpent(NCode):
         # Write aggregate tallies
 
         # nubar
-        if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies):
+        if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies) and ('nubar' not in tallies):
             tally_hdf5_group = getattr(base_group, 'nubar')
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
@@ -702,11 +708,10 @@ class NCodeSerpent(NCode):
             tally_hdf5_array[t] = nubar
 
         # sigma_i
-        if not ('sigma_i' in tallies):
+        sigma_i = None
+        if ('sigma_i' not in tallies):
             tally_hdf5_group = getattr(base_group, 'sigma_i')
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
-
-            sigma_i = None
 
             # Sum all sigma_iN's together
             for tally in tallies:
@@ -720,6 +725,34 @@ class NCodeSerpent(NCode):
                     pass
 
             tally_hdf5_array[t] = sigma_i
+
+        # sigma_s
+        sigma_s = None
+        if ('sigma_s' not in tallies):
+            tally_hdf5_group = getattr(base_group, 'sigma_s')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            if 'sigma_e' in tallies:
+                sigma_e = getattr(rx_det, 'DETsigma_e')
+                sigma_e = sigma_e[::-1, 10]
+            else:
+                sigma_e = None
+
+            if (sigma_i == None) and ('sigma_i' in tallies):
+                sigma_i = getattr(rx_det, 'DETsigma_i')
+                sigma_i = sigma_e[::-1, 10]
+
+            if (sigma_e == None) and (sigma_i == None):
+                sigma_s = None
+            elif (sigma_e == None) and (sigma_i != None):
+                sigma_s = sigma_i
+            elif (sigma_e != None) and (sigma_i == None):
+                sigma_s = sigma_e
+            else:
+                sigma_s = sigma_e + sigma_i
+
+            if sigma_s != None:
+                tally_hdf5_array[t] = sigma_s
 
         # close the file before returning
         rx_h5.close()
