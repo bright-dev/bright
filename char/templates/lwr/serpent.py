@@ -31,7 +31,9 @@ set gcu 100
 {sym_flag}set sym 8
 
 % Group Stucture
-set nfg {n_groups} {group_structure}
+set egrid 5E-05 {group_lower_bound} {group_upper_bound}
+set nfg {n_groups} 
+{group_inner_structure}
 
 
 % Criticality calc
@@ -65,7 +67,8 @@ mesh 3 800 800
 % --- Group Constant Generation ---
 
 % Energy group structure
-ene energies 1 {group_structure}
+ene energies 1
+{group_structure}
 
 % Total flux in fuel
 det phi de energies dm fuel
@@ -110,7 +113,9 @@ set bc 3
 {sym_flag}set sym 8
 
 % Group Stucture
-set nfg {n_groups} {group_structure}
+set egrid 5E-05 {group_lower_bound} {group_upper_bound}
+set nfg {n_groups}
+{group_structure}
 
 
 % Criticality calc

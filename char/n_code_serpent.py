@@ -245,16 +245,14 @@ class NCodeSerpent(NCode):
         thus covers 0.0 MeV <= Group G < Bound[1].
         """
         e = {}
+        gs = ["{0:.6G}".format(float(gb)) for gb in defchar.group_structure]
 
         # Set number of (serpent) groups
-        e['n_groups'] = len(defchar.group_structure) + 1
-
-        # Set serpent energy group bounds.
-        gs = list(defchar.group_structure)
-        gs = str(gs)
-        gs = gs[1:-1]
-        gs = gs.replace(',', '')
-        e['group_structure'] = gs
+        e['n_groups'] = len(defchar.group_structure) - 1
+        e['group_lower_bound'] = gs[0]
+        e['group_upper_bound'] = gs[-1]
+        e['group_inner_structure'] = "  " + "\n  ".join(gs[1:-1])
+        e['group_structure'] = "  " + "\n  ".join(gs)
 
         return e        
 
@@ -428,6 +426,9 @@ class NCodeSerpent(NCode):
         # close the file before returning
         rx_h5.close()
 
+        # Initialize the hdf5 file to take XS data
+        self.init_h5_xs_gen(ntimes)
+
         # Loop over all times
         for t in range(ntimes):
             # Grab the MassStream at this time.
@@ -588,6 +589,34 @@ class NCodeSerpent(NCode):
         rx_h5.close()
 
 
+    def init_h5_xs_gen(self, ntimes=1):
+        """Initialize the hdf5 file for writing for the XS Gen stage.
+        The shape of these arrays is dependent on the number of time steps."""
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = "/"
+
+        
+
+
+        # close the file before returning
+        rx_h5.close()
+
+
     def write_xs_gen(self):
+        # Add current working directory to path
+        sys.path.insert(0, os.getcwd())
+
+        # Import data
+        rx_res = __import__(defchar.reactor + "_xs_gen_res")
+        rx_det = __import__(defchar.reactor + "_xs_gen_det0")
+
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = "/"
+
+        
+
+
         # close the file before returning
         rx_h5.close()
