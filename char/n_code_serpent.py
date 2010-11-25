@@ -420,11 +420,13 @@ class NCodeSerpent(NCode):
         run_command = "{0} {1}_xs_gen {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
 
         # Open the hdf5 library
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
-        base_group = "/"
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
 
         # Get the number of time points from the file
         ntimes = len(rx_h5.root.time0)
+
+        # close the file before returning
+        rx_h5.close()
 
         # Loop over all times
         for t in range(ntimes):
@@ -475,8 +477,6 @@ class NCodeSerpent(NCode):
                 self.parse_xs_gen()
 #                self.write_xs_gen()
 
-        # close the file before returning
-        rx_h5.close()
 
 
     #
@@ -584,5 +584,10 @@ class NCodeSerpent(NCode):
         mass = mass / mass[0]   # Renormalize mass
         rx_h5.createArray(Ti0_group, 'Mass', mass, "Mass fraction of fuel [kg/kgIHM]")
 
+        # close the file before returning
+        rx_h5.close()
+
+
+    def write_xs_gen(self):
         # close the file before returning
         rx_h5.close()
