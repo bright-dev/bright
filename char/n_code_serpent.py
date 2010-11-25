@@ -476,7 +476,7 @@ class NCodeSerpent(NCode):
 
                 # Parse & write this output to HDF5
                 self.parse_xs_gen()
-#                self.write_xs_gen()
+                self.write_xs_gen(iso, t)
 
 
 
@@ -596,14 +596,34 @@ class NCodeSerpent(NCode):
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = "/"
 
-        
+        # Numbe of energy groups
+        G = self.serpent_fill['n_groups']
 
+        # Init the raw tally arrays
+        neg1 = -1.0 * np.ones( (ntimes, G) )
+
+        if hasattr(defchar, 'tallies'):
+            tallies = defchar.tallies
+        else:
+            tallies = tally_types.serpent_default
+
+        for tally in tallies:
+            if hasattr(rx_h5.getNode(base_group), tally):
+                rx_h5.removeNode(base_group, tally, recursive=True)
+            tally_group = rx_h5.createGroup(base_group, tally, "Microscopic Cross Section {0} [barns]".format(tally))
+
+            for iso_LL in defchar.core_transmute['LLAAAM']: 
+                rx_h5.createArray(tally_group, iso_LL, neg1, "Microscopic Cross Section {0} for {1} [barns]".format(tally, iso_LL))
 
         # close the file before returning
         rx_h5.close()
 
 
-    def write_xs_gen(self):
+    def write_xs_gen(self, iso, t):
+        # Convert isoname
+        iso_zz = isoname.mixed_2_zzaaam(iso)
+        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+
         # Add current working directory to path
         sys.path.insert(0, os.getcwd())
 
@@ -613,10 +633,21 @@ class NCodeSerpent(NCode):
 
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
-        base_group = "/"
+        base_group = rx_h5.root
 
-        
+        # Write the raw tally arrays for this time and this iso        
+        if hasattr(defchar, 'tallies'):
+            tallies = defchar.tallies
+        else:
+            tallies = tally_types.serpent_default
 
+        for tally in tallies:
+            tally_hdf5_group = getattr(base_group, tally)
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
+
+            tally_hdf5_array[t] = tally_serp_array[:, 10]
 
         # close the file before returning
         rx_h5.close()
