@@ -631,6 +631,8 @@ class NCodeSerpent(NCode):
 
         # Init the raw tally arrays
         neg1 = -1.0 * np.ones( (ntimes, G) )
+        negG = -1.0 * np.ones( (ntimes, G, G) )
+
         for tally in tallies:
             self.init_tally_group(rx_h5, base_group, tally, neg1, 
                                   "Microscopic Cross Section {tally} [barns]", 
@@ -654,6 +656,11 @@ class NCodeSerpent(NCode):
             self.init_tally_group(rx_h5, base_group, 'sigma_s', neg1, 
                                   "Microscopic Cross Section {tally} [barns]", 
                                   "Microscopic Cross Section {tally} for {iso} [barns]")
+
+        # Scattering kernel, sigma_s_gh
+        self.init_tally_group(rx_h5, base_group, 'sigma_s_gh', negG, 
+                              "Microscopic Scattering Kernel {tally} [barns]", 
+                              "Microscopic Scattering Kernel {tally} for {iso} [barns]")
 
         # close the file before returning
         rx_h5.close()
@@ -753,6 +760,19 @@ class NCodeSerpent(NCode):
 
             if sigma_s != None:
                 tally_hdf5_array[t] = sigma_s
+
+        # Scattering kernel, sigma_s_gh
+        if sigma_s != None:
+            tally_hdf5_group = getattr(base_group, 'sigma_s_gh')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            gtp = rx_res.GTRANSFP[rx_res.idx][::2]
+            G = len(sigma_s)
+            gtp = gtp.reshape((G, G))
+
+            sigma_s_gh = sigma_s * gtp
+
+            tally_hdf5_array[t] = sigma_s_gh
 
         # close the file before returning
         rx_h5.close()
