@@ -115,7 +115,7 @@ set bc 3
 % Group Stucture
 set egrid 5E-05 {group_lower_bound} {group_upper_bound}
 set nfg {n_groups}
-{group_structure}
+{group_inner_structure}
 
 
 % Criticality calc

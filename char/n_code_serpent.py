@@ -332,15 +332,11 @@ class NCodeSerpent(NCode):
 
 
     def make_burnup_input(self):
-        # Add burnup information
-        if defchar.options.NoBurnBool:
-            pass
-        else:
-            self.serpent_fill.update(self.make_burnup())
+        self.serpent_fill.update(self.make_burnup())
 
-            # Fill the burnup template
-            with open(defchar.reactor + "_burnup", 'w') as f:
-                f.write(defchar.burnup_template.format(**self.serpent_fill))
+        # Fill the burnup template
+        with open(defchar.reactor + "_burnup", 'w') as f:
+            f.write(defchar.burnup_template.format(**self.serpent_fill))
 
 
     def make_xs_gen_input(self, iso="U235"):
@@ -353,7 +349,13 @@ class NCodeSerpent(NCode):
 
     def make_input(self):
         self.make_common_input()
-        self.make_burnup_input()
+
+        # Add burnup information
+        if defchar.options.NoBurnBool:
+            pass
+        else:
+            self.make_burnup_input()
+
         self.make_xs_gen_input()
 
 
@@ -406,7 +408,17 @@ class NCodeSerpent(NCode):
         rsfv['transport_job_context'] = self.run_str + " -version"
 
         # Set Run_Commands 
-        rsfv['run_commands'] = "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+        rsfv['run_commands'] = ''
+
+        # Add burnup information
+        if defchar.options.NoBurnBool:
+            pass
+        else:
+            rsfv['run_commands'] += "{0} {1}_burnup {2} &&\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+            rsfv['run_commands'] += "char --cwd -p defchar.py &&\n"
+
+        #Add cross section information
+        rsfv['run_commands'] += "char --cwd -x defchar.py\n"
 
         return rsfv
 

@@ -102,6 +102,9 @@ def main():
     parser.add_option("--no-pert", action="store_true", dest="NoPertBool", default=False, 
         help="Removes the perturbation cards from the MCNP deck.")
 
+    parser.add_option("--cwd", action="store_true", dest="CWD", default=False, 
+        help="Run char in the current working directory.")
+
     (options, args) = parser.parse_args()
 
     # Make sure we have a configureation file before proceeding
@@ -146,9 +149,12 @@ def main():
     ################
 
     # Prep work
-    if defchar.reactor not in os.listdir('.'):
-        os.mkdir(defchar.reactor)
-    os.chdir(defchar.reactor)
+    if not options.CWD:
+        if defchar.reactor not in os.listdir('.'):
+            os.mkdir(defchar.reactor)
+
+        os.chdir(defchar.reactor)
+        shutil.copyfile(absolute_path, 'defchar.py')
 
     # Set the transport code type
     if options.RunWith == "NONE":
@@ -222,7 +228,8 @@ def main():
             parsechar.Write_TXT_Lib_ORIGEN( BU, k, Pro, Des, Tij )
 
     #Clean up
-    os.chdir('..')
+    if not options.CWD:
+        os.chdir('..')
 
 
 #Run CHAR
