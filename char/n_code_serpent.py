@@ -375,27 +375,33 @@ class NCodeSerpent(NCode):
         return mpi_flag
 
 
-    def run_script_fill_values(self, runflag=''):
+    def run_script_walltime(self):
+        # Set PBS_Walltime
+        if defchar.scheduler in ["PBS"]:
+            return 36
+        else:
+            return 36
+
+
+    def run_script_fill_values(self):
         """Sets the fill values for running serpent."""
 
         rsfv = {}
 
-        # Set PBS_Walltime
-        if runflag in ["PBS"]:
-            rsfv['PBS_walltime'] = ",walltime={0:02G}:00:00\n".format(36)
-        else:
-            rsfv['PBS_walltime'] = '\n'
-        
         # Set Schedular input an output files
         rsfv['PBS_stagein_settings']  = ''
         rsfv['PBS_stageout_settings'] = ''
-        if runflag in ["PBS"]:
+        if defchar.scheduler in ["PBS"]:
             for f in self.place_remote_files:
-                rsfv['PBS_stagein_settings'] += "#PBS -W stagein=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
+                rsfv['PBS_stagein_settings'] += "#PBS -W stagein=./{f}@{rg}:{rd}{f}\n".format(
+                                                 f=f, rd=defchar.remote_connection.dir, 
+                                                 rg=defchar.remote_gateway)
 
             for f in self.fetch_remote_files:
                 if f not in self.place_remote_files:
-                    rsfv['PBS_stageout_settings']  = "#PBS -W stageout=./{f}@{rg}:{rd}{f}\n".format(f=f, rd=RemoteDir, rg=RemoteGateway)
+                    rsfv['PBS_stageout_settings']  = "#PBS -W stageout=./{f}@{rg}:{rd}{f}\n".format(
+                                                      f=f, rd=remote_connection.dir, 
+                                                      rg=defchar.remote_gateway)
 
         # Set Transport Job Context
         rsfv['transport_job_context'] = self.run_str + " -version"

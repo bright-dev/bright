@@ -13,7 +13,7 @@ from char import defchar
 from templates.run_script import template as run_script_template
 
 remote_err_msg = ("Host, username, password, or directory not properly specified for remote machine.\n"
-                  "Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir.\n"
+                  "Please edit defchar to include remote_url, remote_user, and remote_dir.\n"
                   "Nothing to do, quiting.")
 
 
@@ -26,18 +26,21 @@ def make_run_script(n_transporter):
     if defchar.scheduler in ["PBS"]:
         run_fill["run_shell"] = "#!/bin/sh"
 
-        run_fill["PBS_general_settings"] = "### PBS Settings\n"
-        run_fill["PBS_general_settings"] = "#PBS -N CHAR_{0}\n".format(defchar.reactor)
+        run_fill["PBS_general_settings"]  = ""
+        run_fill["PBS_general_settings"] += "### PBS Settings\n"
+        run_fill["PBS_general_settings"] += "#PBS -N CHAR_{0}\n".format(defchar.reactor)
 
-        run_fill["PBS_general_settings"] = "#PBS -l ncpus={0}".format(defchar.number_cpus)
-        run_fill["PBS_general_settings"] = ",nodes={0}".format(defchar.number_cpus/defchar.cpus_per_node)
-        run_fill["PBS_general_settings"] = ":ppn={0}".format(defchar.cpus_per_node)
+        run_fill["PBS_general_settings"] += "#PBS -l ncpus={0}".format(defchar.number_cpus)
+        run_fill["PBS_general_settings"] += ",nodes={0}".format(defchar.number_cpus/defchar.cpus_per_node)
+        run_fill["PBS_general_settings"] += ":ppn={0}".format(defchar.cpus_per_node) 
+        run_fill["PBS_general_settings"] += ",walltime={0:02G}:00:00\n".format(
+                                             n_transporter.run_script_walltime()) 
 
-        run_fill["PBS_general_settings"] = "#PBS -k oe\n"
-        run_fill["PBS_general_settings"] = "#PBS -j oe\n"
+        run_fill["PBS_general_settings"] += "#PBS -k oe\n"
+        run_fill["PBS_general_settings"] += "#PBS -j oe\n"
 
-        run_fill["PBS_general_settings"] = "#PBS -M {0}\n".format(defchar.email)
-        run_fill["PBS_general_settings"] = "#PBS -m abe\n".format(defchar.email)
+        run_fill["PBS_general_settings"] += "#PBS -M {0}\n".format(defchar.email)
+        run_fill["PBS_general_settings"] += "#PBS -m abe\n".format(defchar.email)
     else:
         run_fill["run_shell"] = "#!/bin/bash\n"
         run_fill["PBS_general_settings"] = ''
@@ -103,8 +106,9 @@ def run_transport_remote():
         defchar.remote_connection.run("rm {rc.dir}*".format(rc=defchar.remote_connection))
 
         # Put all appropriate files in reomte dir
-        defchar.remote_connection.put(runscript,  defchar.remote_connection.dir + defchar.run_script)
-        for inputfile in n_transporter.place_remote_files:
+        defchar.remote_connection.put(defchar.run_script,  defchar.remote_connection.dir + defchar.run_script)
+        for inputfile in defchar.n_transporter.place_remote_files:
+            print(inputfile)
             defchar.remote_connection.put(inputfile,  defchar.remote_connection.dir + inputfile)
 
         if defchar.scheduler == "PBS":
@@ -133,10 +137,10 @@ def fetch_remote_files():
         print(message("Fetching files from remote server."))
 
     try:
-        for outputfile in n_transporter.fetch_remote_files:
+        for outputfile in defchar.n_transporter.fetch_remote_files:
             metasci.SafeRemove(outputfile)
 
-        for outputfile in n_transporter.fetch_remote_files:
+        for outputfile in defchar.n_transporter.fetch_remote_files:
             defchar.remote_connection.get(defchar.remote_connection.dir + outputfile, ".")
 
     except NameError:
@@ -226,10 +230,9 @@ def find_pid_remote():
     #Print the process info
     if 0 < defchar.verbosity:
         print(message("Remote Process ID: {0}".format(pid)))
-        print(message("Remote Process Runtime: {0:time} min.".format(prt)))
+        print(message("Remote Process Runtime: {0:time} min.", prt))
 
         if defchar.scheduler in ["PBS"]:
-            print()
             print(spout)
 
     #Kill the remote process if required...
@@ -237,9 +240,9 @@ def find_pid_remote():
         if defchar.scheduler in ["PBS"]:
             defchar.remote_connection.run("qdel {0}".format(pid)) 
 
-            if ('serpent' in transport_code) and ('mcnp' not in transport_code):
+            if ('serpent' in defchar.transport_code) and ('mcnp' not in defchar.transport_code):
                 defchar.remote_connection.run("cluster-kill sss-dev")
-            elif ('mcnp' in transport_code) and ('serpent' not in transport_code):
+            elif ('mcnp' in defchar.transport_code) and ('serpent' not in defchar.transport_code):
                 defchar.remote_connection.run("cluster-kill mcnpx260")
 
         else:

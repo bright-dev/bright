@@ -182,6 +182,8 @@ def main():
         print(failure("Currently, 'MCNP' and 'Serpent' are accpeted values."))
         raise SystemExit
 
+    defchar.n_transporter = n_transporter
+
     # Make the input file unless otherwise specified.
     if (options.MakeInput) and (not options.FetchFiles) and (not options.PID):
         if isinstance(n_transporter, NCodeSerpent):
@@ -192,6 +194,7 @@ def main():
     # Run Transport code
     if options.RunTransport:
         runchar.make_run_script(n_transporter)
+
         if options.Local:
             runchar.run_transport_local()
         else:
@@ -204,9 +207,9 @@ def main():
     #Finds (and kills?) the Transport Run Process
     if options.PID:
         if options.Local:
-            runchar.Find_PID_Local()
+            runchar.find_pid_local()
         else:
-            runchar.Find_PID_Remote()
+            runchar.find_pid_remote()
 
     # Parse transporter output & make HDF5 data library
     if options.ParseData:
