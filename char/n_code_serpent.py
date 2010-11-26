@@ -51,13 +51,8 @@ class NCodeSerpent(NCode):
             self.iso_flag = ''
 
         # Remote file lists
-        self.place_remote_files = [defchar.reactor]
-        self.fetch_remote_files = [defchar.reactor, 
-                                   defchar.reactor + '.seed', 
-                                   defchar.reactor + '_geom1.png', 
-                                   defchar.reactor + '_mesh1.png', 
-                                   defchar.reactor + '_lat_res.m', 
-                                   ]
+        self.place_remote_files = ['.']
+        self.fetch_remote_files = ['.']
 
     def make_input_material_weights(self, comp, mass_weighted=True):
         """This function takes an isotopic vector, comp, and returns a serpent string representation.

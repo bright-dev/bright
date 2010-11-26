@@ -62,55 +62,75 @@ def make_run_script(n_transporter, runflag, localflag=True):
 
 def run_transport_local(runflag):
     """Runs the transport calculation on the local machine."""
+    global defchar
+    from char import defchar
+
     t1 = time.time()
     if runflag == "PBS":
         subprocess.call("qsub {0}".format(defchar.run_script), shell=True)
     else:
         subprocess.call("./{0}".format(defchar.run_script), shell=True)
     t2 = time.time()
+
+    # Report times
+    time_msg = "{0:.3G}".format((t2-t1)/60.0)
+    defchar.logger.info("Transport executed in {0} minutes.".format(time_msg))
     if 0 < defchar.verbosity:
         print()
-        print(message("Transport executed in {0:time} minutes.", "{0:.3G}".format((t2-t1)/60.0) ))
+        print(message("Transport executed in {0:time} minutes.", time_msg ))
         print()
+
     return
 
 def run_transport_remote(runflag):
     """Runs the transport calculation on a remote machine"""
+    global defchar
+    from char import defchar
+
     try:
         if 0 < verbosity:
             print(message("Copying files to remote server."))
 
-        RemoteConnection.run("mkdir -p {rc.RemoteDir}".format(rc=RemoteConnection)) 
-        RemoteConnection.run("rm {rc.RemoteDir}*".format(rc=RemoteConnection))
-        RemoteConnection.put(runscript,  RemoteConnection.RemoteDir + runscript)
+        # Make remote directory, if it isn't already there
+        defchar.remote_connection.run("mkdir -p {rc.dir}".format(rc=defchar.remote_connection))
+
+        # Remove the current contents of the remote directory        
+        defchar.remote_connection.run("rm {rc.dir}*".format(rc=defchar.remote_connection))
+
+        # Put all appropriate files in reomte dir
+        defchar.remote_connection.put(runscript,  defchar.remote_connection.RemoteDir + runscript)
         for inputfile in n_transporter.place_remote_files:
-            RemoteConnection.put(inputfile,  RemoteConnection.RemoteDir + inputfile)
+            defchar.remote_connection.put(inputfile,  defchar.remote_connection.RemoteDir + inputfile)
 
         if runflag == "PBS":
-            RemoteConnection.run("source /etc/profile; cd {rc.RemoteDir}; qsub {rs} > runlog.txt 2>&1 &".format(rc=RemoteConnection, rs=runscript))
+            defchar.remote_connection.run("source /etc/profile; cd {rc.dir}; qsub {rs} > run.log 2>&1 &".format(rc=defchar.remote_connection, rs=runscript))
         else:
-            RemoteConnection.run("source /etc/profile; cd {rc.RemoteDir}; ./{rs} > runlog.txt 2>&1 &".format(rc=RemoteConnection, rs=runscript))
+            defchar.remote_connection.run("source /etc/profile; cd {rc.dir}; ./{rs} > run.log 2>&1 &".format(rc=defchar.remote_connection, rs=runscript))
 
         if 0 < verbosity:
             print(message("Running transport code remotely."))
-        raise SystemExit
+
     except NameError:
         if 0 < verbosity:
             print(failure("Host, username, password, or directory not properly specified for remote machine."))
             print(failure("Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir."))
             print(failure("Nothing to do, quiting."))
-        raise SystemExit
-    return
+
+    # My work here is done
+    raise SystemExit
 
 def fetch_remote_files():
     """Fetches files from remote server."""
+    global defchar
+    from char import defchar
+
     try:
         if 0 < verbosity:
             print(message("Fetching files from remote server."))
         for outputfile in n_transporter.fetch_remote_files:
             metasci.SafeRemove(outputfile)
         for outputfile in n_transporter.fetch_remote_files:
-            RemoteConnection.get(RemoteConnection.RemoteDir + outputfile, ".")
+            defchar.remote_connection.get(defchar.remote_connection.RemoteDir + outputfile, ".")
     except NameError:
         if 0 < verbosity:
             print(message("Host, username, password, or directory not properly specified for remote machine."))
@@ -121,6 +141,9 @@ def fetch_remote_files():
 
 def find_pid_local(BoolKill = False):
     """Finds (and kills?) the Local Transport Run Process"""
+    global defchar
+    from char import defchar
+
     sp = subprocess.Popen("ps ux | grep {0}".format(n_transporter.run_str), stdout=subprocess.PIPE, 
         stderr=subprocess.PIPE, shell=True) 
     spout, sperr = sp.communicate() 
@@ -145,13 +168,16 @@ def find_pid_local(BoolKill = False):
 
 def find_pid_remote(runflag, BoolKill = False):
     """Finds (and kills?) the Remote Transport Run Process"""
+    global defchar
+    from char import defchar
+
     try:
         if runflag in ["PBS"]:
-            rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"qstat -u {rc.RemoteUser}\"".format(rc=RemoteConnection), 
+            rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"qstat -u {rc.RemoteUser}\"".format(rc=defchar.remote_connection), 
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
         else:
             rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"ps ux | grep {0}\"".format(n_transporter.run_str, 
-                rc=RemoteConnection), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
+                rc=defchar.remote_connection), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
     except NameError:
         if 0 < verbosity:
             print(failure("Host, username, password, or directory not properly specified for remote machine."))
@@ -193,10 +219,10 @@ def find_pid_remote(runflag, BoolKill = False):
     #Kill the remote process if required...
     if BoolKill:
         if runflag in ["PBS"]:
-            RemoteConnection.run("qdel {0}".format(pid)) 
-            RemoteConnection.run("cluster-kill mcnpx260") 
+            defchar.remote_connection.run("qdel {0}".format(pid)) 
+            defchar.remote_connection.run("cluster-kill mcnpx260") 
         else:
-            RemoteConnection.run("kill {0}".format(pid)) 
+            defchar.remote_connection.run("kill {0}".format(pid)) 
 
         if 0 < verbosity:
             print(message("Remote Process Killed."))
