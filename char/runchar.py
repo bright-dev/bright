@@ -58,6 +58,20 @@ def make_run_script(n_transporter):
     else:
         run_fill['PBS_job_context']  = ''
 
+    # Remote copy commands
+    if defchar.options.Local:
+        run_fill['remote_put'] = ''
+        run_fill['remote_get'] = ''
+    else:
+        run_fill['remote_put'] = ("scp -r {rc.user}@{rg}:{rc.dir} ~/tmpchar/\n"
+                                  "cd ~/tmpchar/\n").format(rc=defchar.remote_connection, 
+                                                            rg=defchar.remote_gateway)
+        run_fill['remote_get'] = ("cd ~\n"
+                                  "scp -r ~/tmpchar/* {rc.user}@{rg}:{rc.dir}\n"
+                                  "rm -r ~/tmpchar/\n").format(rc=defchar.remote_connection, 
+                                                               rg=defchar.remote_gateway)
+
+    # Get transport specific values
     run_fill.update(n_transporter.run_script_fill_values())
 
     # Fill the template
@@ -103,7 +117,7 @@ def run_transport_remote():
         defchar.remote_connection.run("mkdir -p {rc.dir}".format(rc=defchar.remote_connection))
 
         # Remove the current contents of the remote directory        
-        defchar.remote_connection.run("rm {rc.dir}*".format(rc=defchar.remote_connection))
+        defchar.remote_connection.run("rm -r {rc.dir}*".format(rc=defchar.remote_connection))
 
         # Put all appropriate files in reomte dir
         defchar.remote_connection.put(defchar.run_script,  defchar.remote_connection.dir + defchar.run_script)

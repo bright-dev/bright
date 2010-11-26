@@ -1,6 +1,6 @@
 template = """\
 {run_shell}
-{PBS_general_settings}{PBS_stagein_settings}{PBS_stageout_settings}
+{PBS_general_settings}
 
 ### Display the job context
 echo 
@@ -10,4 +10,7 @@ echo "Directory is" `pwd`
 {transport_job_context}
 {PBS_job_context}
 
-{run_commands}"""
+{remote_put}
+{run_commands}
+{remote_get}
+"""

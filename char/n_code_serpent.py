@@ -388,21 +388,6 @@ class NCodeSerpent(NCode):
 
         rsfv = {}
 
-        # Set Schedular input an output files
-        rsfv['PBS_stagein_settings']  = ''
-        rsfv['PBS_stageout_settings'] = ''
-        if defchar.scheduler in ["PBS"]:
-            for f in self.place_remote_files:
-                rsfv['PBS_stagein_settings'] += "#PBS -W stagein=./{f}@{rg}:{rd}{f}\n".format(
-                                                 f=f, rd=defchar.remote_connection.dir, 
-                                                 rg=defchar.remote_gateway)
-
-            for f in self.fetch_remote_files:
-                if f not in self.place_remote_files:
-                    rsfv['PBS_stageout_settings']  = "#PBS -W stageout=./{f}@{rg}:{rd}{f}\n".format(
-                                                      f=f, rd=remote_connection.dir, 
-                                                      rg=defchar.remote_gateway)
-
         # Set Transport Job Context
         rsfv['transport_job_context'] = self.run_str + " -version"
 
