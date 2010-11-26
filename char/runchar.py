@@ -27,17 +27,17 @@ def make_run_script(n_transporter):
         run_fill["run_shell"] = "#!/bin/sh"
 
         run_fill["PBS_general_settings"] = "### PBS Settings\n"
-        run_fill["PBS_general_settings"] = "#PBS -N CHAR_{0}\n".format(reactor)
+        run_fill["PBS_general_settings"] = "#PBS -N CHAR_{0}\n".format(defchar.reactor)
 
-        run_fill["PBS_general_settings"] = "#PBS -l ncpus={0}".format(NumberCPUs)
-        run_fill["PBS_general_settings"] = ",nodes={0}".format(NumberCPUs/CPUsPerNode)
-        run_fill["PBS_general_settings"] = ":ppn={0}".format(CPUsPerNode)
+        run_fill["PBS_general_settings"] = "#PBS -l ncpus={0}".format(defchar.number_cpus)
+        run_fill["PBS_general_settings"] = ",nodes={0}".format(defchar.number_cpus/defchar.cpus_per_node)
+        run_fill["PBS_general_settings"] = ":ppn={0}".format(defchar.cpus_per_node)
 
         run_fill["PBS_general_settings"] = "#PBS -k oe\n"
         run_fill["PBS_general_settings"] = "#PBS -j oe\n"
 
-        run_fill["PBS_general_settings"] = "#PBS -M {0}\n".format(email)
-        run_fill["PBS_general_settings"] = "#PBS -m abe\n".format(email)
+        run_fill["PBS_general_settings"] = "#PBS -M {0}\n".format(defchar.email)
+        run_fill["PBS_general_settings"] = "#PBS -m abe\n".format(defchar.email)
     else:
         run_fill["run_shell"] = "#!/bin/bash\n"
         run_fill["PBS_general_settings"] = ''

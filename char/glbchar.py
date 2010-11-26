@@ -113,13 +113,15 @@ class RemoteConnection(object):
         self.dir  = dir
 
     def run(self, cmd):
-        return subprocess.call("ssh {user}@{url} \"{remcmd}\"".format(remcmd=cmd, **self), shell=True)
+        return subprocess.call("ssh {user}@{url} \"{remcmd}\"".format(remcmd=cmd, **self.__dict__), shell=True)
 
     def put(self, loc_file, rem_file):
-        return subprocess.call("rsync -r --partial --progress --rsh=ssh {lf} {user}@{url}:{rf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+        return subprocess.call("rsync -r --partial --progress --rsh=ssh {lf} {user}@{url}:{rf}".format(
+                                lf=loc_file, rf=rem_file, **self.__dict__), shell=True)
 
     def get(self, rem_file, loc_file):
-        return subprocess.call("rsync -r --partial --progress --rsh=ssh {user}@{url}:{rf} {lf}".format(lf=loc_file, rf=rem_file, **self), shell=True)
+        return subprocess.call("rsync -r --partial --progress --rsh=ssh {user}@{url}:{rf} {lf}".format(
+                                lf=loc_file, rf=rem_file, **self.__dict__), shell=True)
 
 
 def defchar_update(defchar):
