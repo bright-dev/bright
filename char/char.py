@@ -67,9 +67,6 @@ def main():
     parser.add_option("-d", "--dry-run", action="store_false", dest="RunTransport", 
         help="Dry Run. Do NOT run the transport calculation.")
 
-    parser.add_option("-w", "--with", dest="RunWith", default="NONE", metavar="PROG", 
-        help="Dictates what PROG to run transport calculation with. PROG = [MCNP | Serpent].")
-
     parser.add_option("-O", "--ORIGEN", action="store_true", dest="RunORIGEN", 
         default=False, help="Run ORIGEN Burnup calculations.")
 
@@ -126,7 +123,6 @@ def main():
 
     #intial command-line options protocol.
     Quiet = options.Quiet
-    options.RunWith = options.RunWith.upper()   #Ensures that RunWith is uppercase (nice for flags).
     if options.KillTransport:
         options.PID = True                      #Ensures that the PID is found in order that it mak be killed.
 
@@ -164,20 +160,18 @@ def main():
     defchar.logger = logger
 
     # Set the transport code type
-    if options.RunWith == "NONE":
-        try:
-            transport_code = defchar.transport_code.lower()
-        except:
-            print(failure("Transport code type not set!\n"
-                          "  Use either the '-w' command line option, or\n"
-                          "  use the 'TransportCode' flag in defchar.py.\n"
-                          "Currently, 'MCNP' and 'Serpent' are accpeted values.\n"
-                          "\n"
-                          "Note: you must have the appropriate neutronics code\n"
-                          "installed on your machine for this to work."))
-            raise SystemExit
-    else:
-        transport_code = options.RunWith.lower()
+    try:
+        transport_code = defchar.transport_code.lower()
+        defchar.transport_code = transport_code
+    except:
+        print(failure("Transport code type not set!\n"
+                      "  Use either the '-w' command line option, or\n"
+                      "  use the 'TransportCode' flag in defchar.py.\n"
+                      "Currently, 'MCNP' and 'Serpent' are accpeted values.\n"
+                      "\n"
+                      "Note: you must have the appropriate neutronics code\n"
+                      "installed on your machine for this to work."))
+        raise SystemExit
 
     if ('serpent' in transport_code) and ('mcnp' not in transport_code):
         n_transporter = NCodeSerpent()
@@ -193,15 +187,15 @@ def main():
         if isinstance(n_transporter, NCodeSerpent):
             n_transporter.make_input()
         elif isinstance(n_transporter, NCodeMCNP):
-            n_transporter.make_input(options.NoBurnBool, options.NoPertBool)
+            n_transporter.make_input()
 
     # Run Transport code
     if options.RunTransport:
-        runchar.make_run_script(n_transporter, options.RunWith, options.Local)
+        runchar.make_run_script(n_transporter)
         if options.Local:
-            runchar.run_transport_local(options.RunWith)
+            runchar.run_transport_local()
         else:
-            runchar.run_transport_remote(options.RunWith)
+            runchar.run_transport_remote()
 
     #Fetches files from remote server
     if options.FetchFiles:
@@ -210,9 +204,9 @@ def main():
     #Finds (and kills?) the Transport Run Process
     if options.PID:
         if options.Local:
-            runchar.Find_PID_Local(options.KillTransport)
+            runchar.Find_PID_Local()
         else:
-            runchar.Find_PID_Remote(options.RunWith, options.KillTransport)
+            runchar.Find_PID_Remote()
 
     # Parse transporter output & make HDF5 data library
     if options.ParseData:

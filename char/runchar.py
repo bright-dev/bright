@@ -12,13 +12,18 @@ from metasci.colortext import message, failure
 from char import defchar
 from templates.run_script import template as run_script_template
 
-def make_run_script(n_transporter, runflag, localflag=True):
+remote_err_msg = ("Host, username, password, or directory not properly specified for remote machine.\n"
+                  "Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir.\n"
+                  "Nothing to do, quiting.")
+
+
+def make_run_script(n_transporter):
     global defchar
     from char import defchar
 
     run_fill = {}
 
-    if runflag in ["PBS"]:
+    if defchar.scheduler in ["PBS"]:
         run_fill["run_shell"] = "#!/bin/sh"
 
         run_fill["PBS_general_settings"] = "### PBS Settings\n"
@@ -38,7 +43,7 @@ def make_run_script(n_transporter, runflag, localflag=True):
         run_fill["PBS_general_settings"] = ''
 
     # Set PBS_Job_Context
-    if runflag in ["PBS"]:
+    if defchar.scheduler in ["PBS"]:
         run_fill['PBS_job_context']  = "echo \"The master node of this job is: $PBS_O_HOST\"\n"
         run_fill['PBS_job_context'] += "NPROCS=`wc -l < $PBS_NODEFILE`\n"
         run_fill['PBS_job_context'] += "NNODES=`uniq $PBS_NODEFILE | wc -l`\n"
@@ -50,7 +55,7 @@ def make_run_script(n_transporter, runflag, localflag=True):
     else:
         run_fill['PBS_job_context']  = ''
 
-    run_fill.update(n_transporter.run_script_fill_values(runflag))
+    run_fill.update(n_transporter.run_script_fill_values())
 
     # Fill the template
     with open(defchar.run_script, 'w') as f:
@@ -60,13 +65,13 @@ def make_run_script(n_transporter, runflag, localflag=True):
 
     return
 
-def run_transport_local(runflag):
+def run_transport_local():
     """Runs the transport calculation on the local machine."""
     global defchar
     from char import defchar
 
     t1 = time.time()
-    if runflag == "PBS":
+    if defchar.scheduler == "PBS":
         subprocess.call("qsub {0}".format(defchar.run_script), shell=True)
     else:
         subprocess.call("./{0}".format(defchar.run_script), shell=True)
@@ -75,20 +80,20 @@ def run_transport_local(runflag):
     # Report times
     time_msg = "{0:.3G}".format((t2-t1)/60.0)
     defchar.logger.info("Transport executed in {0} minutes.".format(time_msg))
-    if 0 < defchar.verbosity:
+    if 0 < defchar.defchar.verbosity:
         print()
         print(message("Transport executed in {0:time} minutes.", time_msg ))
         print()
 
     return
 
-def run_transport_remote(runflag):
+def run_transport_remote():
     """Runs the transport calculation on a remote machine"""
     global defchar
     from char import defchar
 
     try:
-        if 0 < verbosity:
+        if 0 < defchar.verbosity:
             print(message("Copying files to remote server."))
 
         # Make remote directory, if it isn't already there
@@ -98,23 +103,23 @@ def run_transport_remote(runflag):
         defchar.remote_connection.run("rm {rc.dir}*".format(rc=defchar.remote_connection))
 
         # Put all appropriate files in reomte dir
-        defchar.remote_connection.put(runscript,  defchar.remote_connection.RemoteDir + runscript)
+        defchar.remote_connection.put(runscript,  defchar.remote_connection.dir + defchar.run_script)
         for inputfile in n_transporter.place_remote_files:
-            defchar.remote_connection.put(inputfile,  defchar.remote_connection.RemoteDir + inputfile)
+            defchar.remote_connection.put(inputfile,  defchar.remote_connection.dir + inputfile)
 
-        if runflag == "PBS":
-            defchar.remote_connection.run("source /etc/profile; cd {rc.dir}; qsub {rs} > run.log 2>&1 &".format(rc=defchar.remote_connection, rs=runscript))
+        if defchar.scheduler == "PBS":
+            defchar.remote_connection.run("source /etc/profile; cd {rc.dir}; qsub {rs} > run.log 2>&1 &".format(
+                                          rc=defchar.remote_connection, rs=defchar.run_script))
         else:
-            defchar.remote_connection.run("source /etc/profile; cd {rc.dir}; ./{rs} > run.log 2>&1 &".format(rc=defchar.remote_connection, rs=runscript))
+            defchar.remote_connection.run("source /etc/profile; cd {rc.dir}; ./{rs} > run.log 2>&1 &".format(
+                                          rc=defchar.remote_connection, rs=defchar.run_script))
 
-        if 0 < verbosity:
+        if 0 < defchar.verbosity:
             print(message("Running transport code remotely."))
 
     except NameError:
-        if 0 < verbosity:
-            print(failure("Host, username, password, or directory not properly specified for remote machine."))
-            print(failure("Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir."))
-            print(failure("Nothing to do, quiting."))
+        if 0 < defchar.verbosity:
+            print(failure(remote_err_msg))
 
     # My work here is done
     raise SystemExit
@@ -124,108 +129,123 @@ def fetch_remote_files():
     global defchar
     from char import defchar
 
+    if 0 < defchar.verbosity:
+        print(message("Fetching files from remote server."))
+
     try:
-        if 0 < verbosity:
-            print(message("Fetching files from remote server."))
         for outputfile in n_transporter.fetch_remote_files:
             metasci.SafeRemove(outputfile)
-        for outputfile in n_transporter.fetch_remote_files:
-            defchar.remote_connection.get(defchar.remote_connection.RemoteDir + outputfile, ".")
-    except NameError:
-        if 0 < verbosity:
-            print(message("Host, username, password, or directory not properly specified for remote machine."))
-            print(message("Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir."))
-            print(message("Nothing to do, quiting."))
-        raise SystemExit
-    return
 
-def find_pid_local(BoolKill = False):
+        for outputfile in n_transporter.fetch_remote_files:
+            defchar.remote_connection.get(defchar.remote_connection.dir + outputfile, ".")
+
+    except NameError:
+        if 0 < defchar.verbosity:
+            print(failure(remote_err_msg))
+
+        raise SystemExit
+
+def find_pid_local():
     """Finds (and kills?) the Local Transport Run Process"""
     global defchar
     from char import defchar
 
     sp = subprocess.Popen("ps ux | grep {0}".format(n_transporter.run_str), stdout=subprocess.PIPE, 
-        stderr=subprocess.PIPE, shell=True) 
+                          stderr=subprocess.PIPE, shell=True) 
     spout, sperr = sp.communicate() 
     spout = spout.split('\n')[:-1]
     pid =  spout[0].split()[1]
     prt =  spout[0].split()[9]
-    if 0 < verbosity:
+
+    if 0 < defchar.verbosity:
         print(message("Process ID: {0}".format(pid)))
         print(message("Process Runtime: {0:time} min.".format(prt)))
+
     del sp, spout, sperr
 
-    if BoolKill:
-        sp = subprocess.Popen("kill {0}".format(pid), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
+    if defchar.options.KillTransport:
+        sp = subprocess.Popen("kill {0}".format(pid), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         spout, sperr = sp.communicate() 
         spout = spout.split('\n')[:-1]
-        if 0 < verbosity:
+
+        if 0 < defchar.verbosity:
             print(spout)
             print(message("Process Killed."))
+
         del sp, spout, sperr
         raise SystemExit
-    return
 
-def find_pid_remote(runflag, BoolKill = False):
+def find_pid_remote():
     """Finds (and kills?) the Remote Transport Run Process"""
     global defchar
     from char import defchar
 
     try:
-        if runflag in ["PBS"]:
-            rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"qstat -u {rc.RemoteUser}\"".format(rc=defchar.remote_connection), 
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
+        if defchar.scheduler in ["PBS"]:
+            rsp = subprocess.Popen("ssh {rc.user}@{rc.url} 'qstat -u {rc.user}'".format(
+                                   rc=defchar.remote_connection), stdout=subprocess.PIPE, 
+                                   stderr=subprocess.PIPE, shell=True) 
         else:
-            rsp = subprocess.Popen("ssh {rc.RemoteUser}@{rc.RemoteURL} \"ps ux | grep {0}\"".format(n_transporter.run_str, 
-                rc=defchar.remote_connection), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
+            rsp = subprocess.Popen("ssh {rc.user}@{rc.url} 'ps ux | grep {0}'".format(n_transporter.run_str, 
+                                   rc=defchar.remote_connection), stdout=subprocess.PIPE, 
+                                   stderr=subprocess.PIPE, shell=True) 
     except NameError:
-        if 0 < verbosity:
-            print(failure("Host, username, password, or directory not properly specified for remote machine."))
-            print(failure("Please edit defchar to include RemoteURL, RemoteUser, RemotePass, and RemoteDir."))
-            print(failure("Nothing to do, quiting."))
+        if 0 < defchar.verbosity:
+            print(failure(remote_err_msg))
+
         raise SystemExit
 
     #grab and parse the remote process info
     spout, sperr = rsp.communicate() 
-    if runflag in ["PBS"]:
+    if defchar.scheduler in ["PBS"]:
         spl = spout.split('\n')
+
         if len(spl) < 2:
-            if 0 < verbosity:
+            if 0 < defchar.verbosity:
                 print(message("Remote Process Not Running."))
+
             raise SystemExit
-            return
+
         spll = spl[-2].split()
         pid = spll[0].partition('.')[0]
         prt = spll[-1]
+
     else:
         spl = spout.split('\n')
         if len(spl) < 1:
-            if 0 < verbosity:
+
+            if 0 < defchar.verbosity:
                 print(message("Remote Process Not Running."))
+
             raise SystemExit
-            return
+
         spll = spl[:-1]
         pid =  spll[0].split()[1]
         prt =  spll[0].split()[9]
 
     #Print the process info
-    if 0 < verbosity:
+    if 0 < defchar.verbosity:
         print(message("Remote Process ID: {0}".format(pid)))
         print(message("Remote Process Runtime: {0:time} min.".format(prt)))
-        if runflag in ["PBS"]:
+
+        if defchar.scheduler in ["PBS"]:
             print()
             print(spout)
 
     #Kill the remote process if required...
-    if BoolKill:
-        if runflag in ["PBS"]:
+    if defchar.options.KillTransport:
+        if defchar.scheduler in ["PBS"]:
             defchar.remote_connection.run("qdel {0}".format(pid)) 
-            defchar.remote_connection.run("cluster-kill mcnpx260") 
+
+            if ('serpent' in transport_code) and ('mcnp' not in transport_code):
+                defchar.remote_connection.run("cluster-kill sss-dev")
+            elif ('mcnp' in transport_code) and ('serpent' not in transport_code):
+                defchar.remote_connection.run("cluster-kill mcnpx260")
+
         else:
             defchar.remote_connection.run("kill {0}".format(pid)) 
 
-        if 0 < verbosity:
+        if 0 < defchar.verbosity:
             print(message("Remote Process Killed."))
 
     raise SystemExit
-    return

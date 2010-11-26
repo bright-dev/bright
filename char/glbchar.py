@@ -127,6 +127,9 @@ def defchar_update(defchar):
     if hasattr(defchar, 'tallies'):
         defchar.tallies_reversed = metasci.ReverseDic(defchar.tallies)
 
+    if not hasattr(defchar, 'scheduler'):
+        defchar.scheduler = ''
+
     # Name some files and directories
     defchar.input_file = defchar.reactor + ".i"
     defchar.run_script = 'run_{0}.sh'.format(defchar.reactor)
