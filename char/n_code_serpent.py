@@ -448,6 +448,8 @@ class NCodeSerpent(NCode):
             # Loop over all output isotopes
 #            for iso in defchar.core_transmute['zzaaam']:
             for iso in [922350]:
+                defchar.logger.info('Generating coss-section for {0} at time[{1}].'.format(iso, t))
+
                 # Add filler fision product
                 # If iso is not zirconium, add Zr-90
                 # If is zirconium, add Sr-90
@@ -498,6 +500,7 @@ class NCodeSerpent(NCode):
         """Convienence function to parse results."""
         self.parse_burnup()
         self.write_burnup()
+        defchar.logger.info('Parsed burnup calculation.')
 
 
     def parse_burnup(self):

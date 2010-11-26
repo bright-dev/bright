@@ -8,6 +8,7 @@ import os
 import sys
 import time
 import shutil
+import logging
 import subprocess
 
 from optparse import OptionParser
@@ -152,6 +153,15 @@ def main():
 
         os.chdir(defchar.reactor)
         shutil.copyfile(absolute_path, 'defchar.py')
+
+    # Start up logger
+    logger = logging.getLogger('char')
+    hdlr = logging.FileHandler('char.log')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    hdlr.setFormatter(formatter)
+    logger.addHandler(hdlr)
+    logger.setLevel(logging.INFO)
+    defchar.logger = logger
 
     # Set the transport code type
     if options.RunWith == "NONE":
