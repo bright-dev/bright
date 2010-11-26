@@ -362,6 +362,9 @@ class NCodeSerpent(NCode):
         else:
             run_flag = ''
 
+        if defchar.scheduler == 'PBS':
+            run_flag = 'PBS'
+
         if run_flag in ["MPI", "PBS"]:
             if hasattr(defchar, 'number_cpus'):
                 num_cpus = defchar.number_cpus
