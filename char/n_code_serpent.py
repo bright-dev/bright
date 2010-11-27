@@ -418,7 +418,7 @@ class NCodeSerpent(NCode):
         """Runs the cross-section genaration portion of CHAR."""
         # Initializa the common serpent_fill values
         self.make_common_input()
-        run_command = "{0} {1}_xs_gen {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+        run_command = "{0} {1}_xs_gen {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
 
         # Open the hdf5 library
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
