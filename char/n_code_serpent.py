@@ -27,7 +27,7 @@ def zzaaam_2_serpent(iso):
     else:
         iso_zz = iso/10000
         iso_LL = isoname.zzLL[iso_zz]
-        iso_LL.capitalize()
+        iso_LL = iso_LL.capitalize()
         iso_aaa = (iso/10)%1000
         iso_serp = "{0}-{1}m".format(iso_LL, iso_aaa)
 
