@@ -401,8 +401,8 @@ class NCodeSerpent(NCode):
         if defchar.options.NoBurnBool:
             pass
         else:
-            rsfv['run_commands'] += "{0} {1}_burnup {2} &&\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
-            rsfv['run_commands'] += "char --cwd -p defchar.py &&\n"
+            rsfv['run_commands'] += "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+            rsfv['run_commands'] += "char --cwd -p defchar.py\n"
 
         #Add cross section information
         rsfv['run_commands'] += "char --cwd -x defchar.py\n"
