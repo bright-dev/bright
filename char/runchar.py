@@ -155,9 +155,6 @@ def fetch_remote_files():
 
     try:
         for outputfile in defchar.n_transporter.fetch_remote_files:
-            metasci.SafeRemove(outputfile)
-
-        for outputfile in defchar.n_transporter.fetch_remote_files:
             defchar.remote_connection.get(defchar.remote_connection.dir + outputfile, ".")
 
     except NameError:

@@ -202,7 +202,7 @@ def main():
 
     #Fetches files from remote server
     if options.FetchFiles:
-        runchar.Fetch_Remote_Files()
+        runchar.fetch_remote_files()
 
     #Finds (and kills?) the Transport Run Process
     if options.PID:
