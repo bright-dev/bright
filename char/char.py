@@ -67,6 +67,9 @@ def main():
     parser.add_option("-d", "--dry-run", action="store_false", dest="RunTransport", 
         help="Dry Run. Do NOT run the transport calculation.")
 
+    parser.add_option("-c", "--clean", action="store_true", dest="Clean", 
+        help="Cleans the reactor direactory of current files.")
+
     parser.add_option("-O", "--ORIGEN", action="store_true", dest="RunORIGEN", 
         default=False, help="Run ORIGEN Burnup calculations.")
 
@@ -144,6 +147,9 @@ def main():
 
     # Prep work
     if not options.CWD:
+        if defchar.options.Clean:
+            metasci.SafeRemove(defchar.reactor, True)
+
         if defchar.reactor not in os.listdir('.'):
             os.mkdir(defchar.reactor)
 
