@@ -3,6 +3,7 @@ from __future__ import print_function
 import os
 import time
 import subprocess
+from math import ceil
 
 from metasci.colortext import message, failure
 
@@ -24,6 +25,8 @@ def make_run_script(n_transporter):
     run_fill = {}
 
     if defchar.scheduler in ["PBS"]:
+        nodes = int(ceil( float(defchar.number_cpus) / defchar.cpus_per_node))
+
         run_fill["run_shell"] = "#!/bin/sh"
 
         run_fill["PBS_general_settings"]  = ""
@@ -31,7 +34,7 @@ def make_run_script(n_transporter):
         run_fill["PBS_general_settings"] += "#PBS -N CHAR_{0}\n".format(defchar.reactor)
 
         run_fill["PBS_general_settings"] += "#PBS -l ncpus={0}".format(defchar.number_cpus)
-        run_fill["PBS_general_settings"] += ",nodes={0}".format(defchar.number_cpus/defchar.cpus_per_node)
+        run_fill["PBS_general_settings"] += ",nodes={0}".format(nodes)
         run_fill["PBS_general_settings"] += ":ppn={0}".format(defchar.cpus_per_node) 
         run_fill["PBS_general_settings"] += ",walltime={0:02G}:00:00\n".format(
                                              n_transporter.run_script_walltime()) 
