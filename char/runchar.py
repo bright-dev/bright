@@ -70,6 +70,7 @@ def make_run_script(n_transporter):
                                   "cd ~/tmpchar/\n").format(rc=defchar.remote_connection, 
                                                             rg=defchar.remote_gateway)
         run_fill['remote_get'] = ("cd ~\n"
+                                  "mv ~/CHAR_*.o* ~/tmpchar/\n"
                                   "scp -r ~/tmpchar/* {rc.user}@{rg}:{rc.dir}\n"
                                   "rm -r ~/tmpchar/\n").format(rc=defchar.remote_connection, 
                                                                rg=defchar.remote_gateway)
