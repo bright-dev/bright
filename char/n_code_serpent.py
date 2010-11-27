@@ -395,7 +395,10 @@ class NCodeSerpent(NCode):
         rsfv['transport_job_context'] = self.run_str + " -version"
 
         # Set Run_Commands 
-        rsfv['run_commands'] = ''
+        if defchar.options.Local:
+            rsfv['run_commands'] = ''
+        else:
+            rsfv['run_commands'] = 'lamboot\n'
 
         # Add burnup information
         if defchar.options.NoBurnBool:
