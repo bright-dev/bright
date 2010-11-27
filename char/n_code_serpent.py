@@ -440,7 +440,7 @@ class NCodeSerpent(NCode):
 
             # Loop over all output isotopes
             for iso in defchar.core_transmute['zzaaam']:
-                defchar.logger.info('Generating coss-section for {0} at time[{1}].'.format(iso, t))
+                defchar.logger.info('Generating cross-sections for {0} at time[{1}].'.format(iso, t))
 
                 # Add filler fision product
                 # If iso is not zirconium, add Zr-90
