@@ -3,7 +3,7 @@ import shutil
 
 import isoname
 import metasci.nuke as msn
-import metasci.nuke.Origen as msno
+import metasci.nuke.origen as msno
 from metasci import SafeRemove
 from metasci.colortext import message
 
