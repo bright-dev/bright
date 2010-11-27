@@ -438,8 +438,7 @@ class NCodeSerpent(NCode):
             ms_t.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", t)
 
             # Loop over all output isotopes
-#            for iso in defchar.core_transmute['zzaaam']:
-            for iso in [922350]:
+            for iso in defchar.core_transmute['zzaaam']:
                 defchar.logger.info('Generating coss-section for {0} at time[{1}].'.format(iso, t))
 
                 # Add filler fision product
