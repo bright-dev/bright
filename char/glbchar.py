@@ -7,8 +7,11 @@ import subprocess
 ##########################
 #### Custom Libraries ####
 ##########################
+import numpy as np
+
 import isoname
 import MassStream
+
 import metasci
 import metasci.nuke as msn
 
@@ -150,14 +153,10 @@ def defchar_update(defchar):
     defchar.remote_connection = RemoteConnection(**rckw)
 
     # Make Time Steps 
-    defchar.coarse_time = range(0, defchar.burn_time, defchar.coarse_step/2)
-    defchar.coarse_time.append(defchar.burn_time)
-    defchar.coarse_time[0] = defchar.coarse_time[1] / 10.0
+    defchar.coarse_time = np.arange(0, defchar.burn_time + defchar.coarse_step/10.0, defchar.coarse_step)
     defchar.coarse_time_index = range(len(defchar.coarse_time))
 
-    defchar.fine_time = range(0, defchar.burn_time, defchar.fine_step)
-    defchar.fine_time.append(defchar.burn_time)
-    defchar.fine_time[0] = defchar.fine_time[1] / 10.0
+    defchar.fine_time = np.arange(0, defchar.burn_time + defchar.fine_step/10.0, defchar.fine_step)
     defchar.fine_time_index = range(len(defchar.fine_time))
 
     # Make isotopic lists
@@ -182,5 +181,31 @@ def defchar_update(defchar):
     defchar.initial_fuel_stream = MassStream.MassStream(isovec)
     defchar.IHM_weight = AW
     defchar.fuel_weight = MW
+
+    # Make arrays out of quatities that are allowed to vary.
+    defchar.fuel_density = np.atleast_1d(defchar.fuel_density)
+    defchar.clad_density = np.atleast_1d(defchar.clad_density)
+    defchar.cool_density = np.atleast_1d(defchar.cool_density)
+    
+    defchar.fuel_cell_radius = np.atleast_1d(defchar.fuel_cell_radius)
+    defchar.void_cell_radius = np.atleast_1d(defchar.void_cell_radius)
+    defchar.clad_cell_radius = np.atleast_1d(defchar.clad_cell_radius)
+
+    defchar.unit_cell_pitch = np.atleast_1d(defchar.unit_cell_pitch)
+
+    defchar.fuel_specific_power = np.atleast_1d(defchar.fuel_specific_power)
+
+    # Set up tuple of parameters to perform a burnup step for
+    defchar.burnup_params = ('fuel_density', 
+                             'clad_density', 
+                             'cool_density', 
+
+                             'fuel_cell_radius', 
+                             'void_cell_radius', 
+                             'clad_cell_radius', 
+
+                             'unit_cell_pitch', 
+                             'fuel_specific_power', 
+                             'coarse_time')   # coarse_time needs to be the last element
 
     return defchar

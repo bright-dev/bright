@@ -260,7 +260,7 @@ class NCodeSerpent(NCode):
               }
 
         bu['depletion_times'] = ''
-        for ct in defchar.coarse_time:
+        for ct in defchar.coarse_time[1:]:
             bu['depletion_times'] += '{0:>8.4G}\n'.format(ct)
 
         bu['transmute_inventory'] = ''
