@@ -336,7 +336,7 @@ class NCodeSerpent(NCode):
         serpent_fill['coolant']  = self.make_input_coolant()
 
         # Add the geometry information
-        serpent_fill.update(self.make_input_geometry())
+        serpent_fill.update(self.make_input_geometry(n))
 
         # Set the energy group structure
         serpent_fill.update(self.make_input_energy_groups())
@@ -451,7 +451,7 @@ class NCodeSerpent(NCode):
         self.init_h5_burnup(nperturbations)
 
         # Loop over all non-burnup perturbations.
-        ntimes = len(defchar.coarse_times)
+        ntimes = len(defchar.coarse_time)
         for n in range(nperturbations):
             defchar.logger.info('Running burnup calculation at perturbation step {0}.'.format(n))
 
