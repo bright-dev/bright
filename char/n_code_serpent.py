@@ -669,35 +669,42 @@ class NCodeSerpent(NCode):
     # Writing functions
     #
 
-    def write_burnup(self):
-        """Writes the results of the burnup calculation to an hdf5 file."""
+    def write_burnup(self, n):
+        """Writes the results of the burnup calculation to an hdf5 file.
+
+        n : Perturbation index of first time step for this burnup calculation.
+        """
 
         # Add current working directory to path
-        sys.path.insert(0, os.getcwd())
+        if sys.path[0] != os.getcwd():
+            sys.path.insert(0, os.getcwd())
 
         # Import data
         rx_res = __import__(defchar.reactor + "_burnup_res")
         rx_dep = __import__(defchar.reactor + "_burnup_dep")
 
+        # Find end index 
+        t = n + len(rx_dep.DAYS)
+
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
-        base_group = "/"
+        base_group = rx_h5.root
 
         # Add basic BU information
-        rx_h5.createArray(base_group, 'BU0', rx_dep.BU, "Burnup of the initial core loading [MWd/kg]")
-        rx_h5.createArray(base_group, 'time0', rx_dep.DAYS, "Time after initial core loading [days]")
+        base_group.BU0[n:t] =  rx_dep.BU
+        base_group.time0[n:t] = rx_dep.DAYS
 
         phi = rx_res.TOT_FLUX[:, ::2].flatten()
-        rx_h5.createArray(base_group, 'phi', phi, "Total flux [n/cm2/s]")
-        rx_h5.createArray(base_group, 'phi_g', rx_res.FLUX[:,::2][:, 1:], "Group fluxes [n/cm2/s]")
+        base_group.phi[n:t] = phi
+        base_group.phi_g[n:t] = rx_res.FLUX[:,::2][:, 1:]
 
         # Create Fluence array
         Phi = np.zeros(len(phi))
         Phi[1:] = cumtrapz(phi * (10.0**-21), rx_dep.DAYS * (3600.0 * 24.0))
-        rx_h5.createArray(base_group, 'Phi', Phi, "Fluence [n/kb]")
+        base_group.Phi[n:t] = Phi
 
-        # Energy Group bounds
-        rx_h5.createArray(base_group, 'energy', rx_res.GC_BOUNDS[0], "Energy boundaries [MeV]")
+        # Energy Group bounds 
+        base_group.energy[n:t] = rx_res.GC_BOUNDS
 
         # Calculate and store weight percents per IHM
         # Serepent masses somehow unnoprmalize themselves in all of these conversions, which is annoying.
@@ -705,8 +712,6 @@ class NCodeSerpent(NCode):
         # Thus we have to go through two bouts of normalization here.
         mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * defchar.fuel_density)
         mw = rx_dep.TOT_MASS * mw_conversion 
-
-        Ti0_group = rx_h5.createGroup(base_group, 'Ti0', "Transmutation matrix from initial core loading [kg_i/kgIHM]")
 
         iso_LL = {}
         iso_index = {}
@@ -720,13 +725,16 @@ class NCodeSerpent(NCode):
 
         mass = mw[iso_index.values()].sum(axis=0)   # Caclulate actual mass of isotopes present
 
+        # Store normalized mass vector for each isotope
         for iso_zz in iso_index:
-            # Store normalized mass vector for this isotope
-            mw_i =  mw[iso_index[iso_zz]] / mass[0]
-            rx_h5.createArray(Ti0_group, iso_LL[iso_zz], mw_i, "Mass weight of {0} [kg/kgIHM]".format(iso_LL[iso_zz]))
+            iso_array = getattr(base_group.Ti0, iso_LL[iso_zz])
 
-        mass = mass / mass[0]   # Renormalize mass
-        rx_h5.createArray(Ti0_group, 'Mass', mass, "Mass fraction of fuel [kg/kgIHM]")
+            mw_i =  mw[iso_index[iso_zz]] / mass[0]
+            iso_array[n:t] = mw_i
+
+        # Renormalize mass
+        mass = mass / mass[0]   
+        base_group.Ti0.Mass[n:t] = mass
 
         # close the file before returning
         rx_h5.close()
@@ -738,7 +746,8 @@ class NCodeSerpent(NCode):
         iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
         # Add current working directory to path
-        sys.path.insert(0, os.getcwd())
+        if sys.path[0] != os.getcwd():
+            sys.path.insert(0, os.getcwd())
 
         # Import data
         rx_res = __import__(defchar.reactor + "_xs_gen_res")
