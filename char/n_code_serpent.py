@@ -415,7 +415,7 @@ class NCodeSerpent(NCode):
         rsfv['transport_job_context'] = self.run_str + " -version"
 
         # Set Run_Commands 
-        if defchar.options.Local:
+        if defchar.options.LOCAL:
             rsfv['run_commands'] = ''
         else:
             rsfv['run_commands'] = ''
