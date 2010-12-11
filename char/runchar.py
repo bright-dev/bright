@@ -62,7 +62,7 @@ def make_run_script(n_transporter):
         run_fill['PBS_job_context']  = ''
 
     # Remote copy commands
-    if defchar.options.Local:
+    if defchar.options.LOCAL:
         run_fill['remote_put'] = ''
         run_fill['remote_get'] = ''
     else:
