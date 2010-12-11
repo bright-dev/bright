@@ -169,7 +169,7 @@ class NCodeSerpent(NCode):
         
         return self.make_input_material_weights(cool_stream.comp, mass_weighted)
 
-    def make_input_geometry(self, n=0):
+    def make_input_geometry(self, n):
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
         pert_cols = rx_h5.root.perturbations.cols
@@ -229,6 +229,7 @@ class NCodeSerpent(NCode):
 
         return geom
 
+
     def make_input_energy_groups(self):
         """Makes the energy group structure.
 
@@ -251,7 +252,8 @@ class NCodeSerpent(NCode):
 
         return e        
 
-    def make_burnup(self, n=0):
+
+    def make_burnup(self, n):
         """Generates a dictionary of values that fill the burnup portion of the serpent template."""
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
@@ -276,6 +278,7 @@ class NCodeSerpent(NCode):
             bu['transmute_inventory'] += '{0:>8}\n'.format(iso)
 
         return bu
+
 
     def make_detector(self, iso):
         """Generates a dictionary of values that fill the detector/cross-section portion of 
@@ -305,7 +308,7 @@ class NCodeSerpent(NCode):
 
         return det
 
-    def make_common_input(self, n=0):
+    def make_common_input(self, n):
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
         pert_cols = rx_h5.root.perturbations.cols
@@ -342,15 +345,12 @@ class NCodeSerpent(NCode):
         self.serpent_fill = serpent_fill
 
 
-    def make_burnup_input(self, n=0):
+    def make_burnup_input(self, n):
         self.serpent_fill.update(self.make_burnup(n))
 
         # Fill the burnup template
         with open(defchar.reactor + "_burnup", 'w') as f:
             f.write(defchar.burnup_template.format(**self.serpent_fill))
-
-        # Initilaize a new HDF5 file with this defchar info. 
-        self.init_h5()
 
 
     def make_xs_gen_input(self, iso="U235"):
@@ -361,12 +361,15 @@ class NCodeSerpent(NCode):
             f.write(defchar.xs_gen_template.format(**self.serpent_fill))
 
 
-    def make_input(self):
-        self.make_common_input()
+    def make_input(self, n):
+        # Initilaize a new HDF5 file with this defchar info. 
+        self.init_h5()
+
+        self.make_common_input(n)
 
         # Add burnup information
         if defchar.options.RUN_BURNUP:
-            self.make_burnup_input()
+            self.make_burnup_input(n)
 
         self.make_xs_gen_input()
 
@@ -432,7 +435,7 @@ class NCodeSerpent(NCode):
     def run_burnup(self):
         """Runs the burnup portion of CHAR."""
         # Initializa the common serpent_fill values
-        self.make_common_input()
+        self.make_common_input(0)
         run_command = "{0} {1}_burnup {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
 
         # Open the hdf5 library
@@ -448,15 +451,31 @@ class NCodeSerpent(NCode):
         self.init_h5_burnup(nperturbations)
 
         # Loop over all non-burnup perturbations.
-        data = [getattr(defchar, a) for a in defchar.perturbation_params[:-1]]
-        pert = [r for r in product(*data)]
-        for d
+        ntimes = len(defchar.coarse_times)
+        for n in range(nperturbations):
+            defchar.logger.info('Running burnup calculation at perturbation step {0}.'.format(n))
+
+            # Ensure that the burnup times are at t = 0
+            if 0 != n%ntimes:
+                continue
+
+            self.make_common_input(n)
+
+            # Make new input file
+            self.make_burnup_input(n)
+
+            # Run serpent on this input file as a subprocess
+            rtn = subprocess.check_call(run_command, shell=True)
+
+            # Parse & write this output to HDF5
+            self.parse_burnup()
+            self.write_burnup(n)
 
 
     def run_xs_gen(self):
         """Runs the cross-section generation portion of CHAR."""
         # Initializa the common serpent_fill values
-        self.make_common_input()
+        self.make_common_input(0)
         run_command = "{0} {1}_xs_gen {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
 
         # Open the hdf5 library
@@ -474,6 +493,7 @@ class NCodeSerpent(NCode):
         # Loop over all times
         for n in range(nperturbations):
             # Grab the MassStream at this time.
+            self.make_common_input(n)
             ms_n = MassStream()
             ms_n.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", n)
 
