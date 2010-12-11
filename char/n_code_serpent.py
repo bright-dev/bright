@@ -3,6 +3,7 @@ from __future__ import print_function
 import os
 import sys
 import subprocess
+from itertools import product
 
 import isoname
 import numpy as np
@@ -297,14 +298,14 @@ class NCodeSerpent(NCode):
 
         return det
 
-    def make_common_input(self):
+    def make_common_input(self, n=0):
         serpent_fill = {
             'reactor': defchar.reactor,
             'xsdata':  defchar.serpent_xsdata,
 
-            'fuel_density': '{0:.5G}'.format(defchar.fuel_density),
-            'clad_density': '{0:.5G}'.format(defchar.clad_density),
-            'cool_density': '{0:.5G}'.format(defchar.cool_density),
+            'fuel_density': '{0:.5G}'.format(defchar.fuel_density[n]),
+            'clad_density': '{0:.5G}'.format(defchar.clad_density[n]),
+            'cool_density': '{0:.5G}'.format(defchar.cool_density[n]),
 
             'k_particles':  defchar.k_particles,
             'k_cycles':     defchar.k_cycles,
@@ -326,12 +327,38 @@ class NCodeSerpent(NCode):
         self.serpent_fill = serpent_fill
 
 
+    def init_hdf5(self):
+        """Initialize a new HDF5 file in preparation for burnup and XS runs."""
+        # Setup tables 
+        desc = {}
+        for n, param in enumerate(defchar.burnup_params):
+            desc[param] = tb.Float64Col(pos=n)
+
+        # Open HDF5 file
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
+        base_group = "/"
+
+        # Add pertubation table index
+        bi = rx_h5.createTable(base_group, 'burnup_index', desc, )
+
+        # Add rows to table
+        data = [getattr(defchar, a) for a in defchar.burnup_params]
+        rows = [r for r in product(*data)]
+        bi.append(rows)
+
+        # Close HDF5 file
+        rx_h5.close()
+
+
     def make_burnup_input(self):
         self.serpent_fill.update(self.make_burnup())
 
         # Fill the burnup template
         with open(defchar.reactor + "_burnup", 'w') as f:
             f.write(defchar.burnup_template.format(**self.serpent_fill))
+
+        # Initilaize a new HDF5 file with this defchar info. 
+        self.init_hdf5()
 
 
     def make_xs_gen_input(self, iso="U235"):
@@ -346,7 +373,7 @@ class NCodeSerpent(NCode):
         self.make_common_input()
 
         # Add burnup information
-        if defchar.options.RunBU:
+        if defchar.options.RUN_BURNUP:
             self.make_burnup_input()
 
         self.make_xs_gen_input()
@@ -408,6 +435,11 @@ class NCodeSerpent(NCode):
         rsfv['run_commands'] += "char --cwd -x defchar.py\n"
 
         return rsfv
+
+
+    def run_burnup(self):
+        """Runs the burnup portion of CHAR."""
+        pass
 
 
     def run_xs_gen(self):
@@ -524,7 +556,7 @@ class NCodeSerpent(NCode):
         rx_dep = __import__(defchar.reactor + "_burnup_dep")
 
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = "/"
 
         # Add the isotope tracking arrays.  
