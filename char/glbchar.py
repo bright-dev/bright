@@ -193,6 +193,7 @@ def defchar_update(defchar):
 
     defchar.unit_cell_pitch = np.atleast_1d(defchar.unit_cell_pitch)
 
+    defchar.burn_regions = np.atleast_1d(defchar.burn_regions)
     defchar.fuel_specific_power = np.atleast_1d(defchar.fuel_specific_power)
 
     # Set up tuple of parameters to perform a burnup step for
@@ -205,6 +206,7 @@ def defchar_update(defchar):
                                    'clad_cell_radius', 
 
                                    'unit_cell_pitch', 
+                                   'burn_regions', 
                                    'fuel_specific_power', 
                                    'coarse_time')   # coarse_time needs to be the last element
 

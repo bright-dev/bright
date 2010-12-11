@@ -169,22 +169,21 @@ class NCodeSerpent(NCode):
         
         return self.make_input_material_weights(cool_stream.comp, mass_weighted)
 
-    def make_input_geometry(self):
+    def make_input_geometry(self, n=0):
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        pert_cols = rx_h5.root.perturbations.cols
+
         # Require
         geom = {
-            'fuel_radius': defchar.fuel_cell_radius,
-            'clad_radius': defchar.clad_cell_radius,
-            'cell_pitch':  defchar.unit_cell_pitch,
+            'fuel_radius': pert_cols.fuel_cell_radius[n],
+            'clad_radius': pert_cols.clad_cell_radius[n],
+            'void_radius': pert_cols.void_cell_radius[n],
+            'cell_pitch':  pert_cols.unit_cell_pitch[n],
             }
 
-        # Tries to add a void region, 
-        # If there isn't space, cladding is used instead.
-        if hasattr(defchar, 'void_cell_radius'):
-            geom['void_radius'] = defchar.void_cell_radius
-        else:
-            geom['void_radius'] = defchar.fuel_cell_radius + 0.0085
-            if defchar.clad_cell_radius <= geom['void_radius']:
-                geom['void_radius'] = defchar.fuel_cell_radius
+        # Close hdf5 file
+        rx_h5.close()
 
         # Tries to get the lattice specification
         # If it isn't present, use a default 17x17 PWR lattice
@@ -225,7 +224,7 @@ class NCodeSerpent(NCode):
             geom['sym_flag'] = '% The lattice is not symmetric! Forced to use whole geometry...\n%'
 
         # Set half of the lattice pitch.
-        half_lat_pitch = (float(geom['lattice_xy']) * defchar.unit_cell_pitch) / 2.0
+        half_lat_pitch = (float(geom['lattice_xy']) * geom['cell_pitch']) / 2.0
         geom['half_lattice_pitch'] = "{0}".format(half_lat_pitch)
 
         return geom
@@ -252,13 +251,21 @@ class NCodeSerpent(NCode):
 
         return e        
 
-    def make_burnup(self):
+    def make_burnup(self, n=0):
         """Generates a dictionary of values that fill the burnup portion of the serpent template."""
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        pert_cols = rx_h5.root.perturbations.cols
+
+        # make burnup dictionary
         bu = {'decay_lib': defchar.serpent_decay_lib,
               'fission_yield_lib': defchar.serpent_fission_yield_lib,
-              'num_burn_regions':  int(defchar.burn_regions), 
-              'fuel_specific_power': defchar.fuel_specific_power,
+              'num_burn_regions':  int(pert_cols.burn_regions[n]), 
+              'fuel_specific_power': pert_cols.fuel_specific_power[n],
               }
+
+        # Close hdf5 file
+        rx_h5.close()
 
         bu['depletion_times'] = ''
         for ct in defchar.coarse_time[1:]:
@@ -299,18 +306,26 @@ class NCodeSerpent(NCode):
         return det
 
     def make_common_input(self, n=0):
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        pert_cols = rx_h5.root.perturbations.cols
+
+        # Initial serpent fill dictionary
         serpent_fill = {
             'reactor': defchar.reactor,
             'xsdata':  defchar.serpent_xsdata,
 
-            'fuel_density': '{0:.5G}'.format(defchar.fuel_density[n]),
-            'clad_density': '{0:.5G}'.format(defchar.clad_density[n]),
-            'cool_density': '{0:.5G}'.format(defchar.cool_density[n]),
+            'fuel_density': '{0:.5G}'.format(pert_cols.fuel_density[n]),
+            'clad_density': '{0:.5G}'.format(pert_cols.clad_density[n]),
+            'cool_density': '{0:.5G}'.format(pert_cols.cool_density[n]),
 
             'k_particles':  defchar.k_particles,
             'k_cycles':     defchar.k_cycles,
             'k_cycles_skip': defchar.k_cycles_skip,
             }
+
+        # Close hdf5 file.
+        rx_h5.close()
 
         # Set the material lines
         serpent_fill['fuel']     = self.make_input_fuel()
@@ -327,8 +342,8 @@ class NCodeSerpent(NCode):
         self.serpent_fill = serpent_fill
 
 
-    def make_burnup_input(self):
-        self.serpent_fill.update(self.make_burnup())
+    def make_burnup_input(self, n=0):
+        self.serpent_fill.update(self.make_burnup(n))
 
         # Fill the burnup template
         with open(defchar.reactor + "_burnup", 'w') as f:
@@ -416,11 +431,30 @@ class NCodeSerpent(NCode):
 
     def run_burnup(self):
         """Runs the burnup portion of CHAR."""
-        pass
+        # Initializa the common serpent_fill values
+        self.make_common_input()
+        run_command = "{0} {1}_burnup {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+
+        # Open the hdf5 library
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+
+        # Get the number of time points from the file
+        nperturbations = len(rx_h5.root.perturbations)
+
+        # close the file before returning
+        rx_h5.close()
+
+        # Initialize the hdf5 file to take XS data
+        self.init_h5_burnup(nperturbations)
+
+        # Loop over all non-burnup perturbations.
+        data = [getattr(defchar, a) for a in defchar.perturbation_params[:-1]]
+        pert = [r for r in product(*data)]
+        for d
 
 
     def run_xs_gen(self):
-        """Runs the cross-section genaration portion of CHAR."""
+        """Runs the cross-section generation portion of CHAR."""
         # Initializa the common serpent_fill values
         self.make_common_input()
         run_command = "{0} {1}_xs_gen {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
