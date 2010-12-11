@@ -429,23 +429,23 @@ class NCodeSerpent(NCode):
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
 
         # Get the number of time points from the file
-        ntimes = len(rx_h5.root.time0)
+        nperturbations = len(rx_h5.root.perturbations)
 
         # close the file before returning
         rx_h5.close()
 
         # Initialize the hdf5 file to take XS data
-        self.init_h5_xs_gen(ntimes)
+        self.init_h5_xs_gen(nperturbations)
 
         # Loop over all times
-        for t in range(ntimes):
+        for n in range(nperturbations):
             # Grab the MassStream at this time.
-            ms_t = MassStream()
-            ms_t.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", t)
+            ms_n = MassStream()
+            ms_n.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", n)
 
             # Loop over all output isotopes
             for iso in defchar.core_transmute['zzaaam']:
-                defchar.logger.info('Generating cross-sections for {0} at time[{1}].'.format(iso, t))
+                defchar.logger.info('Generating cross-sections for {0} at perturbation step {1}.'.format(iso, n))
 
                 # Add filler fision product
                 # If iso is not zirconium, add Zr-90
@@ -460,7 +460,7 @@ class NCodeSerpent(NCode):
                 #
                 # WARNING: This is only suppossed to be a first order correction!
                 # Make sure that you include enough FP in core_transmute.
-                top_up_mass = 1.0 - ms_t.mass
+                top_up_mass = 1.0 - ms_n.mass
                 if top_up_mass == 0.0:
                     top_up = 0.0
                 elif isoname.zzLL[iso//10000] == 'ZR':
@@ -470,7 +470,7 @@ class NCodeSerpent(NCode):
                 else:
                     top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
 
-                ms = ms_t + top_up
+                ms = ms_n + top_up
                 isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
                 ms = MassStream(isovec)
 
@@ -485,7 +485,7 @@ class NCodeSerpent(NCode):
 
                 # Parse & write this output to HDF5
                 self.parse_xs_gen()
-                self.write_xs_gen(iso, t)
+                self.write_xs_gen(iso, n)
 
 
 
