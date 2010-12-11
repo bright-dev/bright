@@ -526,7 +526,7 @@ class NCodeSerpent(NCode):
         """Initialize a new HDF5 file in preparation for burnup and XS runs."""
         # Setup tables 
         desc = {}
-        for n, param in enumerate(defchar.burnup_params):
+        for n, param in enumerate(defchar.perturbation_params):
             desc[param] = tb.Float64Col(pos=n)
 
         # Open HDF5 file
@@ -534,12 +534,12 @@ class NCodeSerpent(NCode):
         base_group = "/"
 
         # Add pertubation table index
-        bi = rx_h5.createTable(base_group, 'burnup_index', desc, )
+        p = rx_h5.createTable(base_group, 'perturbations', desc)
 
         # Add rows to table
-        data = [getattr(defchar, a) for a in defchar.burnup_params]
+        data = [getattr(defchar, a) for a in defchar.perturbation_params]
         rows = [r for r in product(*data)]
-        bi.append(rows)
+        p.append(rows)
 
         # Add the isotope tracking arrays.  
         rx_h5.createArray(base_group, 'isostrack', np.array(defchar.core_transmute['zzaaam']), 
@@ -573,14 +573,54 @@ class NCodeSerpent(NCode):
             rx_h5.createArray(tally_group, iso_LL, init_array, astring.format(tally=tally, iso=iso_LL))
 
 
-    def init_h5_xs_gen(self, ntimes=1):
+    def init_h5_burnup(self, nperturbations=1):
+        """Initialize the hdf5 file for a set of burnup calculations based on the its input params."""
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = "/"
+
+        # Number of energy groups
+        G = self.serpent_fill['n_groups']
+
+        # Init the raw tally arrays
+        neg1 = -1.0 * np.ones( (nperturbations, ) )
+        negG = -1.0 * np.ones( (nperturbations, G) )
+        negE = -1.0 * np.ones( (nperturbations, G+1) )
+
+
+        # Add basic BU information
+        rx_h5.createArray(base_group, 'BU0',   neg1, "Burnup of the initial core loading [MWd/kg]")
+        rx_h5.createArray(base_group, 'time0', neg1, "Time after initial core loading [days]")
+
+        # Add flux arrays
+        rx_h5.createArray(base_group, 'phi',   neg1, "Total flux [n/cm2/s]")
+        rx_h5.createArray(base_group, 'phi_g', negG, "Group fluxes [n/cm2/s]")
+
+        # Create Fluence array
+        rx_h5.createArray(base_group, 'Phi', neg1, "Fluence [n/kb]")
+
+        # Energy Group bounds
+        rx_h5.createArray(base_group, 'energy', negE, "Energy boundaries [MeV]")
+
+        # Initialize transmutation matrix
+        self.init_tally_group(rx_h5, base_group, 'Ti0', neg1, 
+                              "Transmutation matrix from initial core loading [kg_i/kgIHM]", 
+                              "Mass weight of {iso} [kg/kgIHM]")
+
+        rx_h5.createArray(base_group + '/Ti0', 'Mass', neg1, "Mass fraction of fuel [kg/kgIHM]")
+
+        # close the file before returning
+        rx_h5.close()
+
+
+    def init_h5_xs_gen(self, nperturbations=1):
         """Initialize the hdf5 file for writing for the XS Gen stage.
         The shape of these arrays is dependent on the number of time steps."""
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = "/"
 
-        # Numbe of energy groups
+        # Number of energy groups
         G = self.serpent_fill['n_groups']
 
         # Grab the tallies
@@ -588,10 +628,9 @@ class NCodeSerpent(NCode):
             tallies = defchar.tallies
         else:
             tallies = tally_types.serpent_default
-
         # Init the raw tally arrays
-        neg1 = -1.0 * np.ones( (ntimes, G) )
-        negG = -1.0 * np.ones( (ntimes, G, G) )
+        neg1 = -1.0 * np.ones( (nperturbations, G) )
+        negG = -1.0 * np.ones( (nperturbations, G, G) )
 
         for tally in tallies:
             self.init_tally_group(rx_h5, base_group, tally, neg1, 
@@ -624,7 +663,6 @@ class NCodeSerpent(NCode):
 
         # close the file before returning
         rx_h5.close()
-
 
 
     #
@@ -694,7 +732,7 @@ class NCodeSerpent(NCode):
         rx_h5.close()
 
 
-    def write_xs_gen(self, iso, t):
+    def write_xs_gen(self, iso, n):
         # Convert isoname
         iso_zz = isoname.mixed_2_zzaaam(iso)
         iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
@@ -723,7 +761,7 @@ class NCodeSerpent(NCode):
 
             tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
 
-            tally_hdf5_array[t] = tally_serp_array[::-1, 10]
+            tally_hdf5_array[n] = tally_serp_array[::-1, 10]
 
         # Write aggregate tallies
 
@@ -740,7 +778,7 @@ class NCodeSerpent(NCode):
 
             nubar = nubar_sigma_f / sigma_f
 
-            tally_hdf5_array[t] = nubar
+            tally_hdf5_array[n] = nubar
 
         # sigma_i
         sigma_i = None
@@ -759,7 +797,7 @@ class NCodeSerpent(NCode):
                 else:
                     pass
 
-            tally_hdf5_array[t] = sigma_i
+            tally_hdf5_array[n] = sigma_i
 
         # sigma_s
         sigma_s = None
@@ -787,7 +825,7 @@ class NCodeSerpent(NCode):
                 sigma_s = sigma_e + sigma_i
 
             if sigma_s != None:
-                tally_hdf5_array[t] = sigma_s
+                tally_hdf5_array[n] = sigma_s
 
         # Scattering kernel, sigma_s_gh
         if sigma_s != None:
@@ -800,7 +838,7 @@ class NCodeSerpent(NCode):
 
             sigma_s_gh = sigma_s * gtp
 
-            tally_hdf5_array[t] = sigma_s_gh
+            tally_hdf5_array[n] = sigma_s_gh
 
         # close the file before returning
         rx_h5.close()

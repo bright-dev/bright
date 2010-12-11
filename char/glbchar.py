@@ -196,16 +196,16 @@ def defchar_update(defchar):
     defchar.fuel_specific_power = np.atleast_1d(defchar.fuel_specific_power)
 
     # Set up tuple of parameters to perform a burnup step for
-    defchar.burnup_params = ('fuel_density', 
-                             'clad_density', 
-                             'cool_density', 
+    defchar.perturbation_params = ('fuel_density', 
+                                   'clad_density', 
+                                   'cool_density',
 
-                             'fuel_cell_radius', 
-                             'void_cell_radius', 
-                             'clad_cell_radius', 
+                                   'fuel_cell_radius', 
+                                   'void_cell_radius', 
+                                   'clad_cell_radius', 
 
-                             'unit_cell_pitch', 
-                             'fuel_specific_power', 
-                             'coarse_time')   # coarse_time needs to be the last element
+                                   'unit_cell_pitch', 
+                                   'fuel_specific_power', 
+                                   'coarse_time')   # coarse_time needs to be the last element
 
     return defchar
