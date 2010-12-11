@@ -361,15 +361,15 @@ class NCodeSerpent(NCode):
             f.write(defchar.xs_gen_template.format(**self.serpent_fill))
 
 
-    def make_input(self, n):
+    def make_input(self):
         # Initilaize a new HDF5 file with this defchar info. 
         self.init_h5()
 
-        self.make_common_input(n)
+        self.make_common_input(0)
 
         # Add burnup information
         if defchar.options.RUN_BURNUP:
-            self.make_burnup_input(n)
+            self.make_burnup_input(0)
 
         self.make_xs_gen_input()
 

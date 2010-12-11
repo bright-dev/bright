@@ -187,6 +187,9 @@ def main():
         else:
             runchar.run_transport_remote()
 
+        # Leave everything else to the run script
+        raise SystemExit
+
     #Fetches files from remote server
     if options.FETCH_FILES:
         runchar.fetch_remote_files()
