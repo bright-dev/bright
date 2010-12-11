@@ -327,29 +327,6 @@ class NCodeSerpent(NCode):
         self.serpent_fill = serpent_fill
 
 
-    def init_hdf5(self):
-        """Initialize a new HDF5 file in preparation for burnup and XS runs."""
-        # Setup tables 
-        desc = {}
-        for n, param in enumerate(defchar.burnup_params):
-            desc[param] = tb.Float64Col(pos=n)
-
-        # Open HDF5 file
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
-        base_group = "/"
-
-        # Add pertubation table index
-        bi = rx_h5.createTable(base_group, 'burnup_index', desc, )
-
-        # Add rows to table
-        data = [getattr(defchar, a) for a in defchar.burnup_params]
-        rows = [r for r in product(*data)]
-        bi.append(rows)
-
-        # Close HDF5 file
-        rx_h5.close()
-
-
     def make_burnup_input(self):
         self.serpent_fill.update(self.make_burnup())
 
@@ -358,7 +335,7 @@ class NCodeSerpent(NCode):
             f.write(defchar.burnup_template.format(**self.serpent_fill))
 
         # Initilaize a new HDF5 file with this defchar info. 
-        self.init_hdf5()
+        self.init_h5()
 
 
     def make_xs_gen_input(self, iso="U235"):
@@ -542,22 +519,27 @@ class NCodeSerpent(NCode):
 
 
     #
-    # Writing functions
+    # Init HDF5 groups and arrays
     #
 
-    def write_burnup(self):
-        """Writes the results of the burnup calculation to an hdf5 file."""
+    def init_h5(self):
+        """Initialize a new HDF5 file in preparation for burnup and XS runs."""
+        # Setup tables 
+        desc = {}
+        for n, param in enumerate(defchar.burnup_params):
+            desc[param] = tb.Float64Col(pos=n)
 
-        # Add current working directory to path
-        sys.path.insert(0, os.getcwd())
-
-        # Import data
-        rx_res = __import__(defchar.reactor + "_burnup_res")
-        rx_dep = __import__(defchar.reactor + "_burnup_dep")
-
-        # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        # Open HDF5 file
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
         base_group = "/"
+
+        # Add pertubation table index
+        bi = rx_h5.createTable(base_group, 'burnup_index', desc, )
+
+        # Add rows to table
+        data = [getattr(defchar, a) for a in defchar.burnup_params]
+        rows = [r for r in product(*data)]
+        bi.append(rows)
 
         # Add the isotope tracking arrays.  
         rx_h5.createArray(base_group, 'isostrack', np.array(defchar.core_transmute['zzaaam']), 
@@ -573,52 +555,7 @@ class NCodeSerpent(NCode):
         rx_h5.createArray(base_group, 'transmute_isos_LL', np.array(defchar.core_transmute['LLAAAM']), 
                           "Core transmute isotopes [LLAAAM]")
 
-        # Add basic BU information
-        rx_h5.createArray(base_group, 'BU0', rx_dep.BU, "Burnup of the initial core loading [MWd/kg]")
-        rx_h5.createArray(base_group, 'time0', rx_dep.DAYS, "Time after initial core loading [days]")
-
-        phi = rx_res.TOT_FLUX[:, ::2].flatten()
-        rx_h5.createArray(base_group, 'phi', phi, "Total flux [n/cm2/s]")
-        rx_h5.createArray(base_group, 'phi_g', rx_res.FLUX[:,::2][:, 1:], "Group fluxes [n/cm2/s]")
-
-        # Create Fluence array
-        Phi = np.zeros(len(phi))
-        Phi[1:] = cumtrapz(phi * (10.0**-21), rx_dep.DAYS * (3600.0 * 24.0))
-        rx_h5.createArray(base_group, 'Phi', Phi, "Fluence [n/kb]")
-
-        # Energy Group bounds
-        rx_h5.createArray(base_group, 'energy', rx_res.GC_BOUNDS[0], "Energy boundaries [MeV]")
-
-        # Calculate and store weight percents per IHM
-        # Serepent masses somehow unnoprmalize themselves in all of these conversions, which is annoying.
-        # This eefect is of order 1E-5, which is large enough to be noticable.
-        # Thus we have to go through two bouts of normalization here.
-        mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * defchar.fuel_density)
-        mw = rx_dep.TOT_MASS * mw_conversion 
-
-        Ti0_group = rx_h5.createGroup(base_group, 'Ti0', "Transmutation matrix from initial core loading [kg_i/kgIHM]")
-
-        iso_LL = {}
-        iso_index = {}
-        for iso_zz in rx_dep.ZAI:
-            # Find valid isotope indeces
-            try: 
-                iso_LL[iso_zz] = isoname.mixed_2_LLAAAM(int(iso_zz))
-            except:
-                continue
-            iso_index[iso_zz] = getattr(rx_dep, 'i{0}'.format(iso_zz)) - 1
-
-        mass = mw[iso_index.values()].sum(axis=0)   # Caclulate actual mass of isotopes present
-
-        for iso_zz in iso_index:
-            # Store normalized mass vector for this isotope
-            mw_i =  mw[iso_index[iso_zz]] / mass[0]
-            rx_h5.createArray(Ti0_group, iso_LL[iso_zz], mw_i, "Mass weight of {0} [kg/kgIHM]".format(iso_LL[iso_zz]))
-
-        mass = mass / mass[0]   # Renormalize mass
-        rx_h5.createArray(Ti0_group, 'Mass', mass, "Mass fraction of fuel [kg/kgIHM]")
-
-        # close the file before returning
+        # Close HDF5 file
         rx_h5.close()
 
 
@@ -684,6 +621,74 @@ class NCodeSerpent(NCode):
         self.init_tally_group(rx_h5, base_group, 'sigma_s_gh', negG, 
                               "Microscopic Scattering Kernel {tally} [barns]", 
                               "Microscopic Scattering Kernel {tally} for {iso} [barns]")
+
+        # close the file before returning
+        rx_h5.close()
+
+
+
+    #
+    # Writing functions
+    #
+
+    def write_burnup(self):
+        """Writes the results of the burnup calculation to an hdf5 file."""
+
+        # Add current working directory to path
+        sys.path.insert(0, os.getcwd())
+
+        # Import data
+        rx_res = __import__(defchar.reactor + "_burnup_res")
+        rx_dep = __import__(defchar.reactor + "_burnup_dep")
+
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = "/"
+
+        # Add basic BU information
+        rx_h5.createArray(base_group, 'BU0', rx_dep.BU, "Burnup of the initial core loading [MWd/kg]")
+        rx_h5.createArray(base_group, 'time0', rx_dep.DAYS, "Time after initial core loading [days]")
+
+        phi = rx_res.TOT_FLUX[:, ::2].flatten()
+        rx_h5.createArray(base_group, 'phi', phi, "Total flux [n/cm2/s]")
+        rx_h5.createArray(base_group, 'phi_g', rx_res.FLUX[:,::2][:, 1:], "Group fluxes [n/cm2/s]")
+
+        # Create Fluence array
+        Phi = np.zeros(len(phi))
+        Phi[1:] = cumtrapz(phi * (10.0**-21), rx_dep.DAYS * (3600.0 * 24.0))
+        rx_h5.createArray(base_group, 'Phi', Phi, "Fluence [n/kb]")
+
+        # Energy Group bounds
+        rx_h5.createArray(base_group, 'energy', rx_res.GC_BOUNDS[0], "Energy boundaries [MeV]")
+
+        # Calculate and store weight percents per IHM
+        # Serepent masses somehow unnoprmalize themselves in all of these conversions, which is annoying.
+        # This eefect is of order 1E-5, which is large enough to be noticable.
+        # Thus we have to go through two bouts of normalization here.
+        mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * defchar.fuel_density)
+        mw = rx_dep.TOT_MASS * mw_conversion 
+
+        Ti0_group = rx_h5.createGroup(base_group, 'Ti0', "Transmutation matrix from initial core loading [kg_i/kgIHM]")
+
+        iso_LL = {}
+        iso_index = {}
+        for iso_zz in rx_dep.ZAI:
+            # Find valid isotope indeces
+            try: 
+                iso_LL[iso_zz] = isoname.mixed_2_LLAAAM(int(iso_zz))
+            except:
+                continue
+            iso_index[iso_zz] = getattr(rx_dep, 'i{0}'.format(iso_zz)) - 1
+
+        mass = mw[iso_index.values()].sum(axis=0)   # Caclulate actual mass of isotopes present
+
+        for iso_zz in iso_index:
+            # Store normalized mass vector for this isotope
+            mw_i =  mw[iso_index[iso_zz]] / mass[0]
+            rx_h5.createArray(Ti0_group, iso_LL[iso_zz], mw_i, "Mass weight of {0} [kg/kgIHM]".format(iso_LL[iso_zz]))
+
+        mass = mass / mass[0]   # Renormalize mass
+        rx_h5.createArray(Ti0_group, 'Mass', mass, "Mass fraction of fuel [kg/kgIHM]")
 
         # close the file before returning
         rx_h5.close()
