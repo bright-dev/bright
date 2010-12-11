@@ -346,9 +346,7 @@ class NCodeSerpent(NCode):
         self.make_common_input()
 
         # Add burnup information
-        if defchar.options.NoBurnBool:
-            pass
-        else:
+        if defchar.options.RunBU:
             self.make_burnup_input()
 
         self.make_xs_gen_input()
@@ -402,11 +400,9 @@ class NCodeSerpent(NCode):
             #rsfv['run_commands'] = 'lamboot\n'
 
         # Add burnup information
-        if defchar.options.NoBurnBool:
-            pass
-        else:
-            rsfv['run_commands'] += "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
-            rsfv['run_commands'] += "char --cwd -p defchar.py\n"
+        if defchar.options.RunBU:
+            #rsfv['run_commands'] += "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+            rsfv['run_commands'] += "char --cwd -bp defchar.py\n"
 
         #Add cross section information
         rsfv['run_commands'] += "char --cwd -x defchar.py\n"

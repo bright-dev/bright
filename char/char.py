@@ -49,56 +49,44 @@ def main():
     usage = "usage: %prog [options] confchar"
     parser = OptionParser(usage)
 
-    parser.add_option("-q", "--quiet", action="store_true", dest="Quiet", 
-        default=False, help="Supresses stdout.")
-
-    parser.add_option("-v", "--verbose", action="store_true", dest="Verbose", 
+    parser.add_option("-v", "--verbose", action="store_true", dest="VERBOSE", 
         default=False, help="Gives extra info while running.")
 
-    parser.add_option("-i", "--input", action="store_true", dest="MakeInput", 
+    parser.add_option("-i", "--input", action="store_true", dest="MAKE_INPUT", 
         help="Makes the transport calculation input deck.")
 
-    parser.add_option("-r", "--run", action="store_true", dest="RunTransport", 
+    parser.add_option("-r", "--run", action="store_true", dest="RUN_TRANSPORT", 
         default=False, help="Run the transport calculation.")
 
-    parser.add_option("-x", "--xs",  action="store_true", dest="RunXSGen", 
-        default=False, help="Run the cross-section generation calculation.")
-
-    parser.add_option("-d", "--dry-run", action="store_false", dest="RunTransport", 
+    parser.add_option("-d", "--dry-run", action="store_false", dest="RUN_TRANSPORT", 
         help="Dry Run. Do NOT run the transport calculation.")
 
-    parser.add_option("-c", "--clean", action="store_true", dest="Clean", 
+    parser.add_option("-b", "--burnup",  action="store_true", dest="RUN_BURNUP", 
+        default=False, help="Run the burnup calculation.")
+
+    parser.add_option("-x", "--xs",  action="store_true", dest="RUN_XS_GEN", 
+        default=False, help="Run the cross-section generation calculation.")
+
+    parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
         help="Cleans the reactor direactory of current files.")
 
-    parser.add_option("-O", "--ORIGEN", action="store_true", dest="RunORIGEN", 
-        default=False, help="Run ORIGEN Burnup calculations.")
-
-    parser.add_option("-l", "--local", action="store_true", dest="Local", 
+    parser.add_option("-l", "--local", action="store_true", dest="LOCAL", 
         default=True, help="Run or Fetch files locally.")
 
-    parser.add_option("-s", "--server", action="store_false", dest="Local", 
+    parser.add_option("-s", "--server", action="store_false", dest="LOCAL", 
         help="Run or Fetch files from a remote server.")
 
-    parser.add_option("-f", "--fetch", action="store_true", dest="FetchFiles", default=False, 
+    parser.add_option("-f", "--fetch", action="store_true", dest="FETCH_FILES", default=False, 
         help="Fetches files from the remote server. Does not run transport, even if -r is set. Automatically sets -s.")
 
-    parser.add_option("-p", "--parse", action="store_true", dest="ParseData", 
+    parser.add_option("-p", "--parse", action="store_true", dest="PARSE_DATA", 
         default=False, help="Parses output and stores it an HDF5 library.")
-
-    parser.add_option("-9", "--tape9", action="store_true", dest="MakeTape9", 
-        default=False, help="Parses output and makes a ORIGEN tape9 libraries for each burn step.")
 
     parser.add_option("-P", "--pid", action="store_true", dest="PID", default=False, 
         help="Finds the process identification number of a current transport run. Sets -d.")
 
-    parser.add_option("-k", "--kill", action="store_true", dest="KillTransport", 
+    parser.add_option("-k", "--kill", action="store_true", dest="KILL_TRANSPORT", 
         default=False, help="Kills the current transport run. Sets -P.")
-
-    parser.add_option("--no-burn", action="store_true", dest="NoBurnBool", default=False, 
-        help="Removes the burn card from the MCNP deck.")
-
-    parser.add_option("--no-pert", action="store_true", dest="NoPertBool", default=False, 
-        help="Removes the perturbation cards from the MCNP deck.")
 
     parser.add_option("--cwd", action="store_true", dest="CWD", default=False, 
         help="Run char in the current working directory.")
@@ -125,21 +113,17 @@ def main():
     defchar = glbchar.defchar_update(defchar)
 
     #intial command-line options protocol.
-    Quiet = options.Quiet
-    if options.KillTransport:
+    if options.KILL_TRANSPORT:
         options.PID = True                      #Ensures that the PID is found in order that it mak be killed.
 
     if options.PID:
-        options.RunXSGen = False
-        options.RunTransport = False            #Ensures that transport calculation is not initiated while fetching files.
+        options.RUN_XS_GEN = False
+        options.RUN_TRANSPORT = False            #Ensures that transport calculation is not initiated while fetching files.
 
-    if options.FetchFiles:
-        options.RunXSGen = False
-        options.RunTransport = False            #Ensures that transport calculation is not initiated while fetching files.
-        options.Local = False                   #Ensures that ssh package is loaded.
-
-    if options.RunORIGEN:
-        options.MakeTape9 = True
+    if options.FETCH_FILES:
+        options.RUN_XS_GEN = False
+        options.RUN_TRANSPORT = False            #Ensures that transport calculation is not initiated while fetching files.
+        options.LOCAL = False                   #Ensures that ssh package is loaded.
 
     ################
     #### Script ####
@@ -147,7 +131,7 @@ def main():
 
     # Prep work
     if not options.CWD:
-        if defchar.options.Clean:
+        if defchar.options.CLEAN:
             metasci.SafeRemove(defchar.reactor, True)
 
         if defchar.reactor not in os.listdir('.'):
@@ -191,51 +175,41 @@ def main():
     defchar.n_transporter = n_transporter
 
     # Make the input file unless otherwise specified.
-    if (options.MakeInput) and (not options.FetchFiles) and (not options.PID):
-        if isinstance(n_transporter, NCodeSerpent):
-            n_transporter.make_input()
-        elif isinstance(n_transporter, NCodeMCNP):
-            n_transporter.make_input()
+    if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
+        n_transporter.make_input()
 
     # Run Transport code
-    if options.RunTransport:
+    if options.RUN_TRANSPORT:
         runchar.make_run_script(n_transporter)
 
-        if options.Local:
+        if options.LOCAL:
             runchar.run_transport_local()
         else:
             runchar.run_transport_remote()
 
     #Fetches files from remote server
-    if options.FetchFiles:
+    if options.FETCH_FILES:
         runchar.fetch_remote_files()
 
     #Finds (and kills?) the Transport Run Process
     if options.PID:
-        if options.Local:
+        if options.LOCAL:
             runchar.find_pid_local()
         else:
             runchar.find_pid_remote()
 
+    # Make tranumatrion libraries by executing the as a separate step from 
+    # the cross-section generation
+    if options.RUN_BURNUP:
+        n_transporter.run_burnup()
+
     # Parse transporter output & make HDF5 data library
-    if options.ParseData:
+    if options.PARSE_DATA:
         n_transporter.parse()
 
     # Make Cross-sections as a separate step from the burnup calculation
-    if options.RunXSGen:
+    if options.RUN_XS_GEN:
         n_transporter.run_xs_gen()
-
-    #Parse MCNPX Output & Make ORIGEN TAPE9 Libraries
-    if options.MakeTape9:
-        parsechar.Write_ORIGEN_Libs()
-
-    #Run ORIGEN IRF Burnup Calculation
-    if options.RunORIGEN:
-        BU, k, Pro, Des, Tij = runchar.Run_ORIGEN()
-        parsechar.Write_HDF5_Lib_ORIGEN( BU, k, Pro, Des, Tij )
-
-        if options.MakeText:
-            parsechar.Write_TXT_Lib_ORIGEN( BU, k, Pro, Des, Tij )
 
     #Clean up
     if not options.CWD:
