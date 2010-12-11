@@ -422,7 +422,7 @@ class NCodeSerpent(NCode):
             #rsfv['run_commands'] = 'lamboot\n'
 
         # Add burnup information
-        if defchar.options.RunBU:
+        if defchar.options.RUN_BURNUP:
             #rsfv['run_commands'] += "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
             rsfv['run_commands'] += "char --cwd -bp defchar.py\n"
 
