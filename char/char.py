@@ -79,10 +79,7 @@ def main():
     parser.add_option("-f", "--fetch", action="store_true", dest="FETCH_FILES", default=False, 
         help="Fetches files from the remote server. Does not run transport, even if -r is set. Automatically sets -s.")
 
-    parser.add_option("-p", "--parse", action="store_true", dest="PARSE_DATA", 
-        default=False, help="Parses output and stores it an HDF5 library.")
-
-    parser.add_option("-P", "--pid", action="store_true", dest="PID", default=False, 
+    parser.add_option("-p", "--pid", action="store_true", dest="PID", default=False, 
         help="Finds the process identification number of a current transport run. Sets -d.")
 
     parser.add_option("-k", "--kill", action="store_true", dest="KILL_TRANSPORT", 
@@ -178,8 +175,9 @@ def main():
     if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
         n_transporter.make_input()
 
-    # Run Transport code
+    # Check a bunch of run conditions
     if options.RUN_TRANSPORT:
+        # Run Transport code
         runchar.make_run_script(n_transporter)
 
         if options.LOCAL:
@@ -187,32 +185,25 @@ def main():
         else:
             runchar.run_transport_remote()
 
-        # Leave everything else to the run script
-        raise SystemExit
+    elif options.RUN_BURNUP or options.RUN_XS_GEN:
+        # Make tranumatrion libraries by executing the as a separate step from 
+        # the cross-section generation
+        if options.RUN_BURNUP:
+            n_transporter.run_burnup()
 
-    #Fetches files from remote server
-    if options.FETCH_FILES:
+        # Make Cross-sections as a separate step from the burnup calculation
+        if options.RUN_XS_GEN:
+            n_transporter.run_xs_gen()
+
+    elif options.FETCH_FILES:
+        #Fetches files from remote server
         runchar.fetch_remote_files()
-
-    #Finds (and kills?) the Transport Run Process
-    if options.PID:
+    elif options.PID:
+        #Finds (and kills?) the Transport Run Process
         if options.LOCAL:
             runchar.find_pid_local()
         else:
             runchar.find_pid_remote()
-
-    # Make tranumatrion libraries by executing the as a separate step from 
-    # the cross-section generation
-    if options.RUN_BURNUP:
-        n_transporter.run_burnup()
-
-    # Parse transporter output & make HDF5 data library
-    if options.PARSE_DATA:
-        n_transporter.parse()
-
-    # Make Cross-sections as a separate step from the burnup calculation
-    if options.RUN_XS_GEN:
-        n_transporter.run_xs_gen()
 
     #Clean up
     if not options.CWD:
