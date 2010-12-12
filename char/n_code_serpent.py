@@ -465,7 +465,7 @@ class NCodeSerpent(NCode):
             self.make_burnup_input(n)
 
             # Run serpent on this input file as a subprocess
-            rtn = subprocess.check_call(run_command, shell=True)
+            rtn = subprocess.call(run_command, shell=True)
 
             # Parse & write this output to HDF5
             self.parse_burnup()
@@ -535,7 +535,7 @@ class NCodeSerpent(NCode):
                 self.make_xs_gen_input(iso)
 
                 # Run serpent on this input file as a subprocess
-                rtn = subprocess.check_call(run_command, shell=True)
+                rtn = subprocess.call(run_command, shell=True)
 
                 # Parse & write this output to HDF5
                 self.parse_xs_gen()
