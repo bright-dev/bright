@@ -613,6 +613,17 @@ class NCodeSerpent(NCode):
         rx_h5.close()
 
 
+    def init_array(self, rx_h5, base_group, array_name, init_array, array_string='Helpful Array is Helpful'):
+        """Inits an array in an hdf5 file."""
+
+        # Remove existing array
+        if hasattr(rx_h5.getNode(base_group), array_name):
+            rx_h5.removeNode(base_group, array_name, recursive=True)
+
+        # Create new array
+        rx_h5.createArray(base_group, array_name, init_array, array_string)
+
+
     def init_tally_group(self, rx_h5, base_group, tally, init_array, 
                          gstring='Group {tally}', astring='Array {tally} {iso}'):
         """Inits a tally group in an hdf5 file."""
@@ -643,25 +654,25 @@ class NCodeSerpent(NCode):
 
 
         # Add basic BU information
-        rx_h5.createArray(base_group, 'BU0',   neg1, "Burnup of the initial core loading [MWd/kg]")
-        rx_h5.createArray(base_group, 'time0', neg1, "Time after initial core loading [days]")
+        self.init_array(rx_h5, base_group, 'BU0',   neg1, "Burnup of the initial core loading [MWd/kg]")
+        self.init_array(rx_h5, base_group, 'time0', neg1, "Time after initial core loading [days]")
 
         # Add flux arrays
-        rx_h5.createArray(base_group, 'phi',   neg1, "Total flux [n/cm2/s]")
-        rx_h5.createArray(base_group, 'phi_g', negG, "Group fluxes [n/cm2/s]")
+        self.init_array(rx_h5, base_group, 'phi',   neg1, "Total flux [n/cm2/s]")
+        self.init_array(rx_h5, base_group, 'phi_g', negG, "Group fluxes [n/cm2/s]")
 
         # Create Fluence array
-        rx_h5.createArray(base_group, 'Phi', neg1, "Fluence [n/kb]")
+        self.init_array(rx_h5, base_group, 'Phi', neg1, "Fluence [n/kb]")
 
         # Energy Group bounds
-        rx_h5.createArray(base_group, 'energy', negE, "Energy boundaries [MeV]")
+        self.init_array(rx_h5, base_group, 'energy', negE, "Energy boundaries [MeV]")
 
         # Initialize transmutation matrix
         self.init_tally_group(rx_h5, base_group, 'Ti0', neg1, 
                               "Transmutation matrix from initial core loading [kg_i/kgIHM]", 
                               "Mass weight of {iso} [kg/kgIHM]")
 
-        rx_h5.createArray(base_group + '/Ti0', 'Mass', neg1, "Mass fraction of fuel [kg/kgIHM]")
+        self.init_array(rx_h5, base_group + '/Ti0', 'Mass', neg1, "Mass fraction of fuel [kg/kgIHM]")
 
         # close the file before returning
         rx_h5.close()
