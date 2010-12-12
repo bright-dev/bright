@@ -101,7 +101,7 @@ def run_transport_local():
     # Report times
     time_msg = "{0:.3G}".format((t2-t1)/60.0)
     defchar.logger.info("Transport executed in {0} minutes.".format(time_msg))
-    if 0 < defchar.defchar.verbosity:
+    if 0 < defchar.verbosity:
         print()
         print(message("Transport executed in {0:time} minutes.", time_msg ))
         print()

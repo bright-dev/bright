@@ -368,8 +368,9 @@ class NCodeSerpent(NCode):
         self.make_common_input(0)
 
         # Add burnup information
-        if defchar.options.RUN_BURNUP:
-            self.make_burnup_input(0)
+#        if defchar.options.RUN_BURNUP:
+#            self.make_burnup_input(0)
+        self.make_burnup_input(0)
 
         self.make_xs_gen_input()
 
