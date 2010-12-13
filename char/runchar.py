@@ -182,7 +182,7 @@ def find_pid_local():
 
     del sp, spout, sperr
 
-    if defchar.options.KillTransport:
+    if defchar.options.KILL_TRANSPORT:
         sp = subprocess.Popen("kill {0}".format(pid), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         spout, sperr = sp.communicate() 
         spout = spout.split('\n')[:-1]
@@ -251,7 +251,7 @@ def find_pid_remote():
             print(spout)
 
     #Kill the remote process if required...
-    if defchar.options.KillTransport:
+    if defchar.options.KILL_TRANSPORT:
         if defchar.scheduler in ["PBS"]:
             defchar.remote_connection.run("qdel {0}".format(pid)) 
 
