@@ -33,6 +33,7 @@ def iso_list_conversions(iso_list):
 
     for iso in zzaaam:
         if not ( (iso%10) == 0):
+            continue
             metastable.append(iso)
 
             NGammaParent = ((iso/10) - 1) * 10
