@@ -36,7 +36,7 @@ def make_run_script(n_transporter):
         run_fill["PBS_general_settings"] += "#PBS -l ncpus={0}".format(defchar.number_cpus)
         run_fill["PBS_general_settings"] += ",nodes={0}".format(nodes)
         run_fill["PBS_general_settings"] += ":ppn={0}".format(defchar.cpus_per_node) 
-        run_fill["PBS_general_settings"] += ",walltime={0:02G}:00:00\n".format(
+        run_fill["PBS_general_settings"] += ",walltime={0:02G}:00:00,pmem=3gb\n".format(
                                              n_transporter.run_script_walltime()) 
 
         run_fill["PBS_general_settings"] += "#PBS -k oe\n"
