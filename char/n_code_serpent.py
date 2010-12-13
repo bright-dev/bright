@@ -367,9 +367,6 @@ class NCodeSerpent(NCode):
 
         self.make_common_input(0)
 
-        # Add burnup information
-#        if defchar.options.RUN_BURNUP:
-#            self.make_burnup_input(0)
         self.make_burnup_input(0)
 
         self.make_xs_gen_input()
@@ -428,7 +425,8 @@ class NCodeSerpent(NCode):
             rsfv['run_commands'] += "char --cwd -b defchar.py\n"
 
         #Add cross section information
-        rsfv['run_commands'] += "char --cwd -x defchar.py\n"
+        if defchar.options.RUN_XS_GEN:
+            rsfv['run_commands'] += "char --cwd -x defchar.py\n"
 
         return rsfv
 
