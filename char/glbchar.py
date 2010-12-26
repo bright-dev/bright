@@ -2,6 +2,7 @@
 ### Standard Libraries ###
 ##########################
 from __future__ import print_function
+import re
 import subprocess
 
 ##########################
@@ -67,43 +68,22 @@ def iso_file_conversions(filename):
     iso_dict = iso_list_conversions(iso_list)
     return iso_dict
 
-# Old code that masked isotopes that are not present in the MCNP xsdir file.
-# I longer think that this is the right design pattern.  If an isotope should 
-# not be included, the user simply shouldn't include it!
-""" 
-InXSDIR = {}
-for iso in coreload:
-    InXSDIR[iso] = False
+def serpent_xs_isos_available(xsdata):
+    """Finds the isotopes available to serpent for cross-section generation.
 
-try:
-    xsdir = open(os.getenv("DATAPATH") + "/xsdir", 'r' )
-    for line in xsdir:
-        ls = line.split()
-        if ls == []:
-            continue
-        elif not ('.' in ls[0]):
-            continue
-        else:
-            i, p, l = ls[0].partition('.')
-            try:
-                xs_i = int(i)
-            except:
-                continue
-            for iso in InXSDIR.keys():
-                if xs_i == int(iso):
-                    InXSDIR[iso] = True
-    xsdir.close()
-except:
-    pass
+    Args:
+        * xsdata (str): path to serpent *.xsdata file that will be used.
 
-coreload = []
-for iso in InXSDIR.keys():
-    if InXSDIR[iso]:
-        coreload.append(iso)
-    else:
-        if 0 < verbosity:
-            print("The following nuclide could not be found in $DATAPATH/xsdir: {0}.".format(isoname.MCNP_2_LLAAAM(iso)))
-"""
+    Returns:
+        * serpent_isos (set): Set of isotopes serpent has available.
+    """
+    xsdata_pattern = "\s*[\dA-Za-z-]+\.\d{2}[a-z]\s+\d{4,6}\.\d{2}[a-z]  \d\s+(\d{4,6})  (\d)\s+.*"
+
+    with open(xsdata, 'r') as f:
+        raw_xsdata = f.read()
+
+    serpent_iso = set(int(''.join(m.groups())) for m in re.finditer(xsdata_pattern, raw_xsdata))
+    return serpent_iso
 
 
 ##########################
@@ -210,5 +190,10 @@ def defchar_update(defchar):
                                    'burn_regions', 
                                    'fuel_specific_power', 
                                    'coarse_time')   # coarse_time needs to be the last element
+
+    # Find which isotopes are available in serpent
+    # and which ones must be handled manually.
+    defchar.serpent_xs_isos = serpent_xs_isos_available(defchar.serpent_xsdata)
+
 
     return defchar
