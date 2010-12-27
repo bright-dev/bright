@@ -494,11 +494,16 @@ class NCodeSerpent(NCode):
             # Grab the MassStream at this time.
             self.make_common_input(n)
             ms_n = MassStream()
-            ms_n.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", n)
+            ms_n.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", 2)
 
-            # Loop over all output isotopes
-            for iso in defchar.core_transmute['zzaaam']:
-                defchar.logger.info('Generating cross-sections for {0} at perturbation step {1}.'.format(iso, n))
+            # Calc restricted mass streams
+            ms_n_in_serpent = ms_n.getSubStreamInt(defchar.core_transmute_in_serpent['zzaaam'])
+            ms_n_not_in_serpent = ms_n.getSubStreamInt(defchar.core_transmute_not_in_serpent['zzaaam'])
+
+            # Loop over all output isotopes that are valid in serpent
+            for iso in defchar.core_transmute_in_serpent['zzaaam']:
+                info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
+                defchar.logger.info(info_str.format(iso, n))
 
                 # Add filler fision product
                 # If iso is not zirconium, add Zr-90
@@ -523,7 +528,7 @@ class NCodeSerpent(NCode):
                 else:
                     top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
 
-                ms = ms_n + top_up
+                ms = ms_n_in_serpent + top_up
                 isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
                 ms = MassStream(isovec)
 

@@ -77,6 +77,7 @@ def serpent_xs_isos_available(xsdata):
     Returns:
         * serpent_isos (set): Set of isotopes serpent has available.
     """
+    # Grabs the ZAID and metastable flag separately
     xsdata_pattern = "\s*[\dA-Za-z-]+\.\d{2}[a-z]\s+\d{4,6}\.\d{2}[a-z]  \d\s+(\d{4,6})  (\d)\s+.*"
 
     with open(xsdata, 'r') as f:
@@ -155,6 +156,17 @@ def defchar_update(defchar):
     else:
         raise TypeError("The core_transmute_isos type was not correct.")
 
+    # Find which isotopes are available in serpent
+    # and which ones must be handled manually.
+    core_transmute_set = set(defchar.core_transmute['zzaaam'])
+    serpent_xs_isos_set = serpent_xs_isos_available(defchar.serpent_xsdata)
+
+    core_transmute_in_serpent = list(core_transmute_set & serpent_xs_isos_set)
+    core_transmute_not_in_serpent = list(core_transmute_set - serpent_xs_isos_set)
+
+    defchar.core_transmute_in_serpent = iso_list_conversions(core_transmute_in_serpent)
+    defchar.core_transmute_not_in_serpent = iso_list_conversions(core_transmute_not_in_serpent)
+
     # Make fuel stream
     defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)
     isovec, AW, MW = msn.convolve_initial_fuel_form(defchar.IHM_stream, defchar.fuel_chemical_form)
@@ -190,10 +202,5 @@ def defchar_update(defchar):
                                    'burn_regions', 
                                    'fuel_specific_power', 
                                    'coarse_time')   # coarse_time needs to be the last element
-
-    # Find which isotopes are available in serpent
-    # and which ones must be handled manually.
-    defchar.serpent_xs_isos = serpent_xs_isos_available(defchar.serpent_xsdata)
-
 
     return defchar
