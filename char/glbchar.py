@@ -59,6 +59,7 @@ def iso_list_conversions(iso_list):
 
     return iso_dict
 
+
 def iso_file_conversions(filename):
     """Takes a file that contains whitespace separated isotope names and runs iso_list_conversions on it."""
     with open(filename, 'r') as f:
@@ -67,6 +68,7 @@ def iso_file_conversions(filename):
     iso_list = s.split()
     iso_dict = iso_list_conversions(iso_list)
     return iso_dict
+
 
 def serpent_xs_isos_available(xsdata):
     """Finds the isotopes available to serpent for cross-section generation.
@@ -86,6 +88,30 @@ def serpent_xs_isos_available(xsdata):
     serpent_iso = set(int(''.join(m.groups())) for m in re.finditer(xsdata_pattern, raw_xsdata))
     return serpent_iso
 
+def tempurature_flag(t):
+    """Converts a temperature into a the proper continuous energy flag used in ACE files.
+
+    Args:
+        * t (int): Temperature, multiple of 300 K.
+
+    Returns: 
+        * temp_flag (3-character string)
+    """
+
+    t = int(t)
+
+    # Check temperature value validity
+    if t%300 != 0:
+        raise ValueError("The temperature value must be a multiple of 300 K!")
+    elif t <= 0:
+        raise ValueError("The temperature value must be positive!")
+    elif 9999 < t:
+        raise ValueError("The temperature value must less than 10000 K!")
+
+    # Make the temperature flag
+    temp_flag = "{0:02}c".format(t/100)
+
+    return temp_flag
 
 ##########################
 #### Global Variables ####
@@ -166,6 +192,12 @@ def defchar_update(defchar):
 
     defchar.core_transmute_in_serpent = iso_list_conversions(core_transmute_in_serpent)
     defchar.core_transmute_not_in_serpent = iso_list_conversions(core_transmute_not_in_serpent)
+
+    # Make temperature flag
+    if not hasattr(defchar, 'temperature'):
+        defchar.temperature = 600
+
+    defchar.temp_flag = tempurature_flag(defchar.temperature)
 
     # Make fuel stream
     defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)

@@ -46,11 +46,6 @@ class NCodeSerpent(NCode):
         self.name    = "Serpent"
         self.run_str = "sss-dev"
 
-        if hasattr(defchar, 'ISO_FLAG'):
-            self.iso_flag = defchar.ISO_FLAG
-        else:
-            self.iso_flag = ''
-
         # Remote file lists
         self.place_remote_files = ['.']
         self.fetch_remote_files = ['.']
@@ -64,10 +59,7 @@ class NCodeSerpent(NCode):
             iso_serp = isoname.mixed_2_zzaaam(iso)
             iso_serp = zzaaam_2_serpent(iso_serp)
 
-            if self.iso_flag == '':
-                comp_str += "{0:>11}".format( "{0}".format(iso_serp) )
-            else:
-                comp_str += "{0:>11}".format( "{0}.{1}".format(iso_serp, self.iso_flag) )
+            comp_str += "{0:>11}".format("{0}.{1}".format(iso_serp, defchar.temp_flag))
 
             if mass_weighted:
                 comp_str += "  -{0:.5G}\n".format(comp[iso])
@@ -289,10 +281,7 @@ class NCodeSerpent(NCode):
         iso_serp = zzaaam_2_serpent(iso_zz)
 
         # Set the isotope to calculate XS for
-        if self.iso_flag == '':
-            det['xsiso'] = "{0}".format(iso_serp) 
-        else:
-            det['xsiso'] = "{0}.{1}".format(iso_serp, self.iso_flag)
+        det['xsiso'] = "{0}.{1}".format(iso_serp, defchar.temp_flag)
 
         # Setup detectors to calculate XS for
         det['xsdet'] = ''
