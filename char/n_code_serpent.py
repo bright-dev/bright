@@ -832,8 +832,6 @@ class NCodeSerpent(NCode):
 
         tallies = defchar.tallies
 
-        import pdb; pdb.set_trace()
-
         # Write the raw tally arrays for this time and this iso        
         for tally in tallies:
             tally_hdf5_group = getattr(base_group, tally)
