@@ -259,8 +259,6 @@ def defchar_update(defchar):
                                            defchar.temp_flag, 
                                            defchar.verbosity)
 
-    raise SystemExit
-
     # Make fuel stream
     defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)
     isovec, AW, MW = msn.convolve_initial_fuel_form(defchar.IHM_stream, defchar.fuel_chemical_form)

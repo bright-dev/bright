@@ -287,13 +287,16 @@ class NCodeSerpent(NCode):
         det['xsdet'] = ''
         det_format = "det {tally_name} de energies dm fuel dr {tally_type} xsmat dt 3 phi\n"
 
-        if hasattr(defchar, 'tallies'):
-            tallies = defchar.tallies
-        else:
-            tallies = tally_types.serpent_default
+        # Get tallies
+        if not hasattr(defchar, 'tallies'):
+            defchar.tallies = tally_types.serpent_default
 
+        tallies = defchar.tallies
+
+        # Add tally line if MT number is valid
         for tally in tallies:
-            det['xsdet'] += det_format.format(tally_name=tally, tally_type=tallies[tally])
+            if tallies[tally] in defchar.iso_mts[iso_zz]:
+                det['xsdet'] += det_format.format(tally_name=tally, tally_type=tallies[tally])
 
         return det
 
@@ -816,17 +819,24 @@ class NCodeSerpent(NCode):
         base_group = rx_h5.root
 
         # Grab the tallies
-        if hasattr(defchar, 'tallies'):
-            tallies = defchar.tallies
-        else:
-            tallies = tally_types.serpent_default
+        if not hasattr(defchar, 'tallies'):
+           defchar.tallies = tally_types.serpent_default
+
+        tallies = defchar.tallies
 
         # Write the raw tally arrays for this time and this iso        
         for tally in tallies:
             tally_hdf5_group = getattr(base_group, tally)
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
-            tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
+            # Make sure the detector was calculated, 
+            # Or replace the tally with zeros
+            if tallies[tally] in defchar.iso_mts[iso_zz]:
+                tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
+                tally_serp_array = tally_serp_array[::-1, 10]
+            else:
+                tally_serp_array = np.zeros(len(tally_hdf5_array[n]), dtype=float)
+                
 
             tally_hdf5_array[n] = tally_serp_array[::-1, 10]
 
