@@ -837,7 +837,6 @@ class NCodeSerpent(NCode):
             else:
                 tally_serp_array = np.zeros(len(tally_hdf5_array[n]), dtype=float)
                 
-
             tally_hdf5_array[n] = tally_serp_array
 
         # Write aggregate tallies
@@ -858,21 +857,26 @@ class NCodeSerpent(NCode):
             tally_hdf5_array[n] = nubar
 
         # sigma_i
-        sigma_i = None
         if ('sigma_i' not in tallies):
             tally_hdf5_group = getattr(base_group, 'sigma_i')
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
+            sigma_i = np.zeros(len(tally_hdf5_array[n]), dtype=float)
+
             # Sum all sigma_iN's together
             for tally in tallies:
+                # Skip this tally when appropriate
+                if 'sigma_i' not in tally:
+                    continue
+
+                if tallies[tally] not in defchar.iso_mts[iso_zz]:
+                    continue
+
+                # Grab a sigma_iN array
                 tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
 
-                if ('sigma_i' in tally) and (sigma_i == None):
-                    sigma_i = tally_serp_array[::-1, 10]
-                elif ('sigma_i' in tally) and (sigma_i != None):
-                    sigma_i += tally_serp_array[::-1, 10]
-                else:
-                    pass
+                # Add this array to the current sigma_i 
+                sigma_i += tally_serp_array[::-1, 10]
 
             tally_hdf5_array[n] = sigma_i
 
