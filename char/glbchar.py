@@ -15,11 +15,14 @@ import MassStream
 
 import metasci
 import metasci.nuke as msn
+from metasci.nuke import ace
+from metasci.colortext import message
 
 ######################
 ### CHAR Libraries ###
 ######################
 from char import defchar
+from n_code_serpent import zzaaam_2_serpent
 
 ########################
 ### Global Functions ###
@@ -88,6 +91,56 @@ def serpent_xs_isos_available(xsdata):
     serpent_iso = set(int(''.join(m.groups())) for m in re.finditer(xsdata_pattern, raw_xsdata))
     return serpent_iso
 
+
+serpent_mt_always = set(range(-9, 3))
+"""A set of MT numbers that is always available in Serpent."""
+
+def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
+    """Finds the MT numbers available for each isotope.
+
+    Args:
+        * xsdata (str): path to serpent *.xsdata file that will be used.
+        * isos (list of zzaaam): List of isotopes to find MT numbers for. 
+          isotopes must be valid for serpent.
+        * temp_flag (3-character string): Flag for the temperature.
+
+    Returns:
+        * iso_mt (dict of sets): A dictionary whose keys are isotopes (zzaaam) and whose 
+          keys are sets of MT numbers that serpent has available.
+    """
+    if 0 < verbosity:
+        print(message("Grabbing valid MT numbers for available isotopes:"))
+
+    # First, read in the xsdata file
+    xsdata_dict = {}
+    with open(xsdata, 'r') as f:
+        for line in f:
+            ls = line.split()
+            xsdata_dict[ls[0]] = (ls[1], ls[-1])
+
+    # Now, find the MTs for each iso
+    iso_mts = {}
+    for iso_zz in isos:
+        # Convert iso 
+        iso_serp = zzaaam_2_serpent(iso_zz)
+        iso_serp_flag = "{0}.{1}".format(iso_serp, temp_flag)
+
+        if 0 < verbosity:
+            print("  Isotope {0:>7} {1:>11}".format(iso_zz, iso_serp_flag))
+
+        # Get the MT numbers
+        mts = ace.mt(*xsdata_dict[iso_serp_flag])
+        iso_mt = mts | serpent_mt_always
+
+        # Add this iso to the dict
+        iso_mts[iso_zz] = iso_mt
+
+    if 0 < verbosity:
+        print(message("Done!"))
+        print()
+
+    return iso_mts
+
 def tempurature_flag(t):
     """Converts a temperature into a the proper continuous energy flag used in ACE files.
 
@@ -112,6 +165,7 @@ def tempurature_flag(t):
     temp_flag = "{0:02}c".format(t/100)
 
     return temp_flag
+
 
 ##########################
 #### Global Variables ####
@@ -198,6 +252,14 @@ def defchar_update(defchar):
         defchar.temperature = 600
 
     defchar.temp_flag = tempurature_flag(defchar.temperature)
+
+    # Grab the MT numbers that are available for valid isotopes.
+    defchar.iso_mts = serpent_mt_avaliable(defchar.serpent_xsdata, 
+                                           defchar.core_transmute_in_serpent['zzaaam'], 
+                                           defchar.temp_flag, 
+                                           defchar.verbosity)
+
+    raise SystemExit
 
     # Make fuel stream
     defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)

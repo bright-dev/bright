@@ -24,7 +24,7 @@ from m2py import convert_res, convert_dep, convert_det
 def zzaaam_2_serpent(iso):
     """Makes an isotope in serpent form."""
     if 0 == iso%10:
-        iso_serp = iso/10
+        iso_serp = str(iso/10)
     else:
         iso_zz = iso/10000
         iso_LL = isoname.zzLL[iso_zz]
