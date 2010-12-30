@@ -169,16 +169,16 @@ def find_pid_local():
     global defchar
     from char import defchar
 
-    sp = subprocess.Popen("ps ux | grep {0}".format(n_transporter.run_str), stdout=subprocess.PIPE, 
-                          stderr=subprocess.PIPE, shell=True) 
+    sp = subprocess.Popen("ps ux | grep {0}".format(defchar.n_transporter.run_str), 
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) 
     spout, sperr = sp.communicate() 
     spout = spout.split('\n')[:-1]
-    pid =  spout[0].split()[1]
-    prt =  spout[0].split()[9]
+    pid = spout[0].split()[1]
+    prt = spout[0].split()[9]
 
     if 0 < defchar.verbosity:
         print(message("Process ID: {0}".format(pid)))
-        print(message("Process Runtime: {0:time} min.".format(prt)))
+        print(message("Process Runtime: {0:time} min.", prt))
 
     del sp, spout, sperr
 
@@ -205,7 +205,7 @@ def find_pid_remote():
                                    rc=defchar.remote_connection), stdout=subprocess.PIPE, 
                                    stderr=subprocess.PIPE, shell=True) 
         else:
-            rsp = subprocess.Popen("ssh {rc.user}@{rc.url} 'ps ux | grep {0}'".format(n_transporter.run_str, 
+            rsp = subprocess.Popen("ssh {rc.user}@{rc.url} 'ps ux | grep {0}'".format(defchar.n_transporter.run_str, 
                                    rc=defchar.remote_connection), stdout=subprocess.PIPE, 
                                    stderr=subprocess.PIPE, shell=True) 
     except NameError:
