@@ -181,46 +181,17 @@ class RemoteConnection(object):
         return subprocess.call("ssh {user}@{url} \"{remcmd}\"".format(remcmd=cmd, **self.__dict__), shell=True)
 
     def put(self, loc_file, rem_file):
-        return subprocess.call("rsync -r --partial --progress --rsh=ssh {lf} {user}@{url}:{rf}".format(
+        return subprocess.call("rsync -rh --partial --progress --rsh=ssh {lf} {user}@{url}:{rf}".format(
                                 lf=loc_file, rf=rem_file, **self.__dict__), shell=True)
 
     def get(self, rem_file, loc_file):
-        return subprocess.call("rsync -r --partial --progress --rsh=ssh {user}@{url}:{rf} {lf}".format(
+        return subprocess.call("rsync -rh --partial --progress --rsh=ssh {user}@{url}:{rf} {lf}".format(
                                 lf=loc_file, rf=rem_file, **self.__dict__), shell=True)
 
 
-def defchar_update(defchar):
-    """Takes the defchar namespace, updates it, and returns it."""
-    if hasattr(defchar, 'tallies'):
-        defchar.tallies_reversed = metasci.ReverseDic(defchar.tallies)
 
-    if not hasattr(defchar, 'scheduler'):
-        defchar.scheduler = ''
-
-    # Name some files and directories
-    defchar.input_file = defchar.reactor + ".i"
-    defchar.run_script = 'run_{0}.sh'.format(defchar.reactor)
-
-    if hasattr(defchar, 'remote_dir'):
-        defchar.remote_dir = defchar.remote_dir + "runchar/{0}/".format(defchar.reactor)
-
-    # Setup a remote connection instance
-    rckw = {}
-    if hasattr(defchar, 'remote_url'):
-        rckw['url'] = defchar.remote_url
-    if hasattr(defchar, 'remote_user'):
-        rckw['user'] = defchar.remote_user
-    if hasattr(defchar, 'remote_dir'):
-        rckw['dir'] = defchar.remote_dir
-    defchar.remote_connection = RemoteConnection(**rckw)
-
-    # Make Time Steps 
-    defchar.coarse_time = np.arange(0, defchar.burn_time + defchar.coarse_step/10.0, defchar.coarse_step)
-    defchar.coarse_time_index = range(len(defchar.coarse_time))
-
-    defchar.fine_time = np.arange(0, defchar.burn_time + defchar.fine_step/10.0, defchar.fine_step)
-    defchar.fine_time_index = range(len(defchar.fine_time))
-
+def defchar_update_for_execution(defchar):
+    """Updates the defchar namespace for runs where an execution is going to occur."""
     # Make isotopic lists
     if isinstance(defchar.core_load_isos, basestring):
         defchar.core_load = iso_file_conversions(defchar.core_load_isos)
@@ -296,3 +267,47 @@ def defchar_update(defchar):
                                    'coarse_time')   # coarse_time needs to be the last element
 
     return defchar
+
+
+def defchar_update(defchar):
+    """Takes the defchar namespace, updates it, and returns it."""
+    if hasattr(defchar, 'tallies'):
+        defchar.tallies_reversed = metasci.ReverseDic(defchar.tallies)
+
+    if not hasattr(defchar, 'scheduler'):
+        defchar.scheduler = ''
+
+    # Name some files and directories
+    defchar.input_file = defchar.reactor + ".i"
+    defchar.run_script = 'run_{0}.sh'.format(defchar.reactor)
+
+    if hasattr(defchar, 'remote_dir'):
+        defchar.remote_dir = defchar.remote_dir + "runchar/{0}/".format(defchar.reactor)
+
+    # Setup a remote connection instance
+    rckw = {}
+    if hasattr(defchar, 'remote_url'):
+        rckw['url'] = defchar.remote_url
+    if hasattr(defchar, 'remote_user'):
+        rckw['user'] = defchar.remote_user
+    if hasattr(defchar, 'remote_dir'):
+        rckw['dir'] = defchar.remote_dir
+    defchar.remote_connection = RemoteConnection(**rckw)
+
+    # Make Time Steps 
+    defchar.coarse_time = np.arange(0, defchar.burn_time + defchar.coarse_step/10.0, defchar.coarse_step)
+    defchar.coarse_time_index = range(len(defchar.coarse_time))
+
+    defchar.fine_time = np.arange(0, defchar.burn_time + defchar.fine_step/10.0, defchar.fine_step)
+    defchar.fine_time_index = range(len(defchar.fine_time))
+
+
+    # Upddate the namespace if we are going to execute a neutronics code
+    if (defchar.options.MAKE_INPUT or defchar.options.RUN_TRANSPORT or 
+        defchar.options.RUN_BURNUP or defchar.options.RUN_XS_GEN):
+
+        defchar = defchar_update_for_execution(defchar)
+
+    return defchar
+
+
