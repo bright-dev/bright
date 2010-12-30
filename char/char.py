@@ -129,7 +129,7 @@ def main():
     # Prep work
     if not options.CWD:
         if defchar.options.CLEAN:
-            metasci.SafeRemove(defchar.reactor, True)
+            metasci.safe_remove(defchar.reactor, True)
 
         if defchar.reactor not in os.listdir('.'):
             os.mkdir(defchar.reactor)

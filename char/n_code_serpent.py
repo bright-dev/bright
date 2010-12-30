@@ -9,7 +9,7 @@ import isoname
 import numpy as np
 import tables as tb
 import metasci.nuke as msn
-from metasci import SafeRemove
+from metasci import safe_remove, clean_reload
 from MassStream import MassStream
 from metasci.colortext import message, failure
 
@@ -744,6 +744,10 @@ class NCodeSerpent(NCode):
         rx_res = __import__(defchar.reactor + "_burnup_res")
         rx_dep = __import__(defchar.reactor + "_burnup_dep")
 
+        # Ensure that the right file is imported and not just the cached version
+        clean_reload(rx_res)
+        clean_reload(rx_dep)
+
         # Find end index 
         t = n + len(rx_dep.DAYS)
 
@@ -800,9 +804,6 @@ class NCodeSerpent(NCode):
         # close the file before returning
         rx_h5.close()
 
-        # Remove modules so the aren't using wrong data
-        del rx_res, rx_dep
-
 
     def write_xs_gen(self, iso, n):
         # Convert isoname
@@ -817,6 +818,10 @@ class NCodeSerpent(NCode):
         rx_res = __import__(defchar.reactor + "_xs_gen_res")
         rx_det = __import__(defchar.reactor + "_xs_gen_det0")
 
+        # Ensure that the right file is imported and not just the cached version
+        clean_reload(rx_res)
+        clean_reload(rx_det)
+
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = rx_h5.root
@@ -826,6 +831,8 @@ class NCodeSerpent(NCode):
            defchar.tallies = tally_types.serpent_default
 
         tallies = defchar.tallies
+
+        import pdb; pdb.set_trace()
 
         # Write the raw tally arrays for this time and this iso        
         for tally in tallies:
@@ -926,6 +933,3 @@ class NCodeSerpent(NCode):
 
         # close the file before returning
         rx_h5.close()
-
-        # Remove modules so the aren't using wrong data
-        del rx_res, rx_det 

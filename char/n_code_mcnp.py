@@ -4,7 +4,7 @@ from math import pi
 
 import isoname
 import metasci.nuke as msn
-from metasci import SafeRemove
+from metasci import safe_remove
 
 from char import defchar
 
@@ -169,7 +169,7 @@ class NCodeMCNP(NCode):
     def make_input(self, NoBurnBool=False, NoPertBool=False):
         """Make the MCNP input file."""
 
-        SafeRemove(reactor + ".i")
+        safe_remove(reactor + ".i")
         mcnp_fill = {
             'FuelDensity': '{0:G}'.format(FuelDensity), 
             'CladDensity': '{0:G}'.format(CladDensity), 
@@ -564,7 +564,7 @@ class NCodeMCNP(NCode):
         os.chdir('libs/')
         for lib in os.listdir('.'):
             if lib[-4:] == ".lib":
-                metasci.SafeRemove(lib)
+                metasci.safe_remove(lib)
 
         headline = "E_up"
         for t in CoarseTime:
@@ -653,7 +653,7 @@ class NCodeMCNP(NCode):
         os.chdir('libs/')
         for h5 in os.listdir('.'):
             if h5[-3:] == ".h5":
-                metasci.SafeRemove(h5)
+                metasci.safe_remove(h5)
 
         # Initialize the HDF5 file
         libfile = tb.openFile(reactor + ".h5", mode = "w", title = '[CHAR] {0}'.format(reactor))

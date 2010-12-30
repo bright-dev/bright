@@ -10,7 +10,7 @@ def Make_Figs_MCNP(q=False):
         os.mkdir('figs/')
     os.chdir('figs/')
     for fig in os.listdir('.'):
-        metasci.SafeRemove(fig)
+        metasci.safe_remove(fig)
 
     libfile = tb.openFile('../libs/' + reactor + '.h5', 'r')
     lfr = libfile.root

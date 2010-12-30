@@ -4,7 +4,7 @@ import shutil
 import isoname
 import metasci.nuke as msn
 import metasci.nuke.origen as msno
-from metasci import SafeRemove
+from metasci import safe_remove
 from metasci.colortext import message
 
 from char import defchar
@@ -246,7 +246,7 @@ class NCodeORIGEN(NCode):
                 # Clean up the directory
                 for f in os.listdir('.'):
                     if f[-4:] in ['.INP', '.OUT']:
-                        metasci.SafeRemove(f)
+                        metasci.safe_remove(f)
                 os.chdir('../') # Back to ORIGEN Directory
 
                 t2 = time.time()
@@ -293,7 +293,7 @@ class NCodeORIGEN(NCode):
             os.mkdir('libs/')
         os.chdir('libs/')
         if ( 'ORIGEN' in os.listdir('.') ):
-            metasci.SafeRemove('ORIGEN', IsDir=True)
+            metasci.safe_remove('ORIGEN', IsDir=True)
             os.removedirs('ORIGEN')
         os.mkdir('ORIGEN/')
         os.chdir('ORIGEN/')
