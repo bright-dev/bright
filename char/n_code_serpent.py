@@ -800,6 +800,9 @@ class NCodeSerpent(NCode):
         # close the file before returning
         rx_h5.close()
 
+        # Remove modules so the aren't using wrong data
+        del rx_res, rx_dep
+
 
     def write_xs_gen(self, iso, n):
         # Convert isoname
@@ -923,3 +926,6 @@ class NCodeSerpent(NCode):
 
         # close the file before returning
         rx_h5.close()
+
+        # Remove modules so the aren't using wrong data
+        del rx_res, rx_det 
