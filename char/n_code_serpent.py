@@ -838,7 +838,7 @@ class NCodeSerpent(NCode):
                 tally_serp_array = np.zeros(len(tally_hdf5_array[n]), dtype=float)
                 
 
-            tally_hdf5_array[n] = tally_serp_array[::-1, 10]
+            tally_hdf5_array[n] = tally_serp_array
 
         # Write aggregate tallies
 
