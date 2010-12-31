@@ -490,7 +490,9 @@ class NCodeSerpent(NCode):
         """Runs the cross-section generation portion of CHAR."""
         # Initializa the common serpent_fill values
         self.make_common_input(0)
-        run_command = "{0} {1}_xs_gen {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+        mpi_flag = self.get_mpi_flag()
+        run_command_xs_gen = "{0} {1}_xs_gen {2}".format(self.run_str, defchar.reactor, mpi_flag)
+        run_command_flux_g = "{0} {1}_flux_g {2}".format(self.run_str, defchar.reactor, mpi_flag)
 
         # Open the hdf5 library
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
@@ -504,6 +506,15 @@ class NCodeSerpent(NCode):
         # Initialize the hdf5 file to take XS data
         self.init_h5_xs_gen(nperturbations)
 
+        # Initialize run if non-seprent isotopes are present
+        if 0 < len(defchar.core_transmute_not_in_serpent['zzaaam']):
+            # Grab stock high-resolution group structure
+            with tb.openFile(msn.nuc_data, 'r') as f:
+                hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
+
+            # Initialize the hdf5 file for the high-res structure
+            self.init_h5_flux_g(nperturbations, hi_res_group_structure)
+
         # Loop over all times
         for n in range(nperturbations):
             # Grab the MassStream at this time.
@@ -515,7 +526,9 @@ class NCodeSerpent(NCode):
             ms_n_in_serpent = ms_n.getSubStreamInt(defchar.core_transmute_in_serpent['zzaaam'])
             ms_n_not_in_serpent = ms_n.getSubStreamInt(defchar.core_transmute_not_in_serpent['zzaaam'])
 
+            #
             # Loop over all output isotopes that are valid in serpent
+            #
             for iso in defchar.core_transmute_in_serpent['zzaaam']:
                 info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
                 defchar.logger.info(info_str.format(iso, n))
@@ -533,7 +546,7 @@ class NCodeSerpent(NCode):
                 #
                 # WARNING: This is only suppossed to be a first order correction!
                 # Make sure that you include enough FP in core_transmute.
-                top_up_mass = 1.0 - ms_n.mass
+                top_up_mass = 1.0 - ms_n_in_serpent.mass
                 if top_up_mass == 0.0:
                     top_up = 0.0
                 elif isoname.zzLL[iso//10000] == 'ZR':
@@ -554,12 +567,43 @@ class NCodeSerpent(NCode):
                 self.make_xs_gen_input(iso)
 
                 # Run serpent on this input file as a subprocess
-                rtn = subprocess.call(run_command, shell=True)
+                rtn = subprocess.call(run_command_xs_gen, shell=True)
 
                 # Parse & write this output to HDF5
                 self.parse_xs_gen()
                 self.write_xs_gen(iso, n)
 
+            #
+            # Prep for isotopes not in serpent
+            #
+            if 0 == len(defchar.core_transmute_not_in_serpent['zzaaam']):
+                continue
+
+            defchar.logger.info("Generating high resolution flux for use with non-serpent models.")
+
+            # Make mass stream 
+            top_up_mass = 1.0 - ms_n_in_serpent.mass
+            if top_up_mass == 0.0:
+                top_up = 0.0
+            else:
+                top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
+
+            ms = ms_n_in_serpent + top_up
+            isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
+            ms = MassStream(isovec)
+
+            # Update fuel in serpent_fill
+            self.serpent_fill['fuel'] = self.make_input_fuel(ms)
+
+            # Make new input file
+            self.make_flux_g_input(group_structure=hi_res_group_structure)
+
+            # Run serpent on this input file as a subprocess
+            rtn = subprocess.call(run_command_flux_g, shell=True)
+
+            # Parse & write this output to HDF5
+            self.parse_flux_g()
+            self.write_flux_g(n)
 
 
     #
@@ -574,8 +618,7 @@ class NCodeSerpent(NCode):
 
 
     def parse_burnup(self):
-        """Parse the burnup/depletion files into an equivelent python modules.
-        Writes the output to hdf5."""
+        """Parse the burnup/depletion files into an equivelent python modules."""
 
         # Convert files
         convert_res(defchar.reactor + "_burnup_res.m")
@@ -583,12 +626,19 @@ class NCodeSerpent(NCode):
 
 
     def parse_xs_gen(self):
-        """Parse the burnup/depletion files into an equivelent python modules.
-        Writes the output to hdf5."""
+        """Parse the cross-section generation files into an equivelent python modules."""
 
         # Convert files
         convert_res(defchar.reactor + "_xs_gen_res.m")
         convert_det(defchar.reactor + "_xs_gen_det0.m")
+
+
+    def parse_flux_g(self):
+        """Parse the group flux only generation files into an equivelent python modules."""
+
+        # Convert files
+        convert_res(defchar.reactor + "_flux_g_res.m")
+        convert_det(defchar.reactor + "_flux_g_det0.m")
 
 
     #
@@ -744,6 +794,35 @@ class NCodeSerpent(NCode):
         self.init_tally_group(rx_h5, base_group, 'sigma_s_gh', negG, 
                               "Microscopic Scattering Kernel {tally} [barns]", 
                               "Microscopic Scattering Kernel {tally} for {iso} [barns]")
+
+        # close the file before returning
+        rx_h5.close()
+
+
+    def init_h5_flux_g(self, nperturbations=1, group_structure=None):
+        """Initialize the hdf5 file for a set of high-resoultion flux calculations."""
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = "/hi_res"
+
+        # Get default group structure
+        if group_structure is None:
+            group_structure = defchar.group_structure
+
+        # Number of energy groups
+        G = len(group_structure) - 1
+
+        # Init the raw tally arrays
+        neg1 = -1.0 * np.ones( (nperturbations, ) )
+        negG = -1.0 * np.ones( (nperturbations, G) )
+        negE = -1.0 * np.ones( (nperturbations, G+1) )
+
+        # Add flux arrays
+        self.init_array(rx_h5, base_group, 'phi',   neg1, "High-Resolution Total flux [n/cm2/s]")
+        self.init_array(rx_h5, base_group, 'phi_g', negG, "High-Resolution Group fluxes [n/cm2/s]")
+
+        # Energy Group bounds
+        self.init_array(rx_h5, base_group, 'energy', group_structure, "High-Resolution Energy Boundaries [MeV]")
 
         # close the file before returning
         rx_h5.close()
@@ -954,3 +1033,39 @@ class NCodeSerpent(NCode):
 
         # close the file before returning
         rx_h5.close()
+
+
+    def write_flux_g(self, n):
+        # Add current working directory to path
+        if sys.path[0] != os.getcwd():
+            sys.path.insert(0, os.getcwd())
+
+        # Import data
+        rx_res = __import__(defchar.reactor + "_flux_g_res")
+        rx_det = __import__(defchar.reactor + "_flux_g_det0")
+
+        # Ensure that the right file is imported and not just the cached version
+        clean_reload(rx_res)
+        clean_reload(rx_det)
+
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = rx_h5.root.hi_res
+
+        # Grab the HDF5 arrays
+        phi_hdf5_array = base_group.phi   
+        phi_g_hdf5_array = base_group.phi_g
+
+        # Grab the Serepent arrays
+        phi_g_serp_array = getattr(rx_det, 'DETphi')
+        phi_g_serp_array = tally_serp_array[::-1, 10]
+
+        phi_serp = phi_g_serp_array.sum()
+
+        # Write the flux tallies
+        phi_hdf5_array[n] = phi_serp
+        phi_g_hdf5_array[n] = phi_g_serp_array
+
+        # close the file before returning
+        rx_h5.close()
+
