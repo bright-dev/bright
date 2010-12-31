@@ -529,7 +529,7 @@ class NCodeSerpent(NCode):
             #
             # Loop over all output isotopes that are valid in serpent
             #
-            for iso in defchar.core_transmute_in_serpent['zzaaam']:
+            """for iso in defchar.core_transmute_in_serpent['zzaaam']:
                 info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
                 defchar.logger.info(info_str.format(iso, n))
 
@@ -572,6 +572,7 @@ class NCodeSerpent(NCode):
                 # Parse & write this output to HDF5
                 self.parse_xs_gen()
                 self.write_xs_gen(iso, n)
+            """
 
             #
             # Prep for isotopes not in serpent
@@ -810,7 +811,12 @@ class NCodeSerpent(NCode):
         """Initialize the hdf5 file for a set of high-resoultion flux calculations."""
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
-        base_group = "/hi_res"
+        base_group = "/"
+
+        # Remove existing group, create new group of same name.
+        if hasattr(rx_h5.getNode(base_group), "hi_res"):
+            rx_h5.removeNode(base_group, "hi_res", recursive=True)
+        hi_res_group = rx_h5.createGroup(base_group, "hi_res", "High Resolution Group Fluxes")
 
         # Get default group structure
         if group_structure is None:
@@ -825,11 +831,11 @@ class NCodeSerpent(NCode):
         negE = -1.0 * np.ones( (nperturbations, G+1) )
 
         # Add flux arrays
-        self.init_array(rx_h5, base_group, 'phi',   neg1, "High-Resolution Total flux [n/cm2/s]")
-        self.init_array(rx_h5, base_group, 'phi_g', negG, "High-Resolution Group fluxes [n/cm2/s]")
+        self.init_array(rx_h5, hi_res_group, 'phi',   neg1, "High-Resolution Total flux [n/cm2/s]")
+        self.init_array(rx_h5, hi_res_group, 'phi_g', negG, "High-Resolution Group fluxes [n/cm2/s]")
 
         # Energy Group bounds
-        self.init_array(rx_h5, base_group, 'energy', group_structure, "High-Resolution Energy Boundaries [MeV]")
+        self.init_array(rx_h5, hi_res_group, 'energy', group_structure[::-1], "High-Resolution Energy Boundaries [MeV]")
 
         # close the file before returning
         rx_h5.close()
@@ -1065,7 +1071,7 @@ class NCodeSerpent(NCode):
 
         # Grab the Serepent arrays
         phi_g_serp_array = getattr(rx_det, 'DETphi')
-        phi_g_serp_array = tally_serp_array[::-1, 10]
+        phi_g_serp_array = phi_g_serp_array[::-1, 10]
 
         phi_serp = phi_g_serp_array.sum()
 
