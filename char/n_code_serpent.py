@@ -605,6 +605,13 @@ class NCodeSerpent(NCode):
             self.parse_flux_g()
             self.write_flux_g(n)
 
+            #
+            # Loop over all output isotopes that are NOT valid in serpent
+            #
+            for iso in defchar.core_transmute_not_in_serpent['zzaaam']:
+                info_str = 'Generating cross-sections for {0} at perturbation step {1} using models.'
+                defchar.logger.info(info_str.format(iso, n))
+
 
     #
     # Parsing functions
