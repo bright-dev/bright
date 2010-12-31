@@ -222,7 +222,7 @@ class NCodeSerpent(NCode):
         return geom
 
 
-    def make_input_energy_groups(self):
+    def make_input_energy_groups(self, group_structure=None):
         """Makes the energy group structure.
 
         CHAR and most other neutronics codes sepecify this using 
@@ -232,11 +232,14 @@ class NCodeSerpent(NCode):
         has the range Bound[G-1] <= Group 1 < inifinity.  The lowest energy group 
         thus covers 0.0 MeV <= Group G < Bound[1].
         """
+        if group_structure is None:
+            group_structure = defchar.group_structure
+
         e = {}
-        gs = ["{0:.6G}".format(float(gb)) for gb in defchar.group_structure]
+        gs = ["{0:.6G}".format(float(gb)) for gb in group_structure]
 
         # Set number of (serpent) groups
-        e['n_groups'] = len(defchar.group_structure) - 1
+        e['n_groups'] = len(group_structure) - 1
         e['group_lower_bound'] = gs[0]
         e['group_upper_bound'] = gs[-1]
         e['group_inner_structure'] = "  " + "\n  ".join(gs[1:-1])
@@ -346,11 +349,29 @@ class NCodeSerpent(NCode):
 
 
     def make_xs_gen_input(self, iso="U235"):
-        self.serpent_fill.update( self.make_detector(iso) )
+        self.serpent_fill.update(self.make_detector(iso))
 
         # Fill the XS template
         with open(defchar.reactor + "_xs_gen", 'w') as f:
             f.write(defchar.xs_gen_template.format(**self.serpent_fill))
+
+
+    def make_flux_g_input(self, iso="U235", group_structure=None):
+        # Make the flux only calculation with this energy group structure
+        self.serpent_fill.update(self.make_input_energy_groups(group_structure))
+
+        # Load the detectors to ensure valid entries,
+        # Then wash out mutlipliers that are not just the flux
+        self.serpent_fill.update(self.make_detector(iso))
+        self.serpent_fill['xsdet'] = "% Only calculating the flux here!"
+
+        # Fill the XS template
+        with open(defchar.reactor + "_flux_g", 'w') as f:
+            f.write(defchar.xs_gen_template.format(**self.serpent_fill))
+
+        # Restore the detectors and energy groups to their default values
+        self.serpent_fill.update(self.make_detector(iso))
+        self.serpent_fill.update(self.make_input_energy_groups())
 
 
     def make_input(self):
@@ -362,6 +383,8 @@ class NCodeSerpent(NCode):
         self.make_burnup_input(0)
 
         self.make_xs_gen_input()
+
+        self.make_flux_g_input(group_structure=[0.1, 0.25, 1.0, 10.0, 25.0])
 
 
     def get_mpi_flag(self):
