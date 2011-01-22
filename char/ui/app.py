@@ -15,6 +15,7 @@ class Application(HasTraits):
     rx_h5_path = File
     rx_h5 = Instance(tb.File)
 
+    
 
     traits_view = View(
                     Item('rx_h5_path', label="Path to data:")
@@ -25,10 +26,11 @@ class Application(HasTraits):
     # Traits changed functions
     # 
 
-    def _rx_h5_file_changed(self, new):
+    def _rx_h5_path_changed(self, new):
         # Close old file
         if self.rx_h5 is not None:
             self.rx_h5.close()
 
         # Open new file
         self.rx_h5 = tb.openFile(new, 'r')
+
