@@ -530,7 +530,7 @@ class NCodeSerpent(NCode):
             #
             # Loop over all output isotopes that are valid in serpent
             #
-            """for iso in defchar.core_transmute_in_serpent['zzaaam']:
+            for iso in defchar.core_transmute_in_serpent['zzaaam']:
                 info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
                 defchar.logger.info(info_str.format(iso, n))
 
@@ -573,7 +573,6 @@ class NCodeSerpent(NCode):
                 # Parse & write this output to HDF5
                 self.parse_xs_gen()
                 self.write_xs_gen(iso, n)
-            """
 
             #
             # Prep for isotopes not in serpent
