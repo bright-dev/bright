@@ -83,7 +83,7 @@ def main():
         help="Finds the process identification number of a current transport run. Sets -d.")
 
     parser.add_option("-k", "--kill", action="store_true", dest="KILL_TRANSPORT", 
-        default=False, help="Kills the current transport run. Sets -P.")
+        default=False, help="Kills the current transport run. Sets -p.")
 
     parser.add_option("--cwd", action="store_true", dest="CWD", default=False, 
         help="Run char in the current working directory.")
