@@ -1104,3 +1104,87 @@ class NCodeSerpent(NCode):
         # close the file before returning
         rx_h5.close()
 
+
+    def write_xs_mod(self, iso, n, xs_dict):
+        """Writes cross sections from models."""
+
+        # Convert isoname
+        iso_zz = isoname.mixed_2_zzaaam(iso)
+        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = rx_h5.root
+
+        # Grab the tallies
+        if not hasattr(defchar, 'tallies'):
+           defchar.tallies = tally_types.serpent_default
+
+        tallies = defchar.tallies
+
+        # Write the raw tally arrays for this time and this iso        
+        for tally in xs_dict:
+            if tally not in  tallies:
+                continue
+
+            tally_hdf5_group = getattr(base_group, tally)
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            tally_model_array = np.array(xs_dict[tally][::-1])
+
+            tally_hdf5_array[n] = tally_model_array
+
+        # Write special tallies
+
+        # nubar
+        if ('sigma_f' in tallies) and ('sigma_f' in xs_dict) and  ('nubar_sigma_f' in tallies):
+            # set the value of the number of neutrons per fission, based on 
+            # whether or not the species actually fissions.
+            if (xs_dict['sigma_f'] == 0.0).all():
+                nubar = 0.0
+            else:
+                # Average value for thermal U-238 / Pu-239 systems
+                # best guess for now.
+                nubar = 2.871 
+
+            # Write nubar
+            nubar_array = nubar * np.ones(len(xs_dict['sigma_f']), dtype=float)
+
+            tally_hdf5_group = getattr(base_group, 'nubar')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+            
+            tally_hdf5_array[n] = nubar_array
+
+            # Write nubar * sigma_f
+            nubar_sigma_f_array = nubar * xs_dict['sigma_f'][::-1]
+
+            tally_hdf5_group = getattr(base_group, 'nubar_sigma_f')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+            
+            tally_hdf5_array[n] = nubar_sigma_f_array
+
+        # sigma_s
+        if ('sigma_s' in xs_dict):
+            sigma_s = xs_dict['sigma_s'][::-1]
+        elif ('sigma_s_gh' in xs_dict):
+            sigma_s = xs_dict['sigma_s_gh'][::-1, ::-1].sum(axis=1)
+        else:
+            sigma_s = None
+
+        tally_hdf5_group = getattr(base_group, 'sigma_s')
+        tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+        if sigma_s is not None:
+            tally_hdf5_array[n] = sigma_s
+
+        # Scattering kernel, sigma_s_gh
+        if ('sigma_s_gh' in xs_dict):
+            tally_hdf5_group = getattr(base_group, 'sigma_s_gh')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            sigma_s_gh = xs_dict['sigma_s_gh'][::-1, ::-1]
+
+            tally_hdf5_array[n] = sigma_s_gh
+
+        # close the file before returning
+        rx_h5.close()
