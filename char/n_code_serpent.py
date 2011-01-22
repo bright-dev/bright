@@ -614,9 +614,9 @@ class NCodeSerpent(NCode):
                 phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
 
             # Load cross-section cahce with proper values
-            xs_cache['E_n'] = E_n
-            xs_cache['E_g'] = E_g
-            xs_cache['phi_n'] = phi_n
+            msnxs.xs_cache['E_n'] = E_n
+            msnxs.xs_cache['E_g'] = E_g
+            msnxs.xs_cache['phi_n'] = phi_n
 
             #
             # Loop over all output isotopes that are NOT valid in serpent
