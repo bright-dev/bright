@@ -610,7 +610,7 @@ class NCodeSerpent(NCode):
             # Read in some common parameters from the data file
             with tb.openFile(defchar.reactor + ".h5", 'r') as  rx_h5:
                 E_g = np.array(rx_h5.root.energy[n][::-1])
-                E_n = np.array(rx_h5.root.hi_res.energy[::-1])
+                E_n = np.array(rx_h5.root.hi_res.energy.read()[::-1])
                 phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
 
             # Load cross-section cahce with proper values
