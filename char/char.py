@@ -88,7 +88,23 @@ def main():
     parser.add_option("--cwd", action="store_true", dest="CWD", default=False, 
         help="Run char in the current working directory.")
 
+    parser.add_option("--ui", action="store_true", dest="UI", default=False, 
+        help="Launches the char ui.")
+
     (options, args) = parser.parse_args()
+
+    # Try launching ui before anything else
+    if options.UI:
+        # Test to see if ui library is installed
+        try:
+            import char.ui.app
+        except ImportError:
+            print(failure("Please install the Enthought Tool Suite (ETS) for CHAR UI."))
+
+        app = char.ui.app.Application()
+        app.configure_traits()
+
+        raise SystemExit
 
     # Make sure we have a configureation file before proceeding
     if len(args) == 0:
