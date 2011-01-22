@@ -102,8 +102,13 @@ def main():
             print(failure("Please install the Enthought Tool Suite (ETS) for CHAR UI."))
             raise SystemExit
 
+        # Open UI
         application = app.Application()
         application.configure_traits()
+
+        # Clean-up UI
+        if application.rx_h5 is not None:
+            application.rx_h5.close()
 
         raise SystemExit
 
