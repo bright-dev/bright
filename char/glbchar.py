@@ -141,7 +141,7 @@ def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
 
     return iso_mts
 
-def tempurature_flag(t):
+def temperature_flag(t):
     """Converts a temperature into a the proper continuous energy flag used in ACE files.
 
     Args:
@@ -222,7 +222,7 @@ def defchar_update_for_execution(defchar):
     if not hasattr(defchar, 'temperature'):
         defchar.temperature = 600
 
-    defchar.temp_flag = tempurature_flag(defchar.temperature)
+    defchar.temp_flag = temperature_flag(defchar.temperature)
 
     # Grab the MT numbers that are available for valid isotopes.
     defchar.iso_mts = serpent_mt_avaliable(defchar.serpent_xsdata, 
