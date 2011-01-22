@@ -97,12 +97,13 @@ def main():
     if options.UI:
         # Test to see if ui library is installed
         try:
-            import char.ui.app
+            from .ui import app
         except ImportError:
             print(failure("Please install the Enthought Tool Suite (ETS) for CHAR UI."))
+            raise SystemExit
 
-        app = char.ui.app.Application()
-        app.configure_traits()
+        application = app.Application()
+        application.configure_traits()
 
         raise SystemExit
 
