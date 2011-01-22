@@ -9,6 +9,7 @@ import isoname
 import numpy as np
 import tables as tb
 import metasci.nuke as msn
+import metasci.nuke.xs as msnxs
 from metasci import safe_remove, clean_reload
 from MassStream import MassStream
 from metasci.colortext import message, failure
@@ -606,6 +607,17 @@ class NCodeSerpent(NCode):
             self.parse_flux_g()
             self.write_flux_g(n)
 
+            # Read in some common parameters from the data file
+            with tb.openFile(defchar.reactor + ".h5", 'r') as  rx_h5:
+                E_g = np.array(rx_h5.root.energy[n][::-1])
+                E_n = np.array(rx_h5.root.hi_res.energy[::-1])
+                phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
+
+            # Load cross-section cahce with proper values
+            xs_cache['E_n'] = E_n
+            xs_cache['E_g'] = E_g
+            xs_cache['phi_n'] = phi_n
+
             #
             # Loop over all output isotopes that are NOT valid in serpent
             #
@@ -613,6 +625,16 @@ class NCodeSerpent(NCode):
                 info_str = 'Generating cross-sections for {0} at perturbation step {1} using models.'
                 defchar.logger.info(info_str.format(iso, n))
 
+                xs_dict = {}
+
+                # Add the cross-section data from models
+                xs_dict['sigma_f'] = msnxs.sigma_f(iso)
+                xs_dict['sigma_a'] = msnxs.sigma_a(iso)
+                xs_dict['sigma_s_gh'] = msnxs.sigma_s_gh(iso, defchar.temperature)
+                xs_dict['sigma_s'] = msnxs.sigma_s(iso, defchar.temperature)
+
+                # Write out these cross-sections to the data file
+                self.write_xs_mod(iso, n, xs_dict)
 
     #
     # Parsing functions
