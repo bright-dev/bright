@@ -2,7 +2,8 @@ import re
 
 from enthought.traits.api import HasTraits, Instance, Array, NO_COMPARE, List, Class, \
     Bool, Int, Float, Complex, Str, Unicode, Any
-from enthought.traits.ui.api import View, Item, TableEditor, InstanceEditor
+
+from enthought.traits.ui.api import View, Item, TableEditor, InstanceEditor, Group, HGroup, VGroup
 
 from enthought.traits.ui.table_column import ObjectColumn
 
@@ -45,9 +46,6 @@ class Hdf5Table(HasTraits):
     def _table_data_default(self):
         tab = self.h5.getNode(self.path_to_table)
         tab_data = tab.read()
-
-        #self.fields = list(tab_data.dtype.names)
-
         return tab_data
 
     def _fields_default(self):
@@ -83,30 +81,32 @@ class Hdf5Table(HasTraits):
 
     def traits_view(self):
         return View(
-            Item('rows', editor=TableEditor(
-                columns = self.columns,
-                deletable   = False,
-                sort_model  = False,
-                auto_size   = False,
-                orientation = 'vertical',
-                filters     = [],
-                row_factory = 'row_class',
-                configurable = False,
-                editable = False,
-                show_toolbar = False,
-                reorderable = False,
-                selected = 'table_selection',
-                edit_on_first_click = False,
-                ), show_label=False, resizable=True, ),
-            Item('path_to_table'), 
+            HGroup( Item('path_to_table', style='readonly'), ), 
+            Item('rows', 
+                    editor=TableEditor(
+                                    columns = self.columns,
+                                    deletable   = False,
+                                    sort_model  = False,
+                                    auto_size   = False,
+                                    orientation = 'vertical',
+                                    filters     = [],
+                                    row_factory = 'row_class',
+                                    configurable = False,
+                                    editable = False,
+                                    show_toolbar = False,
+                                    reorderable = False,
+                                    selected = 'table_selection',
+                                    edit_on_first_click = False,
+                                    ), 
+                    show_label=False, 
+                    resizable=True, 
+                    ),
             resizable=True,
             )
 
 
+# Demonstrate the table view
 if __name__ == '__main__':
-
-    from enthought.traits.ui.api import InstanceEditor
-
     h5 = tb.openFile("/home/scopatz/MultiGroupPaper/DataXS/lwr/lwr.h5", 'r')
     p = "/perturbations"
 
@@ -116,7 +116,7 @@ if __name__ == '__main__':
         def _h5table_default(self):
             return Hdf5Table(h5=h5, path_to_table=p)
 
-        traits_view = View(Item('h5table', editor=InstanceEditor(view='traits_view')), 
+        traits_view = View(Item('h5table', editor=InstanceEditor(view='traits_view'), style='custom', show_label=False), 
             width=500,
             height=500,
             resizable=True,
