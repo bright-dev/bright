@@ -3,12 +3,12 @@ cross-section database output.  It the future, it may also drive the char system
 and monitor runs."""
 
 from enthought.traits.api import HasTraits, Float, File, Str, Int, Array, Instance
-from enthought.traits.ui.api import View, Item, HGroup, VGroup, InstanceEditor, spring
+from enthought.traits.ui.api import View, Item, HGroup, VGroup, InstanceEditor, spring, TreeEditor
 
 import tables as tb
 
 from char.ui.hdf5_table import Hdf5Table
-from char.ui.hdf5_tree import Hdf5Viewer
+from char.ui.hdf5_tree import Hdf5Viewer, TablesFile, TablesGroup, TablesArray, TablesTable
 
 class Application(HasTraits):
     """Front-facing char application."""
@@ -16,7 +16,6 @@ class Application(HasTraits):
     # Pytables Traits
     rx_h5_path = File(filter=["H5 (*.h5)|*.h5", "HDF5 (*.hdf5)|*.hdf5", "All files|*"], auto_set=False)
     rx_h5 = Instance(tb.File)
-    rx_h5_viewer = Instance(Hdf5Viewer)
 
     perturbations_table = Instance(Hdf5Table)
 
@@ -27,13 +26,15 @@ class Application(HasTraits):
                         Item("_"),
 
                         HGroup(
-                            Item('rx_h5_viewer', 
-                                editor=InstanceEditor(view='traits_view'),
-                                style='custom',
-                                show_label=False,
+                           Item('rx_h5',
+                                editor = TreeEditor(editable=False,
+                                                    #auto_open = -1, 
+                                                    ),
+                                show_label=False, 
                                 resizable=True,
-                                ), 
-                            #spring, 
+                                ),
+
+                            spring, 
                             ),
 
                         Item("_"),
@@ -41,7 +42,8 @@ class Application(HasTraits):
                         Item('perturbations_table', 
                             editor=InstanceEditor(view='traits_view'), 
                             style='custom', 
-                            show_label=False, 
+                            show_label=False,
+                            height = 0.15, 
                             resizable=True, 
                             ),
                         ),
@@ -63,7 +65,5 @@ class Application(HasTraits):
 
         # Open new file
         self.rx_h5 = tb.openFile(new, 'r')
-
-        self.rx_h5_viewer = Hdf5Viewer(tableFile=self.rx_h5)
 
         self.perturbations_table = Hdf5Table(h5=self.rx_h5, path_to_table="/perturbations")

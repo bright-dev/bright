@@ -130,8 +130,9 @@ class Hdf5Viewer(HasTraits):
     traits_view = View(
                        Item('tableFile', 
                             editor = TreeEditor(editable=False, 
-                                                auto_open = 1),
-                            show_label=False),
+                                                auto_open = 1, 
+                                                ),
+                            show_label=False, resizable=True),
                        width = 0.33,
                        height = 0.55,
                        resizable  =True
