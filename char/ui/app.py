@@ -3,12 +3,12 @@ cross-section database output.  It the future, it may also drive the char system
 and monitor runs."""
 
 from enthought.traits.api import HasTraits, Float, File, Str, Int, Array, Instance
-from enthought.traits.ui.api import View, Item, HGroup, VGroup, InstanceEditor
+from enthought.traits.ui.api import View, Item, HGroup, VGroup, InstanceEditor, spring
 
 import tables as tb
 
 from char.ui.hdf5_table import Hdf5Table
-
+from char.ui.hdf5_tree import Hdf5Viewer
 
 class Application(HasTraits):
     """Front-facing char application."""
