@@ -35,7 +35,8 @@ class Hdf5Table(HasTraits):
     fields = List(Str)
     columns = List(ObjectColumn)
 
-    row_class = Class
+#    row_class = Class
+    row_class = Any
     rows = List
 
     table_editor = TableEditor
@@ -80,24 +81,26 @@ class Hdf5Table(HasTraits):
         return r
 
 
-    def _table_editor_default(self):
-        return  TableEditor(
-            columns = self.columns,
-            deletable   = False,
-            sort_model  = False,
-            auto_size   = False,
-            orientation = 'vertical',
-            filters     = [],
-            row_factory = self.row_class,
-            configurable = False,
-            editable = False,
-            show_toolbar = False,
-            reorderable = False,
-            selected = 'table_selection',
-            edit_on_first_click = False,
+    def traits_view(self):
+        return View(
+            Item('rows', editor=TableEditor(
+                columns = self.columns,
+                deletable   = False,
+                sort_model  = False,
+                auto_size   = False,
+                orientation = 'vertical',
+                filters     = [],
+                row_factory = 'row_class',
+                configurable = False,
+                editable = False,
+                show_toolbar = False,
+                reorderable = False,
+                selected = 'table_selection',
+                edit_on_first_click = False,
+                ), show_label=False, resizable=True, ),
+            Item('path_to_table'), 
+            resizable=True,
             )
-
-    traits_view = View(Item('rows', editor=_table_editor_default, show_label=False))
 
 
 if __name__ == '__main__':
@@ -108,7 +111,11 @@ if __name__ == '__main__':
     p = "/perturbations"
 
     class HasTable(HasTraits):
-        h5table = Hdf5Table(h5=h5, path_to_table=p)
+        h5table = Instance(Hdf5Table)
+
+        def _h5table_default(self):
+            return Hdf5Table(h5=h5, path_to_table=p)
+
         traits_view = View(Item('h5table', editor=InstanceEditor(view='traits_view')), 
             width=500,
             height=500,
