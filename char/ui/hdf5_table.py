@@ -3,7 +3,7 @@ import re
 from enthought.traits.api import HasTraits, Instance, Array, NO_COMPARE, List, Class, \
     Bool, Int, Float, Complex, Str, Unicode, Any
 
-from enthought.traits.ui.api import View, Item, TableEditor, InstanceEditor, Group, HGroup, VGroup
+from enthought.traits.ui.api import View, Item, TableEditor, InstanceEditor, Group, HGroup, VGroup, spring
 
 from enthought.traits.ui.table_column import ObjectColumn
 
@@ -39,8 +39,9 @@ class Hdf5Table(HasTraits):
     row_class = Any
     rows = List
 
-    table_editor = TableEditor
-
+    # 
+    # Default trait handlers
+    #
 
     def _table_data_default(self):
         tab = self.h5.getNode(self.path_to_table)
@@ -78,15 +79,33 @@ class Hdf5Table(HasTraits):
         return r
 
 
+    # 
+    # Some table selection exposure
+    #
+
+    table_selection = Any
+    selection_index = Int
+
+    def _table_selection_changed(self, new):
+        # Find the index of the selection, whenever the selection changes.
+        for n in range(len(self.rows)):
+            if new is self.rows[n]:
+                self.selection_index = n
+                break
+
+
+    # The view here must be a function so the columns can be figured out dynamically.
     def traits_view(self):
         return View(
+            VGroup(
             HGroup( Item('path_to_table', style='readonly'), ), 
-            Item('rows', 
+            HGroup(
+                Item('rows', 
                     editor=TableEditor(
                                     columns = self.columns,
                                     deletable   = False,
                                     sort_model  = False,
-                                    auto_size   = False,
+                                    auto_size   = True,
                                     orientation = 'vertical',
                                     filters     = [],
                                     row_factory = 'row_class',
@@ -98,8 +117,10 @@ class Hdf5Table(HasTraits):
                                     edit_on_first_click = False,
                                     ), 
                     show_label=False, 
-                    resizable=True, 
+                    resizable=True,
                     ),
+                ),
+                ),
             resizable=True,
             )
 
