@@ -16,20 +16,36 @@ class Application(HasTraits):
     # Pytables Traits
     rx_h5_path = File(filter=["H5 (*.h5)|*.h5", "HDF5 (*.hdf5)|*.hdf5", "All files|*"], auto_set=False)
     rx_h5 = Instance(tb.File)
+    rx_h5_viewer = Instance(Hdf5Viewer)
 
     perturbations_table = Instance(Hdf5Table)
 
     traits_view = View(
                     VGroup(
                         HGroup( Item('rx_h5_path', label="Path to data:", width=1.0) ),
+
                         Item("_"),
+
+                        HGroup(
+                            Item('rx_h5_viewer', 
+                                editor=InstanceEditor(view='traits_view'),
+                                style='custom',
+                                show_label=False,
+                                resizable=True,
+                                ), 
+                            #spring, 
+                            ),
+
+                        Item("_"),
+
                         Item('perturbations_table', 
                             editor=InstanceEditor(view='traits_view'), 
                             style='custom', 
                             show_label=False, 
                             resizable=True, 
                             ),
-                    ),
+                        ),
+
                     width=500,
                     height=500,
                     resizable=True,
@@ -47,5 +63,7 @@ class Application(HasTraits):
 
         # Open new file
         self.rx_h5 = tb.openFile(new, 'r')
+
+        self.rx_h5_viewer = Hdf5Viewer(tableFile=self.rx_h5)
 
         self.perturbations_table = Hdf5Table(h5=self.rx_h5, path_to_table="/perturbations")

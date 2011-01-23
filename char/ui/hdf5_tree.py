@@ -82,6 +82,7 @@ class TablesGroup(ITreeNodeAdapter):
             
         return '<open>'
     
+
 class TablesArray(ITreeNodeAdapter):
     adapts(tb.Array, ITreeNode)
     
@@ -101,6 +102,27 @@ class TablesArray(ITreeNodeAdapter):
         """
         return '<item>'
    
+
+class TablesTable(ITreeNodeAdapter):
+    adapts(tb.Table, ITreeNode)
+    
+    def get_name(self):
+        return self.adaptee._v_name
+    
+    def has_children(self):
+        return False
+    
+    def get_label ( self ):
+        """ Gets the label to display for a specified object.
+        """
+        return self.get_name() 
+    
+    def get_icon ( self, is_expanded ):
+        """ Returns the icon for a specified object.
+        """
+        return '<item>'
+   
+
 class Hdf5Viewer(HasTraits):
     
     tableFile = Instance(tb.File)

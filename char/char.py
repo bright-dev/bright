@@ -104,6 +104,7 @@ def main():
 
         # Open UI
         application = app.Application()
+        application.rx_h5_path = "/home/scopatz/MultiGroupPaper/DataXS/lwr/lwr.h5"
         application.configure_traits()
 
         # Clean-up UI
