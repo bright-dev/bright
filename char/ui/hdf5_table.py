@@ -36,7 +36,6 @@ class Hdf5Table(HasTraits):
     fields = List(Str)
     columns = List(ObjectColumn)
 
-#    row_class = Class
     row_class = Any
     rows = List
 
