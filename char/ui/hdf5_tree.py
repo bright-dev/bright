@@ -42,8 +42,8 @@ class TablesFile(ITreeNodeAdapter):
         """
         return True
 
-#    def select(self):
-#        return self.adaptee._v_pathname
+    def select(self):
+        return self.adaptee._v_pathname
 
 
 class TablesGroup(ITreeNodeAdapter):

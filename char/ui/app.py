@@ -2,9 +2,10 @@
 cross-section database output.  It the future, it may also drive the char system and be able to spwan 
 and monitor runs."""
 
-from enthought.traits.api import HasTraits, Float, File, Str, Int, Array, Instance, Any
+from enthought.traits.api import HasTraits, Float, File, Str, Int, Array, Instance, Any, on_trait_change
 from enthought.traits.ui.api import View, Item, HGroup, VGroup, InstanceEditor, spring, TreeEditor
 
+import numpy as np
 import tables as tb
 
 from char.ui.hdf5_table import Hdf5Table
@@ -22,6 +23,7 @@ class Application(HasTraits):
 
     # Perturbation table
     perturbations_table = Instance(Hdf5Table)
+
 
     traits_view = View(
                     VGroup(
@@ -73,3 +75,36 @@ class Application(HasTraits):
         self.rx_h5 = tb.openFile(new, 'r')
 
         self.perturbations_table = Hdf5Table(h5=self.rx_h5, path_to_table="/perturbations")
+
+
+    @on_trait_change('tree_selected, perturbations_table.selection_index')
+    def change_plot(self):
+        # Selected values
+        node = self.tree_selected
+        n = self.perturbations_table.selection_index
+
+        # Don't change the plot under certain conditions
+        if not isinstance(node, tb.Array):
+            return 
+
+        if len(node) != len(self.perturbations_table.table_data):
+            return 
+
+        # Read in the energy array
+        if 'hi_res' in node._v_pathname:
+            E_g = self.rx_h5.root.hi_res.energy.read()
+        else:
+            E_g = np.array(self.rx_h5.root.energy[n])
+
+        # Read in the data value
+        data = np.array(node[n])
+
+        # Confirm that the data is graphable
+        if data.shape == ():
+            return 
+
+        if len(E_g) != len(data) + 1:
+            return 
+
+        # Plot the data
+
