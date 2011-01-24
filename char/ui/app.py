@@ -42,10 +42,9 @@ class Application(HasTraits):
                                                     hide_root=True, 
                                                     lines_mode='on',
                                                     selected='tree_selected',
-                                                    #auto_open = -1, 
                                                     ),
                                 show_label=False, 
-                                resizable=True,
+                                width = 0.15, 
                                 ),
 
                             Item('plot', 
