@@ -1,11 +1,11 @@
-# Chaco imports
-from enthought.chaco.api import AbstractDataSource, ArrayPlotData, Plot, \
-                                 HPlotContainer, LassoOverlay
-from enthought.chaco.tools.api import LassoSelection, ScatterInspector
+# Other imports
+import numpy as np
 
-from enthought.chaco.api import ArrayPlotData
+# Chaco imports
+from enthought.chaco.api import ArrayPlotData, Plot
 from enthought.chaco.tools.api import PanTool, ZoomTool
 
+# My libs
 import metasci
 
 def stairstep_plot(energy, data, data_name):
@@ -41,6 +41,9 @@ def stairstep_plot(energy, data, data_name):
     plot.y_axis.title = "Data"
     plot.y_axis.title_font = "Roman 16"
     plot.y_axis.tick_label_font = "Roman 12"
+
+    plot.index_scale = 'log'
+    plot.value_scale = 'log'
 
     # Attach some tools to the plot
     plot.tools.append(PanTool(plot))
