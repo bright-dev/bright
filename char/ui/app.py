@@ -5,11 +5,14 @@ and monitor runs."""
 from enthought.traits.api import HasTraits, Float, File, Str, Int, Array, Instance, Any, on_trait_change
 from enthought.traits.ui.api import View, Item, HGroup, VGroup, InstanceEditor, spring, TreeEditor
 
+from enthought.enable.api import Component, ComponentEditor
+
 import numpy as np
 import tables as tb
 
 from char.ui.hdf5_table import Hdf5Table
-from char.ui.hdf5_tree import Hdf5Viewer, TablesFile, TablesGroup, TablesArray, TablesTable
+from char.ui.hdf5_tree import TablesFile, TablesGroup, TablesArray, TablesTable
+from char.ui.stairstep_plot import stairstep_plot
 
 class Application(HasTraits):
     """Front-facing char application."""
@@ -24,6 +27,8 @@ class Application(HasTraits):
     # Perturbation table
     perturbations_table = Instance(Hdf5Table)
 
+    # Plot traits 
+    plot = Instance(Component)
 
     traits_view = View(
                     VGroup(
@@ -43,7 +48,11 @@ class Application(HasTraits):
                                 resizable=True,
                                 ),
 
-                            spring, 
+                            Item('plot', 
+                                editor = ComponentEditor(size=(500, 500), bgcolor='lightgray'), 
+                                show_label=False, 
+                                resizable=True,
+                                ),
                             ),
 
                         Item("_"),
@@ -60,6 +69,15 @@ class Application(HasTraits):
                     height=500,
                     resizable=True,
                   )
+
+    #
+    # Trait default handlers
+    #
+
+    def _plot_default(self):
+        E_g = np.array([0.1, 1.0])
+        data = np.array([1.0])
+        return stairstep_plot(E_g, data, "No Data Selected")
 
 
     #
@@ -107,4 +125,5 @@ class Application(HasTraits):
             return 
 
         # Plot the data
+        self.plot = stairstep_plot(E_g, data, node._v_pathname)
 
