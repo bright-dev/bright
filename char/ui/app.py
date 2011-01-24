@@ -14,6 +14,8 @@ from char.ui.hdf5_table import Hdf5Table
 from char.ui.hdf5_tree import TablesFile, TablesGroup, TablesArray, TablesTable
 from char.ui.stairstep_plot import stairstep_plot
 
+import os
+
 class Application(HasTraits):
     """Front-facing char application."""
 
@@ -78,6 +80,11 @@ class Application(HasTraits):
         data = np.array([1.0])
         return stairstep_plot(E_g, data, "No Data Selected")
 
+
+    def _rx_h5_default(self):
+        f = tb.File('none.h5', 'w')
+        os.remove('none.h5')
+        return f
 
     #
     # Traits changed functions
