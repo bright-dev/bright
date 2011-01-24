@@ -2,7 +2,7 @@
 cross-section database output.  It the future, it may also drive the char system and be able to spwan 
 and monitor runs."""
 
-from enthought.traits.api import HasTraits, Float, File, Str, Int, Array, Instance
+from enthought.traits.api import HasTraits, Float, File, Str, Int, Array, Instance, Any
 from enthought.traits.ui.api import View, Item, HGroup, VGroup, InstanceEditor, spring, TreeEditor
 
 import tables as tb
@@ -17,6 +17,10 @@ class Application(HasTraits):
     rx_h5_path = File(filter=["H5 (*.h5)|*.h5", "HDF5 (*.hdf5)|*.hdf5", "All files|*"], auto_set=False)
     rx_h5 = Instance(tb.File)
 
+    # Object selected from the tree view
+    tree_selected = Any 
+
+    # Perturbation table
     perturbations_table = Instance(Hdf5Table)
 
     traits_view = View(
@@ -28,6 +32,9 @@ class Application(HasTraits):
                         HGroup(
                            Item('rx_h5',
                                 editor = TreeEditor(editable=False,
+                                                    hide_root=True, 
+                                                    lines_mode='on',
+                                                    selected='tree_selected',
                                                     #auto_open = -1, 
                                                     ),
                                 show_label=False, 
@@ -43,7 +50,6 @@ class Application(HasTraits):
                             editor=InstanceEditor(view='traits_view'), 
                             style='custom', 
                             show_label=False,
-                            height = 0.15, 
                             resizable=True, 
                             ),
                         ),

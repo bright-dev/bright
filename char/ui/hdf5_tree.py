@@ -42,6 +42,9 @@ class TablesFile(ITreeNodeAdapter):
         """
         return True
 
+#    def select(self):
+#        return self.adaptee._v_pathname
+
 
 class TablesGroup(ITreeNodeAdapter):
     adapts(tb.Group, ITreeNode)
@@ -102,6 +105,9 @@ class TablesArray(ITreeNodeAdapter):
         """
         return '<item>'
    
+    def select(self):
+        return self.adaptee._v_pathname
+
 
 class TablesTable(ITreeNodeAdapter):
     adapts(tb.Table, ITreeNode)
@@ -122,6 +128,9 @@ class TablesTable(ITreeNodeAdapter):
         """
         return '<item>'
    
+    def select(self):
+        return self.adaptee._v_pathname
+
 
 class Hdf5Viewer(HasTraits):
     
