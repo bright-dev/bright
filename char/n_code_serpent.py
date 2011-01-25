@@ -891,6 +891,9 @@ class NCodeSerpent(NCode):
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = rx_h5.root
 
+        # Grab pertubation columns
+        pert_cols = rx_h5.root.perturbations.cols
+
         # Add basic BU information
         base_group.BU0[n:t] =  rx_dep.BU
         base_group.time0[n:t] = rx_dep.DAYS
@@ -911,7 +914,7 @@ class NCodeSerpent(NCode):
         # Serepent masses somehow unnoprmalize themselves in all of these conversions, which is annoying.
         # This eefect is of order 1E-5, which is large enough to be noticable.
         # Thus we have to go through two bouts of normalization here.
-        mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * defchar.fuel_density)
+        mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * pert_cols.fuel_density[n])
         mw = rx_dep.TOT_MASS * mw_conversion 
 
         iso_LL = {}
