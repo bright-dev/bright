@@ -9,10 +9,8 @@ from metasci.colortext import message
 
 from char import defchar
 
-from n_code import NCode
 
-
-class NCodeORIGEN(NCode):
+class NCodeORIGEN(object):
     """An ORIGEN neutronics code wrapper class."""
 
     def __init__(self):

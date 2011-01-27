@@ -18,7 +18,6 @@ from scipy.integrate import cumtrapz
 
 import tally_types
 from char import defchar
-from n_code import NCode
 from m2py import convert_res, convert_dep, convert_det
 
 
@@ -36,7 +35,7 @@ def zzaaam_2_serpent(iso):
     return iso_serp
 
 
-class NCodeSerpent(NCode):
+class NCodeSerpent(object):
     """A Serpent neutronics code wrapper class."""
 
     def __init__(self):

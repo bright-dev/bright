@@ -8,10 +8,8 @@ from metasci import safe_remove
 
 from char import defchar
 
-from n_code import NCode
 
-
-class NCodeMCNP(NCode):
+class NCodeMCNP(object):
     """A MCNP neutronics code wrapper class."""
 
     def __init__(self):
