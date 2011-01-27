@@ -27,6 +27,8 @@ from n_code_serpent import zzaaam_2_serpent
 ########################
 ### Global Functions ###
 ########################
+initial_iso_pattern = 'initial_([A-Za-z]{1,2}\d{1,3}[Mm]?)'
+
 
 def iso_list_conversions(iso_list):
     """Converts an isotopic list from a mixed from to zzaaam, LLAAAM, MCNP form as well as doing the
@@ -252,8 +254,21 @@ def defchar_update_for_execution(defchar):
     defchar.burn_regions = np.atleast_1d(defchar.burn_regions)
     defchar.fuel_specific_power = np.atleast_1d(defchar.fuel_specific_power)
 
+    # Grab initial iso perturbation
+    initial_iso_vars = []
+    for var in defchar.__dict__:
+        m = re.match(initial_iso_pattern, var)
+        if m is None:
+            continue
+
+        defchar_initial_iso = getattr(defchar, var)
+        defchar_initial_iso = np.atleast_1d(defchar_initial_iso)
+        initial_iso_vars.append(var)
+
+    initial_iso_vars.sort()
+
     # Set up tuple of parameters to perform a burnup step for
-    defchar.perturbation_params = ('fuel_density', 
+    defchar.perturbation_params = ['fuel_density', 
                                    'clad_density', 
                                    'cool_density',
 
@@ -263,8 +278,11 @@ def defchar_update_for_execution(defchar):
 
                                    'unit_cell_pitch', 
                                    'burn_regions', 
-                                   'fuel_specific_power', 
-                                   'coarse_time')   # coarse_time needs to be the last element
+                                   'fuel_specific_power',]
+
+    defchar.perturbation_params.extend(initial_iso_vars)
+ 
+    defchar.perturbation_params.append('coarse_time')   # coarse_time needs to be the last element
 
     return defchar
 
