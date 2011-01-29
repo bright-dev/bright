@@ -68,6 +68,49 @@ class NCodeSerpent(object):
         return comp_str
             
 
+    def update_initial_fuel(self, n):
+        """Required to allow for initial fuel isotopic concentration perturbations."""
+        if len(defchar.initial_iso_vars) == 0:
+            # Don't bother readin the perturbation table if there 
+            # is nothing there to read!
+            ihm_stream = defchar.IHM_stream
+        else:
+            # Read the perturbations from the file
+            pert_isos = set()
+            init_iso_conc = {} 
+
+            with tb.openFile(defchar.reactor + ".h5", 'r') as rx_h5:
+                pert_cols = rx_h5.root.perturbations.cols
+
+                for iiv in defchar.initial_iso_vars:
+                    iiv_col = getattr(pert_cols, iiv)
+
+                    iso_zz = isoname.mixed_2_zzaaam(iiv.partition('_')[2])
+                    pert_isos.add(iso_zz)
+
+                    init_iso_conc[iso_zz] = iiv_col[n]
+
+            # generate a pertubed stream
+            pert_stream = MassStream(init_iso_conc)
+
+            # generate a non-pertubed stream
+            all_isos = set(defchar.IHM_stream.comp.keys())
+            non_pert_isos = all_isos - pert_isos
+            non_pert_stream = defchar.IHM_stream.getSubStreamInt(list(non_pert_isos))
+            non_pert_stream.mass = 1.0 - pert_stream.mass
+
+            # generate an initial heavy metal stream
+            ihm_stream = pert_stream + non_pert_stream
+
+        # Convolve the streams
+        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, defchar.fuel_chemical_form)
+
+        # Set the most recent values on the instance
+        self.initial_fuel_stream = MassStream(isovec)
+        self.IHM_weight = AW
+        self.fuel_weight = MW
+    
+
     def make_input_fuel(self, ms=None):
         if hasattr(defchar, 'fuel_form_mass_weighted'):
             mass_weighted = defchar.fuel_form_mass_weighted
@@ -75,11 +118,12 @@ class NCodeSerpent(object):
             mass_weighted = True
 
         if ms == None:
-            comp_str = self.make_input_material_weights(defchar.initial_fuel_stream.comp, mass_weighted)
+            comp_str = self.make_input_material_weights(self.initial_fuel_stream.comp, mass_weighted)
         else:
             comp_str = self.make_input_material_weights(ms.multByMass(), True)
 
         return comp_str
+
 
     def make_input_cladding(self):
         # Try to load cladding stream
@@ -326,6 +370,7 @@ class NCodeSerpent(object):
         rx_h5.close()
 
         # Set the material lines
+        self.update_initial_fuel(n)
         serpent_fill['fuel']     = self.make_input_fuel()
         serpent_fill['cladding'] = self.make_input_cladding()
         serpent_fill['coolant']  = self.make_input_coolant()
@@ -913,7 +958,7 @@ class NCodeSerpent(object):
         # Serepent masses somehow unnoprmalize themselves in all of these conversions, which is annoying.
         # This eefect is of order 1E-5, which is large enough to be noticable.
         # Thus we have to go through two bouts of normalization here.
-        mw_conversion = defchar.fuel_weight / (defchar.IHM_weight * rx_dep.TOT_VOLUME * pert_cols.fuel_density[n])
+        mw_conversion = self.fuel_weight / (self.IHM_weight * rx_dep.TOT_VOLUME * pert_cols.fuel_density[n])
         mw = rx_dep.TOT_MASS * mw_conversion 
 
         iso_LL = {}

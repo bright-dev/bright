@@ -16,7 +16,7 @@ import MassStream
 import metasci
 import metasci.nuke as msn
 from metasci.nuke import ace
-from metasci.colortext import message
+from metasci.colortext import message, failure
 
 ######################
 ### CHAR Libraries ###
@@ -234,11 +234,6 @@ def defchar_update_for_execution(defchar):
 
     # Make fuel stream
     defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)
-    isovec, AW, MW = msn.convolve_initial_fuel_form(defchar.IHM_stream, defchar.fuel_chemical_form)
-
-    defchar.initial_fuel_stream = MassStream.MassStream(isovec)
-    defchar.IHM_weight = AW
-    defchar.fuel_weight = MW
 
     # Make arrays out of quatities that are allowed to vary.
     defchar.fuel_density = np.atleast_1d(defchar.fuel_density)
@@ -255,6 +250,7 @@ def defchar_update_for_execution(defchar):
     defchar.fuel_specific_power = np.atleast_1d(defchar.fuel_specific_power)
 
     # Grab initial iso perturbation
+    max_mass = 0.0
     initial_iso_vars = []
     for var in defchar.__dict__:
         m = re.match(initial_iso_pattern, var)
@@ -263,9 +259,15 @@ def defchar_update_for_execution(defchar):
 
         defchar_initial_iso = getattr(defchar, var)
         defchar_initial_iso = np.atleast_1d(defchar_initial_iso)
+
         initial_iso_vars.append(var)
+        max_mass += np.max(defchar_initial_iso)
 
     initial_iso_vars.sort()
+
+    if 1.0 < max_mass:
+        print(failure("The maxium mass perturbations of initial heavy metals exceeds 1.0 kg!"))
+        raise SystemExit
 
     # Set up tuple of parameters to perform a burnup step for
     defchar.perturbation_params = ['fuel_density', 
