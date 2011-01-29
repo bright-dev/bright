@@ -264,6 +264,7 @@ def defchar_update_for_execution(defchar):
         max_mass += np.max(defchar_initial_iso)
 
     initial_iso_vars.sort()
+    defchar.initial_iso_vars = initial_iso_vars
 
     if 1.0 < max_mass:
         print(failure("The maxium mass of initial heavy metal perturbations exceeds 1.0 kg!"))
