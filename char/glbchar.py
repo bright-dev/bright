@@ -266,7 +266,7 @@ def defchar_update_for_execution(defchar):
     initial_iso_vars.sort()
 
     if 1.0 < max_mass:
-        print(failure("The maxium mass perturbations of initial heavy metals exceeds 1.0 kg!"))
+        print(failure("The maxium mass of initial heavy metal perturbations exceeds 1.0 kg!"))
         raise SystemExit
 
     # Set up tuple of parameters to perform a burnup step for
