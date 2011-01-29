@@ -954,9 +954,9 @@ class NCodeSerpent(object):
         # Energy Group bounds 
         base_group.energy[n:t] = rx_res.GC_BOUNDS
 
-        # Calculate and store weight percents per IHM
-        # Serepent masses somehow unnoprmalize themselves in all of these conversions, which is annoying.
-        # This eefect is of order 1E-5, which is large enough to be noticable.
+        # Calculate and store weight percents per kg fuel form (ie not per IHM)
+        # Serepent masses somehow unnormalize themselves in all of these conversions, which is annoying.
+        # This effect is of order 1E-5, which is large enough to be noticable.
         # Thus we have to go through two bouts of normalization here.
         mw_conversion = self.fuel_weight / (self.IHM_weight * rx_dep.TOT_VOLUME * pert_cols.fuel_density[n])
         mw = rx_dep.TOT_MASS * mw_conversion 
