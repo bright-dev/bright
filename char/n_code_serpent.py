@@ -524,11 +524,11 @@ class NCodeSerpent(object):
         # Loop over all non-burnup perturbations.
         ntimes = len(defchar.coarse_time)
         for n in range(nperturbations):
-            defchar.logger.info('Running burnup calculation at perturbation step {0}.'.format(n))
-
             # Ensure that the burnup times are at t = 0
             if 0 != n%ntimes:
                 continue
+
+            defchar.logger.info('Running burnup calculation at perturbation step {0}.'.format(n))
 
             self.make_common_input(n)
 
@@ -707,8 +707,8 @@ class NCodeSerpent(object):
         # close the file before returning
         rx_h5.close()
 
-        # Initialize the hdf5 file to take XS data
-        self.init_h5_burnup(nperturbations)
+        # Initialize the hdf5 file to take sensitivity data
+        self.init_h5_deltam()
 
         # Loop over all non-burnup perturbations.
         ntimes = len(defchar.coarse_time)
@@ -955,6 +955,33 @@ class NCodeSerpent(object):
 
         # Energy Group bounds
         self.init_array(rx_h5, hi_res_group, 'energy', group_structure[::-1], "High-Resolution Energy Boundaries [MeV]")
+
+        # close the file before returning
+        rx_h5.close()
+
+
+    def init_h5_deltam(self):
+        """Initialize the hdf5 file for isotopic sensitivity study."""
+        ntimes = len(defchar.coarse_time)
+
+        deltam_desc = {
+            'iso_LL': tb.StringCol(6, pos=0),
+            'iso_zz': tb.Int32Col(pos=1),
+                         
+            'perturbation': tb.Int16Col(pos=2), 
+            'ihm_mass_fraction': tb.Float64Col(pos=3),
+
+            'reactivity': tb.Float64Col(shape=(ntimes, ), pos=4), 
+            }
+
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = "/"
+
+        # Remove existing group, create new group of same name.
+        if hasattr(rx_h5.getNode(base_group), "isotope_sensitivity"):
+            rx_h5.removeNode(base_group, "isotope_sensitivity", recursive=True)
+        deltam_table = rx_h5.createTable(base_group, "isotope_sensitivity", deltam_desc, "Isotopic Sensitivity")
 
         # close the file before returning
         rx_h5.close()
