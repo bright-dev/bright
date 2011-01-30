@@ -67,6 +67,9 @@ def main():
     parser.add_option("-x", "--xs",  action="store_true", dest="RUN_XS_GEN", 
         default=False, help="Run the cross-section generation calculation.")
 
+    parser.add_option("-m", "--delta-mass",  action="store_true", dest="RUN_DELTAM", 
+        default=False, help="Run the initial isotope sensitivity calculation.")
+
     parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
         help="Cleans the reactor direactory of current files.")
 
@@ -138,10 +141,12 @@ def main():
 
     if options.PID:
         options.RUN_XS_GEN = False
+        options.RUN_DELTAM = False
         options.RUN_TRANSPORT = False            #Ensures that transport calculation is not initiated while fetching files.
 
     if options.FETCH_FILES:
         options.RUN_XS_GEN = False
+        options.RUN_DELTAM = False
         options.RUN_TRANSPORT = False            #Ensures that transport calculation is not initiated while fetching files.
         options.LOCAL = False                   #Ensures that ssh package is loaded.
 
@@ -208,7 +213,7 @@ def main():
         else:
             runchar.run_transport_remote()
 
-    elif options.RUN_BURNUP or options.RUN_XS_GEN:
+    elif options.RUN_BURNUP or options.RUN_XS_GEN or options.RUN_DELTAM:
         # Make tranumatrion libraries by executing the as a separate step from 
         # the cross-section generation
         if options.RUN_BURNUP:
@@ -217,6 +222,10 @@ def main():
         # Make Cross-sections as a separate step from the burnup calculation
         if options.RUN_XS_GEN:
             n_transporter.run_xs_gen()
+
+        # Run initial isotope sensitivity calculation
+        if options.RUN_DELTAM:
+            n_transporter.run_deltam()
 
     elif options.FETCH_FILES:
         #Fetches files from remote server
