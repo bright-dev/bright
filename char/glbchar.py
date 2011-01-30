@@ -330,7 +330,8 @@ def defchar_update(defchar):
 
     # Upddate the namespace if we are going to execute a neutronics code
     if (defchar.options.MAKE_INPUT or defchar.options.RUN_TRANSPORT or 
-        defchar.options.RUN_BURNUP or defchar.options.RUN_XS_GEN):
+        defchar.options.RUN_BURNUP or defchar.options.RUN_XS_GEN or 
+        defchar.options.RUN_DELTAM):
 
         defchar = defchar_update_for_execution(defchar)
 
