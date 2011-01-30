@@ -773,7 +773,7 @@ class NCodeSerpent(object):
             defchar.logger.info('Starting isotopic sensitivity study at perturbation step {0}.'.format(n))
 
             # Loop over all isotopes
-            for iso_zz in defchar.IHM_stream.keys():
+            for iso_zz in defchar.IHM_stream.comp.keys():
                 iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
                 # Load this perturbations IHM stream
