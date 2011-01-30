@@ -802,7 +802,7 @@ class NCodeSerpent(object):
 
                     # Parse & write this output to HDF5
                     self.parse_deltam()
-                    self.write_burnup(n)
+                    self.write_deltam(n, iso_zz, iso_fracs[s])
 
 
 
@@ -1392,3 +1392,54 @@ class NCodeSerpent(object):
 
         # close the file before returning
         rx_h5.close()
+
+
+    def write_deltam(self, n, iso_zz, frac):
+        """Writes the results of a isotopic sensitivity study run to the hdf5 file.
+
+        n : Perturbation index of first time step for this burnup calculation.
+        iso_zz : The isotope name in zzaaam form.
+        frac : The mass fraction of the IHM of this isotopr.
+        """
+        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+
+        # Add current working directory to path
+        if sys.path[0] != os.getcwd():
+            sys.path.insert(0, os.getcwd())
+
+        # Import data
+        rx_res = __import__(defchar.reactor + "_deltam_res")
+        rx_dep = __import__(defchar.reactor + "_deltam_dep")
+
+        # Ensure that the right file is imported and not just the cached version
+        clean_reload(rx_res)
+        clean_reload(rx_dep)
+
+        # Open a new hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = rx_h5.root
+
+        # Calculate the effectiv ereactivity
+        keff = rx_res.SIX_FF_KEFF[:, ::2].flatten()
+        rho = (keff - 1.0) / keff
+
+        # Store this row
+        iso_sense_table = base_group.isotope_sensitivity
+        iso_row = iso_sense_table.row
+
+        iso_row['iso_LL'] = iso_LL
+        iso_row['iso_zz'] = iso_zz
+                         
+        iso_row['perturbation'] = n
+        iso_row['ihm_mass_fraction'] = frac
+
+        iso_row['reactivity'] = rho
+
+        # Write this table out
+        iso_row.append()
+        iso_sense_table.flush()
+
+        # close the file before returning
+        rx_h5.close()
+
+
