@@ -801,7 +801,7 @@ class NCodeSerpent(object):
                     rtn = subprocess.call(run_command, shell=True)
 
                     # Parse & write this output to HDF5
-                    self.parse_burnup()
+                    self.parse_deltam()
                     self.write_burnup(n)
 
 
@@ -819,7 +819,6 @@ class NCodeSerpent(object):
 
     def parse_burnup(self):
         """Parse the burnup/depletion files into an equivelent python modules."""
-
         # Convert files
         convert_res(defchar.reactor + "_burnup_res.m")
         convert_dep(defchar.reactor + "_burnup_dep.m")
@@ -827,7 +826,6 @@ class NCodeSerpent(object):
 
     def parse_xs_gen(self):
         """Parse the cross-section generation files into an equivelent python modules."""
-
         # Convert files
         convert_res(defchar.reactor + "_xs_gen_res.m")
         convert_det(defchar.reactor + "_xs_gen_det0.m")
@@ -835,10 +833,16 @@ class NCodeSerpent(object):
 
     def parse_flux_g(self):
         """Parse the group flux only generation files into an equivelent python modules."""
-
         # Convert files
         convert_res(defchar.reactor + "_flux_g_res.m")
         convert_det(defchar.reactor + "_flux_g_det0.m")
+
+
+    def parse_deltam(self):
+        """Parse the sensitivity study files into an equivelent python modules."""
+        # Convert files
+        convert_res(defchar.reactor + "_deltam_res.m")
+        convert_dep(defchar.reactor + "_deltam_dep.m")
 
 
     #
