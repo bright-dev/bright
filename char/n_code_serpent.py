@@ -50,6 +50,10 @@ class NCodeSerpent(object):
         self.place_remote_files = ['.']
         self.fetch_remote_files = ['.']
 
+    #
+    # Serpent input file generation methods
+    #
+
     def make_input_material_weights(self, comp, mass_weighted=True):
         """This function takes an isotopic vector, comp, and returns a serpent string representation.
         Note that by default these are mass weights, rather than atomic weights."""
@@ -456,10 +460,14 @@ class NCodeSerpent(object):
         return mpi_flag
 
 
+    #
+    # Serpent run methods
+    # 
+
     def run_script_walltime(self):
         # Set PBS_Walltime
-        if defchar.scheduler in ["PBS"]:
-            return 36
+        if hasattr(defchar, 'walltime'):
+            return defchar.walltime
         else:
             return 36
 
@@ -484,9 +492,13 @@ class NCodeSerpent(object):
             #rsfv['run_commands'] += "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
             rsfv['run_commands'] += "char --cwd -b defchar.py\n"
 
-        #Add cross section information
+        # Add cross section information
         if defchar.options.RUN_XS_GEN:
             rsfv['run_commands'] += "char --cwd -x defchar.py\n"
+
+        # Add isotopic sensitivity analysis
+        if defchar.options.RUN_DELTAM:
+            rsfv['run_commands'] += "char --cwd -m defchar.py\n"
 
         return rsfv
 
@@ -678,6 +690,48 @@ class NCodeSerpent(object):
 
                 # Write out these cross-sections to the data file
                 self.write_xs_mod(iso, n, xs_dict)
+
+
+    def run_deltam(self):
+        """Runs the isotopic sensitivity study."""
+        # Initializa the common serpent_fill values
+        self.make_common_input(0)
+        run_command = "{0} {1}_deltam {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+
+        # Open the hdf5 library
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+
+        # Get the number of time points from the file
+        nperturbations = len(rx_h5.root.perturbations)
+
+        # close the file before returning
+        rx_h5.close()
+
+        # Initialize the hdf5 file to take XS data
+        self.init_h5_burnup(nperturbations)
+
+        # Loop over all non-burnup perturbations.
+        ntimes = len(defchar.coarse_time)
+        for n in range(nperturbations):
+            defchar.logger.info('Running burnup calculation at perturbation step {0}.'.format(n))
+
+            # Ensure that the burnup times are at t = 0
+            if 0 != n%ntimes:
+                continue
+
+            self.make_common_input(n)
+
+            # Make new input file
+            self.make_burnup_input(n)
+
+            # Run serpent on this input file as a subprocess
+            rtn = subprocess.call(run_command, shell=True)
+
+            # Parse & write this output to HDF5
+            self.parse_burnup()
+            self.write_burnup(n)
+
+
 
     #
     # Parsing functions
