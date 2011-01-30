@@ -77,7 +77,7 @@ class NCodeSerpent(object):
         if len(defchar.initial_iso_vars) == 0:
             # Don't bother readin the perturbation table if there 
             # is nothing there to read!
-            ihm_stream = defchar.IHM_stream
+            ihm_stream = 1.0 * defchar.IHM_stream
         else:
             # Read the perturbations from the file
             pert_isos = set()
@@ -105,6 +105,8 @@ class NCodeSerpent(object):
 
             # generate an initial heavy metal stream
             ihm_stream = pert_stream + non_pert_stream
+
+        self.ihm_stream = ihm_stream
 
         # Convolve the streams
         isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, defchar.fuel_chemical_form)
@@ -423,6 +425,17 @@ class NCodeSerpent(object):
         self.serpent_fill.update(self.make_input_energy_groups())
 
 
+    def make_deltam_input(self, n, s):
+        """While n indexs the perturbations, iso is the isotope (zzaaam) to perturb and 
+        frac is the new mass fraction of this isotope."""
+        self.serpent_fill.update(self.make_burnup(n))
+        self.serpent_fill.update(self.make_deltam(iso, frac))
+
+        # Fill the burnup template
+        with open(defchar.reactor + "_deltam", 'w') as f:
+            f.write(defchar.burnup_template.format(**self.serpent_fill))
+
+
     def make_input(self):
         # Initilaize a new HDF5 file with this defchar info. 
         self.init_h5()
@@ -710,26 +723,48 @@ class NCodeSerpent(object):
         # Initialize the hdf5 file to take sensitivity data
         self.init_h5_deltam()
 
-        # Loop over all non-burnup perturbations.
+        nsense = len(defchar.deltam)
         ntimes = len(defchar.coarse_time)
-        for n in range(nperturbations):
-            defchar.logger.info('Running burnup calculation at perturbation step {0}.'.format(n))
 
+        # Loop over all non-burnup perturbations.
+        for n in range(nperturbations):
             # Ensure that the burnup times are at t = 0
             if 0 != n%ntimes:
                 continue
 
-            self.make_common_input(n)
+            defchar.logger.info('Running isotopic sensitivity study at perturbation step {0}.'.format(n))
 
-            # Make new input file
-            self.make_burnup_input(n)
+            # Loop over all isotopes
+            for iso_zz in defchar.IHM_stream.keys():
+                iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
-            # Run serpent on this input file as a subprocess
-            rtn = subprocess.call(run_command, shell=True)
+                # Load this perturbations IHM stream
+                self.update_initial_fuel(n)
 
-            # Parse & write this output to HDF5
-            self.parse_burnup()
-            self.write_burnup(n)
+                # Calulate this isotopes new values of IHM concentration
+                iso_fracs = defchar.deltam * self.ihm_stream[iso]
+
+                # Skip isotopes that would be pertubed over 1 kgIHM
+                if (1.0 < iso_fracs).any():
+                    continue
+
+                # Loop over all isotopic sesnitivities
+                for s in range(nsense):
+                    info_str = 'Running {0} sensitivity study at mass fraction {1} at perturbation step {2}.'.format(iso_zz, iso_fracs[s], n)
+                    defchar.logger.info(info_str)
+
+                    # Ensure we are where we think we are by remaking the common input
+                    self.make_common_input(n)
+
+                    # Make new input file
+                    self.make_deltam_input(n, iso_zz, iso_fracs[s])
+
+                    # Run serpent on this input file as a subprocess
+                    rtn = subprocess.call(run_command, shell=True)
+
+                    # Parse & write this output to HDF5
+                    self.parse_burnup()
+                    self.write_burnup(n)
 
 
 

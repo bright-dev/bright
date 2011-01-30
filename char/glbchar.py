@@ -235,6 +235,11 @@ def defchar_update_for_execution(defchar):
     # Make fuel stream
     defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)
 
+    if hasattr(defchar, 'sensitivity_mass_fractions'):
+        defchar.deltam = np.atleast_1d(defchar.sensitivity_mass_fractions)
+        defchar.deltam.sort()
+
+
     # Make arrays out of quatities that are allowed to vary.
     defchar.fuel_density = np.atleast_1d(defchar.fuel_density)
     defchar.clad_density = np.atleast_1d(defchar.clad_density)
