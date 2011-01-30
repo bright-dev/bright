@@ -353,6 +353,44 @@ class NCodeSerpent(object):
 
         return det
 
+
+    def make_deltam(self, iso, frac):
+        """Generates a dictionary of values that fill the fuel mass stream portion of the 
+        serpent template with this isotope (zzaaam) pertubed to this mass value."""
+
+        ihm_stream = 1.0 * defchar.IHM_stream
+
+        pert_iso = set([iso])
+        init_iso_conc = {iso: frac} 
+
+        # generate a pertubed stream
+        pert_stream = MassStream(init_iso_conc)
+
+        # generate a non-pertubed stream
+        all_isos = set(defchar.ihm_stream.comp.keys())
+        non_pert_isos = all_isos - pert_isos
+        non_pert_stream = defchar.IHM_stream.getSubStreamInt(list(non_pert_isos))
+        non_pert_stream.mass = 1.0 - pert_stream.mass
+
+        # generate an initial heavy metal stream
+        ihm_stream = pert_stream + non_pert_stream
+
+        self.ihm_stream = ihm_stream
+
+        # Convolve the streams
+        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, defchar.fuel_chemical_form)
+
+        # Set the most recent values on the instance
+        self.initial_fuel_stream = MassStream(isovec)
+        self.IHM_weight = AW
+        self.fuel_weight = MW
+
+        # make burnup dictionary
+        dm = {'fuel': self.make_input_fuel()}
+
+        return dm
+
+
     def make_common_input(self, n):
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
@@ -732,7 +770,7 @@ class NCodeSerpent(object):
             if 0 != n%ntimes:
                 continue
 
-            defchar.logger.info('Running isotopic sensitivity study at perturbation step {0}.'.format(n))
+            defchar.logger.info('Starting isotopic sensitivity study at perturbation step {0}.'.format(n))
 
             # Loop over all isotopes
             for iso_zz in defchar.IHM_stream.keys():
