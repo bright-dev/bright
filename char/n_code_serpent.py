@@ -1486,8 +1486,8 @@ class NCodeSerpent(object):
 
         print(message("Maximum standard deviation for isotopic sensitivity study:"))
         for sig, iso_zz in rho_std_iso:
-            iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
-            print("{0<8}{1}".format(iso_LL, sig))
+            iso_LL = isoname.zzaaam_2_LLAAAM(int(iso_zz))
+            print("{0:<8}{1}".format(iso_LL, sig))
 
         # close the file before returning
         rx_h5.close()
