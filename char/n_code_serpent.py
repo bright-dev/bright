@@ -1454,8 +1454,39 @@ class NCodeSerpent(object):
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = rx_h5.root
 
-        # Store this row
+        # Grab the appropriate table
         iso_sense_table = base_group.isotope_sensitivity
-        
+
+        # Get unique set of isotopes and perturbation numbers.
+        isos = np.unique(iso_sense_table.col.iso_zz)
+        ns = np.unique(iso_sense_table.col.perturbation)
+
+        # Loop over all isos and perturbations.
+        rho_std_iso = []
+        for iso in isos:
+            iso_std = []
+            for n in ns:
+                where_cond = '(perturbation == {n}) & (iso_zz == {iso})'.format(n=n, iso=iso)
+                rhos = np.array([row['reactivity'] for row in iso_sense_table.where(where_cond)])
+
+                # Take the standard deviation for each burn step, along this perturbations
+                rho_std = np.std(rhos, axis=0)
+
+                # Pick out the standard dev that is the highest among the burnstep
+                iso_std.append(np.max(rho_std))
+
+            # Pick out the standard dev that is highest among all perturbations.
+            # Couple that with this isotope.
+            rho_std_iso.append((np.max(iso_std), iso))
+
+        # Sort these reactivity standard deviations highest to lowest.
+        rho_std_iso.sort(reverse=True)
+
+        print(message("Maximum standard deviation for isotopic sensitivity study:"))
+        for sig, iso_zz in rho_std_iso:
+            iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+            print("{0<8}{1}".format(iso_LL, sig))
+
         # close the file before returning
         rx_h5.close()
+
