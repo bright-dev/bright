@@ -1460,8 +1460,8 @@ class NCodeSerpent(object):
         iso_sense_table = base_group.isotope_sensitivity
 
         # Get unique set of isotopes and perturbation numbers.
-        isos = np.unique(iso_sense_table.col.iso_zz)
-        ns = np.unique(iso_sense_table.col.perturbation)
+        isos = np.unique(iso_sense_table.cols.iso_zz)
+        ns = np.unique(iso_sense_table.cols.perturbation)
 
         # Loop over all isos and perturbations.
         rho_std_iso = []
