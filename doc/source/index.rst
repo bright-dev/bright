@@ -1,6 +1,6 @@
-===========================================================
-Welcome to Cross-sections Have Awesome Rates documentation!
-===========================================================
+==================================
+Welcome to the Char documentation!
+==================================
 Cross-sections Have Awesome Rates (CHAR) is a Python program that computes neutron cross-sections
 as a function of time interned in a nuclear power reactor.  
 
@@ -41,7 +41,8 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-   
+
+   contact
 
 =============
 Helpful Links
