@@ -463,7 +463,7 @@ class NCodeSerpent(object):
         self.serpent_fill.update(self.make_input_energy_groups())
 
 
-    def make_deltam_input(self, n, s):
+    def make_deltam_input(self, n, iso, frac):
         """While n indexs the perturbations, iso is the isotope (zzaaam) to perturb and 
         frac is the new mass fraction of this isotope."""
         self.serpent_fill.update(self.make_burnup(n))
