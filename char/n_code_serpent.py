@@ -780,7 +780,7 @@ class NCodeSerpent(object):
                 self.update_initial_fuel(n)
 
                 # Calulate this isotopes new values of IHM concentration
-                iso_fracs = defchar.deltam * self.ihm_stream[iso_zz]
+                iso_fracs = defchar.deltam * self.ihm_stream.comp[iso_zz]
 
                 # Skip isotopes that would be pertubed over 1 kgIHM
                 if (1.0 < iso_fracs).any():
