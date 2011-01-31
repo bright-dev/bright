@@ -804,6 +804,8 @@ class NCodeSerpent(object):
                     self.parse_deltam()
                     self.write_deltam(n, iso_zz, iso_fracs[s])
 
+        # Analyze these runs
+        self.analyze_deltam()
 
 
     #
