@@ -1415,7 +1415,7 @@ class NCodeSerpent(object):
         clean_reload(rx_res)
         clean_reload(rx_dep)
 
-        # Open a new hdf5 file 
+        # Open the hdf5 file 
         rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
         base_group = rx_h5.root
 
@@ -1443,3 +1443,19 @@ class NCodeSerpent(object):
         rx_h5.close()
 
 
+    #
+    # Analysis functions
+    # 
+
+    def analyze_deltam(self):
+        """Analyzes the results of the isotopic sensitivity study, producing a report to stdout."""
+
+        # Open the hdf5 file 
+        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        base_group = rx_h5.root
+
+        # Store this row
+        iso_sense_table = base_group.isotope_sensitivity
+        
+        # close the file before returning
+        rx_h5.close()
