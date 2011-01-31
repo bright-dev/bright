@@ -368,7 +368,7 @@ class NCodeSerpent(object):
 
         # generate a non-pertubed stream
         all_isos = set(self.ihm_stream.comp.keys())
-        non_pert_isos = all_isos - pert_isos
+        non_pert_isos = all_isos - pert_iso
         non_pert_stream = self.ihm_stream.getSubStreamInt(list(non_pert_isos))
         non_pert_stream.mass = 1.0 - pert_stream.mass
 
