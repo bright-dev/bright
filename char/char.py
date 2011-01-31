@@ -61,6 +61,9 @@ def main():
     parser.add_option("-d", "--dry-run", action="store_false", dest="RUN_TRANSPORT", 
         help="Dry Run. Do NOT run the transport calculation.")
 
+    parser.add_option("-a", "--analyze", action="store_true", dest="RUN_ANALYSIS", 
+        default=False, help="Run analysis on database.")
+
     parser.add_option("-b", "--burnup",  action="store_true", dest="RUN_BURNUP", 
         default=False, help="Run the burnup calculation.")
 
@@ -212,6 +215,9 @@ def main():
             runchar.run_transport_local()
         else:
             runchar.run_transport_remote()
+
+    elif options.RUN_ANALYSIS:
+        n_transporter.analyze_deltam()
 
     elif options.RUN_BURNUP or options.RUN_XS_GEN or options.RUN_DELTAM:
         # Make tranumatrion libraries by executing the as a separate step from 
