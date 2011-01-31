@@ -358,7 +358,7 @@ class NCodeSerpent(object):
         """Generates a dictionary of values that fill the fuel mass stream portion of the 
         serpent template with this isotope (zzaaam) pertubed to this mass value."""
 
-        ihm_stream = 1.0 * defchar.IHM_stream
+        ihm_stream = 1.0 * self.ihm_stream
 
         pert_iso = set([iso])
         init_iso_conc = {iso: frac} 
@@ -367,9 +367,9 @@ class NCodeSerpent(object):
         pert_stream = MassStream(init_iso_conc)
 
         # generate a non-pertubed stream
-        all_isos = set(defchar.ihm_stream.comp.keys())
+        all_isos = set(self.ihm_stream.comp.keys())
         non_pert_isos = all_isos - pert_isos
-        non_pert_stream = defchar.IHM_stream.getSubStreamInt(list(non_pert_isos))
+        non_pert_stream = self.ihm_stream.getSubStreamInt(list(non_pert_isos))
         non_pert_stream.mass = 1.0 - pert_stream.mass
 
         # generate an initial heavy metal stream
