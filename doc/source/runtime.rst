@@ -167,3 +167,8 @@ Char comes packaged with a graphical user interface.  Currently, this is used to
 inspect the database library and plot certain types of regular data.
 
 The GUI is based of of the Enthought Tool Suite.  Here is a screenshot, because people love those.
+
+.. image:: _static/char_ui_screenshot.png
+   :scale: 50%
+   :align: center
+
