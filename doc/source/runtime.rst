@@ -172,3 +172,34 @@ The GUI is based of of the Enthought Tool Suite.  Here is a screenshot, because 
    :scale: 50%
    :align: center
 
+
+================
+Common Workflows
+================
+Below are some comon workflows that are used in to run char in various modes.
+
+Initialize a reactor::
+
+    char -i -c defchar.py
+
+
+Run a burnup & cross section calculation remotely::
+
+    # Run the reactor
+    char -irs -cbx defchar.py
+
+    # Poll the remote server
+    char -ps defchar.py
+
+    # After the calculation is complete, get the files
+    char -f defchar.py
+
+
+Run an isotopic sensitivity study and analyze the results::
+
+    char -irl -cm defchar.py
+    char -a defchar.py
+
+Start the user interface::
+
+    char --ui
