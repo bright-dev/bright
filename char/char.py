@@ -34,10 +34,7 @@ from metasci.colortext import failure
 defchar = None
 import glbchar
 
-import graphchar
 import runchar
-from n_code_mcnp    import NCodeMCNP
-from n_code_origen  import NCodeORIGEN
 from n_code_serpent import NCodeSerpent
 
 def main():
@@ -177,29 +174,8 @@ def main():
     logger.setLevel(logging.INFO)
     defchar.logger = logger
 
-    # Set the transport code type
-    try:
-        transport_code = defchar.transport_code.lower()
-        defchar.transport_code = transport_code
-    except:
-        print(failure("Transport code type not set!\n"
-                      "  Use either the '-w' command line option, or\n"
-                      "  use the 'TransportCode' flag in defchar.py.\n"
-                      "Currently, 'MCNP' and 'Serpent' are accpeted values.\n"
-                      "\n"
-                      "Note: you must have the appropriate neutronics code\n"
-                      "installed on your machine for this to work."))
-        raise SystemExit
-
-    if ('serpent' in transport_code) and ('mcnp' not in transport_code):
-        n_transporter = NCodeSerpent()
-    elif ('mcnp' in transport_code) and ('serpent' not in transport_code):
-        n_transporter = NCodeMCNP()
-    else:
-        print(failure("The transport code given is not valid: {0:yellow}", transport_code))
-        print(failure("Currently, 'MCNP' and 'Serpent' are accpeted values."))
-        raise SystemExit
-
+    # Set the transport code
+    n_transporter = NCodeSerpent()
     defchar.n_transporter = n_transporter
 
     # Make the input file unless otherwise specified.

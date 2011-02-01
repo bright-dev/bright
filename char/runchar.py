@@ -254,12 +254,7 @@ def find_pid_remote():
     if defchar.options.KILL_TRANSPORT:
         if defchar.scheduler in ["PBS"]:
             defchar.remote_connection.run("qdel {0}".format(pid)) 
-
-            if ('serpent' in defchar.transport_code) and ('mcnp' not in defchar.transport_code):
-                defchar.remote_connection.run("cluster-kill sss-dev")
-            elif ('mcnp' in defchar.transport_code) and ('serpent' not in defchar.transport_code):
-                defchar.remote_connection.run("cluster-kill mcnpx260")
-
+            defchar.remote_connection.run("cluster-kill sss-dev")
         else:
             defchar.remote_connection.run("kill {0}".format(pid)) 
 
