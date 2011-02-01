@@ -290,7 +290,7 @@ def defchar_update_for_execution(defchar):
 
     defchar.perturbation_params.extend(initial_iso_vars)
  
-    defchar.perturbation_params.append('coarse_time')   # coarse_time needs to be the last element
+    defchar.perturbation_params.append('burn_times')   # burn_times needs to be the last element
 
     return defchar
 
@@ -321,12 +321,8 @@ def defchar_update(defchar):
     defchar.remote_connection = RemoteConnection(**rckw)
 
     # Make Time Steps 
-    defchar.coarse_time = np.arange(0, defchar.burn_time + defchar.coarse_step/10.0, defchar.coarse_step)
-    defchar.coarse_time_index = range(len(defchar.coarse_time))
-
-    defchar.fine_time = np.arange(0, defchar.burn_time + defchar.fine_step/10.0, defchar.fine_step)
-    defchar.fine_time_index = range(len(defchar.fine_time))
-
+    defchar.burn_times = np.arange(0, defchar.burn_time + defchar.time_step/10.0, defchar.time_step)
+    defchar.burn_times_index = range(len(defchar.burn_times))
 
     # Upddate the namespace if we are going to execute a neutronics code
     if (defchar.options.MAKE_INPUT or defchar.options.RUN_TRANSPORT or 

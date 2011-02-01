@@ -315,8 +315,8 @@ class NCodeSerpent(object):
         rx_h5.close()
 
         bu['depletion_times'] = ''
-        for ct in defchar.coarse_time[1:]:
-            bu['depletion_times'] += '{0:>8.4G}\n'.format(ct)
+        for bt in defchar.burn_times[1:]:
+            bu['depletion_times'] += '{0:>8.4G}\n'.format(bt)
 
         bu['transmute_inventory'] = ''
         for iso in defchar.core_transmute['zzaaam']:
@@ -573,7 +573,7 @@ class NCodeSerpent(object):
         self.init_h5_burnup(nperturbations)
 
         # Loop over all non-burnup perturbations.
-        ntimes = len(defchar.coarse_time)
+        ntimes = len(defchar.burn_times)
         for n in range(nperturbations):
             # Ensure that the burnup times are at t = 0
             if 0 != n%ntimes:
@@ -762,7 +762,7 @@ class NCodeSerpent(object):
         self.init_h5_deltam()
 
         nsense = len(defchar.deltam)
-        ntimes = len(defchar.coarse_time)
+        ntimes = len(defchar.burn_times)
 
         # Loop over all non-burnup perturbations.
         for n in range(nperturbations):
@@ -1041,7 +1041,7 @@ class NCodeSerpent(object):
 
     def init_h5_deltam(self):
         """Initialize the hdf5 file for isotopic sensitivity study."""
-        ntimes = len(defchar.coarse_time)
+        ntimes = len(defchar.burn_times)
 
         deltam_desc = {
             'iso_LL': tb.StringCol(6, pos=0),
