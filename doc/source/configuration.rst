@@ -56,7 +56,7 @@ Isotope Tracking
   list.
 
 There are a few ways to instantiate these two variables.  
-Lastly, the preffered way is to import some of the predefined lists that have already been specified
+The preffered way is to import some of the predefined lists that have already been specified
 in char.  This prevents the user from having to build undo specification::
 
     # Set isotopes to track
