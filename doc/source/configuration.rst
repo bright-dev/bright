@@ -44,6 +44,8 @@ General Specification
   is zero. You may set this arbitrarily high.
 
 
+.. _isotope-tracking:
+
 ----------------
 Isotope Tracking
 ----------------
@@ -89,3 +91,22 @@ A string-valued path to this file may also be passed into these parameters.
         core_load_isos = "/path/to/isos_to_track.txt"
         core_transmute_isos = "/path/to/isos_to_track.txt"
 
+
+--------------------------
+Calculation Mode Templates
+--------------------------
+* **xs_gen_template** (str): An unformatted string template that is used for cross-section generation
+  calculations.
+* **burnup_template** (str): An unformatted string template that is used for burnup-depletion
+  calculations.
+
+Like in :ref:`isotope-tracking`, the preffered method of supplying templates is from pre-defined
+versions in char itself.  Current values may be seen 
+`at github <https://github.com/scopatz/char/blob/master/char/templates/lwr/serpent.py>`_::
+
+    # Load stock template string from char
+    from char.templates.lwr import serpent
+    xs_gen_template = serpent.xs_gen
+    burnup_template = serpent.burnup
+
+Of course, the user could generate their own template strings and place them here.
