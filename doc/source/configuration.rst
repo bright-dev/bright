@@ -394,3 +394,18 @@ An example that will perturb each isotopes initial amount by +/-10% from the ini
 other pertubation is as follows::
 
     sensitivity_mass_fractions = [1.1, 0.9]
+
+
+--------------------
+Crtiticality Control
+--------------------
+* **k_cycles** (int): The total number of criticality cycles to run.
+* **k_cycles_skip** (int): The number of cycles to run but not tally at the begining.
+  This number must be strictly less than ``k_cycles``.
+* **k_particles** (int): The number of source particles to run per cycle.
+
+These are some decent values for the criticality calculation::
+    k_particles   = 1000
+    k_cycles      = 130
+    k_cycles_skip = 30
+
