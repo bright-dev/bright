@@ -355,6 +355,16 @@ The following values represent a light water reactor::
         }
 
 
+Additionally, if for some reason the user does not wish to supply a mass-weighted fuel stream
+and instead spcifies atom fractions, the following parameters may be set away from their default 
+``True`` value.  If any of these are ``False``, atom fractions wil be used.  This is not
+recomended in general.
+
+* **fuel_form_mass_weighted** (bool): Fuel stream mass-weighted / atom-fraction flag.
+* **clad_form_mass_weighted** (bool): Cladding stream mass-weighted / atom-fraction flag.
+* **cool_form_mass_weighted** (bool): Coolant stream mass-weighted / atom-fraction flag.
+
+
 ------------------------------
 Initial Isotopic Perturbations
 ------------------------------
@@ -408,4 +418,25 @@ These are some decent values for the criticality calculation::
     k_particles   = 1000
     k_cycles      = 130
     k_cycles_skip = 30
+
+
+-------------------------
+Other Physical Parameters
+-------------------------
+* **group_structure** (sequence of floats): Defines the energy group structure but setting bounds 
+  on each group.  Energies are given in [MeV].  For ``G`` energy groups, this list must be of length 
+  ``G+1``.  Note that this list is not allowed to change.  
+* **temperature** (int or float): This is the value of the temperature [K] of the fuel region.  This 
+  parameter determines which cross-section set to use and is therefor not a continuous variable.
+  Though char does not check, ``temperature`` should be a positive multiple of 300 K (ie 300, 600, 900, etc).
+  If a value other than this is supplied, char will likely run, but use physical models everywhere instead 
+  of serpent generated values.
+
+Examples of the above parameters are as follows::
+
+    # A log-spaced 10-group structure
+    group_structure = [1.0E-09, 1.0E-08, 1.0E-07, 1.0E-06, 1.0E-05, 0.0001, 0.001, 0.01, 0.1, 1.0, 10.0]
+
+    # Temperature at 600 K
+    temperature = 600
 
