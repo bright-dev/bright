@@ -116,6 +116,8 @@ A string-valued path to this file may also be passed into these parameters.
         core_transmute_isos = "/path/to/isos_to_track.txt"
 
 
+.. _calc_mode_templates:
+
 --------------------------
 Calculation Mode Templates
 --------------------------
@@ -215,6 +217,8 @@ Unit Cell Sepcifications
 * **fuel_density** ([sequence of] float): Denisty of fuel region [g/cm^3].  
 * **clad_density** ([sequence of] float): Denisty of cladding region [g/cm^3].  
 * **cool_density** ([sequence of] float): Denisty of coolant region [g/cm^3].  
+* **fuel_specific_power** ([sequence of] float): Mass-normalized power from a unit of fuel [W/g].
+  Required for burnup and sensitivity calculations.
 
 An example that is representative of a light water reactor is as follows::
 
@@ -228,3 +232,131 @@ An example that is representative of a light water reactor is as follows::
     clad_density = 5.87
     cool_density = 0.73
 
+    fuel_specific_power = 40.0 / 1000.0
+
+
+---------------------
+Lattice Specification
+---------------------
+* **lattice** (str):  This is a string that represents the lattice that is used by serpent.
+  While interally char does some analysis of this string (to set the symmetric lattice flag ``sym_flag``), 
+  this string is passed directly into serpent.  When using the 
+  :ref:`default serpent templates <calc_mode_templates>`, the number ``1`` represents a fuel pin, 
+  while the number ``2`` represents a coolant pin.  These are material numbers defined in the templates.
+  New rows must be separated by newline characters.
+  Optional, if not provided, a 17x17 pressurized water reactor assembly is subsitutied.
+* **lattice_xy** (int):  The number of rows and columns in a fuel assembly.  
+  For instance, this number would be 17 for a 17x17 assembly or 9 for 9x9 assembly.
+  Optional, if not provided, this value is given as 17 to match ``lattice``.
+
+More information on how to set up lattices is available in the serpent manual.
+The default values are as follows::
+
+    lattice_xy = 17
+    lattice    = ("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n"
+                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n"
+                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n")
+
+
+-----------------------
+Mass Stream Information
+-----------------------
+* **initial_heavy_metal** (dict): A ditionary that specifies the initial heavy metal 
+  concentrations of each isotope in a pure fuel stream.  The keys of this isotope are 
+  integers in ``zzaaam``-form.  The values are floats on the range ``[0, 1]``.
+  The sum of all values here should equal 1.  Therefore, this represents 1 [kgIHM].
+* **fuel_chemical_form** (dict): This is another python dictionary that gives the 
+  chemical composition of the fuel region.  Keys are either isotopes in ``zzaaam``-form
+  or the string ``"IHM"``, which is a placeholder for the ``initial_heavy_metal`` stream.
+  Values are floats that repesent the number of atoms in this chemical form.
+* **clad_form** (dict): A python dictionary that represents the cladding material. The keys of 
+  this isotope are integers in ``zzaaam``-form.  The values are floats on the range ``[0, 1]``.
+  The sum of all values here should equal 1.
+  Optional, if not present in ``defchar.py`` a default zircaloy will be substituted.
+* **cool_form** (dict): A python dictionary that represents the cladding material. The keys of 
+  this isotope are integers in ``zzaaam``-form.  The values are floats on the range ``[0, 1]``.
+  The sum of all values here should equal 1.
+  Optional, if not present in ``defchar.py`` borated light water will be substituted.
+
+The following values represent a light water reactor::
+
+    # Low enriched uranium
+    initial_heavy_metal = {
+        922350: 0.04,
+        922380: 0.96,
+        }
+
+    # Uranium oxide
+    fuel_chemical_form = {
+        80160: 2.0,
+        "IHM": 1.0,
+        }
+
+    # Default zircaloy
+    clad_form = {
+        # Natural Zirconium
+        400900: 0.98135 * 0.5145,
+        400910: 0.98135 * 0.1122,
+        400920: 0.98135 * 0.1715,
+        400940: 0.98135 * 0.1738,
+        400960: 0.98135 * 0.0280,
+        # The plastic is all melted and the natural Chromium too..
+        240500: 0.00100 * 0.04345,
+        240520: 0.00100 * 0.83789,
+        240530: 0.00100 * 0.09501,
+        240540: 0.00100 * 0.02365,
+        # Natural Iron
+        260540: 0.00135 * 0.05845,
+        260560: 0.00135 * 0.91754,
+        260570: 0.00135 * 0.02119,
+        260580: 0.00135 * 0.00282,
+        # Natural Nickel
+        280580: 0.00055 * 0.68077,
+        280600: 0.00055 * 0.26223,
+        280610: 0.00055 * 0.01140,
+        280620: 0.00055 * 0.03634,
+        280640: 0.00055 * 0.00926,
+        # Natural Tin
+        501120: 0.01450 * 0.0097,
+        501140: 0.01450 * 0.0065,
+        501150: 0.01450 * 0.0034,
+        501160: 0.01450 * 0.1454,
+        501170: 0.01450 * 0.0768,
+        501180: 0.01450 * 0.2422,
+        501190: 0.01450 * 0.0858,
+        501200: 0.01450 * 0.3259,
+        501220: 0.01450 * 0.0463,
+        501240: 0.01450 * 0.0579,
+        # We Need Oxygen!
+        80160:  0.00125,
+        }
+
+    # Default borated light water
+    MW = (2 * 1.0) + (1 * 16.0) + (0.199 * 550 * 10.0**-6 * 10.0) + (0.801 * 550 * 10.0**-6 * 11.0)
+    cool_form = {
+        10010: (2 * 1.0) / MW,
+        80160: (1 * 16.0) / MW,
+        50100: (0.199 * 550 * 10.0**-6 * 10.0) / MW,
+        50110: (0.801 * 550 * 10.0**-6 * 11.0) / MW,
+        }
+
+
+----------------------
+Isotopic Perturbations
+----------------------
+#initial_U235 = [0.02, 0.04, 0.06]
+sensitivity_mass_fractions = [1.1, 0.9]
