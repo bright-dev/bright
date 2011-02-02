@@ -415,6 +415,7 @@ Crtiticality Control
 * **k_particles** (int): The number of source particles to run per cycle.
 
 These are some decent values for the criticality calculation::
+
     k_particles   = 1000
     k_cycles      = 130
     k_cycles_skip = 30
@@ -439,4 +440,23 @@ Examples of the above parameters are as follows::
 
     # Temperature at 600 K
     temperature = 600
+
+
+
+---------------------------
+Remote Server Specification
+---------------------------
+* **remote_url** (str): Remote server web- or ip-address.
+* **remote_user** (str): Login name to the remote server.
+* **remote_dir** (str): Directory on remote filesystem to store char files.
+* **remote_gateway** (str): Local hostname of the remote machine that the user logs in to. 
+  This is especially useful when running char on a remote cluster where the gateway machine
+  might not have the same name locally that it provides to the outside world.
+
+Here is a Mr. Aznable might set up his remote configuration::
+
+    remote_url  = "mycluster.zeon.gov"
+    remote_user = "char"
+    remote_dir  = "/home/char/"
+    remote_gateway = 'mycluster01'
 
