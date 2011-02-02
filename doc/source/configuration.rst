@@ -355,8 +355,42 @@ The following values represent a light water reactor::
         }
 
 
-----------------------
-Isotopic Perturbations
-----------------------
-#initial_U235 = [0.02, 0.04, 0.06]
-sensitivity_mass_fractions = [1.1, 0.9]
+------------------------------
+Initial Isotopic Perturbations
+------------------------------
+There are two main (optional) ways to pertub isotopes.  The first is such that a pertubed isotopic
+vector shows up in the outer product perturbation set.
+
+* **initial_{iso}** ([sequence of] float):  The mass fraction value(s) of this isotope that 
+  should be replaced in the ``initial_heavy_metal`` stream.  The ``{iso}`` term specifices 
+  the name of the isotope to be pertubed in ``LLAAAM``-form.
+
+For example, take the following hypothetical mass stream::
+
+    # Initial heavy metal mass fraction distribution
+    initial_heavy_metal = {
+        922340: 0.01,
+        922350: 0.04,
+        922380: 0.95,
+        }
+
+    # Pertub some of these nuclides
+    initial_U234 = [0.01, 0.015]
+    initial_U235 = [0.02, 0.04, 0.06]
+
+The above would produce 6 initial heavy metal streams, one for each (U234, U235) combination, and
+generate burnups or cross sections for each of these mass streams.  The remaining isotopes (U238 here)
+would have their mass fractions altered to accomdated the perturbed mass stream.
+
+
+The second way that initial isotopes are perturbed is during the isotopic ssensitivity study (``-m``, 
+calculation).  Every nuclide present in the ``initial_heavy_metal`` stream is pertubed by a set 
+amounts.  These relative amounts are given via the following parameter.
+
+* **sensitivity_mass_fractions** ([sequence of] float): The relative amount by which to perturb each
+  isotope in an isotopic sensitivity study, ``-m``.
+
+An example that will perturb each isotopes initial amount by +/-10% from the initial value for every
+other pertubation is as follows::
+
+    sensitivity_mass_fractions = [1.1, 0.9]
