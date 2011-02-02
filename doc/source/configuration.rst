@@ -446,12 +446,12 @@ Examples of the above parameters are as follows::
 ---------------------------
 Remote Server Specification
 ---------------------------
-* **remote_url** (str): Remote server web- or ip-address.
-* **remote_user** (str): Login name to the remote server.
-* **remote_dir** (str): Directory on remote filesystem to store char files.
-* **remote_gateway** (str): Local hostname of the remote machine that the user logs in to. 
+* **remote_url** (str): Remote server web- or ip-address. Optional.
+* **remote_user** (str): Login name to the remote server. Optional.
+* **remote_dir** (str): Directory on remote filesystem to store char files. Optional.
+* **remote_gateway** (str): Local hostname of the remote machine that the user logs in to. Optional.
   This is especially useful when running char on a remote cluster where the gateway machine
-  might not have the same name locally that it provides to the outside world.
+  might not have the same name locally that it provides to the outside world. Optional.
 
 Here is a Mr. Aznable might set up his remote configuration::
 
@@ -459,4 +459,24 @@ Here is a Mr. Aznable might set up his remote configuration::
     remote_user = "char"
     remote_dir  = "/home/char/"
     remote_gateway = 'mycluster01'
+
+
+---------------------------------------
+Serpent Data Library Path Specification
+---------------------------------------
+* **serpent_xsdata** (str):  Path to the serpent cross section library to use.
+* **serpent_decay_lib** (str): Path to the serpent decay library to use.  Optional, only 
+  required for burnup calculations.
+* **serpent_fission_yield_lib** (str): Path to the serpent fission yeild library to use.  Optional, only
+  required for burnup calculations.
+
+Mr. Aznable's friend, Casval, might want to use a common set of libraries. These parameters are therefore
+set as follows::
+
+    # Use ENDF libraries.
+    serpent_xsdata = "/usr/share/serpent/xsdata/endf7.xsdata"
+
+    # The following two are only needed for burnup runs
+    serpent_decay_lib = "/usr/share/serpent/xsdata/sss_endfb7.dec"
+    serpent_fission_yield_lib = "/usr/share/serpent/xsdata/sss_endfb7.nfy"
 
