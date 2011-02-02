@@ -5,7 +5,7 @@ from setuptools.command.develop import develop
 #from distutils.extension import Extension
 
 setup(name="CHAR",
-	version='0.15',
+	version='1.0',
 	description='Cross-section Have Awesome Rates',
 	author='Anthony Scopatz',
 	author_email='scopatz@gmail.com',
