@@ -480,3 +480,115 @@ set as follows::
     serpent_decay_lib = "/usr/share/serpent/xsdata/sss_endfb7.dec"
     serpent_fission_yield_lib = "/usr/share/serpent/xsdata/sss_endfb7.nfy"
 
+
+========================
+Bringing it all together
+========================
+Using the above specification information, a typicall ``defchar.py`` might look like the 
+following.  This configuration can be veiwed a a work in progress, since the user has
+chosen to comment some values out, but still wants to keep them around::
+
+    #############################
+    ### General specifcations ###
+    #############################
+    reactor = "lwr"
+    burn_regions = 1
+    burn_time   = 4200
+    #time_step = 840
+    email      = "char@zeon.gov"
+
+    #scheduler = "PBS"
+
+    number_cpus   = 3   # Number of CPUs to run transport code on.
+    cpus_per_node = 4   # Processors per node
+
+    verbosity = 100
+
+    # Set isotopes to track
+    from char.iso_track import load, transmute
+    core_load_isos      = load
+    core_transmute_isos = transmute
+
+
+    # Load stock template string from char
+    # Having this allows users to specify other templates
+    from char.templates.lwr import serpent
+    xs_gen_template = serpent.xs_gen
+    burnup_template = serpent.burnup
+
+
+    ################################
+    ### Unit Cell Sepcifications ###
+    ################################
+    fuel_cell_radius = 0.410
+    void_cell_radius = 0.4185
+    clad_cell_radius = 0.475
+    unit_cell_pitch  = 0.65635 * 2.0 
+    unit_cell_height = 10.0
+
+    fuel_density = [10.7, 10.7*0.9, 10.7*1.1]   # Denisty of Fuel
+    clad_density = 5.87                         # Cladding Density
+    cool_density = 0.73                         # Coolant Density
+
+    fuel_specific_power = 40.0 / 1000.0   # Power garnered from fuel [W / g]
+
+
+    #################################
+    ### Mass Stream Specification ###
+    #################################
+    # LEU
+    initial_heavy_metal = {
+        922350: 0.04, 
+        922380: 0.96, 
+        }
+
+    initial_U235 = [0.02, 0.04, 0.06]
+
+    # UOX
+    fuel_chemical_form = {
+        80160: 2.0, 
+        "IHM": 1.0, 
+        }	
+
+
+    fuel_form_mass_weighted = True
+
+
+    ###############################
+    ### Criticality Information ###
+    ###############################
+    #k_particles  = 500
+    #k_particles  = 5000
+    k_particles  = 1000
+    k_cycles      = 130
+    k_cycles_skip = 30
+
+
+    # A log-spaced 10-group structure
+    group_structure = [1.0E-09, 1.0E-08, 1.0E-07, 1.0E-06, 1.0E-05, 0.0001, 0.001, 0.01, 0.1, 1.0, 10.0]
+
+    # Temperature at 600 K
+    temperature = 600
+
+
+    ###################################
+    ### Remote Server Specification ###
+    ###################################
+    remote_url  = "mycluster.zeon.gov"
+    remote_user = "char"
+    remote_dir  = "/home/char/"
+    remote_gateway = 'mycluster01'
+
+
+    #############################
+    ### Serpent Specification ###
+    #############################
+    serpent_xsdata = "/usr/share/serpent/xsdata/endf7.xsdata"
+    #serpent_xsdata = "/usr/share/serpent/xsdata/jeff311.xsdata"
+
+    # The following two are only needed for burnup runs
+    serpent_decay_lib = "/usr/share/serpent/xsdata/sss_endfb7.dec"
+    serpent_fission_yield_lib = "/usr/share/serpent/xsdata/sss_endfb7.nfy"
+    #serpent_decay_lib = "/usr/share/serpent/xsdata/sss_jeff311.dec"
+    #serpent_fission_yield_lib = "/usr/share/serpent/xsdata/sss_jeff311.nfy"
+
