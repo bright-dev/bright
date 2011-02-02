@@ -484,7 +484,7 @@ set as follows::
 ========================
 Bringing it all together
 ========================
-Using the above specification information, a typicall ``defchar.py`` might look like the 
+Using the above specification information, a typical ``defchar.py`` might look like the 
 following.  This configuration can be veiwed a a work in progress, since the user has
 chosen to comment some values out, but still wants to keep them around::
 
