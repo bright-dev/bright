@@ -10,7 +10,6 @@
 #include <map>
 #include <set>
 #include <exception>
-#include <cctype>
 #include <stdlib.h>
 #include <stdio.h>
 

@@ -7,6 +7,7 @@ from distutils.core import setup
 from distutils.extension import Extension
 from distutils.file_util import copy_file, move_file
 from distutils.dir_util import mkpath, remove_tree
+from Cython.Distutils import build_ext
 
 ###########################################
 ### Set compiler options for extensions ###
@@ -153,33 +154,42 @@ setup(name="BriPy",
     author = 'Anthony Scopatz',
     author_email = 'scopatz@gmail.com',
     url = 'http://www.scopatz.com/',
-    packages = ['BriPy', 'MassStream', 'isoname'],
-    package_dir = pack_dir,
-    package_data = pack_data,
-    #py_modules=["BriPy.__init__"],
+#    packages = ['BriPy', 'MassStream', 'isoname'],
+#    package_dir = pack_dir,
+#    package_data = pack_data,
+    cmdclass = {'build_ext': build_ext}, 
     ext_modules=[
-        Extension("isoname.isoname", [
-            src_dir + "isoname.cpp", 
-            src_dir + "bright.cpp", 
-            "BriPy_isoname.cpp"], **ext_kwargs),
-        Extension("MassStream.MassStream", [ 
-            src_dir + "MassStream.cpp", 
-            src_dir + "isoname.cpp", 
-            src_dir + "bright.cpp", 
-            "BriPy_MassStream.cpp"], **MassStream_ext_kwargs),
-        Extension("BriPy.FCComps", [
-            src_dir + "bright.cpp", 
-            src_dir + "isoname.cpp", 
-            src_dir + "MassStream.cpp", 
-            src_dir + "FCComp.cpp", 
-            src_dir + "Reprocess.cpp", 
-            src_dir + "Storage.cpp", 
-            src_dir + "Enrichment.cpp", 
-            src_dir + "Reactor1G.cpp", 
-            src_dir + "LightWaterReactor1G.cpp", 
-            src_dir + "FastReactor1G.cpp", 
-            src_dir + "FuelFabrication.cpp", 
-            "BriPy_FCComps.cpp"], **FCComps_ext_kwargs),
+        Extension("isoname", 
+                  ['src/isoname/bright.cpp', 'src/isoname/isoname.cpp', 
+                   'src/isoname/cpp_isoname.pxd',
+                   'src/isoname/isoname_wrapper.pyx',
+                   ],
+                  include_dirs=['src/isoname/'],
+                  libraries=[],
+                  language="c++",
+                  ), 
+#        Extension("isoname.isoname", [
+#            src_dir + "isoname.cpp", 
+#            src_dir + "bright.cpp", 
+#            "BriPy_isoname.cpp"], **ext_kwargs),
+#        Extension("MassStream.MassStream", [ 
+#            src_dir + "MassStream.cpp", 
+#            src_dir + "isoname.cpp", 
+#            src_dir + "bright.cpp", 
+#            "BriPy_MassStream.cpp"], **MassStream_ext_kwargs),
+#        Extension("BriPy.FCComps", [
+#            src_dir + "bright.cpp", 
+#            src_dir + "isoname.cpp", 
+#            src_dir + "MassStream.cpp", 
+#            src_dir + "FCComp.cpp", 
+#            src_dir + "Reprocess.cpp", 
+#            src_dir + "Storage.cpp", 
+#            src_dir + "Enrichment.cpp", 
+#            src_dir + "Reactor1G.cpp", 
+#            src_dir + "LightWaterReactor1G.cpp", 
+#            src_dir + "FastReactor1G.cpp", 
+#            src_dir + "FuelFabrication.cpp", 
+#            "BriPy_FCComps.cpp"], **FCComps_ext_kwargs),
         ],
     )
 
