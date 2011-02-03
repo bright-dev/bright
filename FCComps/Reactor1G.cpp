@@ -560,7 +560,7 @@ double Reactor1G::calc_deltaR(MassStream ms)
 double Reactor1G::calcTruCR()
 {
     //Calculates the reactor's transuranic conversion ratio.
-    TruCR = (InTRU.mass - OutTRU.mass) / (BUd/935.0);
+    TruCR = 1.0 - ((InTRU.mass - OutTRU.mass) / (BUd/931.46));
     return TruCR;
 };
 
