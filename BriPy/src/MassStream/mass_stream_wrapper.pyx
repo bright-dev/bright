@@ -202,6 +202,25 @@ cdef class MassStream:
     #
 
     def getSubStream(self, iso_sequence, char * name=""):
+        """Grabs a subset of the mass streams and returns a new stream comprised of only
+        the specified nuclides.  The elements or isotopes included in the new substream
+        are determined by iso_sequence. 
+
+        The input here is seen as a suggestion and so no error is raised if a nuclide 
+        is asked for via iso_sequence that is not present in the original mass stream.
+
+        Args:
+            * isoname (sequence): Elements and isotopes to be taken from current stream.
+              Members of this list must be integers.  For example, [92, 942390]
+              would take all uranium atoms and Pu-239.  
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has the members given in iso_sequence.  The mass of the substream
+              is calculated based on the weight fraction composition and mass
+              of the original mass stream.
+        """
         # Make an isotopic set 
         cdef int iso_zz
         cdef cpp_set[int] iso_set = cpp_set[int]()
@@ -209,7 +228,113 @@ cdef class MassStream:
             iso_zz = isoname.mixed_2_zzaaam(iso)
             iso_set.insert(iso_zz)      
 
-#        return self.ms_pointer.getSubStream(iso_set, std.string(name))
+        # Make new python version of this mass stream
         cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getSubStream(iso_set, std.string(name))
         py_ms = MassStream().__copy_constructor__(&cpp_ms)
         return py_ms
+
+
+    def getU(self, char * name=""):
+        """Convenience method that gets the Uranium portion of a mass stream.
+
+        Args:
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has Uranium members. 
+        """
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getU(std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        
+
+    def getPU(self, char * name=""):
+        """Convenience method that gets the Plutonium portion of a mass stream.
+
+        Args:
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has Plutonium members. 
+        """
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getPU(std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        
+
+    def getLAN(self, char * name=""):
+        """Convenience method that gets the Lanthanide portion of a mass stream.
+
+        Args:
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has Lanthanide members. 
+        """
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getLAN(std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        
+
+    def getACT(self, char * name=""):
+        """Convenience method that gets the Actinide portion of a mass stream.
+
+        Args:
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has Actinide members. 
+        """
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getACT(std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        
+
+    def getTRU(self, char * name=""):
+        """Convenience method that gets the Transuranic portion of a mass stream.
+
+        Args:
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has Transuranic members. 
+        """
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getTRU(std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        
+
+    def getMA(self, char * name=""):
+        """Convenience method that gets the Minor Actinide portion of a mass stream.
+
+        Args:
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has Minor Actinide members. 
+        """
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getMA(std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        
+
+    def getFP(self, char * name=""):
+        """Convenience method that gets the Fission Product portion of a mass stream.
+
+        Args:
+            * name (str): The name of the substream.
+
+        Returns:
+            * substream (MassStream): A new mass stream object that only 
+              has Fission Product members. 
+        """
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getFP(std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        

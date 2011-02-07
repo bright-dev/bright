@@ -30,3 +30,10 @@ cdef extern from "../MassStream.h":
         # Substream Methods
         MassStream getSubStream(set[int], std.string)
         #MassStream getSubStream(set[std.string], std.string) # Redundant
+        MassStream getU(std.string)
+        MassStream getPU(std.string)
+        MassStream getLAN(std.string)
+        MassStream getACT(std.string)
+        MassStream getTRU(std.string)
+        MassStream getMA(std.string)
+        MassStream getFP(std.string)
