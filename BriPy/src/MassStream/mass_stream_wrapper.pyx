@@ -2,6 +2,7 @@
 # Cython imports
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
+#from cython.operator cimport reference as ref
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 
@@ -9,6 +10,7 @@ from cython.operator cimport preincrement as inc
 cimport std
 cimport cpp_mass_stream
 
+import isoname
 
 cdef class MassStream:
     cdef cpp_mass_stream.MassStream * ms_pointer
@@ -35,6 +37,10 @@ cdef class MassStream:
         else:
             # Bad MassStream 
             raise TypeError("The mass stream isotopic vector must be a dict, str, or None.")
+
+
+    cdef __copy_constructor__(self, cpp_mass_stream.MassStream * ms_pointer):
+        self.ms_pointer = ms_pointer
 
 
     def __dealloc__(self):
@@ -189,3 +195,21 @@ cdef class MassStream:
         Returns:
             * atomic_weight (float): Atomic weight in [amu]."""
         return self.ms_pointer.atomic_weight()
+
+
+    #
+    # Substream Methods
+    #
+
+    def getSubStream(self, iso_sequence, char * name=""):
+        # Make an isotopic set 
+        cdef int iso_zz
+        cdef cpp_set[int] iso_set = cpp_set[int]()
+        for iso in iso_sequence:
+            iso_zz = isoname.mixed_2_zzaaam(iso)
+            iso_set.insert(iso_zz)      
+
+#        return self.ms_pointer.getSubStream(iso_set, std.string(name))
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getSubStream(iso_set, std.string(name))
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms

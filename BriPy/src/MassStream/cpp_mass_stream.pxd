@@ -26,3 +26,7 @@ cdef extern from "../MassStream.h":
         void Normalize()
         map[int, double] multByMass()
         double atomic_weight()
+
+        # Substream Methods
+        MassStream getSubStream(set[int], std.string)
+        #MassStream getSubStream(set[std.string], std.string) # Redundant
