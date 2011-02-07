@@ -3,7 +3,6 @@ cimport std
 
 cdef extern from "isoname.h" namespace "isoname":
 
-
     # Current Form
     std.string CurrentForm(int)
     std.string CurrentForm(std.string)
