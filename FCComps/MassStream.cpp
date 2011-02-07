@@ -217,6 +217,11 @@ MassStream::MassStream(std::string fstr, double m, std::string s)
     load_from_text( (char *) fstr.c_str() );
 }
 
+
+MassStream::~MassStream()
+{
+}
+
 /*--- Function definitions ---*/
 
 void MassStream::Print()

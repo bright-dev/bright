@@ -51,6 +51,7 @@ public:
     MassStream (CompDict, double = -1.0, std::string = "");
     MassStream (char *, double = -1.0, std::string = "");
     MassStream (std::string, double = -1.0, std::string = "");
+    ~MassStream ();
 
     //Get Functions
     CompDict    get_comp() const {return comp;};
