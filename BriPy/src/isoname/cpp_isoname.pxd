@@ -9,8 +9,19 @@ cdef extern from "isoname.h" namespace "isoname":
     map[std.string, int] LLzz
     map[int, std.string] zzLL
 
-    # Elemental groups and sets
+    # Elemental string sets
     set[std.string] LAN
+    set[std.string] ACT
+    set[std.string] TRU
+    set[std.string] MA
+    set[std.string] FP
+
+    # Elemental integer sets
+    set[int] lan
+    set[int] act
+    set[int] tru
+    set[int] ma
+    set[int] fp
 
     # Current Form
     std.string CurrentForm(int)
