@@ -3,16 +3,6 @@ cimport std
 cimport cpp_isoname
 
 
-#def CurrentForm(char* nuc):
-#    cdef std.string cpp_CurrentForm = cpp_isoname.CurrentForm(std.string(nuc))
-#    return cpp_CurrentForm.c_str()
-    
-
-#def CurrentForm(int nuc):
-#    cdef std.string cpp_CurrentForm = cpp_isoname.CurrentForm(nuc)
-#    return cpp_CurrentForm.c_str()
-
-
 def CurrentForm(nuc):
     """Find the current form of a nuclide."""
     cdef std.string cpp_CurrentForm 
