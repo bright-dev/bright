@@ -161,6 +161,7 @@ setup(name="BriPy",
     ext_modules=[
         Extension("isoname", 
                   ['src/isoname/bright.cpp', 'src/isoname/isoname.cpp', 
+                   'src/isoname/std.pxd',
                    'src/isoname/cpp_isoname.pxd',
                    'src/isoname/isoname_wrapper.pyx',
                    ],

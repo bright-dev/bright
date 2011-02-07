@@ -1,13 +1,16 @@
 """C++ wrapper for isoname library."""
 from libcpp.map cimport map
+from libcpp.set cimport set
 
 cimport std
-
 
 cdef extern from "isoname.h" namespace "isoname":
     # Conversion dictionaries
     map[std.string, int] LLzz
     map[int, std.string] zzLL
+
+    # Elemental groups and sets
+    set[std.string] LAN
 
     # Current Form
     std.string CurrentForm(int)
@@ -37,3 +40,4 @@ cdef extern from "isoname.h" namespace "isoname":
     double nuc_weight_zzaaam(int)
     double nuc_weight(int)
     double nuc_weight(std.string)
+

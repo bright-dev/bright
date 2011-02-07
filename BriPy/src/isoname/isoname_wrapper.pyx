@@ -1,14 +1,13 @@
 """Python wrapper for isoname library."""
 # Cython imports
 from libcpp.map cimport map
-from libcpp.utility cimport pair
+from libcpp.set cimport set as cpp_set
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 
 # local imports 
 cimport std
 cimport cpp_isoname
-
 
 #
 # Conversion dictionaries
@@ -24,6 +23,15 @@ cdef map[int, std.string].iterator zzLL_iter = cpp_isoname.zzLL.begin()
 while zzLL_iter != cpp_isoname.zzLL.end():
     zzLL[deref(zzLL_iter).first] = deref(zzLL_iter).second.c_str()
     inc(zzLL_iter)
+
+#
+# Elemental groups and sets
+#
+LAN = set()
+cdef cpp_set[std.string].iterator LAN_iter = cpp_isoname.LAN.begin()
+while LAN_iter != cpp_isoname.LAN.end():
+    LAN.add(deref(LAN_iter).c_str())
+    inc(LAN_iter)
 
 
 #

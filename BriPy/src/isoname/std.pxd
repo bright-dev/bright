@@ -5,3 +5,4 @@ cdef extern from "<string>" namespace "std":
         string()
         string(char *)
         char * c_str()
+
