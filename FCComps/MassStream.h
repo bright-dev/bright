@@ -53,16 +53,6 @@ public:
     MassStream (std::string, double = -1.0, std::string = "");
     ~MassStream ();
 
-    //Get Functions
-    CompDict    get_comp() const {return comp;};
-    double      get_mass() const {return mass;};
-    std::string get_name() const {return name;};
-
-    //Set Functions
-    void set_comp(CompDict cd)   {comp = cd;};
-    void set_mass(double d)      {mass = d; };
-    void set_name(std::string s) {name = s; };
-
     //MassStream function definitions
     void Print (); 
     void Normalize ();

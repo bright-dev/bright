@@ -400,13 +400,13 @@ MassStream MassStream::getFP (std::string n)
 MassStream operator+ (MassStream x, double y)
 {
     //Overloads x + y
-    return MassStream (x.get_comp(), x.get_mass() + y, x.get_name());
+    return MassStream (x.comp, x.mass + y, x.name);
 }
 
 MassStream operator+ (double x, MassStream y)
 {
     //Overloads x + y
-    return MassStream (y.get_comp(), x + y.get_mass(), y.get_name());
+    return MassStream (y.comp, x + y.mass, y.name);
 }
 
 MassStream operator+ (MassStream x, MassStream y)
@@ -436,18 +436,18 @@ MassStream operator+ (MassStream x, MassStream y)
 MassStream operator* (MassStream x, double y)
 {
     //Overloads x * y
-    return MassStream (x.get_comp(), x.get_mass() * y, x.get_name());
+    return MassStream (x.comp, x.mass * y, x.name);
 }
 
 MassStream operator* (double x, MassStream y)
 {
     //Overloads x * y
-    return MassStream (y.get_comp(), x * y.get_mass(), y.get_name());
+    return MassStream (y.comp, x * y.mass, y.name);
 }
 
 MassStream operator/ (MassStream x, double y)
 {
     //Overloads x / y
-    return MassStream (x.get_comp(), x.get_mass() / y, x.get_name());
+    return MassStream (x.comp, x.mass / y, x.name);
 }
 

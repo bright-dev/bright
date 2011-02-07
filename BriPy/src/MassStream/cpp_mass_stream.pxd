@@ -16,3 +16,13 @@ cdef extern from "../MassStream.h":
         map[int, double] comp
         double mass
         std.string name
+
+        # Methods
+        void norm_comp_dict()
+        void load_from_hdf5(std.string, std.string, int)
+        void load_from_text(char *)
+
+        void Print()
+        void Normalize()
+        map[int, double] multByMass()
+        double atomic_weight()
