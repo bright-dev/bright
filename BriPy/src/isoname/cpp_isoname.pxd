@@ -1,7 +1,12 @@
 """C++ wrapper for isoname library."""
+from libcpp.map cimport map
+
 cimport std
 
+
 cdef extern from "isoname.h" namespace "isoname":
+    # Conversion dictionaries
+    #map[std.string, int] LLzz
 
     # Current Form
     std.string CurrentForm(int)
