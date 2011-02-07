@@ -6,7 +6,8 @@ cimport std
 
 cdef extern from "isoname.h" namespace "isoname":
     # Conversion dictionaries
-    #map[std.string, int] LLzz
+    map[std.string, int] LLzz
+    map[int, std.string] zzLL
 
     # Current Form
     std.string CurrentForm(int)

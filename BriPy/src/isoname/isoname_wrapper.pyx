@@ -1,6 +1,30 @@
 """Python wrapper for isoname library."""
+# Cython imports
+from libcpp.map cimport map
+from libcpp.utility cimport pair
+from cython.operator cimport dereference as deref
+from cython.operator cimport preincrement as inc
+
+# local imports 
 cimport std
 cimport cpp_isoname
+
+
+#
+# Conversion dictionaries
+#
+LLzz = {}
+cdef map[std.string, int].iterator LLzz_iter = cpp_isoname.LLzz.begin()
+while LLzz_iter != cpp_isoname.LLzz.end():
+    LLzz[deref(LLzz_iter).first.c_str()] = deref(LLzz_iter).second
+    inc(LLzz_iter)
+
+zzLL = {}
+cdef map[int, std.string].iterator zzLL_iter = cpp_isoname.zzLL.begin()
+while zzLL_iter != cpp_isoname.zzLL.end():
+    zzLL[deref(zzLL_iter).first] = deref(zzLL_iter).second.c_str()
+    inc(zzLL_iter)
+
 
 #
 # Current Form Function
