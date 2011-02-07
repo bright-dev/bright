@@ -310,7 +310,7 @@ def nuc_weight(nuc):
 # (a*)_2_(b*)_List Functions
 #
 
-def LLAAAM_2_zzaaam_List(nuclist):
+def LLAAAM_2_zzaaam_List(list nuclist):
     """Converts a list of LLAAAM form to a list of zzaaam form.
 
     Args:
@@ -322,7 +322,7 @@ def LLAAAM_2_zzaaam_List(nuclist):
     return [LLAAAM_2_zzaaam(nuc) for nuc in nuclist]
 
 
-def LLAAAM_2_MCNP_List(nuclist):
+def LLAAAM_2_MCNP_List(list nuclist):
     """Converts a list of LLAAAM form to a list of MCNP form.
 
     Args:
@@ -334,7 +334,7 @@ def LLAAAM_2_MCNP_List(nuclist):
     return [LLAAAM_2_MCNP(nuc) for nuc in nuclist]
 
 
-def zzaaam_2_LLAAAM_List(nuclist):
+def zzaaam_2_LLAAAM_List(list nuclist):
     """Converts a list of zzaaam form to a list of LLAAAM form.
 
     Args:
@@ -346,7 +346,7 @@ def zzaaam_2_LLAAAM_List(nuclist):
     return [zzaaam_2_LLAAAM(nuc) for nuc in nuclist]
 
 
-def zzaaam_2_MCNP_List(nuclist):
+def zzaaam_2_MCNP_List(list nuclist):
     """Converts a list of zzaaam form to a list of MCNP form.
 
     Args:
@@ -358,7 +358,7 @@ def zzaaam_2_MCNP_List(nuclist):
     return [zzaaam_2_MCNP(nuc) for nuc in nuclist]
 
 
-def MCNP_2_LLAAAM_List(nuclist):
+def MCNP_2_LLAAAM_List(list nuclist):
     """Converts a list of MCNP form to a list of LLAAAM form.
 
     Args:
@@ -370,7 +370,7 @@ def MCNP_2_LLAAAM_List(nuclist):
     return [MCNP_2_LLAAAM(nuc) for nuc in nuclist]
 
 
-def MCNP_2_zzaaam_List(nuclist):
+def MCNP_2_zzaaam_List(list nuclist):
     """Converts a list of MCNP form to a list of zzaaam form.
 
     Args:
@@ -386,7 +386,7 @@ def MCNP_2_zzaaam_List(nuclist):
 # mixed_2_*_List Functions
 #
 
-def RearRemoveDuplicates(l):
+def RearRemoveDuplicates(list l):
     """Removes duplicate entries from list l, starting from the back. 
     Used internally in the [form]_2_[form]_List() functions.
 
@@ -403,7 +403,7 @@ def RearRemoveDuplicates(l):
     return l
     
 
-def mixed_2_zzaaam_List(nuclist):
+def mixed_2_zzaaam_List(list nuclist):
     """Converts a list of mixed form to a list of zzaaam form.
 
     Args:
@@ -415,7 +415,7 @@ def mixed_2_zzaaam_List(nuclist):
     return RearRemoveDuplicates( [mixed_2_zzaaam(nuc) for nuc in nuclist] )
 
 
-def mixed_2_LLAAAM_List(nuclist):
+def mixed_2_LLAAAM_List(list nuclist):
     """Converts a list of mixed form to a list of LLAAAM form.
 
     Args:
@@ -427,7 +427,7 @@ def mixed_2_LLAAAM_List(nuclist):
     return RearRemoveDuplicates( [mixed_2_LLAAAM(nuc) for nuc in nuclist] )
 
 
-def mixed_2_MCNP_List(nuclist):
+def mixed_2_MCNP_List(list nuclist):
     """Converts a list of mixed form to a list of MCNP form.
 
     Args:
@@ -442,7 +442,7 @@ def mixed_2_MCNP_List(nuclist):
 # isovec_keys_2_* Functions
 #
 
-def isovec_keys_2_zzaaam(isovec):
+def isovec_keys_2_zzaaam(dict isovec):
     """Converts all keys of an isotopic vector dictionary to zzaaam form.
 
     Args:
@@ -459,7 +459,7 @@ def isovec_keys_2_zzaaam(isovec):
     return newvec
 
 
-def isovec_keys_2_LLAAAM(isovec):
+def isovec_keys_2_LLAAAM(dict isovec):
     """Converts all keys of an isotopic vector dictionary to LLAAAM form.
 
     Args:
@@ -476,7 +476,7 @@ def isovec_keys_2_LLAAAM(isovec):
     return newvec
 
 
-def isovec_keys_2_MCNP(isovec):
+def isovec_keys_2_MCNP(dict isovec):
     """Converts all keys of an isotopic vector dictionary to MCNP form.
 
     Args:
