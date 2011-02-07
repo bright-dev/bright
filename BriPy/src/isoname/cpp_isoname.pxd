@@ -24,31 +24,31 @@ cdef extern from "isoname.h" namespace "isoname":
     set[int] fp
 
     # Current Form
-    std.string CurrentForm(int)
-    std.string CurrentForm(std.string)
+    std.string CurrentForm(int) except +
+    std.string CurrentForm(std.string) except +
 
     # LLAAAM_2_* Functions
-    int LLAAAM_2_zzaaam(std.string)
-    int LLAAAM_2_MCNP(std.string)
+    int LLAAAM_2_zzaaam(std.string) except +
+    int LLAAAM_2_MCNP(std.string) except +
 
     # zzaaam_2_* Functions
-    std.string zzaaam_2_LLAAAM(int)
-    int zzaaam_2_MCNP(int)
+    std.string zzaaam_2_LLAAAM(int) except +
+    int zzaaam_2_MCNP(int) except +
 
     # MCNP_2_* Functions 
-    int MCNP_2_zzaaam(int)
-    std.string MCNP_2_LLAAAM(int)
+    int MCNP_2_zzaaam(int) except + 
+    std.string MCNP_2_LLAAAM(int) except + 
 
     # mixed_2_*_ Functions
-    int mixed_2_zzaaam(std.string)
-    int mixed_2_zzaaam(int)
-    std.string mixed_2_LLAAAM(std.string)
-    std.string mixed_2_LLAAAM(int)
-    int mixed_2_MCNP(std.string)
-    int mixed_2_MCNP(int)
+    int mixed_2_zzaaam(std.string) except +
+    int mixed_2_zzaaam(int) except +
+    std.string mixed_2_LLAAAM(std.string) except +
+    std.string mixed_2_LLAAAM(int) except +
+    int mixed_2_MCNP(std.string) except +
+    int mixed_2_MCNP(int) except +
 
     # Helper Functions
-    double nuc_weight_zzaaam(int)
-    double nuc_weight(int)
-    double nuc_weight(std.string)
+    double nuc_weight_zzaaam(int) except +
+    double nuc_weight(int) except +
+    double nuc_weight(std.string) except +
 
