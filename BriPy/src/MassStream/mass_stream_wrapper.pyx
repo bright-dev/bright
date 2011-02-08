@@ -343,6 +343,8 @@ cdef class MassStream:
     # Operator Overloads
     #
 
+    # Addition
+
     def __add_float__(MassStream self, double y):
         cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] + y
         py_ms = MassStream().__copy_constructor__(&cpp_ms)
@@ -356,12 +358,61 @@ cdef class MassStream:
 
 
     def __add__(MassStream self, y): 
-        if isinstance(y, int):
-            y = float(y)
-
         if isinstance(y, float):
             return self.__add_float__(y)
         elif isinstance(y, MassStream):
             return self.__add_mass_stream__(y)
+        elif isinstance(y, int):
+            return self.__add_float__(float(y))
         else:
             raise TypeError("Only ints, floats, and MassStreams may be added to a mass stream.")
+
+
+    def __radd__(MassStream self, y):
+        return self.__add__(y)
+
+
+    # Multiplication
+
+    def __mul_float__(MassStream self, double y):
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] * y
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+
+
+    def __mul__(MassStream self, y):
+        if isinstance(y, float):
+            return self.__mul_float__(y)
+        elif isinstance(y, int):
+            return self.__mul_float__(float(y))
+        else:
+            raise TypeError("Only ints and floats may be multiplied by a mass stream.")
+
+
+    def __rmul__(MassStream self, y):
+        return self.__mul__(y)
+
+
+    # Division
+
+    def __div_float__(MassStream self, double y):
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] / y
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+
+
+    def __div__(MassStream self, y):
+        if isinstance(y, float):
+            return self.__div_float__(y)
+        elif isinstance(y, int):
+            return self.__div_float__(float(y))
+        else:
+            raise TypeError("Only ints and floats may be divide a mass stream.")
+
+
+    def __rdiv__(MassStream self, y):
+        return self.__div__(y)
+
+    
+    def __truediv__(MassStream self, y):
+        return self.__div__(y)
