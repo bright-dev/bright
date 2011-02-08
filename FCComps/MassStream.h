@@ -70,20 +70,16 @@ public:
     MassStream getMA  (std::string = "");
     MassStream getFP  (std::string = "");
 
+    //Overloaded Operators
+    MassStream operator+ (double);
+    MassStream operator+ (MassStream);
+    MassStream operator* (double);
+    MassStream operator/ (double);
+
 };
 
 //std::ostream& operator<< (std::ostream& os, MassStream& ms);
 std::ostream& operator<< (std::ostream& os, MassStream ms);
-
-//Overloaded Operators
-MassStream operator+ (MassStream, double);
-MassStream operator+ (double, MassStream);
-MassStream operator+ (MassStream, MassStream);
-
-MassStream operator* (MassStream, double);
-MassStream operator* (double, MassStream);
-MassStream operator/ (MassStream, double);
-
 
 //Exceptions
 class HDF5BoundsError: public std::exception

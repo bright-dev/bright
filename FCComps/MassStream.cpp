@@ -397,23 +397,18 @@ MassStream MassStream::getFP (std::string n)
 
 /*--- Overloaded Operators ---*/
 
-MassStream operator+ (MassStream x, double y)
+MassStream MassStream::operator+ (double y)
 {
     //Overloads x + y
-    return MassStream (x.comp, x.mass + y, x.name);
+    return MassStream (comp, mass + y, name);
 }
 
-MassStream operator+ (double x, MassStream y)
-{
-    //Overloads x + y
-    return MassStream (y.comp, x + y.mass, y.name);
-}
 
-MassStream operator+ (MassStream x, MassStream y)
+MassStream MassStream::operator+ (MassStream y)
 {
     //Overloads x + y
     CompDict cd;
-    CompDict xwgt = x.multByMass();
+    CompDict xwgt = multByMass();
     CompDict ywgt = y.multByMass();
 
     for (CompIter i = xwgt.begin(); i != xwgt.end(); i++)
@@ -430,24 +425,20 @@ MassStream operator+ (MassStream x, MassStream y)
             cd[i->first] = ywgt[i->first];			
     }
     
-    return MassStream (cd);
+    return MassStream (cd, -1, "");
 }
 
-MassStream operator* (MassStream x, double y)
+
+MassStream MassStream::operator* (double y)
 {
     //Overloads x * y
-    return MassStream (x.comp, x.mass * y, x.name);
+    return MassStream (comp, mass * y, name);
 }
 
-MassStream operator* (double x, MassStream y)
-{
-    //Overloads x * y
-    return MassStream (y.comp, x * y.mass, y.name);
-}
 
-MassStream operator/ (MassStream x, double y)
+MassStream MassStream::operator/ (double y)
 {
     //Overloads x / y
-    return MassStream (x.comp, x.mass / y, x.name);
+    return MassStream (comp, mass / y, name);
 }
 

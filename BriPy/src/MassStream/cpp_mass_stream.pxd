@@ -37,3 +37,9 @@ cdef extern from "../MassStream.h":
         MassStream getTRU(std.string)
         MassStream getMA(std.string)
         MassStream getFP(std.string)
+
+        # Operator Overloads
+        MassStream operator+(double)
+        MassStream operator+(MassStream)
+        MassStream operator*(double)
+        MassStream operator/(double)

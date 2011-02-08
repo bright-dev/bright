@@ -338,3 +338,30 @@ cdef class MassStream:
         py_ms = MassStream().__copy_constructor__(&cpp_ms)
         return py_ms
         
+
+    #
+    # Operator Overloads
+    #
+
+    def __add_float__(MassStream self, double y):
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] + y
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+        
+
+    def __add_mass_stream__(MassStream self, MassStream y):
+        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] + y.ms_pointer[0]
+        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        return py_ms
+
+
+    def __add__(MassStream self, y): 
+        if isinstance(y, int):
+            y = float(y)
+
+        if isinstance(y, float):
+            return self.__add_float__(y)
+        elif isinstance(y, MassStream):
+            return self.__add_mass_stream__(y)
+        else:
+            raise TypeError("Only ints, floats, and MassStreams may be added to a mass stream.")
