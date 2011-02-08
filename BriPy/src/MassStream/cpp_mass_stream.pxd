@@ -19,8 +19,8 @@ cdef extern from "../MassStream.h":
 
         # Methods
         void norm_comp_dict()
-        void load_from_hdf5(std.string, std.string, int)
-        void load_from_text(char *)
+        void load_from_hdf5(std.string, std.string, int) except +
+        void load_from_text(char *) except +
 
         void Print()
         void Normalize()
