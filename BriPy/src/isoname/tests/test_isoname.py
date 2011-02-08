@@ -24,61 +24,61 @@ class TestElementGroupsLL(TestCase):
     """Tests the LL element groups are right."""
 
     def test_LAN(self):
-        assert_equal(isoname.LAN, ['CE', 'DY', 'ER', 'EU', 'GD', 'HO', 'LA', 
-            'LU', 'ND', 'PM', 'PR', 'SM', 'TB', 'TM', 'YB'])
+        assert_equal(isoname.LAN, set(['CE', 'DY', 'ER', 'EU', 'GD', 'HO', 'LA', 
+               'LU', 'ND', 'PM', 'PR', 'SM', 'TB', 'TM', 'YB']))
 
     def test_ACT(self):
-        assert_equal(isoname.ACT, ['AC', 'AM', 'BH', 'BK', 'CF', 'CM', 'DB', 
-            'DS', 'ES', 'FM', 'HS', 'LR', 'MD', 'MT', 'NO', 'NP', 'PA', 'PU', 
-            'RF', 'RG', 'SG', 'TH', 'U'])
+        assert_equal(isoname.ACT, set(['AC', 'AM', 'BH', 'BK', 'CF', 'CM', 'DB', 
+               'DS', 'ES', 'FM', 'HS', 'LR', 'MD', 'MT', 'NO', 'NP', 'PA', 'PU', 
+               'RF', 'RG', 'SG', 'TH', 'U']))
             
     def test_TRU(self):
-        assert_equal(isoname.TRU, ['AM', 'BH', 'BK', 'CF', 'CM', 'DB', 'DS', 
-            'ES', 'FM', 'HS', 'LR', 'MD', 'MT', 'NO', 'NP', 'PU', 'RF', 'RG', 
-            'SG'])
+        assert_equal(isoname.TRU, set(['AM', 'BH', 'BK', 'CF', 'CM', 'DB', 'DS', 
+               'ES', 'FM', 'HS', 'LR', 'MD', 'MT', 'NO', 'NP', 'PU', 'RF', 'RG', 
+               'SG']))
 
     def test_MA(self):
-        assert_equal(isoname.MA, ['AM', 'BH', 'BK', 'CF', 'CM', 'DB', 'DS', 
-            'ES', 'FM', 'HS', 'LR', 'MD', 'MT', 'NO', 'NP', 'RF', 'RG', 'SG'])
+        assert_equal(isoname.MA, set(['AM', 'BH', 'BK', 'CF', 'CM', 'DB', 'DS', 
+              'ES', 'FM', 'HS', 'LR', 'MD', 'MT', 'NO', 'NP', 'RF', 'RG', 'SG']))
 
     def test_FP(self):
-        assert_equal(isoname.FP, ['AG', 'AL', 'AR', 'AS', 'AT', 'AU', 'B',  
-            'BA', 'BE', 'BI', 'BR', 'C',  'CA', 'CD', 'CE', 'CL', 'CO', 'CR', 
-            'CS', 'CU', 'DY', 'ER', 'EU', 'F',  'FE', 'FR', 'GA', 'GD', 'GE',
-            'H',  'HE', 'HF', 'HG', 'HO', 'I',  'IN', 'IR', 'K',  'KR', 'LA', 
-            'LI', 'LU', 'MG', 'MN', 'MO', 'N',  'NA', 'NB', 'ND', 'NE', 'NI', 
-            'O',  'OS', 'P',  'PB', 'PD', 'PM', 'PO', 'PR', 'PT', 'RA', 'RB', 
-            'RE', 'RH', 'RN', 'RU', 'S',  'SB', 'SC', 'SE', 'SI', 'SM', 'SN', 
-            'SR', 'TA', 'TB', 'TC', 'TE', 'TI', 'TL', 'TM', 'V',  'W',  'XE',  
-            'Y', 'YB', 'ZN', 'ZR'])
+        assert_equal(isoname.FP, set(['AG', 'AL', 'AR', 'AS', 'AT', 'AU', 'B',  
+              'BA', 'BE', 'BI', 'BR', 'C',  'CA', 'CD', 'CE', 'CL', 'CO', 'CR', 
+              'CS', 'CU', 'DY', 'ER', 'EU', 'F',  'FE', 'FR', 'GA', 'GD', 'GE',
+              'H',  'HE', 'HF', 'HG', 'HO', 'I',  'IN', 'IR', 'K',  'KR', 'LA', 
+              'LI', 'LU', 'MG', 'MN', 'MO', 'N',  'NA', 'NB', 'ND', 'NE', 'NI', 
+              'O',  'OS', 'P',  'PB', 'PD', 'PM', 'PO', 'PR', 'PT', 'RA', 'RB', 
+              'RE', 'RH', 'RN', 'RU', 'S',  'SB', 'SC', 'SE', 'SI', 'SM', 'SN', 
+              'SR', 'TA', 'TB', 'TC', 'TE', 'TI', 'TL', 'TM', 'V',  'W',  'XE',  
+              'Y', 'YB', 'ZN', 'ZR']))
 
 
 class TestElementGroupsZz(TestCase):
     """Tests the zz element groups are right."""
 
     def test_lan(self):
-        assert_equal(isoname.lan, [57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 
-            68, 69, 70, 71])
+        assert_equal(isoname.lan, set([57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 
+            68, 69, 70, 71]))
 
     def test_act(self):
-        assert_equal(isoname.act, [89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 
-            100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111])
+        assert_equal(isoname.act, set([89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 
+            100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111]))
 
     def test_tru(self):
-        assert_equal(isoname.tru, [93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 
-            103, 104, 105, 106, 107, 108, 109, 110, 111])
+        assert_equal(isoname.tru, set([93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 
+            103, 104, 105, 106, 107, 108, 109, 110, 111]))
 
     def test_ma(self):
-        assert_equal(isoname.ma, [93, 95, 96, 97, 98, 99, 100, 101, 102, 103, 
-            104, 105, 106, 107, 108, 109, 110, 111])
+        assert_equal(isoname.ma, set([93, 95, 96, 97, 98, 99, 100, 101, 102, 103, 
+            104, 105, 106, 107, 108, 109, 110, 111]))
 
     def test_fp(self):
-        assert_equal(isoname.fp, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 
+        assert_equal(isoname.fp, set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 
             14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 
             31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 
             48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 
             65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 
-            82, 83, 84, 85, 86, 87, 88])
+            82, 83, 84, 85, 86, 87, 88]))
 
 
 class TestZzaaamFunctions(TestCase):
