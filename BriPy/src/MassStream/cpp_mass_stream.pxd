@@ -5,8 +5,10 @@ from libcpp.set cimport set
 cimport std
 
 
-cdef extern from "../MassStream.h":
-    cdef cppclass MassStream:
+cdef extern from "../FCComp.h" namespace "FCComps":
+    set[int] isos2track
+
+    """cdef cppclass MassStream:
         # Constuctors
         MassStream()
         MassStream(map[int, double], float, std.string)
@@ -42,4 +44,4 @@ cdef extern from "../MassStream.h":
         MassStream operator+(double)
         MassStream operator+(MassStream)
         MassStream operator*(double)
-        MassStream operator/(double)
+        MassStream operator/(double)"""
