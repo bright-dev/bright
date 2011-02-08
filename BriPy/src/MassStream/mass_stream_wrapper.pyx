@@ -13,6 +13,31 @@ cimport cpp_mass_stream
 import isoname
 
 cdef class MassStream:
+    """MassStream fuel cycle flow object.
+
+    Args:
+        * compdict (dict or str): This is the input isotopic component dictionary.
+          This dictionary need not be normalized; MassStream initialization will
+          automatically renormalize the stream.  Thus compdict simply is a dictionary
+          of relative weights.  The keys of compdict must be integers representing
+          isotopes in zzaaam <isoform> form.  The values are floats for 
+          each isotope's weight fraction.
+
+          If a string is provided instead of a dictionary, then MassStream will
+          read in the compdict vector from a file at the string's location using 
+          the load_from_text() method.  
+
+          If no compdict is provided, an empty MassStream object is constructed.
+
+    Keyword Args:
+        * mass (float): This is the mass of the new stream. If the mass provided
+          is negative (default -1.0) then the mass of the new stream is calculated from 
+          the sum of compdict's components before normalization.  If the mass here
+          is positive or zero, then this mass overrides the calculated one.
+        * name (str):  A string label for the stream.  Helpful for large numbers of 
+          streams. Default ''.
+    """
+
     cdef cpp_mass_stream.MassStream * ms_pointer
 
     def __cinit__(self, isovec=None, float mass=-1.0, char * name=''):
