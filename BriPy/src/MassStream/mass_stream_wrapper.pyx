@@ -11,6 +11,7 @@ cimport std
 cimport cpp_mass_stream
 
 import isoname
+import os
 
 cdef class MassStream:
     """MassStream fuel cycle flow object.
@@ -53,7 +54,11 @@ cdef class MassStream:
 
         elif isinstance(isovec, basestring):
             # Mass Stream from file
-            self.ms_pointer = new cpp_mass_stream.MassStream(<char *> isovec, mass, std.string(name))
+            if os.path.exists(isovec):
+                print "Here"
+                self.ms_pointer = new cpp_mass_stream.MassStream(<char *> isovec, mass, std.string(name))
+            else:
+                raise IOError("The file {0} does not exist!".format(isovec))
 
         elif isovec is None:
             # Empty mass stream

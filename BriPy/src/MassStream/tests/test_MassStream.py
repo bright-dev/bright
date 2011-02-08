@@ -36,6 +36,7 @@ class TestMassStreamConstructor(TestCase):
         assert_equal(ms.mass, 1.0)
         assert_equal(ms.name, '')
 
+"""\
     def test_ms2(self):
         ms = MassStream.MassStream("ms.txt", 42)
         assert_equal(ms.comp, {922350: 0.05, 922380: 0.95})
@@ -100,11 +101,13 @@ class TestMassStreamConstructor(TestCase):
         ms = MassStream.MassStream()
         ms.load_from_text("ms.txt")
         assert_equal(ms.comp, {922350: 0.05, 922380: 0.95})
+"""\
 
 
 class TestMassStreamMethods(TestCase):
     """Tests that the MassStream member functions work."""
 
+"""\
     def test_Normalize(self):
         ms = MassStream.MassStream({922350: 0.05, 922380: 0.95}, 15)
         ms.Normalize()
@@ -124,11 +127,13 @@ class TestMassStreamMethods(TestCase):
 
         ms_mixed = MassStream.MassStream({922350: 0.5, 922380: 0.5})
         assert_almost_equal(ms_mixed.atomic_weight()/236.5, 1.0, 4)
+"""\
 
 
 class TestMassSubStreamMethods(TestCase):
     """Tests that the MassStream sub-stream getter member functions work."""
 
+"""\
     isovec = {
         10010:  1.0,   
         80160:  1.0,   
@@ -298,11 +303,12 @@ class TestMassSubStreamMethods(TestCase):
         assert_equal(ms1.comp[691690], 1.0/3.0)
         assert_equal(ms1.mass, 3.0)
         assert_equal(ms1.name, 'FP Stream')
+"""\
 
         
 class TestMassStreamOperatorOverloading(TestCase):
     """Tests that the MassStream operator overloads work."""
-
+"""\
     u235 = MassStream.MassStream({922350: 1.0})
     u238 = MassStream.MassStream({922380: 1.0})
 
@@ -331,7 +337,7 @@ class TestMassStreamOperatorOverloading(TestCase):
     def test_div_num(self):
         ms = self.u235 / 10
         assert_equal(ms.mass, 0.1)
-
+"""
 
 if __name__ == "__main__":
     nose.main()
