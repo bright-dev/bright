@@ -13,9 +13,9 @@ cimport cpp_bright
 import isoname
 
 
-#
-# FCComps Configuration namespace
-#
+#######################################
+### FCComps Configuration namespace ###
+#######################################
 
 class isos2track(object):
     def __get_value__(self):
@@ -103,3 +103,43 @@ class output_filename(object):
 # Make isos2track a singleton
 output_filename = output_filename().value
 
+
+
+####################
+### FCComp Class ###
+####################
+
+cdef class FCComp:
+    """Base Fuel Cycle Component Class.
+
+    Args:
+        * paramlist (sequence of str): A set of parameter names (str) that the component will track.
+        * name (str): The name of the fuel cycle component instance.
+
+    Note that this automatically calls the protected :meth:`initialize` C function.
+    """
+
+    cdef cpp_bright.FCComp * fccomp_pointer
+
+    def __cinit__(self, params=None, char * name=""):
+        cdef cpp_set[std.string] param_set
+
+        if params is None:
+            self.fccomp_pointer = new cpp_bright.FCComp(std.string(name))
+        else:
+            for p in params:
+                param_set.insert(std.string(p))
+            self.fccomp_pointer = new cpp_bright.FCComp(param_set, std.string(name))
+
+
+    def __dealloc__(self):
+        del self.fccomp_pointer
+
+
+    property name:
+        def __get__(self):
+            cdef std.string n = self.fccomp_pointer.name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.fccomp_pointer.name = std.string(n)

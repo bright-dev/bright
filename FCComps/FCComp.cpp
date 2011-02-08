@@ -343,6 +343,10 @@ FCComp::FCComp (std::set<std::string> ptrack, std::string n)
     initialize(ptrack, n);	
 }
 
+FCComp::~FCComp ()
+{
+}
+
 
 /*******************************/
 /*** Public Access Functions ***/

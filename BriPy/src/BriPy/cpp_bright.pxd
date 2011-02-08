@@ -15,3 +15,12 @@ cdef extern from "../FCComp.h" namespace "FCComps":
     bint write_text
 
     std.string output_filename
+
+
+cdef extern from "../FCComp.h":
+    cdef cppclass FCComp:
+        FCComp()
+        FCComp(std.string)
+        FCComp(set[std.string], std.string)
+
+        std.string name 

@@ -69,6 +69,7 @@ public:
     FCComp ();
     FCComp (std::string);
     FCComp (std::set<std::string>, std::string = "");
+    ~FCComp ();
 
     //Get Functions
     std::set<std::string> get_params2track() const {return params2track;};
