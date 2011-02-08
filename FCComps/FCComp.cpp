@@ -18,19 +18,7 @@ int FCComps::verbosity  = 0;
 int FCComps::write_text = 1;
 int FCComps::write_hdf5 = 0;
 
-std::set<int> FCComps::get_isos2track() {return FCComps::isos2track;};
-int           FCComps::get_verbosity()  {return FCComps::verbosity;};
-int           FCComps::get_write_text() {return FCComps::write_text;};
-int           FCComps::get_write_hdf5() {return FCComps::write_hdf5;};
-
-void FCComps::set_isos2track(std::set<int> i2t) {FCComps::isos2track = i2t;};
-void FCComps::set_verbosity(int v)              {FCComps::verbosity = v;};
-void FCComps::set_write_text(int wt)            {FCComps::write_text = wt;};
-void FCComps::set_write_hdf5(int wh)            {FCComps::write_hdf5 = wh;};
-
 std::string FCComps::output_filename = "fuel_cycle.h5";
-std::string FCComps::get_output_filename() {return FCComps::output_filename;};
-void FCComps::set_output_filename(std::string of) {FCComps::output_filename = of;};
 
 void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname, bool clear_prev)
 {

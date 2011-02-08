@@ -30,19 +30,7 @@ namespace FCComps {
     extern int write_text;
     extern int write_hdf5;
 
-    extern std::set<int> get_isos2track();
-    extern int           get_verbosity();
-    extern int           get_write_text();
-    extern int           get_write_hdf5();
-
-    extern void set_isos2track(std::set<int> i2t);
-    extern void set_verbosity(int v);
-    extern void set_write_text(int wt);
-    extern void set_write_hdf5(int wh);
-
     extern std::string output_filename;
-    extern std::string get_output_filename();
-    extern void set_output_filename(std::string of);
 
 };
 
