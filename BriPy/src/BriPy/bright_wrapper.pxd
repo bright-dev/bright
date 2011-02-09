@@ -8,7 +8,6 @@ from cython.operator cimport preincrement as inc
 
 # local imports 
 cimport std
-#cimport converters
 
 cimport isoname
 cimport cpp_mass_stream
