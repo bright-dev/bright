@@ -9,6 +9,7 @@ from cython.operator cimport preincrement as inc
 # local imports 
 cimport std
 #cimport converters
+#from converters cimport set_py_to_cpp
 
 import isoname
 
@@ -34,14 +35,15 @@ class isos2track(object):
         return value
 
     def __set_value__(self, value):
-        cdef int iso_zz
-        cpp_bright.isos2track.clear()
-        for iso in value:
-            iso_zz = isoname.mixed_2_zzaaam(iso)
-            cpp_bright.isos2track.insert(iso_zz)
+#        cdef int iso_zz
+#        cpp_bright.isos2track.clear()
+#        for iso in value:
+#            iso_zz = isoname.mixed_2_zzaaam(iso)
+#            cpp_bright.isos2track.insert(iso_zz)
 
-#        s = set([isoname.mixed_2_zzaaam(v) for v in value])
+        s = set([isoname.mixed_2_zzaaam(v) for v in value])
 #        converters.set_py_to_cpp(s, cpp_bright.isos2track)
+        set_py_to_cpp(s, cpp_bright.isos2track)
 
     value = property(__get_value__, __set_value__)
 
