@@ -13,87 +13,29 @@ cimport cpp_isoname
 # Conversion dictionaries
 #
 
-LLzz = {}
-cdef map[std.string, int].iterator LLzz_iter = cpp_isoname.LLzz.begin()
-while LLzz_iter != cpp_isoname.LLzz.end():
-    LLzz[deref(LLzz_iter).first.c_str()] = deref(LLzz_iter).second
-    inc(LLzz_iter)
-
-zzLL = {}
-cdef map[int, std.string].iterator zzLL_iter = cpp_isoname.zzLL.begin()
-while zzLL_iter != cpp_isoname.zzLL.end():
-    zzLL[deref(zzLL_iter).first] = deref(zzLL_iter).second.c_str()
-    inc(zzLL_iter)
-
+LLzz = map_to_dict(cpp_isoname.LLzz)
+zzLL = map_to_dict(cpp_isoname.zzLL)
 
 #
 # Elemental string sets
 #
 
-LAN = set()
-cdef cpp_set[std.string].iterator LAN_iter = cpp_isoname.LAN.begin()
-while LAN_iter != cpp_isoname.LAN.end():
-    LAN.add(deref(LAN_iter).c_str())
-    inc(LAN_iter)
-
-ACT = set()
-cdef cpp_set[std.string].iterator ACT_iter = cpp_isoname.ACT.begin()
-while ACT_iter != cpp_isoname.ACT.end():
-    ACT.add(deref(ACT_iter).c_str())
-    inc(ACT_iter)
-
-TRU = set()
-cdef cpp_set[std.string].iterator TRU_iter = cpp_isoname.TRU.begin()
-while TRU_iter != cpp_isoname.TRU.end():
-    TRU.add(deref(TRU_iter).c_str())
-    inc(TRU_iter)
-
-MA = set()
-cdef cpp_set[std.string].iterator MA_iter = cpp_isoname.MA.begin()
-while MA_iter != cpp_isoname.MA.end():
-    MA.add(deref(MA_iter).c_str())
-    inc(MA_iter)
-
-FP = set()
-cdef cpp_set[std.string].iterator FP_iter = cpp_isoname.FP.begin()
-while FP_iter != cpp_isoname.FP.end():
-    FP.add(deref(FP_iter).c_str())
-    inc(FP_iter)
+LAN = cpp_to_py_set(cpp_isoname.LAN)
+ACT = cpp_to_py_set(cpp_isoname.ACT)
+TRU = cpp_to_py_set(cpp_isoname.TRU)
+MA = cpp_to_py_set(cpp_isoname.MA)
+FP = cpp_to_py_set(cpp_isoname.FP)
 
 
 #
 # Elemental integer sets
 #
 
-lan = set()
-cdef cpp_set[int].iterator lan_iter = cpp_isoname.lan.begin()
-while lan_iter != cpp_isoname.lan.end():
-    lan.add(deref(lan_iter))
-    inc(lan_iter)
-
-act = set()
-cdef cpp_set[int].iterator act_iter = cpp_isoname.act.begin()
-while act_iter != cpp_isoname.act.end():
-    act.add(deref(act_iter))
-    inc(act_iter)
-
-tru = set()
-cdef cpp_set[int].iterator tru_iter = cpp_isoname.tru.begin()
-while tru_iter != cpp_isoname.tru.end():
-    tru.add(deref(tru_iter))
-    inc(tru_iter)
-
-ma = set()
-cdef cpp_set[int].iterator ma_iter = cpp_isoname.ma.begin()
-while ma_iter != cpp_isoname.ma.end():
-    ma.add(deref(ma_iter))
-    inc(ma_iter)
-
-fp = set()
-cdef cpp_set[int].iterator fp_iter = cpp_isoname.fp.begin()
-while fp_iter != cpp_isoname.fp.end():
-    fp.add(deref(fp_iter))
-    inc(fp_iter)
+lan = cpp_to_py_set(cpp_isoname.lan)
+act = cpp_to_py_set(cpp_isoname.act)
+tru = cpp_to_py_set(cpp_isoname.tru)
+ma = cpp_to_py_set(cpp_isoname.ma)
+fp = cpp_to_py_set(cpp_isoname.fp)
 
 
 #
