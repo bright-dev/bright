@@ -25,16 +25,11 @@ import os
 
 class isos2track(object):
     def __get_value__(self):
-        value = set()
-        cdef cpp_set[int].iterator isos_iter = cpp_bright.isos2track.begin()
-        while isos_iter != cpp_bright.isos2track.end():
-            value.add(deref(isos_iter))
-            inc(isos_iter)
-        return value
+        return cpp_to_py_set(cpp_bright.isos2track)
 
     def __set_value__(self, value):
         s = set([isoname.mixed_2_zzaaam(v) for v in value])
-        set_py_to_cpp(s, cpp_bright.isos2track)
+        py_to_cpp_set(s, cpp_bright.isos2track)
 
     value = property(__get_value__, __set_value__)
 
