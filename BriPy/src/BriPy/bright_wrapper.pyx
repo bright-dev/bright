@@ -9,9 +9,10 @@ from cython.operator cimport preincrement as inc
 # local imports 
 cimport std
 cimport cpp_bright
+cimport cpp_mass_stream
 
 import isoname
-
+from MassStream import MassStream
 
 #######################################
 ### FCComps Configuration namespace ###
@@ -136,6 +137,10 @@ cdef class FCComp:
         del self.fccomp_pointer
 
 
+    #
+    # Class Attributes
+    #
+
     property name:
         def __get__(self):
             cdef std.string n = self.fccomp_pointer.name
@@ -143,3 +148,26 @@ cdef class FCComp:
 
         def __set__(self, char * n):
             self.fccomp_pointer.name = std.string(n)
+
+
+    property natural_name:
+        def __get__(self):
+            cdef std.string n = self.fccomp_pointer.natural_name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.fccomp_pointer.natural_name = std.string(n)
+
+
+#    property IsosIn:
+#        def __get__(self):
+#            #cdef cpp_mass_stream.MassStream ms = self.fccomp_pointer.IsosIn
+#            #return MassStream().__copy_constructor__(ms)
+#            #return MassStream().__copy_constructor__(<cpp_mass_stream.MassStream *> &(self.fccomp_pointer[0]).IsosIn)
+#            cdef cpp_mass_stream.MassStream * ms = &self.fccomp_pointer.IsosIn
+#            MS = MassStream()
+#            MS.__copy_constructor__(ms)
+#            return MS
+#
+#        def __set__(self, ms):
+#            self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]

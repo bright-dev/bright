@@ -3,7 +3,8 @@ from libcpp.map cimport map
 from libcpp.set cimport set
 
 cimport std
-
+#from cpp_mass_stream cimport MassStream
+cimport cpp_mass_stream
 
 cdef extern from "../FCComp.h" namespace "FCComps":
     set[int] isos2track
@@ -23,4 +24,9 @@ cdef extern from "../FCComp.h":
         FCComp(std.string)
         FCComp(set[std.string], std.string)
 
+        # Attributes
         std.string name 
+        std.string natural_name
+
+        cpp_mass_stream.MassStream IsosIn
+        cpp_mass_stream.MassStream IsosOut

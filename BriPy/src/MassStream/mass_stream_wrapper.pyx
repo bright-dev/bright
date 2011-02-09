@@ -88,6 +88,7 @@ cdef class MassStream:
             cdef cpp_map[int, double].iterator comp_iter = self.ms_pointer.comp.begin()
             while comp_iter != self.ms_pointer.comp.end():
                 comp_dict[deref(comp_iter).first] = deref(comp_iter).second
+                inc(comp_iter)
             return comp_dict
 
         def __set__(self, dict comp):
@@ -215,6 +216,7 @@ cdef class MassStream:
         cdef cpp_map[int, double].iterator isovec_iter = cpp_isovec.begin()
         while isovec_iter != cpp_isovec.end():
             isovec[deref(isovec_iter).first] = deref(isovec_iter).second
+            inc(isovec_iter)
         return isovec
 
 
@@ -255,12 +257,27 @@ cdef class MassStream:
         cdef int iso_zz
         cdef cpp_set[int] iso_set = cpp_set[int]()
         for iso in iso_sequence:
-            iso_zz = isoname.mixed_2_zzaaam(iso)
-            iso_set.insert(iso_zz)      
+            if isinstance(iso, int):
+                if (iso in isoname.zzLL):
+                    iso_zz = iso
+                else:
+                    iso_zz = isoname.mixed_2_zzaaam(iso)
+
+            elif isinstance(iso, basestring):
+                iso_str = iso.upper()
+                if (iso_str in isoname.LLzz):
+                    iso_zz = isoname.LLzz[iso_str]
+                else:
+                    iso_zz = isoname.mixed_2_zzaaam(iso)
+
+            else:
+                raise TypeError("Isotopes must be strings or integers.")
+
+            iso_set.insert(iso_zz)
 
         # Make new python version of this mass stream
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getSubStream(iso_set, std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getSubStream(iso_set, std.string(name))
         return py_ms
 
 
@@ -274,8 +291,8 @@ cdef class MassStream:
             * substream (MassStream): A new mass stream object that only 
               has Uranium members. 
         """
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getU(std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getU(std.string(name))
         return py_ms
         
 
@@ -289,8 +306,8 @@ cdef class MassStream:
             * substream (MassStream): A new mass stream object that only 
               has Plutonium members. 
         """
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getPU(std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getPU(std.string(name))
         return py_ms
         
 
@@ -304,8 +321,8 @@ cdef class MassStream:
             * substream (MassStream): A new mass stream object that only 
               has Lanthanide members. 
         """
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getLAN(std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getLAN(std.string(name))
         return py_ms
         
 
@@ -319,8 +336,8 @@ cdef class MassStream:
             * substream (MassStream): A new mass stream object that only 
               has Actinide members. 
         """
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getACT(std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getACT(std.string(name))
         return py_ms
         
 
@@ -334,8 +351,8 @@ cdef class MassStream:
             * substream (MassStream): A new mass stream object that only 
               has Transuranic members. 
         """
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getTRU(std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getTRU(std.string(name))
         return py_ms
         
 
@@ -349,8 +366,8 @@ cdef class MassStream:
             * substream (MassStream): A new mass stream object that only 
               has Minor Actinide members. 
         """
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getMA(std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getMA(std.string(name))
         return py_ms
         
 
@@ -364,8 +381,8 @@ cdef class MassStream:
             * substream (MassStream): A new mass stream object that only 
               has Fission Product members. 
         """
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer.getFP(std.string(name))
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer.getFP(std.string(name))
         return py_ms
         
 
@@ -375,59 +392,59 @@ cdef class MassStream:
 
     # Addition
 
-    def __add_float__(MassStream self, double y):
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] + y
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+    def __add_float__(MassStream x, double y):
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = x.ms_pointer[0] + y
         return py_ms
         
 
-    def __add_mass_stream__(MassStream self, MassStream y):
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] + y.ms_pointer[0]
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+    def __add_mass_stream__(MassStream x, MassStream y):
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = x.ms_pointer[0] + y.ms_pointer[0]
         return py_ms
 
 
-    def __add__(MassStream self, y): 
-        if isinstance(y, float):
-            return self.__add_float__(y)
-        elif isinstance(y, MassStream):
-            return self.__add_mass_stream__(y)
+    def __add__(x, y): 
+        if isinstance(x, MassStream) and isinstance(y, MassStream):
+            return x.__add_mass_stream__(y)
+        elif isinstance(y, float):
+            return x.__add_float__(y)
+        elif isinstance(x, float):
+            return y.__add_float__(x)
         elif isinstance(y, int):
-            return self.__add_float__(float(y))
+            return x.__add_float__(float(y))
+        elif isinstance(x, int):
+            return y.__add_float__(float(x))
         else:
-            raise TypeError("Only ints, floats, and MassStreams may be added to a mass stream.")
-
-
-    def __radd__(MassStream self, y):
-        return self.__add__(y)
+            return NotImplemented
 
 
     # Multiplication
 
-    def __mul_float__(MassStream self, double y):
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] * y
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+    def __mul_float__(MassStream x, double y):
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = x.ms_pointer[0] * y
         return py_ms
 
 
-    def __mul__(MassStream self, y):
+    def __mul__(x, y):
         if isinstance(y, float):
-            return self.__mul_float__(y)
+            return x.__mul_float__(y)
+        elif isinstance(x, float):
+            return y.__mul_float__(x)
         elif isinstance(y, int):
-            return self.__mul_float__(float(y))
+            return x.__mul_float__(float(y))
+        elif isinstance(x, int):
+            return y.__mul_float__(float(x))
         else:
-            raise TypeError("Only ints and floats may be multiplied by a mass stream.")
-
-
-    def __rmul__(MassStream self, y):
-        return self.__mul__(y)
+            return NotImplemented
 
 
     # Division
 
     def __div_float__(MassStream self, double y):
-        cdef cpp_mass_stream.MassStream cpp_ms = self.ms_pointer[0] / y
-        py_ms = MassStream().__copy_constructor__(&cpp_ms)
+        py_ms = MassStream()
+        py_ms.ms_pointer[0] = self.ms_pointer[0] / y
         return py_ms
 
 
@@ -437,7 +454,7 @@ cdef class MassStream:
         elif isinstance(y, int):
             return self.__div_float__(float(y))
         else:
-            raise TypeError("Only ints and floats may be divide a mass stream.")
+            return NotImplemented
 
 
     def __rdiv__(MassStream self, y):
