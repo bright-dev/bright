@@ -8,11 +8,16 @@ from cython.operator cimport preincrement as inc
 
 # local imports 
 cimport std
-cimport converters
+#cimport converters
 
-cimport isoname
+import isoname
+
 cimport cpp_mass_stream
-cimport mass_stream_wrapper
+#cimport mass_stream_wrapper
+#import mass_stream_wrapper
+#cimport "../MassStream/mass_stream" as mass_stream
+#cimport "../MassStream/mass_stream_wrapper" as mass_stream_wrapper
+#cimport src.MassStream.mass_stream_wrapper as mass_stream_wrapper
 cimport cpp_bright
 
 #from MassStream import MassStream
@@ -34,14 +39,14 @@ class isos2track(object):
         return value
 
     def __set_value__(self, value):
-        """cdef int iso_zz
+        cdef int iso_zz
         cpp_bright.isos2track.clear()
         for iso in value:
             iso_zz = isoname.mixed_2_zzaaam(iso)
             cpp_bright.isos2track.insert(iso_zz)
-        """
-        s = set([isoname.mixed_2_zzaaam(v) for v in value])
-        converters.set_py_to_cpp(s, cpp_bright.isos2track)
+
+#        s = set([isoname.mixed_2_zzaaam(v) for v in value])
+#        converters.set_py_to_cpp(s, cpp_bright.isos2track)
 
     value = property(__get_value__, __set_value__)
 
@@ -170,21 +175,29 @@ cdef class FCComp:
 
     property IsosIn:
         def __get__(self):
-            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
+#            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
+#            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
+#            return py_ms
+
+            cdef MassStream py_ms = MassStream()
             py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
             return py_ms
 
-        def __set__(self, mass_stream_wrapper.MassStream ms):
+        def __set__(self, MassStream ms):
             self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property IsosOut:
         def __get__(self):
-            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
+#            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
+#            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosOut
+#            return py_ms
+
+            cdef MassStream py_ms = MassStream()
             py_ms.ms_pointer[0] = self.fccomp_pointer.IsosOut
             return py_ms
 
-        def __set__(self, mass_stream_wrapper.MassStream ms):
+        def __set__(self, MassStream ms):
             self.fccomp_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
