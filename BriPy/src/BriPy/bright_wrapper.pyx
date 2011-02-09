@@ -172,4 +172,29 @@ cdef class FCComp:
 
         def __set__(self, mass_stream_wrapper.MassStream ms):
             self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
-            #self.fccomp_pointer.IsosIn = deref(ms.ms_pointer)
+
+
+    property IsosOut:
+        def __get__(self):
+            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
+            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosOut
+            return py_ms
+
+        def __set__(self, mass_stream_wrapper.MassStream ms):
+            self.fccomp_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property ParamsIn:
+        def __get__(self):
+            pi = {}
+            cdef cpp_map[std.string, double].iterator pi_iter = self.fccomp_pointer.ParamsIn.begin()
+            while pi_iter != self.fccomp_pointer.ParamsIn.end():
+                pi[deref(pi_iter).first.c_str()] = deref(pi_iter).second
+                inc(pi_ref)
+            return pi
+
+        def __set__(self, dict pi):
+            cdef cpp_map[std.string, double] cpp_pi = self.fccomps_pointer.ParamsIn
+            cpp_pi.clear()
+            for key, value in pi.items():
+                cpp_pi[std.string(key)] = <double> value

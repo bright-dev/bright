@@ -19,6 +19,7 @@ cdef extern from "../FCComp.h" namespace "FCComps":
 
 cdef extern from "../FCComp.h":
     cdef cppclass FCComp:
+        # Constructors
         FCComp()
         FCComp(std.string)
         FCComp(set[std.string], std.string)
@@ -29,3 +30,6 @@ cdef extern from "../FCComp.h":
 
         cpp_mass_stream.MassStream IsosIn
         cpp_mass_stream.MassStream IsosOut
+
+        map[std.string, double] ParamsIn
+        map[std.string, double] ParamsOut
