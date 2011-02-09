@@ -69,10 +69,6 @@ cdef class MassStream:
             raise TypeError("The mass stream isotopic vector must be a dict, str, or None.")
 
 
-    cdef __copy_constructor__(self, cpp_mass_stream.MassStream * ms_pointer):
-        self.ms_pointer = ms_pointer
-
-
     def __dealloc__(self):
         """MassStream C++ destructor."""
         del self.ms_pointer
