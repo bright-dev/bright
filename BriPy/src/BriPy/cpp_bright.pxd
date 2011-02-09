@@ -3,7 +3,6 @@ from libcpp.map cimport map
 from libcpp.set cimport set
 
 cimport std
-#from cpp_mass_stream cimport MassStream
 cimport cpp_mass_stream
 
 cdef extern from "../FCComp.h" namespace "FCComps":

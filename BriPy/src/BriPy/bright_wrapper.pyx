@@ -11,8 +11,13 @@ cimport std
 cimport cpp_bright
 cimport cpp_mass_stream
 
-import isoname
-from MassStream import MassStream
+cimport mass_stream_wrapper
+
+cimport isoname
+#from MassStream import MassStream
+#import MassStream
+
+import os
 
 #######################################
 ### FCComps Configuration namespace ###
@@ -159,15 +164,12 @@ cdef class FCComp:
             self.fccomp_pointer.natural_name = std.string(n)
 
 
-#    property IsosIn:
-#        def __get__(self):
-#            #cdef cpp_mass_stream.MassStream ms = self.fccomp_pointer.IsosIn
-#            #return MassStream().__copy_constructor__(ms)
-#            #return MassStream().__copy_constructor__(<cpp_mass_stream.MassStream *> &(self.fccomp_pointer[0]).IsosIn)
-#            cdef cpp_mass_stream.MassStream * ms = &self.fccomp_pointer.IsosIn
-#            MS = MassStream()
-#            MS.__copy_constructor__(ms)
-#            return MS
-#
-#        def __set__(self, ms):
-#            self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+    property IsosIn:
+        def __get__(self):
+            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
+            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
+            return py_ms
+
+        def __set__(self, mass_stream_wrapper.MassStream ms):
+            self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            #self.fccomp_pointer.IsosIn = deref(ms.ms_pointer)
