@@ -8,12 +8,13 @@ from cython.operator cimport preincrement as inc
 
 # local imports 
 cimport std
-cimport cpp_bright
-cimport cpp_mass_stream
-
-cimport mass_stream_wrapper
+cimport converters
 
 cimport isoname
+cimport cpp_mass_stream
+cimport mass_stream_wrapper
+cimport cpp_bright
+
 #from MassStream import MassStream
 #import MassStream
 
@@ -33,11 +34,14 @@ class isos2track(object):
         return value
 
     def __set_value__(self, value):
-        cdef int iso_zz
+        """cdef int iso_zz
         cpp_bright.isos2track.clear()
         for iso in value:
             iso_zz = isoname.mixed_2_zzaaam(iso)
             cpp_bright.isos2track.insert(iso_zz)
+        """
+        s = set([isoname.mixed_2_zzaaam(v) for v in value])
+        converters.set_py_to_cpp(s, cpp_bright.isos2track)
 
     value = property(__get_value__, __set_value__)
 
@@ -190,11 +194,21 @@ cdef class FCComp:
             cdef cpp_map[std.string, double].iterator pi_iter = self.fccomp_pointer.ParamsIn.begin()
             while pi_iter != self.fccomp_pointer.ParamsIn.end():
                 pi[deref(pi_iter).first.c_str()] = deref(pi_iter).second
-                inc(pi_ref)
+                inc(pi_iter)
             return pi
 
         def __set__(self, dict pi):
-            cdef cpp_map[std.string, double] cpp_pi = self.fccomps_pointer.ParamsIn
+            """cdef cpp_map[std.string, double] cpp_pi = self.fccomps_pointer.ParamsIn
             cpp_pi.clear()
             for key, value in pi.items():
                 cpp_pi[std.string(key)] = <double> value
+            """
+            pass
+
+#            cdef std.string cpp_key
+#            cdef cpp_map[std.string, double] cpp_pi = cpp_map[std.string, double]()
+#            for key, value in pi.items():
+#                #cpp_key = std.string(key)
+#               #cpp_pi[cpp_key] = <double> value
+#               cpp_pi[std.string(key)] = value
+#            self.fccomps_pointer.ParamsIn = cpp_pi
