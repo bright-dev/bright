@@ -12,11 +12,6 @@ cimport std
 
 cimport isoname
 cimport cpp_mass_stream
-#cimport mass_stream_wrapper
-#import mass_stream_wrapper
-#cimport "../MassStream/mass_stream" as mass_stream
-#cimport "../MassStream/mass_stream_wrapper" as mass_stream_wrapper
-#cimport src.MassStream.mass_stream_wrapper as mass_stream_wrapper
 cimport cpp_bright
 
 cdef class FCComp:

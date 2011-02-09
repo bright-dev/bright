@@ -13,11 +13,6 @@ cimport std
 import isoname
 
 cimport cpp_mass_stream
-#cimport mass_stream_wrapper
-#import mass_stream_wrapper
-#cimport "../MassStream/mass_stream" as mass_stream
-#cimport "../MassStream/mass_stream_wrapper" as mass_stream_wrapper
-#cimport src.MassStream.mass_stream_wrapper as mass_stream_wrapper
 cimport cpp_bright
 
 #from MassStream import MassStream
@@ -175,10 +170,6 @@ cdef class FCComp:
 
     property IsosIn:
         def __get__(self):
-#            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
-#            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
-#            return py_ms
-
             cdef MassStream py_ms = MassStream()
             py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
             return py_ms
@@ -189,10 +180,6 @@ cdef class FCComp:
 
     property IsosOut:
         def __get__(self):
-#            cdef mass_stream_wrapper.MassStream py_ms = mass_stream_wrapper.MassStream()
-#            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosOut
-#            return py_ms
-
             cdef MassStream py_ms = MassStream()
             py_ms.ms_pointer[0] = self.fccomp_pointer.IsosOut
             return py_ms
