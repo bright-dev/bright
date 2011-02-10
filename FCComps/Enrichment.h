@@ -50,6 +50,12 @@ protected:
     //Protected functions
 
 public:
+    //Reprocessing Constructors
+    Enrichment ();
+    Enrichment (std::string);
+    Enrichment (EnrichmentParameters, std::string = "");
+    ~Enrichment ();
+    
     //Public data
     double alpha_0;         //specify on init.
     double Mstar_0;         //specify on init.
@@ -73,11 +79,6 @@ public:
     double SWUperFeed;      //This is the SWU for 1 kg of Feed material.
     double SWUperProduct;   //This is the SWU for 1 kg of Product material.
 
-    //Reprocessing Constructors
-    Enrichment ();
-    Enrichment (std::string);
-    Enrichment (EnrichmentParameters, std::string = "");
-    
     //Get Functions
     double get_alpha_0() const {return alpha_0;};
     double get_Mstar_0() const {return Mstar_0;};

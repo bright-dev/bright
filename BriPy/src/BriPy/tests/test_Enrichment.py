@@ -14,7 +14,7 @@ import numpy as np
 import BriPy
 import mass_stream
 
-#Enrichment = BriPy.Enrichment
+Enrichment = BriPy.Enrichment
 MassStream = mass_stream.MassStream
 EnrichmentParameters = BriPy.EnrichmentParameters
 bright_config = BriPy.bright_config
@@ -96,7 +96,6 @@ class TestEnrichmentParameters(TestCase):
 
 class TestEnrichmentConstructors(TestCase):
     """Tests that the Enrichment component constructors work."""
-"""\
 
     @classmethod
     def teardown_class(cls):
@@ -108,6 +107,7 @@ class TestEnrichmentConstructors(TestCase):
         assert_equal(e.params2track, ["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"])
 
+"""\
     def test_Enrichment_2(self):
         e = Enrichment("e")
         assert_equal(e.name, 'e')

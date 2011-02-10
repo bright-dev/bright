@@ -63,5 +63,12 @@ cdef extern from "../Enrichment.h":
 
     EnrichmentParameters fillUraniumEnrichmentDefaults()
 
+    ctypedef EnrichmentParameters const_EnrichmentParameters "const EnrichmentParameters"
 
-#    cdef cppclass Enrichment(FCComp):
+    cdef cppclass Enrichment(FCComp):
+        Enrichment()
+        Enrichment(std.string)
+        Enrichment(EnrichmentParameters, std.string)
+
+#cdef from *:
+

@@ -70,6 +70,10 @@ Enrichment::Enrichment (EnrichmentParameters ep, std::string n) : FCComp (enr_p2
     initialize(ep);
 }
 
+Enrichment::~Enrichment ()
+{
+}
+
 
 /************************/
 /*** Public Functions ***/

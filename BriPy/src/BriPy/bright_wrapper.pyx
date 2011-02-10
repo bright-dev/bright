@@ -367,6 +367,10 @@ cdef class FCComp:
 
 
 
+########################
+### Enrichment Class ###
+########################
+
 
 cdef class EnrichmentParameters:
     """This class is a collection of values that mirror the attributes in 
@@ -451,8 +455,51 @@ cdef class EnrichmentParameters:
             self.ep.xW_j = <double> value
 
 
+
 def UraniumEnrichmentDefaults():
     cdef cpp_bright.EnrichmentParameters cpp_ued = cpp_bright.fillUraniumEnrichmentDefaults()
     cdef EnrichmentParameters ued = EnrichmentParameters()
     ued.ep = cpp_ued
     return ued
+
+
+
+cdef class Enrichment(FCComp):
+    """Enrichment Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+
+    Args:
+        * enrich_params (EnrichmentParameters): This specifies how the enrichment 
+          cascade should be set up.  It is a EnrichmentParameters
+          helper object.  If enrich_params is not specified, then the cascade 
+          is initialized with UraniumEnrichmentDefaults.
+        * name (str): The name of the enrichment fuel cycle component instance.
+
+    Note that this automatically calls the public :meth:`initialize` C function.
+    """
+
+    cdef cpp_bright.Enrichment * e_pointer
+
+    def __cinit__(self, enrich_params=None, char * name=""):
+        cdef EnrichmentParameters enr_par
+
+        if enrich_params is None:
+            self.e_pointer = new cpp_bright.Enrichment(std.string(name))
+        elif isinstance(enrich_params, EnrichmentParameters):
+            enr_par = enrich_params
+            self.e_pointer = new cpp_bright.Enrichment(<cpp_bright.EnrichmentParameters> enr_par.ep, std.string(name))
+
+
+    def __dealloc__(self):
+        del self.e_pointer
+
+
+    #
+    # Class Attributes
+    #
+
+    property alpha_0:
+        def __get__(self):
+            return self.ep.alpha_0
+
+        def __set__(self, value):
+            self.ep.alpha_0 = <double> value
