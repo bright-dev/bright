@@ -82,7 +82,6 @@ class TestEnrichmentParameters(TestCase):
         ep.xW_j = 0.0025
         assert_equal(ep.xW_j, 0.0025)
 
-"""\
     def test_UraniumEnrichmentDefualts(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         assert_equal(ep.alpha_0, 1.05)
@@ -94,7 +93,6 @@ class TestEnrichmentParameters(TestCase):
         assert_equal(ep.xP_j, 0.05)
         assert_equal(ep.xW_j, 0.0025)
 
-"""\
 
 class TestEnrichmentConstructors(TestCase):
     """Tests that the Enrichment component constructors work."""

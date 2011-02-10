@@ -61,6 +61,7 @@ cdef extern from "../Enrichment.h":
         double xP_j
         double xW_j
 
+    EnrichmentParameters fillUraniumEnrichmentDefaults()
 
 
 #    cdef cppclass Enrichment(FCComp):

@@ -449,3 +449,10 @@ cdef class EnrichmentParameters:
 
         def __set__(self, value):
             self.ep.xW_j = <double> value
+
+
+def UraniumEnrichmentDefaults():
+    cdef cpp_bright.EnrichmentParameters cpp_ued = cpp_bright.fillUraniumEnrichmentDefaults()
+    cdef EnrichmentParameters ued = EnrichmentParameters()
+    ued.ep = cpp_ued
+    return ued
