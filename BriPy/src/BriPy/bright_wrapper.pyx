@@ -75,6 +75,7 @@ cdef class BrightConfig:
 # Make a singleton of the Bright config object
 bright_config = BrightConfig()
 
+
 # Load isos2track from file functions
 def load_isos2track_hdf5(char * filename, char * datasetname="", bint clear=False):
     """This convience function tries to load the isos2track set from a dataset 
@@ -360,4 +361,6 @@ cdef class FCComp:
             * output (MassStream): IsosOut.
 
         """
-        pass
+        cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+        py_ms.ms_pointer[0] = self.fccomp_pointer.doCalc()
+        return py_ms

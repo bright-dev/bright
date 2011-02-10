@@ -44,3 +44,4 @@ cdef extern from "../FCComp.h":
         void writeText()
         void writeHDF5()
         void writeout()
+        cpp_mass_stream.MassStream doCalc()
