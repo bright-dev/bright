@@ -21,8 +21,12 @@ cdef cpp_map[std.string, int] dict_to_map_str_int(dict)
 cdef dict map_to_dict_str_int(cpp_map[std.string, int])
 
 # <int, string> conversions
+cdef cpp_map[int, std.string] dict_to_map_int_str(dict)
 cdef dict map_to_dict_int_str(cpp_map[int, std.string])
 
+# <string, double> conversions
+cdef cpp_map[std.string, double] dict_to_map_str_dbl(dict)
+cdef dict map_to_dict_str_dbl(cpp_map[std.string, double])
 
 
 #

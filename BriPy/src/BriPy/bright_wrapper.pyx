@@ -16,7 +16,7 @@ cimport cpp_bright
 cimport stlconverters as conv
 
 #from MassStream import MassStream
-#import MassStream
+#cimport MassStream
 
 import os
 
@@ -178,20 +178,10 @@ cdef class FCComp:
 
     property ParamsIn:
         def __get__(self):
-            pi = {}
-            cdef cpp_map[std.string, double].iterator pi_iter = self.fccomp_pointer.ParamsIn.begin()
-            while pi_iter != self.fccomp_pointer.ParamsIn.end():
-                pi[deref(pi_iter).first.c_str()] = deref(pi_iter).second
-                inc(pi_iter)
-            return pi
+            return conv.map_to_dict_str_dbl(self.fccomp_pointer.ParamsIn)
 
         def __set__(self, dict pi):
-            """cdef cpp_map[std.string, double] cpp_pi = self.fccomps_pointer.ParamsIn
-            cpp_pi.clear()
-            for key, value in pi.items():
-                cpp_pi[std.string(key)] = <double> value
-            """
-            pass
+            self.fccomp_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
 
 #            cdef std.string cpp_key
 #            cdef cpp_map[std.string, double] cpp_pi = cpp_map[std.string, double]()

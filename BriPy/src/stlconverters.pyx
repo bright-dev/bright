@@ -52,6 +52,13 @@ cdef dict map_to_dict_str_int(cpp_map[std.string, int] cppmap):
 
 # <int, string> conversions
 
+cdef cpp_map[int, std.string] dict_to_map_int_str(dict pydict):
+    cdef cpp_map[int, std.string] cppmap = cpp_map[int, std.string]()
+    for key, value in pydict.items():
+        cppmap[key] = std.string(value)
+    return cppmap
+
+
 cdef dict map_to_dict_int_str(cpp_map[int, std.string] cppmap):
     pydict = {}
     cdef cpp_map[int, std.string].iterator mapiter = cppmap.begin()
@@ -61,6 +68,27 @@ cdef dict map_to_dict_int_str(cpp_map[int, std.string] cppmap):
         inc(mapiter)
 
     return pydict
+
+
+# <string, double> conversions
+
+cdef cpp_map[std.string, double] dict_to_map_str_dbl(dict pydict):
+    cdef cpp_map[std.string, double] cppmap = cpp_map[std.string, double]()
+    for key, value in pydict.items():
+        cppmap[std.string(key)] = value
+    return cppmap
+
+cdef dict map_to_dict_str_dbl(cpp_map[std.string, double] cppmap):
+    pydict = {}
+    cdef cpp_map[std.string, double].iterator mapiter = cppmap.begin()
+
+    while mapiter != cppmap.end():
+        pydict[deref(mapiter).first.c_str()] = deref(mapiter).second
+        inc(mapiter)
+
+    return pydict
+
+
 
 
 
