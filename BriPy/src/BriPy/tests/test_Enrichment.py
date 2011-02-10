@@ -34,20 +34,19 @@ class TestEnrichmentParameters(TestCase):
     def test_constructor(self):
         ep = EnrichmentParameters()
         assert_almost_equal(ep.alpha_0, 0.0)
-#        assert_equal(ep.Mstar_0, 0.0)
-#        assert_equal(ep.j, 0)
-#        assert_equal(ep.k, 0)
-#        assert_equal(ep.N0, 0.0)
-#        assert_equal(ep.M0, 0.0)
-#        assert_equal(ep.xP_j, 0.0)
-#        assert_equal(ep.xW_j, 0.0)
+        assert_almost_equal(ep.Mstar_0, 0.0)
+        assert_equal(ep.j, -1)
+        assert_equal(ep.k, 0)
+        assert_almost_equal(ep.N0, 0.0)
+        assert_almost_equal(ep.M0, 0.0)
+        assert_almost_equal(ep.xP_j, 0.0)
+        assert_almost_equal(ep.xW_j, 0.0)
 
     def test_alpha_0(self):
         ep = EnrichmentParameters()
         ep.alpha_0 = 1.05
         assert_equal(ep.alpha_0, 1.05)
 
-"""\
     def test_Mstar_0(self):
         ep = EnrichmentParameters()
         ep.Mstar_0 = 236.5
@@ -83,6 +82,7 @@ class TestEnrichmentParameters(TestCase):
         ep.xW_j = 0.0025
         assert_equal(ep.xW_j, 0.0025)
 
+"""\
     def test_UraniumEnrichmentDefualts(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         assert_equal(ep.alpha_0, 1.05)

@@ -392,4 +392,60 @@ cdef class EnrichmentParameters:
             return self.ep.alpha_0
 
         def __set__(self, value):
-            self.ep.alpha_0 = value
+            self.ep.alpha_0 = <double> value
+
+
+    property Mstar_0:
+        def __get__(self):
+            return self.ep.Mstar_0
+
+        def __set__(self, value):
+            self.ep.Mstar_0 = <double> value
+
+
+    property j:
+        def __get__(self):
+            return self.ep.j
+
+        def __set__(self, value):
+            self.ep.j = <int> value
+
+
+    property k:
+        def __get__(self):
+            return self.ep.k
+
+        def __set__(self, value):
+            self.ep.k = <int> value
+
+
+    property N0:
+        def __get__(self):
+            return self.ep.N0
+
+        def __set__(self, value):
+            self.ep.N0 = <double> value
+
+
+    property M0:
+        def __get__(self):
+            return self.ep.M0
+
+        def __set__(self, value):
+            self.ep.M0 = <double> value
+
+
+    property xP_j:
+        def __get__(self):
+            return self.ep.xP_j
+
+        def __set__(self, value):
+            self.ep.xP_j = <double> value
+
+
+    property xW_j:
+        def __get__(self):
+            return self.ep.xW_j
+
+        def __set__(self, value):
+            self.ep.xW_j = <double> value
