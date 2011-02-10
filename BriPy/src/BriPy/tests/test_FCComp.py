@@ -12,8 +12,10 @@ import tables as tb
 import numpy as np
 
 import BriPy
+from mass_stream import MassStream
+
 FCComp = BriPy.FCComp
-MassStream = BriPy.MassStream
+bright_config = BriPy.bright_config
 
 class TestFCCompConstructors(TestCase):
     """Tests that the fuel cycle component constructors work."""
@@ -31,7 +33,7 @@ class TestFCCompConstructors(TestCase):
     def test_FCComp_1(self):
         fcc = FCComp()
         assert_equal(fcc.name, '')
-        assert_equal(fcc.params2track, [])
+        assert_equal(fcc.params2track, set())
 
     def test_FCComp_2(self):
         fcc = FCComp(["Spam", "Spam", "Eggs", "Spam"])
@@ -39,9 +41,9 @@ class TestFCCompConstructors(TestCase):
         assert_equal(fcc.params2track, ["Eggs", "Spam"])
 
     def test_FCComp_2(self):
-        fcc = FCComp([], "Waldo")
+        fcc = FCComp(set(), "Waldo")
         assert_equal(fcc.name, 'Waldo')
-        assert_equal(fcc.params2track, [])
+        assert_equal(fcc.params2track, set())
 
 
 class TestFCCompAttributes(TestCase):
@@ -90,7 +92,7 @@ class TestFCCompAttributes(TestCase):
         assert_equal(fcc.ParamsIn, {})
 
     def test_ParamsIn_Filled(self):
-        fcc = FCComp(["Mass"])
+        fcc = FCComp(set(["Mass"]))
         fcc.ParamsIn = {"Mass": 1.0}
         assert_equal(fcc.ParamsIn, {"Mass": 1.0})
 
@@ -99,7 +101,7 @@ class TestFCCompAttributes(TestCase):
         assert_equal(fcc.ParamsOut, {})
 
     def test_ParamsOut_Filled(self):
-        fcc = FCComp(["Mass"])
+        fcc = FCComp(set(["Mass"]))
         fcc.ParamsOut = {"Mass": 1.0}
         assert_equal(fcc.ParamsOut, {"Mass": 1.0})
 
@@ -116,26 +118,26 @@ class TestFCCompAttributes(TestCase):
         assert_equal(fcc.name, 'fcc')
 
     def test_natural_name1(self):
-        fcc = FCComp([], "Word")
+        fcc = FCComp(set(), "Word")
         assert_equal(fcc.natural_name, 'Word')
 
     def test_natural_name2(self):
-        fcc = FCComp([], "Word to your mother")
+        fcc = FCComp(set(), "Word to your mother")
         assert_equal(fcc.natural_name, 'Word_to_your_mother')
 
     def test_natural_name3(self):
-        fcc = FCComp([], "1 isthe ")
+        fcc = FCComp(set(), "1 isthe ")
         assert_equal(fcc.natural_name, '_1_isthe_')
 
     def test_natural_name4(self):
-        fcc = FCComp([], "\t Try\nMe...$")
+        fcc = FCComp(set(), "\t Try\nMe...$")
         assert_equal(fcc.natural_name, '__Try_Me')
 
     def test_params2track(self):
         fcc = FCComp()
-        assert_equal(fcc.params2track, [])
-        fcc.params2track = ["Dave"]
-        assert_equal(fcc.params2track, ["Dave"])
+        assert_equal(fcc.params2track, set())
+        fcc.params2track = set(["Dave"])
+        assert_equal(fcc.params2track, set(["Dave"]))
 
 
 class TestFCCompMethods(TestCase):
@@ -152,44 +154,48 @@ class TestFCCompMethods(TestCase):
                 os.remove(f)
 
     def test_setParams(self):
-        fcc = FCComp(["Mass"])
+        fcc = FCComp(set(["Mass"]))
         fcc.setParams()
         assert_equal(fcc.ParamsIn["Mass"],  0.0)
         assert_equal(fcc.ParamsOut["Mass"], 0.0)
 
     def test_writeIsoPass(self):
-        BriPy.isos2track([922350])
+        bright_config.isos2track = set([922350])
         fcc = FCComp()
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.writeIsoPass()
 
     def test_writeParamPass(self):
-        fcc = FCComp(["Mass"])
+        raise SystemExit
+        fcc = FCComp(set(["Mass"]))
         fcc.setParams()
         fcc.writeParamPass()
 
     def test_writeText(self):
-        BriPy.isos2track([922350])
-        fcc = FCComp(["Mass"])
+        raise SystemExit
+        BriPy.isos2track = set([922350])
+        fcc = FCComp(set(["Mass"]))
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.setParams()
         fcc.writeText()
 
     def test_writeHDF5_1(self):
-        BriPy.isos2track([922350])
-        BriPy.write_hdf5(True)
-        fcc = FCComp([], 'fcc')
+        raise SystemExit
+        BriPy.isos2track = set([922350])
+        BriPy.write_hdf5 = True
+        fcc = FCComp(set(), 'fcc')
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.PassNum = 1
         fcc.writeHDF5()
 
     def test_writeHDF5_2(self):
-        BriPy.isos2track([922350])
-        BriPy.write_hdf5(True)
-        fcc = FCComp(["Mass"], 'fcc')
+        raise SystemExit
+        BriPy.isos2track = set([922350])
+        BriPy.write_hdf5 = True
+        fcc = FCComp(set(["Mass"]), 'fcc')
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.setParams()
@@ -198,28 +204,31 @@ class TestFCCompMethods(TestCase):
 
     def test_writeout_1(self):
         """Text only."""
-        BriPy.isos2track([922350])
-        fcc = FCComp(["Mass"])
+        raise SystemExit
+        BriPy.isos2track = set([922350])
+        fcc = FCComp(set(["Mass"]))
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.writeout()
     
     def test_writeout_2(self):
         """HDF5 only."""
-        BriPy.isos2track([922350])
-        BriPy.write_hdf5(True)
-        BriPy.write_text(False)
-        fcc = FCComp(["Mass"], 'fcc')
+        raise SystemExit
+        BriPy.isos2track = set([922350])
+        BriPy.write_hdf5 = True
+        BriPy.write_text = False
+        fcc = FCComp(set(["Mass"]), 'fcc')
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.writeout()
 
     def test_writeout_3(self):
         """HDF5 & Text output."""
-        BriPy.isos2track([922350])
-        BriPy.write_hdf5(True)
-        BriPy.write_text(True)
-        fcc = FCComp(["Mass"], 'fcc')
+        raise SystemExit
+        BriPy.isos2track = set([922350])
+        BriPy.write_hdf5 = True
+        BriPy.write_text = True
+        fcc = FCComp(set(["Mass"]), 'fcc')
         fcc.IsosIn  = MassStream({922350: 1.0})
         fcc.IsosOut = MassStream({922350: 0.5})
         fcc.writeout()

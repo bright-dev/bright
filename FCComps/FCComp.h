@@ -46,7 +46,6 @@ class FCComp
 //Parent class for all fuel cycle components.
 protected:
     //Protected access data
-    std::set<std::string> params2track;	//Set of Parameters to track for this component
 
     //Protected function data
     void initialize (std::set<std::string>, std::string = "");	//initializes empty variables
@@ -63,13 +62,14 @@ public:
     ~FCComp ();
 
     //Public access data
-    std::string name;			//Component name
-    std::string natural_name;   //Component natural name
-    MassStream IsosIn;			//Nuclides flowing into the component.
-    MassStream IsosOut;			//Nuclides flowing out of the component.
-    ParamDict ParamsIn;			//Input paramater values.
-    ParamDict ParamsOut;		//Output parameter values.
-    int PassNum;				//Cycle Number currently on [int].
+    std::string name;			        //Component name
+    std::string natural_name;           //Component natural name
+    MassStream IsosIn;			        //Nuclides flowing into the component.
+    MassStream IsosOut;		        	//Nuclides flowing out of the component.
+    ParamDict ParamsIn;			        //Input paramater values.
+    ParamDict ParamsOut;		        //Output parameter values.
+    int PassNum;			        	//Cycle Number currently on [int].
+    std::set<std::string> params2track;	//Set of Parameters to track for this component
 
     //Public access functions
     virtual void setParams ();

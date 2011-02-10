@@ -28,18 +28,52 @@ import os
 ### FCComps Configuration namespace ###
 #######################################
 
-class isos2track(object):
-    def __get_value__(self):
-        return conv.cpp_to_py_set_int(cpp_bright.isos2track)
+cdef class BrightConfig:
 
-    def __set_value__(self, value):
-        s = set([isoname.mixed_2_zzaaam(v) for v in value])
-        cpp_bright.isos2track = conv.py_to_cpp_set_int(s)
+    property isos2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_int(cpp_bright.isos2track)
 
-    value = property(__get_value__, __set_value__)
+        def __set__(self, value):
+            s = set([isoname.mixed_2_zzaaam(v) for v in value])
+            cpp_bright.isos2track = conv.py_to_cpp_set_int(s)
 
-# Make isos2track a singleton
-isos2track = isos2track().value
+
+    property verbosity:
+        def __get__(self):
+            return cpp_bright.verbosity
+
+        def __set__(self, int value):
+            cpp_bright.verbosity = value
+
+
+    property write_hdf5:
+        def __get__(self):
+            return cpp_bright.write_hdf5
+
+        def __set__(self, bint value):
+            cpp_bright.write_hdf5 = value
+
+
+    property write_text:
+        def __get__(self):
+            return cpp_bright.write_text
+
+        def __set__(self, bint value):
+            cpp_bright.write_text = value
+
+
+    property output_filename:
+        def __get__(self):
+            cdef std.string value = cpp_bright.output_filename
+            return value.c_str()
+
+        def __set__(self, char * value):
+            cpp_bright.output_filename = std.string(value)
+
+
+# Make a singleton of the Bright config object
+bright_config = BrightConfig()
 
 # Load isos2track from file functions
 def load_isos2track_hdf5(char * filename, char * datasetname="", bint clear=False):
@@ -86,25 +120,6 @@ def load_isos2track_text(char * filename, bint clear=False):
           from isos2track prior to loading in new values.
     """
     cpp_bright.load_isos2track_text(std.string(filename), clear)
-
-
-# Simple settings
-verbosity = cpp_bright.verbosity
-write_hdf5 = cpp_bright.write_hdf5
-write_text = cpp_bright.write_text
-
-class output_filename(object):
-    def __get_value__(self):
-        cdef std.string value = cpp_bright.output_filename
-        return value.c_str()
-
-    def __set_value__(self, char * value):
-        cpp_bright.output_filename = std.string(value)
-
-    value = property(__get_value__, __set_value__)
-
-# Make isos2track a singleton
-output_filename = output_filename().value
 
 
 
@@ -203,6 +218,13 @@ cdef class FCComp:
         def __set__(self, int pn):
             self.fccomp_pointer.PassNum = pn
 
+
+    property params2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_str(self.fccomp_pointer.params2track)
+
+        def __set__(self, set p2t):
+            self.fccomp_pointer.params2track = conv.py_to_cpp_set_str(p2t)
 
     #
     # Class Methods
@@ -317,7 +339,7 @@ cdef class FCComp:
                 self.ParamsOut["Mass"] = self.IsosOut.mass
                 return
         """
-        pass
+        self.fccomp_pointer.setParams()
 
 
     def doCalc(self):
