@@ -38,26 +38,6 @@ struct EnrichmentParameters
 
     double xP_j; //Enrichment of the jth isotope in the product stream
     double xW_j; //Enrichment of the jth isotope in the waste (tails) stream
-
-    //Get Functions
-    double get_alpha_0() const {return alpha_0;};
-    double get_Mstar_0() const {return Mstar_0;};
-    int    get_j()       const {return j;};
-    int    get_k()       const {return k;};
-    double get_N0()      const {return N0;};
-    double get_M0()      const {return M0;};
-    double get_xP_j()    const {return xP_j;};
-    double get_xW_j()    const {return xW_j;};
-
-    //Set Functions
-    void set_alpha_0(double a0) {alpha_0 = a0;};
-    void set_Mstar_0(double m0) {Mstar_0 = m0;};
-    void set_j(int jso)         {j = jso;};
-    void set_k(int kso)         {k = kso;};
-    void set_N0(double n0)      {N0 = n0;};
-    void set_M0(double m0)      {M0 = m0;};
-    void set_xP_j(double xpj)   {xP_j = xpj;};
-    void set_xW_j(double xwj)   {xW_j = xwj;};
 };
 
 EnrichmentParameters fillUraniumEnrichmentDefaults();

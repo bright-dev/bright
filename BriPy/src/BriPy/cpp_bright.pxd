@@ -45,3 +45,22 @@ cdef extern from "../FCComp.h":
         void writeHDF5()
         void writeout()
         cpp_mass_stream.MassStream doCalc()
+
+
+cdef extern from "../Enrichment.h":
+    cdef struct EnrichmentParameters:
+        double alpha_0
+        double Mstar_0
+
+        int j
+        int k
+
+        double N0
+        double M0
+
+        double xP_j
+        double xW_j
+
+
+
+#    cdef cppclass Enrichment(FCComp):

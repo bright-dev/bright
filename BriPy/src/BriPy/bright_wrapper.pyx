@@ -364,3 +364,32 @@ cdef class FCComp:
         cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
         py_ms.ms_pointer[0] = self.fccomp_pointer.doCalc()
         return py_ms
+
+
+
+
+cdef class EnrichmentParameters:
+    """This class is a collection of values that mirror the attributes in 
+    Enrichment that are required for the cascade model to run.
+    In C-code this a simple `struct.  Like ReactorParameters, this class 
+    takes no arguments on initialization.  An empty ErichmentParameters
+    instance has all values (weakly) set to zero.
+    """
+
+    cdef cpp_bright.EnrichmentParameters ep
+
+    def __cinit__(self):
+        #cdef cpp_bright.EnrichmentParameters ep 
+        self.ep = cpp_bright.EnrichmentParameters()
+
+
+    #
+    # Class Attributes
+    #
+
+    property alpha_0:
+        def __get__(self):
+            return self.ep.alpha_0
+
+        def __set__(self, value):
+            self.ep.alpha_0 = value
