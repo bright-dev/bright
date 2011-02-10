@@ -9,7 +9,7 @@ from cython.operator cimport preincrement as inc
 # local imports 
 cimport std
 
-cimport isoname
+import isoname
 cimport cpp_mass_stream
 cimport cpp_bright
 

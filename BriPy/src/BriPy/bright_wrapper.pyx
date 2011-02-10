@@ -13,6 +13,7 @@ import isoname
 
 cimport cpp_mass_stream
 cimport cpp_bright
+cimport stlconverters as conv
 
 #from MassStream import MassStream
 #import MassStream
@@ -25,11 +26,11 @@ import os
 
 class isos2track(object):
     def __get_value__(self):
-        return cpp_to_py_set(cpp_bright.isos2track)
+        return conv.cpp_to_py_set_int(cpp_bright.isos2track)
 
     def __set_value__(self, value):
         s = set([isoname.mixed_2_zzaaam(v) for v in value])
-        py_to_cpp_set(s, cpp_bright.isos2track)
+        cpp_bright.isos2track = conv.py_to_cpp_set_int(s)
 
     value = property(__get_value__, __set_value__)
 
@@ -125,8 +126,7 @@ cdef class FCComp:
         if params is None:
             self.fccomp_pointer = new cpp_bright.FCComp(std.string(name))
         else:
-            for p in params:
-                param_set.insert(std.string(p))
+            param_set = conv.py_to_cpp_set_str(params)
             self.fccomp_pointer = new cpp_bright.FCComp(param_set, std.string(name))
 
 

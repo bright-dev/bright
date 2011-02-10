@@ -9,6 +9,19 @@ from distutils.file_util import copy_file, move_file
 from distutils.dir_util import mkpath, remove_tree
 from Cython.Distutils import build_ext
 
+
+# Clean up old files
+cython_cpp_files = ['src/stlconverters.cpp', 
+                    'src/isoname/isoname.cpp', 
+                    'src/MassStream/mass_stream.cpp', 
+                    'src/BriPy/bright.cpp', 
+                    ]
+
+for f in cython_cpp_files:
+    if os.path.exists(f):
+        print "Removing {0}...".format(f)
+        os.remove(f)
+
 ###########################################
 ### Set compiler options for extensions ###
 ###########################################
@@ -159,6 +172,13 @@ setup(name="BriPy",
 #    package_data = pack_data,
     cmdclass = {'build_ext': build_ext}, 
     ext_modules=[
+        Extension("stlconverters", 
+                  ['src/stlconverters.pyx',
+                   ],
+                  include_dirs=['src/'],
+                  libraries=[],
+                  language="c++",
+                  ), 
         Extension("isoname", 
                   ['src/bright.cpp', 
                    'src/isoname.cpp', 
@@ -174,7 +194,7 @@ setup(name="BriPy",
                    'src/MassStream.cpp',
                    'src/MassStream/mass_stream.pyx',
                    ],
-                  include_dirs=['src/MassStream/'],
+                  include_dirs=['src/MassStream/', 'src/isoname/', 'src/'],
                   libraries=MassStream_ext_kwargs["libraries"], 
                   language="c++",
                   ), 

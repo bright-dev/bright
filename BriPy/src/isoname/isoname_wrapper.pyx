@@ -8,34 +8,36 @@ from cython.operator cimport preincrement as inc
 # local imports 
 cimport std
 cimport cpp_isoname
+cimport stlconverters as conv
 
 #
 # Conversion dictionaries
 #
 
-LLzz = map_to_dict(cpp_isoname.LLzz)
-zzLL = map_to_dict(cpp_isoname.zzLL)
+LLzz = conv.map_to_dict_str_int(cpp_isoname.LLzz)
+zzLL = conv.map_to_dict_int_str(cpp_isoname.zzLL)
+
 
 #
 # Elemental string sets
 #
 
-LAN = cpp_to_py_set(cpp_isoname.LAN)
-ACT = cpp_to_py_set(cpp_isoname.ACT)
-TRU = cpp_to_py_set(cpp_isoname.TRU)
-MA = cpp_to_py_set(cpp_isoname.MA)
-FP = cpp_to_py_set(cpp_isoname.FP)
+LAN = conv.cpp_to_py_set_str(cpp_isoname.LAN)
+ACT = conv.cpp_to_py_set_str(cpp_isoname.ACT)
+TRU = conv.cpp_to_py_set_str(cpp_isoname.TRU)
+MA = conv.cpp_to_py_set_str(cpp_isoname.MA)
+FP = conv.cpp_to_py_set_str(cpp_isoname.FP)
 
 
 #
 # Elemental integer sets
 #
 
-lan = cpp_to_py_set(cpp_isoname.lan)
-act = cpp_to_py_set(cpp_isoname.act)
-tru = cpp_to_py_set(cpp_isoname.tru)
-ma = cpp_to_py_set(cpp_isoname.ma)
-fp = cpp_to_py_set(cpp_isoname.fp)
+lan = conv.cpp_to_py_set_int(cpp_isoname.lan)
+act = conv.cpp_to_py_set_int(cpp_isoname.act)
+tru = conv.cpp_to_py_set_int(cpp_isoname.tru)
+ma = conv.cpp_to_py_set_int(cpp_isoname.ma)
+fp = conv.cpp_to_py_set_int(cpp_isoname.fp)
 
 
 #

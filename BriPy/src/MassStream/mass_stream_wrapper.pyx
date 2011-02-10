@@ -9,6 +9,7 @@ from cython.operator cimport preincrement as inc
 # local imports 
 cimport std
 cimport cpp_mass_stream
+cimport stlconverters as conv
 
 import isoname
 import os
@@ -47,9 +48,7 @@ cdef class MassStream:
 
         if isinstance(isovec, dict):
             # Mass Stream from dict
-            comp_dict = cpp_map[int, double]()
-            for key, value in isovec.items():
-                comp_dict[key] = value
+            comp_dict = conv.dict_to_map_int_dbl(isovec)
             self.ms_pointer = new cpp_mass_stream.MassStream(comp_dict, mass, std.string(name))
 
         elif isinstance(isovec, basestring):
@@ -80,18 +79,11 @@ cdef class MassStream:
 
     property comp:
         def __get__(self):
-            comp_dict = {}
-            cdef cpp_map[int, double].iterator comp_iter = self.ms_pointer.comp.begin()
-            while comp_iter != self.ms_pointer.comp.end():
-                comp_dict[deref(comp_iter).first] = deref(comp_iter).second
-                inc(comp_iter)
+            comp_dict = conv.map_to_dict_int_dbl(self.ms_pointer.comp)
             return comp_dict
 
         def __set__(self, dict comp):
-            cdef cpp_map[int, double] comp_dict = cpp_map[int, double]()
-            for key, value in comp.items():
-                comp_dict[key] = value
-            self.ms_pointer.comp = comp_dict
+            self.ms_pointer.comp = conv.dict_to_map_int_dbl(comp)
 
 
     property mass:
@@ -207,12 +199,8 @@ cdef class MassStream:
 
               .. math:: \mbox{isovec[iso]} = \mbox{ms.comp[iso]} \times \mbox{ms.mass}
         """
-        isovec = {}
         cdef cpp_map[int, double] cpp_isovec = self.ms_pointer.multByMass()
-        cdef cpp_map[int, double].iterator isovec_iter = cpp_isovec.begin()
-        while isovec_iter != cpp_isovec.end():
-            isovec[deref(isovec_iter).first] = deref(isovec_iter).second
-            inc(isovec_iter)
+        isovec = conv.map_to_dict_int_dbl(cpp_isovec)
         return isovec
 
 
