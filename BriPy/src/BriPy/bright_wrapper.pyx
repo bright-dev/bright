@@ -17,6 +17,10 @@ cimport stlconverters as conv
 
 #from MassStream import MassStream
 #cimport MassStream
+#import MassStream
+
+cimport mass_stream
+import mass_stream
 
 import os
 
@@ -158,14 +162,17 @@ cdef class FCComp:
 
     property IsosIn:
         def __get__(self):
-            cdef MassStream py_ms = MassStream()
+#            cdef MassStream py_ms = MassStream()
+#            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
+#            return py_ms
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
             py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
             return py_ms
 
-        def __set__(self, MassStream ms):
+        def __set__(self, mass_stream.MassStream ms):
             self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
-
+    """\
     property IsosOut:
         def __get__(self):
             cdef MassStream py_ms = MassStream()
@@ -174,6 +181,7 @@ cdef class FCComp:
 
         def __set__(self, MassStream ms):
             self.fccomp_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+    """\
 
 
     property ParamsIn:

@@ -7,7 +7,7 @@ from nose.tools import assert_equal, assert_not_equal, assert_raises, raises, \
     assert_almost_equal
 
 import os
-import MassStream
+import mass_stream as MassStream
 import numpy  as np
 import tables as tb
 
