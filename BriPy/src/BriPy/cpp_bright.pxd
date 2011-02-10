@@ -65,10 +65,14 @@ cdef extern from "../Enrichment.h":
 
     ctypedef EnrichmentParameters const_EnrichmentParameters "const EnrichmentParameters"
 
-    cdef cppclass Enrichment(FCComp):
+    cdef cppclass Enrichment: 
+        # Constructors
         Enrichment()
         Enrichment(std.string)
         Enrichment(EnrichmentParameters, std.string)
+
+        # Attributes
+        double alpha_0
 
 #cdef from *:
 

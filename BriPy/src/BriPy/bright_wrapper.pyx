@@ -499,7 +499,7 @@ cdef class Enrichment(FCComp):
 
     property alpha_0:
         def __get__(self):
-            return self.ep.alpha_0
+            return self.e_pointer.alpha_0
 
         def __set__(self, value):
-            self.ep.alpha_0 = <double> value
+            self.e_pointer.alpha_0 = <double> value

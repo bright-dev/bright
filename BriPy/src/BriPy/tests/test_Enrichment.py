@@ -104,8 +104,8 @@ class TestEnrichmentConstructors(TestCase):
     def test_Enrichment_1(self):
         e = Enrichment()
         assert_equal(e.name, '')
-        assert_equal(e.params2track, ["M",  "MassFeed", "MassProduct", "MassTails", 
-            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"])
+        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
 
 """\
     def test_Enrichment_2(self):
