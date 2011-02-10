@@ -33,3 +33,12 @@ cdef extern from "../FCComp.h":
 
         map[std.string, double] ParamsIn
         map[std.string, double] ParamsOut
+
+        int PassNum
+
+        # Methods
+        void writeIsoPass()
+        void writeParamPass()
+        void writeText()
+        void writeHDF5()
+        void writeout()

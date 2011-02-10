@@ -162,9 +162,6 @@ cdef class FCComp:
 
     property IsosIn:
         def __get__(self):
-#            cdef MassStream py_ms = MassStream()
-#            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
-#            return py_ms
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
             py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
             return py_ms
@@ -172,16 +169,15 @@ cdef class FCComp:
         def __set__(self, mass_stream.MassStream ms):
             self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
-    """\
+
     property IsosOut:
         def __get__(self):
-            cdef MassStream py_ms = MassStream()
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
             py_ms.ms_pointer[0] = self.fccomp_pointer.IsosOut
             return py_ms
 
-        def __set__(self, MassStream ms):
+        def __set__(self, mass_stream.MassStream ms):
             self.fccomp_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
-    """\
 
 
     property ParamsIn:
@@ -191,10 +187,155 @@ cdef class FCComp:
         def __set__(self, dict pi):
             self.fccomp_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
 
-#            cdef std.string cpp_key
-#            cdef cpp_map[std.string, double] cpp_pi = cpp_map[std.string, double]()
-#            for key, value in pi.items():
-#                #cpp_key = std.string(key)
-#               #cpp_pi[cpp_key] = <double> value
-#               cpp_pi[std.string(key)] = value
-#            self.fccomps_pointer.ParamsIn = cpp_pi
+
+    property ParamsOut:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.fccomp_pointer.ParamsOut)
+
+        def __set__(self, dict po):
+            self.fccomp_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+
+
+    property PassNum:
+        def __get__(self):
+            return self.fccomp_pointer.PassNum
+
+        def __set__(self, int pn):
+            self.fccomp_pointer.PassNum = pn
+
+
+    #
+    # Class Methods
+    #
+
+    def writeIsoPass(self):
+        """This method is responsible for adding a new pass to the output text file 
+        "{FCComp.name}Isos.txt" for this component.  Further calculations should
+        not be performed after :meth:`writeIsoPass` has been called.
+
+        This function has one very important subtlety: it does not write out mass streams data.
+        Rather, input columns are given as normalized isotopic vectors.
+        As weight fractions, input columns are in units of [kgInIso/kgIsosIn.mass].
+        Moreover, the output columns are given in terms relative to the mass of the input mass, 
+        [kgOutIso/kgIsosIn.mass].  These are calculated via the following expressions.
+
+        .. math::
+
+            \mbox{inpcol[iso]} = \mbox{IsosIn.comp[iso]}
+
+            \mbox{outcol[iso]} = \mbox{IsosOut.comp[iso]} \times \frac{\mbox{IsosOut.mass}}{\mbox{IsosIn.mass}}
+
+        Because of the units of these two columns, total mass flow data may often only be recovered via the 
+        a "Mass" parameter in the "{FCComp.name}Params.txt" file.  Here is a sample LWRIsos.txt file for a
+        light water reactor for the first pass::
+
+            Isotope 1in             1out    
+            H1      0.000000E+00    0.000000E+00
+            H3      0.000000E+00    8.568522E-08
+            HE4     0.000000E+00    4.421615E-07
+            B10     0.000000E+00    0.000000E+00
+            B11     0.000000E+00    0.000000E+00
+            C14     0.000000E+00    4.015091E-11
+            O16     0.000000E+00    0.000000E+00
+            SR90    0.000000E+00    8.221283E-04
+            TC99    0.000000E+00    1.112580E-03
+            CS137   0.000000E+00    1.821226E-03
+            U234    0.000000E+00    2.807466E-06
+            U235    4.773292E-02    8.951725E-03
+            U236    0.000000E+00    6.155297E-03
+            U237    0.000000E+00    1.719458E-05
+            U238    9.522671E-01    9.211956E-01
+            U239    0.000000E+00    6.953862E-07
+            NP237   0.000000E+00    8.057270E-04
+            PU238   0.000000E+00    2.842232E-04
+            PU239   0.000000E+00    5.353362E-03
+            PU240   0.000000E+00    2.114728E-03
+
+        """
+        self.fccomp_pointer.writeIsoPass()
+
+
+    def writeParamPass(self):
+        """What writeIsoPass() does for a component's input and output isotopics, 
+        this function does for the components parameters.  To ensure that meaningful 
+        data is available, writeParamPass() first must have setParams()
+        called elsewhere in the program.  Note that to get the pass numbering correct, 
+        PassNum should always be incremented prior to this method.  The 
+        following is an example of "{FCComp.name}Params.txt" for a light water 
+        reactor spent fuel reprocessing facility::
+
+            Param   1in             1out    
+            Mass    9.985828E-01    9.975915E-01
+
+        """
+        self.fccomp_pointer.writeParamPass()
+        
+
+    def writeText(self):
+        """This method calls writeIsoPass() and then, if available, calls 
+        writeParamPass().  This is convience function for producing 
+        text-based output.  However, using writeout() is recommended.
+        """
+        self.fccomp_pointer.writeText()
+
+
+    def writeHDF5(self):
+        """This method writes out the isotopic pass data to an HDF5 file. 
+        Then, if available, it also writes parameter data as well.  
+        Using writeout() instead is recommended.
+        """
+        self.fccomp_pointer.writeHDF5()
+
+
+    def writeout(self):
+        """This is a convenience function that first increments up PassNum.
+        Then, it checks to see if there are any parameters for this component.
+        If there are, it sets the current values using :meth:`setParams`.
+
+        If BriPy.write_hdf5 is set, then writeHDF5() is called.
+
+        If BriPy.write_text is set, then writeText() is called.
+
+        This is what is most often used to write Bright output.  Therefore it is
+        seen as the last step for every component in each pass.
+        """
+        self.fccomp_pointer.writeout()
+
+
+    # Virtual methods
+
+    def setParams(self):
+        """By calling this method, all parameter values are calculated and set for the fuel cycle component.
+        This should be done following a doCalc() calculation but before data is written out.
+        If a component has important parameters associated with it, this function must be overridden and called.
+
+        Note that this is called first thing when writeParamPass() is called.  For example, reprocessing only 
+        has a "Mass" parameter.  Translated into Python, setParams() here looks like the following::
+
+            def setParams(self):
+                self.ParamsIn["Mass"]  = self.IsosIn.mass
+                self.ParamsOut["Mass"] = self.IsosOut.mass
+                return
+        """
+        pass
+
+
+    def doCalc(self):
+        """This method is used to determine a component's output isotopics from its input isotopics.
+        Therefore, this is typically where the bulk of a fuel cycle component's algorithm lies.
+        As each component type has a distinct methodology, the doCalc() method  needs 
+        to be overridden child classes.
+
+        This method should return IsosOut so that component calculations may be easily 
+        daisy-chained together.
+
+        Args:
+            * input (dict or MassStream): If input is present, it set as the component's 
+              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as IsosIn.
+
+        Returns:
+            * output (MassStream): IsosOut.
+
+        """
+        pass
