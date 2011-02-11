@@ -17,9 +17,11 @@
 /*** Enrichment Component Class and Functions ***/
 /************************************************/
 
-static std::string enr_p2t [] = {"MassFeed", "MassProduct", "MassTails", \
-    "N", "M", "Mstar", "TotalPerFeed", "SWUperFeed", "SWUperProduct"};
-static std::set<std::string> enr_p2track (enr_p2t, enr_p2t+9);
+//static std::string enr_p2t [] = {"MassFeed", "MassProduct", "MassTails", \
+//    "N", "M", "Mstar", "TotalPerFeed", "SWUperFeed", "SWUperProduct"};
+//static std::set<std::string> enr_p2track (enr_p2t, enr_p2t+9);
+extern std::string enr_p2t [];
+extern std::set<std::string> enr_p2track;
 
 
 struct EnrichmentParameters 
@@ -55,7 +57,7 @@ public:
     Enrichment (std::string);
     Enrichment (EnrichmentParameters, std::string = "");
     ~Enrichment ();
-    
+
     //Public data
     double alpha_0;         //specify on init.
     double Mstar_0;         //specify on init.

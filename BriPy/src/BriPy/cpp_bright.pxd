@@ -48,6 +48,7 @@ cdef extern from "../FCComp.h":
 
 
 cdef extern from "../Enrichment.h":
+
     cdef struct EnrichmentParameters:
         double alpha_0
         double Mstar_0
@@ -63,9 +64,7 @@ cdef extern from "../Enrichment.h":
 
     EnrichmentParameters fillUraniumEnrichmentDefaults()
 
-    ctypedef EnrichmentParameters const_EnrichmentParameters "const EnrichmentParameters"
-
-    cdef cppclass Enrichment: 
+    cdef cppclass Enrichment(FCComp): 
         # Constructors
         Enrichment()
         Enrichment(std.string)

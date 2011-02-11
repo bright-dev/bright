@@ -2,6 +2,10 @@
 
 #include "Enrichment.h"
 
+std::string enr_p2t [] = {"MassFeed", "MassProduct", "MassTails", \
+    "N", "M", "Mstar", "TotalPerFeed", "SWUperFeed", "SWUperProduct"};
+std::set<std::string> enr_p2track (enr_p2t, enr_p2t+9);
+
 /*********************************/
 /*** Enrichment Helper Classes ***/
 /*********************************/
@@ -266,8 +270,7 @@ void Enrichment::SolveNM()
     CompDict compP;
     CompDict compW;
 
-    for (CompIter i = 
-IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
+    for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
     {
         compP[i->first] = xP_i(i->first);
         compW[i->first] = xW_i(i->first);

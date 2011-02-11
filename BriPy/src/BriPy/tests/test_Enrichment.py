@@ -107,13 +107,13 @@ class TestEnrichmentConstructors(TestCase):
         assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
 
-"""\
     def test_Enrichment_2(self):
-        e = Enrichment("e")
+        e = Enrichment(name="e")
         assert_equal(e.name, 'e')
-        assert_equal(e.params2track, ["M",  "MassFeed", "MassProduct", "MassTails", 
-            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"])
+        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
 
+"""\
     def test_Enrichment_3(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         ep.xP_j = 0.1

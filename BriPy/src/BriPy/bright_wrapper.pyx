@@ -140,7 +140,8 @@ cdef class FCComp:
 
     cdef cpp_bright.FCComp * fccomp_pointer
 
-    def __cinit__(self, params=None, char * name=""):
+    def __cinit__(self, params=None, char * name="", *args, **kwargs):
+#    def __init__(self, params=None, char * name="", *args, **kwargs):
         cdef cpp_set[std.string] param_set
 
         if params is None:
@@ -474,12 +475,12 @@ cdef class Enrichment(FCComp):
           is initialized with UraniumEnrichmentDefaults.
         * name (str): The name of the enrichment fuel cycle component instance.
 
-    Note that this automatically calls the public :meth:`initialize` C function.
+    Note that this automatically calls the public initialize() C function.
     """
 
     cdef cpp_bright.Enrichment * e_pointer
 
-    def __cinit__(self, enrich_params=None, char * name=""):
+    def __cinit__(self, enrich_params=None, char * name="", *args, **kwargs):
         cdef EnrichmentParameters enr_par
 
         if enrich_params is None:
@@ -488,6 +489,10 @@ cdef class Enrichment(FCComp):
             enr_par = enrich_params
             self.e_pointer = new cpp_bright.Enrichment(<cpp_bright.EnrichmentParameters> enr_par.ep, std.string(name))
 
+        # Set the base class pointer to this new instance 
+        #so that inheritied attributes are picked up
+        self.fccomp_pointer[0] = self.e_pointer[0]
+#        self.fccomp_pointer[0] = deref(self.e_pointer)
 
     def __dealloc__(self):
         del self.e_pointer
@@ -497,9 +502,22 @@ cdef class Enrichment(FCComp):
     # Class Attributes
     #
 
+    # Enrichment Attributes
+
     property alpha_0:
         def __get__(self):
             return self.e_pointer.alpha_0
 
         def __set__(self, value):
             self.e_pointer.alpha_0 = <double> value
+
+
+    # FCComps inherited attributes
+
+#    property params2track:
+#        def __get__(self):
+#            return conv.cpp_to_py_set_str((<cpp_bright.FCComp *> self.e_pointer).params2track)
+
+#        def __set__(self, set p2t):
+#            self.fccomp_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+
