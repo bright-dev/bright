@@ -491,7 +491,7 @@ cdef class Enrichment(FCComp):
 
         # Set the base class pointer to this new instance 
         #so that inheritied attributes are picked up
-        self.fccomp_pointer[0] = self.e_pointer[0]
+#        self.fccomp_pointer[0] = self.e_pointer[0]
         #self.fccomp_pointer[0] = deref(self.e_pointer)
 
     def __dealloc__(self):
@@ -628,12 +628,12 @@ cdef class Enrichment(FCComp):
 
     # FCComps inherited attributes
 
-#    property params2track:
-#        def __get__(self):
-#            return conv.cpp_to_py_set_str((<cpp_bright.FCComp *> self.e_pointer).params2track)
+    property params2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_str((<cpp_bright.FCComp *> self.e_pointer).params2track)
 
-#        def __set__(self, set p2t):
-#            self.fccomp_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+        def __set__(self, set p2t):
+            self.e_pointer.params2track = conv.py_to_cpp_set_str(p2t)
 
 
     #
@@ -649,3 +649,36 @@ cdef class Enrichment(FCComp):
               (re-)initialize an Enrichment cascade with.
         """
         self.e_pointer.initialize(<cpp_bright.EnrichmentParameters> enrich_params.ep)
+
+
+    def doCalc(self, input=None):
+        """This method performs an optimization calculation on M* and solves for 
+        appropriate values for all Enrichment attributes.  This includes the 
+        product and waste streams flowing out of the the cascade as well.
+
+        Args:
+            * input (dict or MassStream or None): If input is present, it is set as the component's 
+            IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this dictionary 
+            is first converted into a MassStream before being set as IsosIn.
+
+        Returns:
+            * output (MassStream): IsosOut.
+
+        """
+        cdef mass_stream.MassStream output = mass_stream.MassStream()
+        cdef cpp_mass_stream.MassStream in_ms 
+
+        if input is None:
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.e_pointer).doCalc()
+        elif isinstance(input, dict):
+            output.ms_pointer[0] = self.e_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+#        elif isinstance(input, mass_stream.MassStream):
+#            output.ms_pointer[0] = self.e_pointer.doCalc(<cpp_mass_stream.MassStream> input.ms_pointer[0])
+
+#            in_ms = <cpp_mass_stream.MassStream> input.ms_pointer[0]
+#            output.ms_pointer[0] = self.e_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms)
+
+#            in_ms = <cpp_mass_stream.MassStream> input.ms_pointer
+#            output.ms_pointer[0] = self.e_pointer.doCalc(in_ms)
+
+        return output
