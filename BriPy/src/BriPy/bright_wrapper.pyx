@@ -628,12 +628,75 @@ cdef class Enrichment(FCComp):
 
     # FCComps inherited attributes
 
+    property name:
+        def __get__(self):
+            cdef std.string n = self.e_pointer.name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.e_pointer.name = std.string(n)
+
+
+    property natural_name:
+        def __get__(self):
+            cdef std.string n = self.fccomp_pointer.natural_name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.e_pointer.natural_name = std.string(n)
+
+
+    property IsosIn:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.e_pointer.IsosIn
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.e_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property IsosOut:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.e_pointer.IsosOut
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.e_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property ParamsIn:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.e_pointer.ParamsIn)
+
+        def __set__(self, dict pi):
+            self.e_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+
+
+    property ParamsOut:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.e_pointer.ParamsOut)
+
+        def __set__(self, dict po):
+            self.e_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+
+
+    property PassNum:
+        def __get__(self):
+            return self.e_pointer.PassNum
+
+        def __set__(self, int pn):
+            self.e_pointer.PassNum = pn
+
+
     property params2track:
         def __get__(self):
-            return conv.cpp_to_py_set_str((<cpp_bright.FCComp *> self.e_pointer).params2track)
+            return conv.cpp_to_py_set_str(self.e_pointer.params2track)
 
         def __set__(self, set p2t):
             self.e_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+
 
 
     #
