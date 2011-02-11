@@ -118,6 +118,7 @@ cdef extern from "../Enrichment.h":
         #void MstarOptimize()
 
 
+
 cdef extern from "../Reprocess.h":
 
     cdef cppclass Reprocess(FCComp):
@@ -134,3 +135,23 @@ cdef extern from "../Reprocess.h":
         cpp_mass_stream.MassStream doCalc()
         cpp_mass_stream.MassStream doCalc(map[int, double])
         cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream)
+
+
+cdef extern from "../Storage.h":
+
+    cdef cppclass Storage(FCComp):
+        # Constructors
+        Storage()
+        Storage(std.string)
+
+        # Attributes
+        double decay_time
+
+        # Methods
+        void setParams()
+        cpp_mass_stream.MassStream doCalc()
+        cpp_mass_stream.MassStream doCalc(map[int, double])
+        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream)
+        cpp_mass_stream.MassStream doCalc(double)
+        cpp_mass_stream.MassStream doCalc(map[int, double], double)
+        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream, double)

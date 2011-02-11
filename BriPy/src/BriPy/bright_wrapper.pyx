@@ -811,6 +811,12 @@ cdef class Enrichment(FCComp):
         return self.e_pointer.WoverF(x_F, x_P, x_W)
 
 
+
+#######################
+### Reprocess Class ###
+#######################
+
+
 cdef class Reprocess(FCComp):
     """Reprocess Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
 
@@ -866,9 +872,6 @@ cdef class Reprocess(FCComp):
     def __cinit__(self, dict sepeff={}, char * name="", *args, **kwargs):
         sepeff = self._cpp_sepeff(sepeff)
         self.r_pointer = new cpp_bright.Reprocess(conv.dict_to_map_int_dbl(sepeff), std.string(name))
-
-#        cdef cpp_map[int, double] se = conv.dict_to_map_int_dbl(sepeff)
-#        self.r_pointer = new cpp_bright.Reprocess(se, std.string(name))
 
     def __dealloc__(self):
         del self.r_pointer
@@ -1019,5 +1022,167 @@ cdef class Reprocess(FCComp):
         elif isinstance(input, mass_stream.MassStream):
             in_ms = input
             output.ms_pointer[0] = self.r_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+
+        return output
+
+
+
+#####################
+### Storage Class ###
+#####################
+
+
+cdef class Storage(FCComp):
+    """Storage Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+
+    Args:
+        * name (str): The name of the storage fuel cycle component instance.
+    """
+
+    cdef cpp_bright.Storage * s_pointer
+
+    def __cinit__(self, char * name="", *args, **kwargs):
+        self.s_pointer = new cpp_bright.Storage(std.string(name))
+
+    def __dealloc__(self):
+        del self.s_pointer
+
+
+    #
+    # Class Attributes
+    #
+
+    # Stroage attributes
+
+    property decay_time:
+        def __get__(self):
+            return self.s_pointer.decay_time
+
+        def __set__(self, value):
+            self.s_pointer.decay_time = <double> value
+
+
+    # FCComps inherited attributes
+
+    property name:
+        def __get__(self):
+            cdef std.string n = self.s_pointer.name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.s_pointer.name = std.string(n)
+
+
+    property natural_name:
+        def __get__(self):
+            cdef std.string n = self.s_pointer.natural_name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.s_pointer.natural_name = std.string(n)
+
+
+    property IsosIn:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.s_pointer.IsosIn
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.s_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property IsosOut:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.s_pointer.IsosOut
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.s_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property ParamsIn:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.s_pointer.ParamsIn)
+
+        def __set__(self, dict pi):
+            self.s_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+
+
+    property ParamsOut:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.s_pointer.ParamsOut)
+
+        def __set__(self, dict po):
+            self.s_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+
+
+    property PassNum:
+        def __get__(self):
+            return self.s_pointer.PassNum
+
+        def __set__(self, int pn):
+            self.s_pointer.PassNum = pn
+
+
+    property params2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_str(self.s_pointer.params2track)
+
+        def __set__(self, set p2t):
+            self.s_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+
+
+    #
+    # Class Methods
+    # 
+
+    def setParams(self):
+        """Here the parameters for Storage are set.  For storage, this amounts to just
+        a "Mass" parameter::
+
+            self.ParamsIn["Mass"]  = self.IsosIn.mass
+            self.ParamsOut["Mass"] = self.IsosOut.mass
+        """
+        (<cpp_bright.FCComp *> self.s_pointer).setParams()
+
+
+    def doCalc(self, input=None, decay_time=None):
+        """As usual, doCalc sets up the Storage component's input stream and calculates the corresponding 
+        output MassStream.  Here, this amounts to calling bateman() for every nuclide in 
+        IsosIn, for each chain that ends with a nuclide in isos2track.
+
+        This method is public and accessible from Python.
+
+        Args:
+            * input (dict or MassStream): If input is present, it set as the component's 
+              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as IsosIn.
+            * decay_time (float): decay_time is set to the time value here prior to any other calculations.  This
+              time has units of seconds.
+
+        Returns:
+            * output (MassStream): IsosOut.
+        """
+        cdef mass_stream.MassStream in_ms 
+        cdef mass_stream.MassStream output = mass_stream.MassStream()
+
+        if decay_time is None:
+            if input is None:
+                output.ms_pointer[0] = (<cpp_bright.FCComp *> self.s_pointer).doCalc()
+            elif isinstance(input, dict):
+                output.ms_pointer[0] = self.s_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+            elif isinstance(input, mass_stream.MassStream):
+                in_ms = input
+                output.ms_pointer[0] = self.s_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+        else:
+            if input is None:
+                output.ms_pointer[0] = self.s_pointer.doCalc(<double> decay_time)
+            elif isinstance(input, dict):
+                output.ms_pointer[0] = self.s_pointer.doCalc(conv.dict_to_map_int_dbl(input), <double> decay_time)
+            elif isinstance(input, mass_stream.MassStream):
+                in_ms = input
+                output.ms_pointer[0] = self.s_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0], <double> decay_time)
 
         return output

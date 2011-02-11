@@ -66,19 +66,13 @@ protected:
     void PrintChain (IsoChain);
 
 public:
-    //Public data
-    double decay_time;			//time to decay for
-
     //Storage Constructors	
     Storage ();
     Storage(std::string);
     ~Storage ();
 
-    //Get Functions
-    double get_decay_time() const {return decay_time;};
-
-    //Set Functions
-    void set_decay_time(double d) {decay_time = d;};
+    //Public data
+    double decay_time;			//time to decay for
 
     //Public Functions
     void setParams();
