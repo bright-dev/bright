@@ -24,11 +24,51 @@ import mass_stream
 
 import os
 
+######################################
+### bright Configuration namespace ###
+######################################
+
+def BrightStart():
+    cpp_bright.BrightStart()
+
+
+# Specifiy the BRIGHT_DATA directory
+cpdef PyBrightStart():
+    print __file__
+    if "BRIGHT_DATA" not in os.environ:
+        bd = os.path.split(__file__)
+        print bd
+        bd = list(bd[:-1]) + ['bright_data']
+        print bd
+        bd = os.path.join(*bd)
+        print bd
+        os.environ['BRIGHT_DATA'] = bd
+
+
+# Ensure that bright has been started
+def __init__(self):
+    PyBrightStart()
+    BrightStart()
+
+
 #######################################
 ### FCComps Configuration namespace ###
 #######################################
 
 cdef class BrightConfig:
+
+    # From bright namespace
+
+    property BRIGHT_DATA:
+        def __get__(self):
+            cdef std.string value = cpp_bright.BRIGHT_DATA
+            return value.c_str()
+
+        def __set__(self, char * value):
+            cpp_bright.BRIGHT_DATA = std.string(value)
+        
+
+    # From FCComps namespace
 
     property isos2track:
         def __get__(self):

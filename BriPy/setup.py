@@ -108,7 +108,8 @@ elif os.name == 'nt':
 pack_dir = {
     'BriPy': 'src/BriPy', 
     'MassStream': 'src/MassStream', 
-    'isoname': 'src/isoname'
+    'isoname': 'src/isoname',
+    'bright_data': '../data',
     }
     
 pack_data = {'BriPy': []}
@@ -167,9 +168,11 @@ setup(name="BriPy",
     author = 'Anthony Scopatz',
     author_email = 'scopatz@gmail.com',
     url = 'http://www.scopatz.com/',
-#    packages = ['BriPy', 'MassStream', 'isoname'],
+#    packages = ['BriPy', 'mass_stream', 'isoname'],
 #    package_dir = pack_dir,
-#    package_data = pack_data,
+    packages = ['bright_data'],
+    package_dir = pack_dir,
+    package_data = {'bright_data': BriPy_data_files},
     cmdclass = {'build_ext': build_ext}, 
     ext_modules=[
         Extension("stlconverters", 

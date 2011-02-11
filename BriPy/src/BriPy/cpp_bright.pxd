@@ -5,6 +5,13 @@ from libcpp.set cimport set
 cimport std
 cimport cpp_mass_stream
 
+
+cdef extern from "../bright.h" namespace "bright":
+    std.string BRIGHT_DATA
+
+    void BrightStart()
+
+
 cdef extern from "../FCComp.h" namespace "FCComps":
     set[int] isos2track
     void load_isos2track_hdf5(std.string, std.string, bint)
