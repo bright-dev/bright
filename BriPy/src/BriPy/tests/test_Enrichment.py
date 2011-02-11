@@ -338,21 +338,20 @@ class TestEnrichmentMethods(TestCase):
 class TestEnrichmentBenchmarks(TestCase):
     """Tests that the fuel cycle component methods work."""
 
-"""\
     @classmethod
     def setup_class(cls):
-        BriPy.isos2track([922320, 922340, 922350, 922360, 922380])
-        BriPy.verbosity(0)
+        bright_config.isos2track = set([922320, 922340, 922350, 922360, 922380])
+        bright_config.verbosity = 0
 
     @classmethod
     def teardown_class(cls):
         general_teardown()
-        BriPy.verbosity(0)
+        bright_config.verbosity = 0
 
     def test_SampleFeed(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         ep.xP_j = 0.06
-        e = Enrichment(ep, 'e')
+        e = Enrichment(enrich_params=ep, name='e')
         ms = MassStream({
             922320: 1.1 * (10.0**-9),
             922340: 0.00021,
@@ -381,7 +380,7 @@ class TestEnrichmentBenchmarks(TestCase):
     def test_NU(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         ep.xP_j = 0.05
-        e = Enrichment(ep, 'e')
+        e = Enrichment(enrich_params=ep, name='e')
         ms = MassStream({
             922340: 0.000055,
             922350: 0.00720,
@@ -408,7 +407,7 @@ class TestEnrichmentBenchmarks(TestCase):
     def test_VISION(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         ep.xP_j = 0.055
-        e = Enrichment(ep, 'e')
+        e = Enrichment(enrich_params=ep, name='e')
         ms = MassStream({
             922340: 0.000183963025893197,
             922350: 0.00818576605617839,
@@ -433,14 +432,12 @@ class TestEnrichmentBenchmarks(TestCase):
         assert_almost_equal(e.SWUperFeed    / 0.8510218268267431,  1.0, 4)
         assert_almost_equal(e.SWUperProduct / 7.8579817507360037,  1.0, 4)
 
-"""\
 
-#    def test_Tungsten(self):
-#        """This test comes from 'Multicomponent Isotope Separation in Matched
-#        Abundance Ratio Cascades Composed of Stages with Large Separation Factors' 
-#        by E. von Halle, 1987."""
+    def test_Tungsten(self):
+        """This test comes from 'Multicomponent Isotope Separation in Matched
+        Abundance Ratio Cascades Composed of Stages with Large Separation Factors' 
+        by E. von Halle, 1987."""
 
-"""\
         ep = EnrichmentParameters()
         ep.alpha_0 = 1.16306
         ep.Mstar_0 = 181.3
@@ -451,7 +448,7 @@ class TestEnrichmentBenchmarks(TestCase):
         ep.xP_j = 0.5109
         ep.xW_j = 0.00014
 
-        e = Enrichment(ep, 'e')
+        e = Enrichment(enrich_params=ep, name='e')
         ms = MassStream({
             741800: 0.0014, 
             741820: 0.26416, 
@@ -477,7 +474,6 @@ class TestEnrichmentBenchmarks(TestCase):
         assert_almost_equal(e.SWUperFeed    / 2.2218643574439323, 1.0, 3)
         assert_almost_equal(e.SWUperProduct / 900.66622159370058, 1.0, 3)
 
-"""\
 
 if __name__ == "__main__":
     nose.main()
