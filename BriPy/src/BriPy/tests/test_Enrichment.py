@@ -255,16 +255,15 @@ class TestEnrichmentAttributes(TestCase):
 class TestEnrichmentMethods(TestCase):
     """Tests that the fuel cycle component methods work."""
 
-"""\
     @classmethod
     def setup_class(cls):
-        BriPy.isos2track([922350, 922360, 922380])
-        BriPy.verbosity(0)
+        bright_config.isos2track = set([922350, 922360, 922380])
+        bright_config.verbosity = 0
 
     @classmethod
     def teardown_class(cls):
         general_teardown()
-        BriPy.verbosity(0)
+        bright_config.verbosity = 0
 
     def test_initialize(self):
         e = Enrichment()
@@ -272,15 +271,16 @@ class TestEnrichmentMethods(TestCase):
         ep = EnrichmentParameters()
         ep.xP_j = 0.1
         e.initialize(ep)
-        assert_equal(e.alpha_0, 0.0)
-        assert_equal(e.Mstar_0, 0.0)
-        assert_equal(e.j, 0)
+        assert_almost_equal(e.alpha_0, 0.0)
+        assert_almost_equal(e.Mstar_0, 0.0)
+        assert_equal(e.j, -1)
         assert_equal(e.k, 0)
-        assert_equal(e.N0, 0.0)
-        assert_equal(e.M0, 0.0)
+        assert_almost_equal(e.N0, 0.0)
+        assert_almost_equal(e.M0, 0.0)
         assert_equal(e.xP_j, 0.1)
-        assert_equal(e.xW_j, 0.0)
+        assert_almost_equal(e.xW_j, 0.0)
 
+"""\
     def test_doCalc_1(self):
         e = Enrichment()
         e.IsosIn = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})

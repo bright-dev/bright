@@ -90,6 +90,28 @@ cdef extern from "../Enrichment.h":
         double SWUperFeed
         double SWUperProduct
 
+        # Methods
+        void initialize(EnrichmentParameters)
+        void setParams ()
+        cpp_mass_stream.MassStream doCalc ()
+        cpp_mass_stream.MassStream doCalc (map[int, double])
+        cpp_mass_stream.MassStream doCalc (cpp_mass_stream.MassStream)
 
-#cdef from *:
+        double PoverF (double, double, double)
+        double WoverF (double, double, double)
+
+        double get_alphastar_i (double)
+
+        double get_Ei (double)
+        double get_Si (double)
+        void FindNM()
+
+        double xP_i(int)
+        double xW_i(int)
+        void SolveNM()
+        void Comp2UnitySecant()
+        void Comp2UnityOther()
+        double deltaU_i_OverG(int)
+        void LoverF()
+        void MstarOptimize()
 

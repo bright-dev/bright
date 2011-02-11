@@ -635,3 +635,17 @@ cdef class Enrichment(FCComp):
 #        def __set__(self, set p2t):
 #            self.fccomp_pointer.params2track = conv.py_to_cpp_set_str(p2t)
 
+
+    #
+    # Class Methods
+    # 
+
+    def initialize(self, EnrichmentParameters enrich_params):
+        """The initialize function takes an enrichment parameter object and sets
+        the corresponding Enrichment attributes to the same value.
+
+        Args:
+            * enrich_params (EnrichmentParameters): A class containing the values to
+              (re-)initialize an Enrichment cascade with.
+        """
+        self.e_pointer.initialize(<cpp_bright.EnrichmentParameters> enrich_params.ep)
