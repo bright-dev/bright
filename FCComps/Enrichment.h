@@ -81,43 +81,6 @@ public:
     double SWUperFeed;      //This is the SWU for 1 kg of Feed material.
     double SWUperProduct;   //This is the SWU for 1 kg of Product material.
 
-    //Get Functions
-    double get_alpha_0() const {return alpha_0;};
-    double get_Mstar_0() const {return Mstar_0;};
-    int    get_j()       const {return j;};
-    int    get_k()       const {return k;};
-    double get_N0()      const {return N0;};
-    double get_M0()      const {return M0;};
-    double get_xP_j()    const {return xP_j;};
-    double get_xW_j()    const {return xW_j;};
-
-    double     get_Mstar()    const {return Mstar;};
-    MassStream get_IsosTail() const {return IsosTail;};
-    double     get_N()        const {return N;};
-    double     get_M()        const {return M;};
-
-    double get_TotalPerFeed()  const {return TotalPerFeed;};
-    double get_SWUperFeed()    const {return SWUperFeed;};
-    double get_SWUperProduct() const {return SWUperProduct;};
-
-    //Set Functions
-    void set_alpha_0(double a0) {alpha_0 = a0;};
-    void set_Mstar_0(double m0) {Mstar_0 = m0;};
-    void set_j(int jso)         {j = jso;};
-    void set_k(int kso)         {k = kso;};
-    void set_N0(double n0)      {N0 = n0;};
-    void set_M0(double m0)      {M0 = m0;};
-    void set_xP_j(double xpj)   {xP_j = xpj;};
-    void set_xW_j(double xwj)   {xW_j = xwj;};
-
-    void set_Mstar(double m)         {Mstar = m;};
-    void set_IsosTail(MassStream it) {IsosTail = it;};
-    void set_N(double n)             {N = n;};
-    void set_M(double m)             {M = m;};
-
-    void set_TotalPerFeed(double tpf)    {TotalPerFeed = tpf;};
-    void set_SWUperFeed(double swupf)    {SWUperFeed = swupf;};
-    void set_SWUperProduct(double swupp) {SWUperProduct = swupp;};
 
     //Public access functions
     void initialize(EnrichmentParameters);		//Initializes the constructors.

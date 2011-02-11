@@ -492,7 +492,7 @@ cdef class Enrichment(FCComp):
         # Set the base class pointer to this new instance 
         #so that inheritied attributes are picked up
         self.fccomp_pointer[0] = self.e_pointer[0]
-#        self.fccomp_pointer[0] = deref(self.e_pointer)
+        #self.fccomp_pointer[0] = deref(self.e_pointer)
 
     def __dealloc__(self):
         del self.e_pointer
@@ -510,6 +510,120 @@ cdef class Enrichment(FCComp):
 
         def __set__(self, value):
             self.e_pointer.alpha_0 = <double> value
+
+
+    property Mstar_0:
+        def __get__(self):
+            return self.e_pointer.Mstar_0
+
+        def __set__(self, value):
+            self.e_pointer.Mstar_0 = <double> value
+
+
+    property Mstar:
+        def __get__(self):
+            return self.e_pointer.Mstar
+
+        def __set__(self, value):
+            self.e_pointer.Mstar = <double> value
+
+
+    property IsosTail:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.e_pointer.IsosTail
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.e_pointer.IsosTail = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property j:
+        def __get__(self):
+            return self.e_pointer.j
+
+        def __set__(self, value):
+            self.e_pointer.j = <int> value
+
+
+    property k:
+        def __get__(self):
+            return self.e_pointer.k
+
+        def __set__(self, value):
+            self.e_pointer.k = <int> value
+
+
+    property xP_j:
+        def __get__(self):
+            return self.e_pointer.xP_j
+
+        def __set__(self, value):
+            self.e_pointer.xP_j = <double> value
+
+
+    property xW_j:
+        def __get__(self):
+            return self.e_pointer.xW_j
+
+        def __set__(self, value):
+            self.e_pointer.xW_j = <double> value
+
+
+    property N:
+        def __get__(self):
+            return self.e_pointer.N
+
+        def __set__(self, value):
+            self.e_pointer.N = <double> value
+
+
+    property M:
+        def __get__(self):
+            return self.e_pointer.M
+
+        def __set__(self, value):
+            self.e_pointer.M = <double> value
+
+
+    property N0:
+        def __get__(self):
+            return self.e_pointer.N0
+
+        def __set__(self, value):
+            self.e_pointer.N0 = <double> value
+
+
+    property M0:
+        def __get__(self):
+            return self.e_pointer.M0
+
+        def __set__(self, value):
+            self.e_pointer.M0 = <double> value
+
+
+    property TotalPerFeed:
+        def __get__(self):
+            return self.e_pointer.TotalPerFeed
+
+        def __set__(self, value):
+            self.e_pointer.TotalPerFeed = <double> value
+
+
+    property SWUperFeed:
+        def __get__(self):
+            return self.e_pointer.SWUperFeed
+
+        def __set__(self, value):
+            self.e_pointer.SWUperFeed = <double> value
+
+
+    property SWUperProduct:
+        def __get__(self):
+            return self.e_pointer.SWUperProduct
+
+        def __set__(self, value):
+            self.e_pointer.SWUperProduct = <double> value
 
 
     # FCComps inherited attributes

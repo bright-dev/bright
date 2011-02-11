@@ -72,6 +72,24 @@ cdef extern from "../Enrichment.h":
 
         # Attributes
         double alpha_0
+        double Mstar_0
+        double Mstar
+        cpp_mass_stream.MassStream IsosTail
+
+        int j
+        int k
+        double xP_j
+        double xW_j
+
+        double N
+        double M
+        double N0
+        double M0
+
+        double TotalPerFeed
+        double SWUperFeed
+        double SWUperProduct
+
 
 #cdef from *:
 

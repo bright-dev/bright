@@ -113,14 +113,13 @@ class TestEnrichmentConstructors(TestCase):
         assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
 
-"""\
     def test_Enrichment_3(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         ep.xP_j = 0.1
-        e = Enrichment(ep)
+        e = Enrichment(enrich_params=ep)
         assert_equal(e.name, '')
-        assert_equal(e.params2track, ["M",  "MassFeed", "MassProduct", "MassTails", 
-            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"])
+        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
         assert_equal(e.alpha_0, 1.05)
         assert_equal(e.Mstar_0, 236.5)
         assert_equal(e.j, 922350)
@@ -133,10 +132,10 @@ class TestEnrichmentConstructors(TestCase):
     def test_Enrichment_4(self):
         ep = BriPy.UraniumEnrichmentDefaults()
         ep.j = 922360
-        e = Enrichment(ep, 'e')
+        e = Enrichment(enrich_params=ep, name='e')
         assert_equal(e.name, 'e')
-        assert_equal(e.params2track, ["M",  "MassFeed", "MassProduct", "MassTails", 
-            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"])
+        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
         assert_equal(e.alpha_0, 1.05)
         assert_equal(e.Mstar_0, 236.5)
         assert_equal(e.j, 922360)
@@ -146,22 +145,20 @@ class TestEnrichmentConstructors(TestCase):
         assert_equal(e.xP_j, 0.05)
         assert_equal(e.xW_j, 0.0025)
 
-"""\
 
 class TestEnrichmentAttributes(TestCase):
     """Tests that enrichment the fuel cycle component attributes work."""
 
-"""\
     @classmethod
     def teardown_class(cls):
         general_teardown()
 
     def test_params2track(self):
         e = Enrichment()
-        assert_equal(e.params2track, ["M",  "MassFeed", "MassProduct", "MassTails", 
-            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"])
-        e.params2track = ["Om nom nom"]
-        assert_equal(e.params2track, ["Om nom nom"])
+        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+            "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
+        e.params2track = set(["Om nom nom"])
+        assert_equal(e.params2track, set(["Om nom nom"]))
                         
     def test_alpha_0(self):
         e = Enrichment()
@@ -254,7 +251,6 @@ class TestEnrichmentAttributes(TestCase):
         e.SWUperProduct = 1010.0
         assert_equal(e.SWUperProduct, 1010.0)
 
-"""\
 
 class TestEnrichmentMethods(TestCase):
     """Tests that the fuel cycle component methods work."""
