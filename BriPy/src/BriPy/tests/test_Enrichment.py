@@ -301,7 +301,6 @@ class TestEnrichmentMethods(TestCase):
         assert_almost_equal(e.IsosOut.comp[922350],  0.05,   6) 
         assert_almost_equal(e.IsosTail.comp[922350], 0.0025, 6)
 
-"""\
     def test_setParams(self):
         e = Enrichment()
         ms = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
@@ -334,7 +333,6 @@ class TestEnrichmentMethods(TestCase):
 
         assert_equal(e.ParamsIn["SWUperProduct"],  0.0)
         assert_equal(e.ParamsOut["SWUperProduct"], e.SWUperProduct)
-"""\
 
 
 class TestEnrichmentBenchmarks(TestCase):

@@ -714,6 +714,40 @@ cdef class Enrichment(FCComp):
         self.e_pointer.initialize(<cpp_bright.EnrichmentParameters> enrich_params.ep)
 
 
+    def setParams(self):
+        """Here the parameters for Enrichment are set::
+
+            self.ParamsIn["MassFeed"]  = self.IsosIn.mass
+            self.ParamsOut["MassFeed"] = 0.0
+
+            self.ParamsIn["MassProduct"]  = 0.0
+            self.ParamsOut["MassProduct"] = self.IsosOut.mass
+
+            self.ParamsIn["MassTails"]  = 0.0
+            self.ParamsOut["MassTails"] = self.IsosTail.mass
+
+            self.ParamsIn["N"]  = self.N
+            self.ParamsOut["N"] = self.N
+
+            self.ParamsIn["M"]  = self.M
+            self.ParamsOut["M"] = self.M
+
+            self.ParamsIn["Mstar"]  = self.Mstar
+            self.ParamsOut["Mstar"] = self.Mstar
+
+            self.ParamsIn["TotalPerFeed"]  = self.TotalPerFeed
+            self.ParamsOut["TotalPerFeed"] = self.TotalPerFeed
+
+            self.ParamsIn["SWUperFeed"]  = self.SWUperFeed
+            self.ParamsOut["SWUperFeed"] = 0.0
+
+            self.ParamsIn["SWUperProduct"]  = 0.0
+            self.ParamsOut["SWUperProduct"] = self.SWUperProduct
+
+        """
+        (<cpp_bright.FCComp *> self.e_pointer).setParams()
+
+
     def doCalc(self, input=None):
         """This method performs an optimization calculation on M* and solves for 
         appropriate values for all Enrichment attributes.  This includes the 
