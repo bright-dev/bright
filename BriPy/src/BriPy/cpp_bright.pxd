@@ -100,18 +100,20 @@ cdef extern from "../Enrichment.h":
         double PoverF (double, double, double)
         double WoverF (double, double, double)
 
-        double get_alphastar_i (double)
+        # The following are methods I am too lazy to expose to Python
+        # FIXME
+        #double get_alphastar_i (double)
 
-        double get_Ei (double)
-        double get_Si (double)
-        void FindNM()
+        #double get_Ei (double)
+        #double get_Si (double)
+        #void FindNM()
 
-        double xP_i(int)
-        double xW_i(int)
-        void SolveNM()
-        void Comp2UnitySecant()
-        void Comp2UnityOther()
-        double deltaU_i_OverG(int)
-        void LoverF()
-        void MstarOptimize()
+        #double xP_i(int)
+        #double xW_i(int)
+        #void SolveNM()
+        #void Comp2UnitySecant()
+        #void Comp2UnityOther()
+        #double deltaU_i_OverG(int)
+        #void LoverF()
+        #void MstarOptimize()
 

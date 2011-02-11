@@ -774,3 +774,39 @@ cdef class Enrichment(FCComp):
             output.ms_pointer[0] = self.e_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
+
+
+    def PoverF(self, double x_F, double x_P, double x_W):
+        """Solves for the product over feed enrichment ratio.
+
+        .. math::
+
+            \\frac{p}{f} = \\frac{(x_F - x_W)}{(x_P - x_W)}
+
+        Args:
+            * x_F (float): Feed enrichment.
+            * x_P (float): Product enrichment.
+            * x_W (float): Waste enrichment.
+
+        Returns:
+            * pfratio (float): As calculated above.
+        """
+        return self.e_pointer.PoverF(x_F, x_P, x_W)
+
+
+    def WoverF(self, double x_F, double x_P, double x_W):
+        """Solves for the waste over feed enrichment ratio.
+
+        .. math::
+
+            \\frac{p}{f} = \\frac{(x_F - x_P)}{(x_W - x_P)}
+
+        Args:
+            * x_F (float): Feed enrichment.
+            * x_P (float): Product enrichment.
+            * x_W (float): Waste enrichment.
+
+        Returns:
+            * wfratio (float): As calculated above.
+        """
+        return self.e_pointer.WoverF(x_F, x_P, x_W)
