@@ -867,6 +867,9 @@ cdef class Reprocess(FCComp):
         sepeff = self._cpp_sepeff(sepeff)
         self.r_pointer = new cpp_bright.Reprocess(conv.dict_to_map_int_dbl(sepeff), std.string(name))
 
+#        cdef cpp_map[int, double] se = conv.dict_to_map_int_dbl(sepeff)
+#        self.r_pointer = new cpp_bright.Reprocess(se, std.string(name))
+
     def __dealloc__(self):
         del self.r_pointer
 
@@ -874,6 +877,8 @@ cdef class Reprocess(FCComp):
     #
     # Class Attributes
     #
+
+    # Reprocess attributes
 
     property sepeff:
         def __get__(self):
