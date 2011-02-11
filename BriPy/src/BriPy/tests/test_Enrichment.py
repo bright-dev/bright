@@ -280,18 +280,13 @@ class TestEnrichmentMethods(TestCase):
         assert_equal(e.xP_j, 0.1)
         assert_almost_equal(e.xW_j, 0.0)
 
-    """\
 
     def test_doCalc_1(self):
         e = Enrichment()
         e.IsosIn = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
-
-#        e.IsosIn.Print()
-#        raise SystemExit
         e.doCalc()
         assert_almost_equal(e.IsosOut.comp[922350],  0.05,   6) 
         assert_almost_equal(e.IsosTail.comp[922350], 0.0025, 6)
-    """
 
     def test_doCalc_2(self):
         e = Enrichment()
@@ -299,7 +294,6 @@ class TestEnrichmentMethods(TestCase):
         assert_almost_equal(e.IsosOut.comp[922350],  0.05,   6) 
         assert_almost_equal(e.IsosTail.comp[922350], 0.0025, 6)
 
-"""\
     def test_doCalc_3(self):
         e = Enrichment()
         ms = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
@@ -307,6 +301,7 @@ class TestEnrichmentMethods(TestCase):
         assert_almost_equal(e.IsosOut.comp[922350],  0.05,   6) 
         assert_almost_equal(e.IsosTail.comp[922350], 0.0025, 6)
 
+"""\
     def test_setParams(self):
         e = Enrichment()
         ms = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})

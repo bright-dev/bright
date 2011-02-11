@@ -728,20 +728,15 @@ cdef class Enrichment(FCComp):
             * output (MassStream): IsosOut.
 
         """
+        cdef mass_stream.MassStream in_ms 
         cdef mass_stream.MassStream output = mass_stream.MassStream()
-        cdef cpp_mass_stream.MassStream in_ms 
 
         if input is None:
             output.ms_pointer[0] = (<cpp_bright.FCComp *> self.e_pointer).doCalc()
         elif isinstance(input, dict):
             output.ms_pointer[0] = self.e_pointer.doCalc(conv.dict_to_map_int_dbl(input))
-#        elif isinstance(input, mass_stream.MassStream):
-#            output.ms_pointer[0] = self.e_pointer.doCalc(<cpp_mass_stream.MassStream> input.ms_pointer[0])
-
-#            in_ms = <cpp_mass_stream.MassStream> input.ms_pointer[0]
-#            output.ms_pointer[0] = self.e_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms)
-
-#            in_ms = <cpp_mass_stream.MassStream> input.ms_pointer
-#            output.ms_pointer[0] = self.e_pointer.doCalc(in_ms)
+        elif isinstance(input, mass_stream.MassStream):
+            in_ms = input
+            output.ms_pointer[0] = self.e_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
