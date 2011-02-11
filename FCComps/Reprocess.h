@@ -29,19 +29,14 @@ protected:
     //Protected functions
 
 public:
-    //Public data
-    SepEffDict sepeff;			//separation efficiency dictionary
-
     //Reprocessing Constructors
     Reprocess ();
     Reprocess (SepEffDict, std::string = "");
     Reprocess (std::map<std::string, double>, std::string = "");
+    ~Reprocess ();
     
-    //Get Functions
-    SepEffDict get_sepeff() const {return sepeff;};
-
-    //Set Functions
-    void set_sepeff(SepEffDict sed) {sepeff = sed;};
+    //Public data
+    SepEffDict sepeff;			//separation efficiency dictionary
 
     //Public access functions
     void initialize(SepEffDict);		//Initializes the constructors.

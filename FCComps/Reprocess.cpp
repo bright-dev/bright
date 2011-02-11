@@ -66,6 +66,10 @@ Reprocess::Reprocess (std::map<std::string, double> ssed, std::string n) : FCCom
     initialize(sed);
 }
 
+Reprocess::~Reprocess ()
+{
+}
+
 
 /************************/
 /*** Public Functions ***/

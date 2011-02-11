@@ -384,7 +384,6 @@ cdef class EnrichmentParameters:
     cdef cpp_bright.EnrichmentParameters ep
 
     def __cinit__(self):
-        #cdef cpp_bright.EnrichmentParameters ep 
         self.ep = cpp_bright.EnrichmentParameters()
 
 
@@ -639,7 +638,7 @@ cdef class Enrichment(FCComp):
 
     property natural_name:
         def __get__(self):
-            cdef std.string n = self.fccomp_pointer.natural_name
+            cdef std.string n = self.e_pointer.natural_name
             return n.c_str()
 
         def __set__(self, char * n):
@@ -810,3 +809,210 @@ cdef class Enrichment(FCComp):
             * wfratio (float): As calculated above.
         """
         return self.e_pointer.WoverF(x_F, x_P, x_W)
+
+
+cdef class Reprocess(FCComp):
+    """Reprocess Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+
+    Args:
+        * sepeff (dict): A dictionary containing the separation efficiencies (float) to initialize
+          the instance with.  The keys of this dictionary must be strings.  However, the strings may 
+          represent either elements or isotopes or both::
+
+                #ssed = string dictionary of separation efficiencies.  
+                #Of form {zz: 0.99}, eg 
+                ssed = {"92": 0.999, "94": 0.99} 
+                #of form {LL: 0.99}, eg 
+                ssed = {"U": 0.999, "PU": 0.99} 
+                #or of form {mixed: 0.99}, eg 
+                ssed = {"U235": 0.9, "922350": 0.999, "94239": 0.99}
+
+        * name (str): The name of the reprocessing fuel cycle component instance.
+
+    Note that this automatically calls the public initialize C function.
+
+    .. note::
+       The C++ version of the code also allows you to initialize from an int-keyed dictionary (map).
+       However, due to a from_python C++ signature ambiguity, you cannot do use this directly in Python.
+       Separation efficiencies must therefore be automatically initialized through string dictionaries.
+       If you need to initialize via an int dictionary in python, you can always init with an empty
+       string dictionary and then manually initialize with an int one.  For example::
+
+            R = Reprocess({}, name)
+            R.initialize( {92: 0.99, 942390: 0.9} )
+
+    """
+
+    cdef cpp_bright.Reprocess * r_pointer
+
+    def _cpp_sepeff(self, dict d):
+        sepeff = {}
+
+        for key, value in d.items():
+            value = float(value) 
+
+            if isinstance(key, int):
+                sepeff[key] = value
+            elif isinstance(key, basestring):
+                if key in isoname.LLzz:
+                    sepeff[isoname.LLzz[key]] = value
+                else:
+                    sepeff[isoname.mixed_2_zzaaam(key)] = value
+            else:
+                raise TypeError("Separation keys must be strings or integers.")
+
+        return sepeff
+
+    def __cinit__(self, dict sepeff={}, char * name="", *args, **kwargs):
+        sepeff = self._cpp_sepeff(sepeff)
+        self.r_pointer = new cpp_bright.Reprocess(conv.dict_to_map_int_dbl(sepeff), std.string(name))
+
+    def __dealloc__(self):
+        del self.r_pointer
+
+
+    #
+    # Class Attributes
+    #
+
+    property sepeff:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.r_pointer.sepeff)
+
+        def __set__(self, dict value):
+            value = self._cpp_sepeff(value)
+            self.r_pointer.sepeff = conv.dict_to_map_int_dbl(value)
+
+
+    # FCComps inherited attributes
+
+    property name:
+        def __get__(self):
+            cdef std.string n = self.r_pointer.name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.r_pointer.name = std.string(n)
+
+
+    property natural_name:
+        def __get__(self):
+            cdef std.string n = self.r_pointer.natural_name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.r_pointer.natural_name = std.string(n)
+
+
+    property IsosIn:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r_pointer.IsosIn
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property IsosOut:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r_pointer.IsosOut
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property ParamsIn:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.r_pointer.ParamsIn)
+
+        def __set__(self, dict pi):
+            self.r_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+
+
+    property ParamsOut:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.r_pointer.ParamsOut)
+
+        def __set__(self, dict po):
+            self.r_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+
+
+    property PassNum:
+        def __get__(self):
+            return self.r_pointer.PassNum
+
+        def __set__(self, int pn):
+            self.r_pointer.PassNum = pn
+
+
+    property params2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_str(self.r_pointer.params2track)
+
+        def __set__(self, set p2t):
+            self.r_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+
+
+
+    #
+    # Class Methods
+    # 
+
+    def initialize(self, dict sepdict):
+        """The initialize() function calculates the sepeff from an integer-keyed dictionary
+        of separation efficiencies.  The difference is that sepdict may contain either elemental or
+        isotopic keys and need not contain every isotope tracked.  On the other hand, sepeff
+        must have only zzaaam keys that match exactly the isotopes in BriPy.isos2track.
+
+        Args:
+            * sepdict (dict): Integer valued dictionary of SE to be converted to sepeff.
+        """
+        sepdict = self._cpp_sepeff(sepdict)
+        self.r_pointer.initialize(conv.dict_to_map_int_dbl(sepdict))
+
+
+    def setParams(self):
+        """Here the parameters for Reprocess are set.  For reprocessing, this amounts to just
+        a "Mass" parameter::
+
+            self.ParamsIn["Mass"]  = self.IsosIn.mass
+            self.ParamsOut["Mass"] = self.IsosOut.mass
+
+        """
+        (<cpp_bright.FCComp *> self.r_pointer).setParams()
+
+
+    def doCalc(self, input=None):
+        """This method performs the relatively simply task of multiplying the current input stream by 
+        the SE to form a new output stream::
+
+            incomp  = self.IsosIn.multByMass()
+            outcomp = {}
+            for iso in incomp.keys():
+                outcomp[iso] = incomp[iso] * sepeff[iso]
+            self.IsosOut = MassStream(outcomp)
+            return self.IsosOut
+
+        Args:
+            * input (dict or MassStream): If input is present, it set as the component's 
+              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as IsosIn.
+
+        Returns:
+            * output (MassStream): IsosOut.
+        """
+        cdef mass_stream.MassStream in_ms 
+        cdef mass_stream.MassStream output = mass_stream.MassStream()
+
+        if input is None:
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.r_pointer).doCalc()
+        elif isinstance(input, dict):
+            output.ms_pointer[0] = self.r_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+        elif isinstance(input, mass_stream.MassStream):
+            in_ms = input
+            output.ms_pointer[0] = self.r_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+
+        return output

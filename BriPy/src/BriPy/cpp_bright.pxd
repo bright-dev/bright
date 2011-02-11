@@ -117,3 +117,20 @@ cdef extern from "../Enrichment.h":
         #void LoverF()
         #void MstarOptimize()
 
+
+cdef extern from "../Reprocess.h":
+
+    cdef cppclass Reprocess(FCComp):
+        # Constructors
+        Reprocess()
+        Reprocess(map[int, double], std.string)
+
+        # Attributes
+        map[int, double] sepeff
+
+        # Methods
+        void initialize(map[int, double])
+        void setParams()
+        cpp_mass_stream.MassStream doCalc()
+        cpp_mass_stream.MassStream doCalc(map[int, double])
+        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream)
