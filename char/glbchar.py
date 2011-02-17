@@ -11,7 +11,7 @@ import subprocess
 import numpy as np
 
 import isoname
-import MassStream
+from mass_stream import MassStream
 
 import metasci
 import metasci.nuke as msn
@@ -233,7 +233,7 @@ def defchar_update_for_execution(defchar):
                                            defchar.verbosity)
 
     # Make fuel stream
-    defchar.IHM_stream = MassStream.MassStream(defchar.initial_heavy_metal)
+    defchar.IHM_stream = MassStream(defchar.initial_heavy_metal)
 
     if hasattr(defchar, 'sensitivity_mass_fractions'):
         defchar.deltam = np.atleast_1d(defchar.sensitivity_mass_fractions)

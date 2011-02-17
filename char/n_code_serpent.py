@@ -11,7 +11,7 @@ import tables as tb
 import metasci.nuke as msn
 import metasci.nuke.xs as msnxs
 from metasci import safe_remove, clean_reload
-from MassStream import MassStream
+from mass_stream import MassStream
 from metasci.colortext import message, failure
 
 from scipy.integrate import cumtrapz
