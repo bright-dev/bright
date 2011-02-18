@@ -1212,6 +1212,8 @@ cdef class Storage(FCComp):
             elif isinstance(input, mass_stream.MassStream):
                 in_ms = input
                 output.ms_pointer[0] = self.s_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+            else:
+                raise TypeError("'input' must be a MassStream, dict, or None.")
         else:
             if input is None:
                 output.ms_pointer[0] = self.s_pointer.doCalc(<double> decay_time)
@@ -1220,5 +1222,7 @@ cdef class Storage(FCComp):
             elif isinstance(input, mass_stream.MassStream):
                 in_ms = input
                 output.ms_pointer[0] = self.s_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0], <double> decay_time)
+            else:
+                raise TypeError("'input' must be a MassStream, dict, or None.")
 
         return output
