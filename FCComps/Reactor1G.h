@@ -48,6 +48,7 @@ struct FluencePoint
         F = 0.0;
         m = 0.0;
     };
+
 };
 
 struct ReactorParameters

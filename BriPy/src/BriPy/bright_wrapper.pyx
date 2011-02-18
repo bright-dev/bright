@@ -5,6 +5,7 @@ from libcpp.set cimport set as cpp_set
 from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
+from libc.stdlib cimport free
 
 # local imports 
 cimport std
@@ -421,6 +422,9 @@ cdef class EnrichmentParameters:
 
     def __cinit__(self):
         self.ep = cpp_bright.EnrichmentParameters()
+
+    def __dealloc__(self):
+        free(&self.ep)
 
 
     #
@@ -1226,3 +1230,56 @@ cdef class Storage(FCComp):
                 raise TypeError("'input' must be a MassStream, dict, or None.")
 
         return output
+
+
+
+#######################
+### Reactor1G Class ###
+#######################
+
+
+cdef class FluencePoint:
+    """This class holds three simple data points that represent a fluence point.
+
+    * f (int): Index of Reactor1G.F immediately lower than the value of F (int).
+    * F (float): Fluence value itself (float). In units of [n/kb] or [neutrons/kilobarn].
+    * m (float): The slope dBU/dF between points f and f+1 (float). 
+      Has the odd units of [MWd kb / kgIHM n].
+    """
+
+    cdef cpp_bright.FluencePoint fp
+
+    def __cinit__(self):
+        self.fp = cpp_bright.FluencePoint()
+
+    def __dealloc__(self):
+        free(&self.fp)
+
+
+    #
+    # Class Attributes
+    #
+
+    property f:
+        def __get__(self):
+            return self.fp.f
+
+        def __set__(self, int value):
+            self.fp.f = value
+
+
+    property F:
+        def __get__(self):
+            return self.fp.F
+
+        def __set__(self, double value):
+            self.fp.F = value
+
+
+    property m:
+        def __get__(self):
+            return self.fp.m
+
+        def __set__(self, double value):
+            self.fp.m = value
+

@@ -162,3 +162,16 @@ cdef extern from "../Storage.h":
         cpp_mass_stream.MassStream doCalc(double)
         cpp_mass_stream.MassStream doCalc(map[int, double], double)
         cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream, double)
+
+
+
+cdef extern from "../Reactor1G.h":
+
+    cdef struct FluencePoint:
+        # Constructors        
+        FluencePoint()
+
+        # Attributes
+        int f
+        double F
+        double m
