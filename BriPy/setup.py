@@ -109,7 +109,7 @@ pack_dir = {
     'BriPy': 'src/BriPy', 
     'MassStream': 'src/MassStream', 
     'isoname': 'src/isoname',
-    'bright_data': '../data',
+    'bright_data': 'src/bright_data',
     }
     
 pack_data = {'BriPy': []}

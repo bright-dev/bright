@@ -24,31 +24,27 @@ import mass_stream
 
 import os
 
+import bright_data
+
 ######################################
 ### bright Configuration namespace ###
 ######################################
 
+# Specifiy the BRIGHT_DATA directory
+cpdef PyBrightStart():
+    if "BRIGHT_DATA" not in os.environ:
+        bd = os.path.split(bright_data.__file__)
+        os.environ['BRIGHT_DATA'] = os.path.join(*(bd[0], ''))
+
+
+# Expose the C-code start up routine
 def BrightStart():
     cpp_bright.BrightStart()
 
 
-# Specifiy the BRIGHT_DATA directory
-cpdef PyBrightStart():
-    print __file__
-    if "BRIGHT_DATA" not in os.environ:
-        bd = os.path.split(__file__)
-        print bd
-        bd = list(bd[:-1]) + ['bright_data']
-        print bd
-        bd = os.path.join(*bd)
-        print bd
-        os.environ['BRIGHT_DATA'] = bd
-
-
-# Ensure that bright has been started
-def __init__(self):
-    PyBrightStart()
-    BrightStart()
+# Run the appropriate start-up routines
+PyBrightStart()
+BrightStart()
 
 
 #######################################
