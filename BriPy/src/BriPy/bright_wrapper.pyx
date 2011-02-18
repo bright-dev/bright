@@ -423,8 +423,8 @@ cdef class EnrichmentParameters:
     def __cinit__(self):
         self.ep = cpp_bright.EnrichmentParameters()
 
-    def __dealloc__(self):
-        free(&self.ep)
+    #def __dealloc__(self):
+    #    free(&self.ep)
 
 
     #
@@ -1252,8 +1252,8 @@ cdef class FluencePoint:
     def __cinit__(self):
         self.fp = cpp_bright.FluencePoint()
 
-    def __dealloc__(self):
-        free(&self.fp)
+    #def __dealloc__(self):
+    #    free(&self.fp)
 
 
     #
