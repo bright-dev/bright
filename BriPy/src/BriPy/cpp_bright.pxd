@@ -175,3 +175,22 @@ cdef extern from "../Reactor1G.h":
         int f
         double F
         double m
+
+
+    cdef struct ReactorParameters:
+        # Attributes
+        int batches
+        double flux
+        map[std.string, double] FuelForm
+        map[std.string, double] CoolantForm
+        double FuelDensity
+        double CoolantDensity
+        double pnl
+        double BUt
+        bint useDisadvantage
+        std.string LatticeType
+        bint HydrogenRescale
+        double Radius
+        double Length
+        double open_slots
+        double total_slots

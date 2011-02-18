@@ -53,66 +53,29 @@ struct FluencePoint
 
 struct ReactorParameters
 {
-        /** Set of physical reactor parameters.
-         *  May be used to instantiate new reactor objects, -or-
-         *  to define default settings for a reactor type.
-         */
+    /** Set of physical reactor parameters.
+     *  May be used to instantiate new reactor objects, -or-
+     *  to define default settings for a reactor type.
+     */
 
     //General Info
-        int batches;					//Total number of fuel loading batches
-        double flux;					//Flux used for Fluence
-        std::map<std::string, double> FuelForm;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent$
-        std::map<std::string, double> CoolantForm;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
-        double FuelDensity;				//Fuel Density
-        double CoolantDensity;				//Coolant Density
-        double pnl;					//Non-Leakage Probability
-        double BUt;					//Target Discharge Burnup, only used for graphing inside of this component
-        bool useDisadvantage;				//Boolean value on whether or not the disadvantage factor should be used
-        std::string LatticeType;			//Lattice Type (Planar || Spherical || Cylindrical)
-        bool HydrogenRescale;				//Rescale the Hydrogen-1 XS?
+    int batches;					//Total number of fuel loading batches
+    double flux;					//Flux used for Fluence
+    std::map<std::string, double> FuelForm;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent$
+    std::map<std::string, double> CoolantForm;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
+    double FuelDensity;				//Fuel Density
+    double CoolantDensity;				//Coolant Density
+    double pnl;					//Non-Leakage Probability
+    double BUt;					//Target Discharge Burnup, only used for graphing inside of this component
+    bool useDisadvantage;				//Boolean value on whether or not the disadvantage factor should be used
+    std::string LatticeType;			//Lattice Type (Planar || Spherical || Cylindrical)
+    bool HydrogenRescale;				//Rescale the Hydrogen-1 XS?
 
-        //Volumetric Info
-        double Radius;					//Fuel region radius
-        double Length;					//Unit cell side length
-        double open_slots;				//Number of open slots in fuel assembly
-        double total_slots;				//Total number of Fuel assembly slots.
-
-
-    //Get Functions
-    int                           get_batches()         const {return batches;};
-    double                        get_flux()            const {return flux;};
-    std::map<std::string, double> get_FuelForm()        const {return FuelForm;};
-    std::map<std::string, double> get_CoolantForm()     const {return CoolantForm;};
-    double                        get_FuelDensity()     const {return FuelDensity;};
-    double                        get_CoolantDensity()  const {return CoolantDensity;};
-    double                        get_pnl()             const {return pnl;};
-    double                        get_BUt()             const {return BUt;};
-    bool                          get_useDisadvantage() const {return useDisadvantage;};
-    std::string                   get_LatticeType()     const {return LatticeType;};
-    bool                          get_HydrogenRescale() const {return HydrogenRescale;};
-
-    double                        get_Radius()          const {return Radius;};
-    double                        get_Length()          const {return Length;};
-    double                        get_open_slots()      const {return open_slots;};
-    double                        get_total_slots()     const {return total_slots;};
-
-    //Set Functions
-    void set_batches(int b)                                {batches = b;};
-    void set_flux(double f)                                {flux = f;};
-    void set_FuelForm(std::map<std::string, double> ff)    {FuelForm = ff;};
-    void set_CoolantForm(std::map<std::string, double> cf) {CoolantForm = cf;};
-    void set_FuelDensity(double fd)                        {FuelDensity = fd;};
-    void set_CoolantDensity(double cd)                     {CoolantDensity = cd;};
-    void set_pnl(double prob_nl)                           {pnl = prob_nl;};
-    void set_BUt(double buT)                               {BUt = buT;};
-    void set_useDisadvantage(bool uD)                      {useDisadvantage = uD;};
-    void set_LatticeType(std::string lt)                   {LatticeType = lt;};
-    void set_HydrogenRescale(bool hr)                      {HydrogenRescale = hr;};
-
-    void set_Radius(double r)                              {Radius = r;};
-    void set_Length(double l)                              {Length = l;};
-    void set_open_slots(double os)                         {open_slots = os;};
-    void set_total_slots(double ts)                        {total_slots = ts;};
+    //Volumetric Info
+    double Radius;					//Fuel region radius
+    double Length;					//Unit cell side length
+    double open_slots;				//Number of open slots in fuel assembly
+    double total_slots;				//Total number of Fuel assembly slots.
 };
 
 class Reactor1G : public FCComp
