@@ -857,7 +857,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
 class TestReactor1GBurnupMethods(TestCase):
     """Tests that the Reactor1G burnup methods work."""
 
-"""\
+
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
@@ -889,7 +889,7 @@ class TestReactor1GBurnupMethods(TestCase):
         k = self.r1g.batchAve(BUd, "K")
         kk = self.r1g.batchAve(BUd)
         assert_equal(k, kk)
-#        assert_equal(p/d, k) # Averaging messes this up.
+        #assert_equal(p/d, k) # Averaging messes this up.
 
     def test_batchAveK(self):
         BUd = self.r1g.BUd
@@ -905,12 +905,12 @@ class TestReactor1GBurnupMethods(TestCase):
         assert(self.r1g.IsosOut.mass < 1.0)
         assert(self.r1g.IsosOut.comp[942390] < 1.0) 
 
-"""\
+
 
 class TestReactor1GBurnupMethods2(TestCase):
     """Tests that the Reactor1G burnup methods work."""
 
-"""\
+
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
@@ -930,7 +930,7 @@ class TestReactor1GBurnupMethods2(TestCase):
         self.r1g.BUd_BisectionMethod()
         assert_almost_equal(self.r1g.k, 1.0, 5)
         self.r1g.B = 3
-"""\
+
 
 class TestReactor1GBurnupMethods3(TestCase):
     """Tests that the Reactor1G burnup methods work."""

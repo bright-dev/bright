@@ -2410,3 +2410,96 @@ cdef class Reactor1G(FCComp):
         return output
 
 
+
+
+
+
+    def LatticeEPlanar(self, double a, double b):
+        """Calculates the lattice function E(F) for planar geometry.  Sets value as LatticeE_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        self.r1g_pointer.LatticeEPlanar(a, b)
+
+
+    def LatticeFPlanar(self, double a, double b):
+        """Calculates the lattice function F(F) for planar geometry.  Sets value as LatticeF_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        self.r1g_pointer.LatticeFPlanar(a, b)
+
+
+    def LatticeESpherical(self, double a, double b):
+        """Calculates the lattice function E(F) for spherical geometry.  Sets value as LatticeE_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        self.r1g_pointer.LatticeESpherical(a, b)
+
+
+    def LatticeFSpherical(self, double a, double b):
+        """Calculates the lattice function F(F) for spherical geometry.  Sets value as LatticeF_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        self.r1g_pointer.LatticeFSpherical(a, b)
+
+
+    def LatticeECylindrical(self, double a, double b):
+        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as LatticeE_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        self.r1g_pointer.LatticeECylindrical(a, b)
+
+
+    def LatticeFCylindrical(self, double a, double b):
+        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as LatticeF_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        self.r1g_pointer.LatticeFCylindrical(a, b)
+
+
+
+
+
+    def calcZeta(self):
+        """This calculates the thermal disadvantage factor for the geometry specified by Lattice.  The results
+        are set to zeta_F_.
+        """
+        self.r1g_pointer.calcZeta()
+
+
+    def calcZetaPlanar(self):
+        """This calculates the thermal disadvantage factor for a planar geometry.  The results
+        are set to zeta_F_.
+        """
+        self.r1g_pointer.calcZetaPlanar()
+
+
+    def calcZetaSpherical(self):
+        """This calculates the thermal disadvantage factor for a spherical geometry.  The results
+        are set to zeta_F_.
+        """
+        self.r1g_pointer.calcZetaSpherical()
+
+
+    def calcZetaCylindrical(self):
+        """This calculates the thermal disadvantage factor for a clyindrical geometry.  The results
+        are set to zeta_F_.
+        """
+        self.r1g_pointer.calcZetaCylindrical()
