@@ -228,3 +228,8 @@ cdef extern from "../Reactor1G.h":
         double VF
         double VC
 
+        std.string libfile
+
+
+        # Methods
+        void loadLib(std.string)

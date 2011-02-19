@@ -1685,6 +1685,15 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.VC = value
 
 
+    property libfile:
+        def __get__(self):
+            cdef std.string value = self.r1g_pointer.libfile
+            return value.c_str()
+
+        def __set__(self, char * value):
+            self.r1g_pointer.libfile = std.string(value)
+
+
     # FCComps inherited attributes
 
     property name:
@@ -1756,3 +1765,17 @@ cdef class Reactor1G(FCComp):
         def __set__(self, set p2t):
             self.r1g_pointer.params2track = conv.py_to_cpp_set_str(p2t)
 
+
+    #
+    # Class Methods
+    # 
+
+    def loadLib(self, char * libfile="reactor.h5"):
+        """This method finds the HDF5 library for this reactor and extracts the necessary information from it.
+        This method is typically called by the constructor of the child reactor type object.  It must be 
+        called before attempting to do any real computation.
+
+        Args: 
+            * libfile (str): Path to the reactor library.
+        """
+        self.r1g_pointer.loadLib(std.string(libfile))

@@ -41,7 +41,7 @@ default_rp.total_slots = 180
 def general_teardown():
     for f in os.listdir('.'):
         if "Isos.txt" in f:
-            or1g.remove(f)
+            os.remove(f)
         elif "Params.txt" in f:
             os.remove(f)
         elif f in [".h5", "r1g.h5"]:
@@ -353,7 +353,6 @@ class TestReactor1GParameterAttributes(TestCase):
 class TestReactor1GBasicDataAttributes(TestCase):
     """Tests that the Reactor1G basic data attributes work."""
 
-"""\
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
@@ -369,6 +368,7 @@ class TestReactor1GBasicDataAttributes(TestCase):
         self.r1g.libfile = "It's Ruth!"
         assert_equal(self.r1g.libfile, "It's Ruth!")
 
+"""\
     def test_F(self):
         assert_equal(self.r1g.F[0], 0.0)
         assert(1 < len(self.r1g.F))
