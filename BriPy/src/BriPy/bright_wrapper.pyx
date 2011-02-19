@@ -7,6 +7,9 @@ from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
 
+cimport numpy as np
+import numpy as np
+
 # local imports 
 cimport std
 
@@ -1692,6 +1695,14 @@ cdef class Reactor1G(FCComp):
 
         def __set__(self, char * value):
             self.r1g_pointer.libfile = std.string(value)
+
+
+    property F:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.F)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.F = conv.array_to_vector_1d_dbl(value)
 
 
     # FCComps inherited attributes

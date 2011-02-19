@@ -1,8 +1,12 @@
 # Cython imports
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
+from libcpp.vector cimport vector as cpp_vector
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
+
+cimport numpy as np
+import numpy as np
 
 # Local imports
 cimport std
@@ -40,3 +44,12 @@ cdef set cpp_to_py_set_int(cpp_set[int])
 # String sets
 cdef cpp_set[std.string] py_to_cpp_set_str(set)
 cdef set cpp_to_py_set_str(cpp_set[std.string])
+
+
+#
+# Vector conversions
+#
+
+# 1D Float arrays
+cdef cpp_vector[double] array_to_vector_1d_dbl(np.ndarray[np.float64_t, ndim=1])
+cdef np.ndarray[np.float64_t, ndim=1] vector_to_array_1d_dbl(cpp_vector[double])

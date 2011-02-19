@@ -1,8 +1,12 @@
 # Cython imports
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
+from libcpp.vector cimport vector as cpp_vector
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
+
+cimport numpy as np
+import numpy as np
 
 # Local imports
 cimport std
@@ -135,3 +139,41 @@ cdef set cpp_to_py_set_str(cpp_set[std.string] cppset):
         inc(setiter)
 
     return pyset
+
+
+
+#
+# Vector conversions
+#
+
+# 1D Float arrays
+
+cdef cpp_vector[double] array_to_vector_1d_dbl(np.ndarray[np.float64_t, ndim=1] arr):
+    cdef cpp_vector[double] vec = cpp_vector[double]()
+    cdef Py_ssize_t n, N 
+
+    # Get and reserve the size of the vector
+    # prevents excessive resizing
+    N = arr.shape[0]
+    vec.reserve(N)
+
+    # Loop through the array
+    for n in range(N):
+        vec.push_back(arr[n])
+
+    return vec
+
+
+cdef np.ndarray[np.float64_t, ndim=1] vector_to_array_1d_dbl(cpp_vector[double] vec):
+    cdef np.ndarray[np.float64_t, ndim=1] arr
+    cdef int n, N
+
+    # Get and reserve the size of the array
+    N = vec.size()
+    arr = np.zeros((N,), dtype=np.float64) 
+
+    # loop through the vector
+    for n in range(N):
+        arr[n] = vec[n]
+
+    return arr

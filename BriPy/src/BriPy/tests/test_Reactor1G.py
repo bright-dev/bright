@@ -6,6 +6,8 @@ import nose
 from nose.tools import assert_equal, assert_not_equal, assert_raises, raises, \
     assert_almost_equal, assert_true, assert_false, set_trace
 
+from numpy.testing import assert_array_equal, assert_array_almost_equal
+
 import os
 import warnings
 import tables as tb
@@ -368,13 +370,16 @@ class TestReactor1GBasicDataAttributes(TestCase):
         self.r1g.libfile = "It's Ruth!"
         assert_equal(self.r1g.libfile, "It's Ruth!")
 
-"""\
     def test_F(self):
         assert_equal(self.r1g.F[0], 0.0)
         assert(1 < len(self.r1g.F))
         for f in range(1, len(self.r1g.F)):        
             assert(self.r1g.F[f-1] < self.r1g.F[f])
 
+        self.r1g.F = np.arange(0.0, 10.0)        
+        assert_array_equal(self.r1g.F, np.arange(0.0, 10.0))
+
+"""\
     def test_BUi_F_(self):
         BUi_F_ = self.r1g.BUi_F_
         for i in BUi_F_.keys():
