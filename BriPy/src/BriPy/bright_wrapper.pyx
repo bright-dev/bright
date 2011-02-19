@@ -1873,6 +1873,9 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.zeta_F_ = conv.array_to_vector_1d_dbl(value)
 
 
+
+
+
     property fd:
         def __get__(self):
             return self.r1g_pointer.fd
@@ -1903,6 +1906,89 @@ cdef class Reactor1G(FCComp):
 
         def __set__(self, double value):
             self.r1g_pointer.k = value
+
+
+
+
+
+    property InU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.InU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.InU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property InTRU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.InTRU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.InTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property InLAN:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.InLAN
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.InLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property InACT:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.InACT
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.InACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.OutU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.OutU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutTRU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.OutTRU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.OutTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutLAN:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.OutLAN
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.OutLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutACT:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.OutACT
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.OutACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     # FCComps inherited attributes
@@ -2005,6 +2091,23 @@ cdef class Reactor1G(FCComp):
             harm in calling it twice by accident.
         """
         self.r1g_pointer.foldMassWeights()
+
+
+    def calcSubStreams(self):
+        """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
+        attributes:
+
+            * InU
+            * InTRU
+            * InLAN
+            * InACT
+            * OutU
+            * OutTRU
+            * OutLAN
+            * OutACT
+
+        """
+        self.r1g_pointer.calcSubStreams()
 
 
     def doCalc(self, input=None):

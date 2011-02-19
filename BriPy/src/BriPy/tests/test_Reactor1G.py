@@ -603,12 +603,11 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
     """Tests that the Reactor1G sub-stream and transuranic conversion ratio
     attributes are right."""
 
-"""\
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
@@ -642,6 +641,7 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
     def test_OutACT(self):
         assert(self.r1g.OutACT.mass < 1.0)
 
+"""\
     def test_TruCR(self):
         self.r1g.calcTruCR()
         tmp_TruCR = (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 935.0)
