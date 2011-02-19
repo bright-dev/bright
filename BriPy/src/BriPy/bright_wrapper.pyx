@@ -1809,6 +1809,70 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.NiC = conv.dict_to_map_int_dbl(value)
 
 
+    property dF_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.dF_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.dF_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property dC_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.dC_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.dC_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property BU_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.BU_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.BU_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property P_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.P_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.P_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property D_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.D_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.D_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property k_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.k_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.k_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property Mj_F_:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.r1g_pointer.Mj_F_)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.Mj_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+
+
+    property zeta_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.zeta_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.zeta_F_ = conv.array_to_vector_1d_dbl(value)
+
+
     # FCComps inherited attributes
 
     property name:

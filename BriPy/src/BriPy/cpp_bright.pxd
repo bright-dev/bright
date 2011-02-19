@@ -245,6 +245,15 @@ cdef extern from "../Reactor1G.h":
         map[int, double] NiF
         map[int, double] NiC
 
+        vector[double] dF_F_
+        vector[double] dC_F_
+        vector[double] BU_F_
+        vector[double] P_F_
+        vector[double] D_F_
+        vector[double] k_F_
+        map[int, vector[double]] Mj_F_
+        vector[double] zeta_F_
+
         # Methods
         void loadLib(std.string)
         void foldMassWeights()
