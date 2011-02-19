@@ -168,7 +168,7 @@ cdef extern from "../Storage.h":
 
 cdef extern from "../Reactor1G.h":
 
-    cdef struct FluencePoint:
+    cdef cppclass FluencePoint:
         # Constructors        
         FluencePoint()
 
@@ -298,8 +298,12 @@ cdef extern from "../Reactor1G.h":
         double calc_deltaR(map[int, double])
         double calc_deltaR(cpp_mass_stream.MassStream)
 
+        FluencePoint FluenceAtBU(double)
         double batchAve(double, std.string)
+        double batchAveK(double)
         void BUd_BisectionMethod()
+        void Run_PNL(double)
+        void Calibrate_PNL_2_BUd()
 
         cpp_mass_stream.MassStream doCalc()
         cpp_mass_stream.MassStream doCalc(map[int, double])

@@ -798,12 +798,12 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
 class TestReactor1GBasicCalculationMethods(TestCase):
     """Tests that the Reactor1G basic calculation methods work."""
 
-"""\
+
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
@@ -833,7 +833,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
 
     def test_calcTruCR(self):
         self.r1g.doCalc()
-        tmp_TruCR = (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 935.0)
+        tmp_TruCR = 1.0 - (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 931.46)
         assert_almost_equal(self.r1g.calcTruCR() / tmp_TruCR, 1.0)
 
     def test_deltaR1(self):
@@ -851,7 +851,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
         self.r1g.calc_deltaR(ms)
         tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
-"""\
+
 
 
 class TestReactor1GBurnupMethods(TestCase):

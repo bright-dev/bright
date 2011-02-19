@@ -2,6 +2,23 @@
 
 #include "Reactor1G.h"
 
+/**************************/
+/*** FulencePoint Class ***/
+/**************************/
+
+FluencePoint::FluencePoint()
+{
+    f = 0;
+    F = 0.0;
+    m = 0.0;
+};
+
+
+FluencePoint::~FluencePoint()
+{
+};
+
+
 /*******************************/
 /*** ReactorParameters Class ***/
 /*******************************/

@@ -1251,19 +1251,13 @@ cdef class FluencePoint:
           Has the odd units of [MWd kb / kgIHM n].
     """
 
-    #cdef cpp_bright.FluencePoint * fp
-
-    #def __cinit__(self):
-    #    cdef cpp_bright.FluencePoint cpp_fp = cpp_bright.FluencePoint()
-    #    self.fp = &cpp_fp
-
-    cdef cpp_bright.FluencePoint fp
+    cdef cpp_bright.FluencePoint * fp_pointer
 
     def __cinit__(self):
-        self.fp = cpp_bright.FluencePoint()
+        self.fp_pointer = new cpp_bright.FluencePoint()
 
-    #def __dealloc__(self):
-    #    free(&self.fp)
+    def __dealloc__(self):
+        del self.fp_pointer
 
 
     #
@@ -1272,26 +1266,26 @@ cdef class FluencePoint:
 
     property f:
         def __get__(self):
-            return self.fp.f
+            return self.fp_pointer.f
 
         def __set__(self, int value):
-            self.fp.f = value
+            self.fp_pointer.f = value
 
 
     property F:
         def __get__(self):
-            return self.fp.F
+            return self.fp_pointer.F
 
         def __set__(self, double value):
-            self.fp.F = value
+            self.fp_pointer.F = value
 
 
     property m:
         def __get__(self):
-            return self.fp.m
+            return self.fp_pointer.m
 
         def __set__(self, double value):
-            self.fp.m = value
+            self.fp_pointer.m = value
 
 
 
@@ -2255,7 +2249,7 @@ cdef class Reactor1G(FCComp):
         Returns:
             * TruCR (float): The value of the transuranic conversion ratio just calculated.
         """
-        self.r1g_pointer.calcTruCR()
+        return self.r1g_pointer.calcTruCR()
 
 
 
@@ -2292,6 +2286,26 @@ cdef class Reactor1G(FCComp):
 
 
 
+    def FluenceAtBU(self, double burnup):
+        """This function takes a burnup value  and returns a special fluence point object.  
+        The fluence point is an amalgamation of data where the at which the burnup occurs.
+        This object instance FP contains three pieces of information::
+    
+            FP.f    #Index immediately lower than where BU achieved (int)
+            FP.F    #Fluence value itself (float)
+            FP.m    #Slope dBU/dF between points f and f+1 (double)
+
+        Args:
+            * burnup (float): Burnup [MWd/kgIHM] at which to calculate the corresponding fluence.
+
+        Returns:
+            * fp (FluencePoint): A class containing fluence information.
+        """
+        cdef FluencePoint fp = FluencePoint()
+        fp.fp_pointer[0] = self.r1g_pointer.FluenceAtBU(burnup)
+        return fp
+
+
     def batchAve(self, double BUd, char * PDk_flag="K"):
         """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
         This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
@@ -2310,6 +2324,19 @@ cdef class Reactor1G(FCComp):
         return PDk
 
 
+    def batchAveK(self, double BUd):
+        """Convenience function that calls batchAve(BUd, "K").
+
+        Args:
+            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+
+        Returns:
+            * k (float): the batch averaged multiplication factor.
+        """
+        cdef double PDk = self.r1g_pointer.batchAveK(BUd)
+        return PDk
+
+
     def BUd_BisectionMethod(self):
         """Calculates the maximum discharge burnup via the Bisection Method for a given IsosIn
         in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
@@ -2318,6 +2345,32 @@ cdef class Reactor1G(FCComp):
         Other root finding methods for determining maximum discharge burnup are certainly possible.
         """
         self.r1g_pointer.BUd_BisectionMethod()
+
+
+    def Run_PNL(self, double pnl):
+        """Performs a reactor run for a specific non-leakage probability value.
+        This requires that IsosIn be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+
+        This function amounts to the following code::
+
+            self.P_NL = pnl
+            self.foldMassWeights()
+            self.BUd_BisectionMethod()
+
+        Args:
+            * pnl (float): The new non-leakage probability for the reactor.
+        """
+        self.r1g_pointer.Run_PNL(pnl)
+    
+
+    def Calibrate_PNL_2_BUd(self):
+        """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
+        and the target discharge burnup are.  This function handles that situation by
+        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup TargetBU.
+        Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
+        benchmarking calculations.
+        """
+        self.r1g_pointer.Calibrate_PNL_2_BUd()
 
 
 

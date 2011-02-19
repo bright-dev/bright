@@ -36,19 +36,17 @@ typedef std::vector<double> Data_F_;
 typedef std::set<int> IsoSet;
 typedef IsoSet::iterator IsoIter;
 
-struct FluencePoint
+class FluencePoint
 {
+public:
+    // Constructors
+    FluencePoint();
+    ~FluencePoint();
+
+    // Attributes
     int f;
     double F;
     double m;
-
-    FluencePoint()
-    {
-        f = 0;
-        F = 0.0;
-        m = 0.0;
-    };
-
 };
 
 
