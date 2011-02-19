@@ -448,7 +448,6 @@ class TestReactor1GCalculatedWeightAttributes(TestCase):
     def test_MWC(self):
         assert_almost_equal(self.r1g.MWC / 18.0, 1.0, 4)
 
-"""\
     def test_niF(self):
         assert_equal(self.r1g.niF[80160],  2.0)
         assert_equal(self.r1g.niF[922350], 0.5)
@@ -478,7 +477,6 @@ class TestReactor1GCalculatedWeightAttributes(TestCase):
         assert_almost_equal(self.r1g.NiC[10010] / (2.0 * self.r1g.rhoC * 6.022*(10**23) / 18.0), 1.0, 3)
         assert_almost_equal(self.r1g.NiC[80160] / (1.0 * self.r1g.rhoC * 6.022*(10**23) / 18.0), 1.0, 3)
 
-"""\
 
 class TestReactor1GCalculatedDataAttributes(TestCase):
     """Tests that the Reactor1G calculated data attributes work."""

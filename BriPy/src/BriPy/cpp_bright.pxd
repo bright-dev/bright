@@ -238,7 +238,12 @@ cdef extern from "../Reactor1G.h":
         double A_IHM
         double MWF
         double MWC
-
+        map[int, double] niF
+        map[int, double] niC
+        map[int, double] miF
+        map[int, double] miC
+        map[int, double] NiF
+        map[int, double] NiC
 
         # Methods
         void loadLib(std.string)

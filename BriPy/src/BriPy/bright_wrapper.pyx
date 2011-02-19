@@ -1760,6 +1760,54 @@ cdef class Reactor1G(FCComp):
         def __set__(self, double value):
             self.r1g_pointer.MWC = value
 
+    
+    property niF:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.r1g_pointer.niF)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.niF = conv.dict_to_map_int_dbl(value)
+
+    
+    property niC:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.r1g_pointer.niC)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.niC = conv.dict_to_map_int_dbl(value)
+
+    
+    property miF:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.r1g_pointer.miF)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.miF = conv.dict_to_map_int_dbl(value)
+
+    
+    property miC:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.r1g_pointer.miC)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.miC = conv.dict_to_map_int_dbl(value)
+
+    
+    property NiF:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.r1g_pointer.NiF)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.NiF = conv.dict_to_map_int_dbl(value)
+
+    
+    property NiC:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.r1g_pointer.NiC)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.NiC = conv.dict_to_map_int_dbl(value)
+
 
     # FCComps inherited attributes
 
