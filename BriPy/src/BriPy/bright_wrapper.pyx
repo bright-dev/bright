@@ -1873,6 +1873,38 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.zeta_F_ = conv.array_to_vector_1d_dbl(value)
 
 
+    property fd:
+        def __get__(self):
+            return self.r1g_pointer.fd
+
+        def __set__(self, int value):
+            self.r1g_pointer.fd = value
+
+
+    property Fd:
+        def __get__(self):
+            return self.r1g_pointer.Fd
+
+        def __set__(self, double value):
+            self.r1g_pointer.Fd = value
+
+
+    property BUd:
+        def __get__(self):
+            return self.r1g_pointer.BUd
+
+        def __set__(self, double value):
+            self.r1g_pointer.BUd = value
+
+
+    property k:
+        def __get__(self):
+            return self.r1g_pointer.k
+
+        def __set__(self, double value):
+            self.r1g_pointer.k = value
+
+
     # FCComps inherited attributes
 
     property name:
@@ -1973,3 +2005,40 @@ cdef class Reactor1G(FCComp):
             harm in calling it twice by accident.
         """
         self.r1g_pointer.foldMassWeights()
+
+
+    def doCalc(self, input=None):
+        """Since many other methods provide the computational heavy-lifting of reactor calculations, 
+        the doCalc() method is relatively simple::
+
+            self.IsosIn = input
+            self.foldMassWeights()
+            self.BUd_BisectionMethod()
+            self.calcOutIso()
+            return self.IsosOut
+
+        As you can see, all this function does is set burn an input stream to its maximum 
+        discharge burnup and then reports on the output isotopics.
+
+        Args:
+            * input (dict or MassStream): If input is present, it set as the component's 
+              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as IsosIn.
+
+        Returns:
+            * output (MassStream): IsosOut.
+        """
+        cdef mass_stream.MassStream in_ms 
+        cdef mass_stream.MassStream output = mass_stream.MassStream()
+
+        if input is None:
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.r1g_pointer).doCalc()
+        elif isinstance(input, dict):
+            output.ms_pointer[0] = self.r1g_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+        elif isinstance(input, mass_stream.MassStream):
+            in_ms = input
+            output.ms_pointer[0] = self.r1g_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+
+        return output
+
+

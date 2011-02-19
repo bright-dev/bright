@@ -570,12 +570,11 @@ class TestReactor1GCalculatedDataAttributes(TestCase):
 class TestReactor1GDischargeAttributes(TestCase):
     """Tests that the Reactor1G discharge attributes are right."""
 
-"""\
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
@@ -599,7 +598,6 @@ class TestReactor1GDischargeAttributes(TestCase):
     def test_k(self):
         assert_almost_equal(self.r1g.k, 1.0)
 
-"""\
 
 class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
     """Tests that the Reactor1G sub-stream and transuranic conversion ratio

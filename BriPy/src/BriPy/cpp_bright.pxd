@@ -254,6 +254,15 @@ cdef extern from "../Reactor1G.h":
         map[int, vector[double]] Mj_F_
         vector[double] zeta_F_
 
+        int fd
+        double Fd
+        double BUd
+        double k
+
         # Methods
         void loadLib(std.string)
         void foldMassWeights()
+
+        cpp_mass_stream.MassStream doCalc()
+        cpp_mass_stream.MassStream doCalc(map[int, double])
+        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream)
