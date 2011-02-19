@@ -1991,6 +1991,24 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.OutACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
+
+
+    property deltaR:
+        def __get__(self):
+            return self.r1g_pointer.deltaR
+
+        def __set__(self, double value):
+            self.r1g_pointer.deltaR = value
+
+
+    property TruCR:
+        def __get__(self):
+            return self.r1g_pointer.TruCR
+
+        def __set__(self, double value):
+            self.r1g_pointer.TruCR = value
+
+
     # FCComps inherited attributes
 
     property name:
@@ -2093,6 +2111,9 @@ cdef class Reactor1G(FCComp):
         self.r1g_pointer.foldMassWeights()
 
 
+
+
+
     def calcSubStreams(self):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
         attributes:
@@ -2108,6 +2129,72 @@ cdef class Reactor1G(FCComp):
 
         """
         self.r1g_pointer.calcSubStreams()
+
+
+    def calcTruCR(self):
+        """This calculates and sets the transuranic conversion ratio TruCR through the equation:
+
+        .. math:: \mbox{TruCR} = \frac{\mbox{InTRU.mass} - \mbox{OutTRU.mass}}{\frac{\mbox{BUd}}{935.0}}
+
+        Returns:
+            * TruCR (float): The value of the transuranic conversion ratio just calculated.
+        """
+        self.r1g_pointer.calcTruCR()
+
+
+
+
+
+    def calc_deltaR(self, input=None):
+        """Calculates and sets the deltaR value of the reactor.  
+        This is equal to the production rate minus the destruction rate at the target burnup::
+
+            deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+
+        Args:
+            * input (dict or MassStream): If input is present, it set as the component's 
+              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as IsosIn.
+
+        Returns:
+            * deltaR (float): deltaR.
+        """
+        cdef mass_stream.MassStream in_ms 
+        cdef double deltaR 
+
+        if input is None:
+            deltaR = self.r1g_pointer.calc_deltaR()
+        elif isinstance(input, dict):
+            deltaR = self.r1g_pointer.calc_deltaR(conv.dict_to_map_int_dbl(input))
+        elif isinstance(input, mass_stream.MassStream):
+            in_ms = input
+            deltaR = self.r1g_pointer.calc_deltaR(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+
+        return deltaR
+
+
+
+
+
+    def batchAve(self, double BUd, char * PDk_flag="K"):
+        """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
+        This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
+
+        Args:
+            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+
+        Keyword Args:
+            * PDk_flag (string): Flag that determines whether the neutron production rate "P" [n/s], 
+              the neutron destruction rate "D" [n/s], or the multiplication factor "K" is reported in the output.
+
+        Returns:
+            * PDk (float): the batch averaged neutron production rate,
+        """
+        cdef double PDk = self.r1g_pointer.batchAve(BUd, std.string(PDk_flag))
+        return PDk
+
+
+
 
 
     def doCalc(self, input=None):

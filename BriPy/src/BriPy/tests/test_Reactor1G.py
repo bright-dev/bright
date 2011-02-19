@@ -641,10 +641,9 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
     def test_OutACT(self):
         assert(self.r1g.OutACT.mass < 1.0)
 
-"""\
     def test_TruCR(self):
         self.r1g.calcTruCR()
-        tmp_TruCR = (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 935.0)
+        tmp_TruCR = 1.0 - (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 931.46)
         assert_almost_equal(self.r1g.TruCR / tmp_TruCR, 1.0)
 
     def test_deltaR(self):
@@ -652,7 +651,6 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
         tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
-"""\
 
 class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
     """Tests that the Reactor1G calculated data attributes work."""

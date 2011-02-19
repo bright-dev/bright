@@ -268,11 +268,21 @@ cdef extern from "../Reactor1G.h":
         cpp_mass_stream.MassStream OutLAN
         cpp_mass_stream.MassStream OutACT
 
+        double deltaR
+        double TruCR
+
         # Methods
         void loadLib(std.string)
         void foldMassWeights()
 
         void calcSubStreams()
+        double calcTruCR()
+
+        double calc_deltaR()
+        double calc_deltaR(map[int, double])
+        double calc_deltaR(cpp_mass_stream.MassStream)
+
+        double batchAve(double, std.string)
 
         cpp_mass_stream.MassStream doCalc()
         cpp_mass_stream.MassStream doCalc(map[int, double])
