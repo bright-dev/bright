@@ -1729,6 +1729,14 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.di_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
 
 
+    property Tij_F_:
+        def __get__(self):
+            return conv.map_to_dict_int_int_array_to_vector_1d_dbl(self.r1g_pointer.Tij_F_)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.Tij_F_ = conv.dict_to_map_int_int_vector_to_array_1d_dbl(value)
+
+
     # FCComps inherited attributes
 
     property name:

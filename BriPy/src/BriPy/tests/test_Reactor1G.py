@@ -392,9 +392,11 @@ class TestReactor1GBasicDataAttributes(TestCase):
                 assert(BUi_F_[i][f-1] <= BUi_F_[i][f])
 
 
+        old_BU = self.r1g.BUi_F_
         self.r1g.BUi_F_ = {1: np.arange(0.0, 10.0)}
         assert_equal(self.r1g.BUi_F_.keys(), [1])
         assert_array_equal(self.r1g.BUi_F_[1], np.arange(0.0, 10.0))
+        self.r1g.BUi_F_ = old_BU
 
 
     def test_pi_F_(self):
@@ -407,15 +409,19 @@ class TestReactor1GBasicDataAttributes(TestCase):
         for i in di_F_.keys():
             assert_equal(len(self.r1g.F), len(di_F_[i]))
 
-"""\
     def test_Tij_F_(self):
         Tij_F_ = self.r1g.Tij_F_
-        jsos   = BriPy.isos2track()
+        jsos   = bright_config.isos2track
         for i in Tij_F_.keys():
             for j in jsos:
                 assert_equal(len(self.r1g.F), len(Tij_F_[i][j]))
-"""\
 
+        old_T = self.r1g.Tij_F_
+        self.r1g.Tij_F_ = {1: {2: np.arange(0.0, 10.0)}}
+        assert_equal(self.r1g.Tij_F_.keys(), [1])
+        assert_equal(self.r1g.Tij_F_[1].keys(), [2])
+        assert_array_equal(self.r1g.Tij_F_[1][2], np.arange(0.0, 10.0))
+        self.r1g.Tij_F_ = old_T
 
 class TestReactor1GCalculatedWeightAttributes(TestCase):
     """Tests that the Reactor1G calculated weight attributes work."""

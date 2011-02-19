@@ -233,6 +233,7 @@ cdef extern from "../Reactor1G.h":
         map[int, vector[double]] BUi_F_
         map[int, vector[double]] pi_F_
         map[int, vector[double]] di_F_
+        map[int, map[int, vector[double]]] Tij_F_
 
 
         # Methods
