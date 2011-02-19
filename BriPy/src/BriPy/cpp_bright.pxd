@@ -178,6 +178,9 @@ cdef extern from "../Reactor1G.h":
 
 
     cdef struct ReactorParameters:
+        # Constructors        
+        ReactorParameters()
+
         # Attributes
         int batches
         double flux

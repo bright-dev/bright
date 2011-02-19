@@ -17,11 +17,11 @@ import mass_stream
 bright_config = BriPy.bright_config
 MassStream = mass_stream.MassStream
 FluencePoint = BriPy.FluencePoint
-#ReactorParameters = BriPy.ReactorParameters
+ReactorParameters = BriPy.ReactorParameters
 #Reactor1G = BriPy.Reactor1G
 
-"""\
 default_rp = BriPy.ReactorParameters()
+"""\
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
 default_rp.FuelForm = {"IHM": 1.0, "O16": 2.0}
@@ -37,6 +37,7 @@ default_rp.Radius = 0.411
 default_rp.Length = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
+
 
 def general_teardown():
     for f in os.listdir('.'):
@@ -77,7 +78,6 @@ class TestFluencePoint(TestCase):
 class TestReactorParameters(TestCase):
     """Tests the reactor parameters Reactor1G helper clasr1g."""
 
-"""\
     def test_constructor(self):
         rp = ReactorParameters()
         assert_equal(rp.batches, 0)
@@ -96,6 +96,7 @@ class TestReactorParameters(TestCase):
         assert_equal(rp.open_slots, 0.0)
         assert_equal(rp.total_slots, 0.0)
 
+"""\
     def test_batches(self):
         rp = ReactorParameters()
         rp.batches = 3

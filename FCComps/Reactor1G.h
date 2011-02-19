@@ -51,32 +51,45 @@ struct FluencePoint
 
 };
 
+
 struct ReactorParameters
 {
-    /** Set of physical reactor parameters.
-     *  May be used to instantiate new reactor objects, -or-
-     *  to define default settings for a reactor type.
-     */
+    int batches;
+    double flux;
+    std::map<std::string, double> FuelForm;
+    std::map<std::string, double> CoolantForm;
+    double FuelDensity;
+    double CoolantDensity;
+    double pnl;
+    double BUt;
+    bool useDisadvantage;
+    std::string LatticeType;
+    bool HydrogenRescale;
+    double Radius;
+    double Length;
+    double open_slots;
+    double total_slots;
 
-    //General Info
-    int batches;					//Total number of fuel loading batches
-    double flux;					//Flux used for Fluence
-    std::map<std::string, double> FuelForm;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent$
-    std::map<std::string, double> CoolantForm;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
-    double FuelDensity;				//Fuel Density
-    double CoolantDensity;				//Coolant Density
-    double pnl;					//Non-Leakage Probability
-    double BUt;					//Target Discharge Burnup, only used for graphing inside of this component
-    bool useDisadvantage;				//Boolean value on whether or not the disadvantage factor should be used
-    std::string LatticeType;			//Lattice Type (Planar || Spherical || Cylindrical)
-    bool HydrogenRescale;				//Rescale the Hydrogen-1 XS?
+    ReactorParameters()
+    {
+        batches = 0;
+        flux = 0.0;
+        FuelForm = std::map<std::string, double>();
+        CoolantForm = std::map<std::string, double>();
+        pnl = 0.0;
+        BUt = 0.0;
+        useDisadvantage = false;
+        LatticeType = std::string();
+        HydrogenRescale = false;
 
-    //Volumetric Info
-    double Radius;					//Fuel region radius
-    double Length;					//Unit cell side length
-    double open_slots;				//Number of open slots in fuel assembly
-    double total_slots;				//Total number of Fuel assembly slots.
+        Radius = 0.0;
+        Length = 0.0;
+        open_slots = 0.0;
+        total_slots = 0.0;
+    };
+
 };
+
 
 class Reactor1G : public FCComp
 {

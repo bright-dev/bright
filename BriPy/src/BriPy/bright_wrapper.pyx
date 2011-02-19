@@ -1350,10 +1350,11 @@ cdef class ReactorParameters:
           For a 17x17 bundle, S_T is 289.0. 
     """
 
-    cdef cpp_bright.ReactorParameters rp
+    cdef cpp_bright.ReactorParameters * rp 
 
     def __cinit__(self):
-        self.rp = cpp_bright.ReactorParameters()
+        cdef cpp_bright.ReactorParameters cpp_rp = cpp_bright.ReactorParameters()
+        self.rp = &cpp_rp
 
     #def __dealloc__(self):
     #    free(&self.fp)
