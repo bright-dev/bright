@@ -129,7 +129,7 @@ public:
     std::vector<double> F;   					//Fluence in [n/kb]
     IsoFluenceDict BUi_F_;						//Burnup [MWd/kgIHM]
     IsoFluenceDict pi_F_; 						//Production rate [n/s]
-        IsoFluenceDict di_F_;		      	   			//Destruction rate [n/s]
+    IsoFluenceDict di_F_;		      	   			//Destruction rate [n/s]
     std::map<int, IsoFluenceDict> Tij_F_;				//Transformation Matrix [kg_i/kgIHM]
 
     double A_IHM;							//Atomic weight of IHM

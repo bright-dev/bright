@@ -655,12 +655,11 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
 class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
     """Tests that the Reactor1G calculated data attributes work."""
 
-    """\
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
@@ -668,17 +667,16 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
     @classmethod
     def teardown_class(cls):
         general_teardown()
-    """\
+
 
     def test_SigmaFa_F_(self):
         """Can not do full test do to private sigma_a_therm data member."""
-#        assert_equal(len(self.r1g.SigmaFa_F_), len( self.r1g.F))
+        assert_equal(len(self.r1g.SigmaFa_F_), len( self.r1g.F))
 
     def test_SigmaFtr_F_(self):
         """Can not do full test do to private sigma_a_therm data member."""
-#        assert_equal(len(self.r1g.SigmaFtr_F_), len( self.r1g.F))
+        assert_equal(len(self.r1g.SigmaFtr_F_), len( self.r1g.F))
 
-    """\
     def test_kappaF_F_(self):
         kappaF_F_ = self.r1g.kappaF_F_
         SigmaFa_F_ = self.r1g.SigmaFa_F_
@@ -686,17 +684,15 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
         for f in range(len(self.r1g.F)):
             tmp_kappaF = np.sqrt(3.0 * SigmaFtr_F_[f] * SigmaFa_F_[f])
             assert_almost_equal(kappaF_F_[f] / tmp_kappaF, 1.0)
-    """\
 
     def test_SigmaCa_F_(self):
         """Can not do full test do to private sigma_a_therm data member."""
-    #    assert_equal(len(self.r1g.SigmaCa_F_), len( self.r1g.F))
+        assert_equal(len(self.r1g.SigmaCa_F_), len( self.r1g.F))
 
     def test_SigmaCtr_F_(self):
         """Can not do full test do to private sigma_a_therm data member."""
-    #    assert_equal(len(self.r1g.SigmaCtr_F_), len( self.r1g.F))
+        assert_equal(len(self.r1g.SigmaCtr_F_), len( self.r1g.F))
 
-    """\
     def test_kappaC_F_(self):
         kappaC_F_ = self.r1g.kappaC_F_
         SigmaCa_F_ = self.r1g.SigmaCa_F_
@@ -708,7 +704,6 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
     #Test LatticeE_F_ here
 
     #Test LatticeF_F_ here
-    """\
 
 
 class TestReactor1GInitializationMethods(TestCase):

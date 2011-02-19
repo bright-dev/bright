@@ -271,6 +271,17 @@ cdef extern from "../Reactor1G.h":
         double deltaR
         double TruCR
 
+        vector[double] SigmaFa_F_
+        vector[double] SigmaFtr_F_
+        vector[double] kappaF_F_
+
+        vector[double] SigmaCa_F_
+        vector[double] SigmaCtr_F_
+        vector[double] kappaC_F_
+
+        vector[double] LatticeE_F_
+        vector[double] LatticeF_F_
+
         # Methods
         void loadLib(std.string)
         void foldMassWeights()

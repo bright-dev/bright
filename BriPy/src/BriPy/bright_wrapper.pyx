@@ -2009,6 +2009,80 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.TruCR = value
 
 
+
+
+
+    property SigmaFa_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.SigmaFa_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.SigmaFa_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property SigmaFtr_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.SigmaFtr_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.SigmaFtr_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property kappaF_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.kappaF_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.kappaF_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+
+
+
+    property SigmaCa_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.SigmaCa_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.SigmaCa_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property SigmaCtr_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.SigmaCtr_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.SigmaCtr_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property kappaC_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.kappaC_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.kappaC_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+
+
+
+    property LatticeE_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.LatticeE_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.LatticeE_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property LatticeF_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.LatticeF_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.r1g_pointer.LatticeF_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+
     # FCComps inherited attributes
 
     property name:
