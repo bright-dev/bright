@@ -862,7 +862,7 @@ class TestReactor1GBurnupMethods(TestCase):
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
@@ -915,7 +915,7 @@ class TestReactor1GBurnupMethods2(TestCase):
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
@@ -935,12 +935,12 @@ class TestReactor1GBurnupMethods2(TestCase):
 class TestReactor1GBurnupMethods3(TestCase):
     """Tests that the Reactor1G burnup methods work."""
 
-"""\
+
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
@@ -956,17 +956,17 @@ class TestReactor1GBurnupMethods3(TestCase):
         assert_almost_equal(self.r1g.k, 1.0, 1)
         self.r1g.Run_PNL(0.98)
 
-"""\
+
 
 class TestReactor1GBurnupMethods4(TestCase):
     """Tests that the Reactor1G burnup methods work."""
 
-"""\
+
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
@@ -980,18 +980,18 @@ class TestReactor1GBurnupMethods4(TestCase):
         assert_not_equal(self.r1g.P_NL, 0.98)
         assert_almost_equal(self.r1g.BUd / self.r1g.TargetBU, 1.0, 5)
         
-"""\
+
 
 class TestReactor1GLatticeMethods(TestCase):
     """Tests that the Reactor1G burnup methods work.
     These are not exposed to Python directly =("""
 
-"""\
+
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
@@ -1066,7 +1066,6 @@ class TestReactor1GLatticeMethods(TestCase):
     #   calcZetaPlanar()
     #   calcZetaSpherical()
     #   calcZetaCylindrical()
-"""\
 
 
 if __name__ == "__main__":
