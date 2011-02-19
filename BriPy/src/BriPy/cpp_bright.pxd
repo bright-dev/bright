@@ -287,6 +287,10 @@ cdef extern from "../Reactor1G.h":
         void loadLib(std.string)
         void foldMassWeights()
 
+        void mkMj_F_()
+        void mkMj_Fd_()
+
+        void calcOutIso()
         void calcSubStreams()
         double calcTruCR()
 
@@ -295,6 +299,7 @@ cdef extern from "../Reactor1G.h":
         double calc_deltaR(cpp_mass_stream.MassStream)
 
         double batchAve(double, std.string)
+        void BUd_BisectionMethod()
 
         cpp_mass_stream.MassStream doCalc()
         cpp_mass_stream.MassStream doCalc(map[int, double])

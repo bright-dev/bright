@@ -757,12 +757,12 @@ class TestReactor1GInitializationMethods(TestCase):
 class TestReactor1GTransmutationMatrixMethods(TestCase):
     """Tests that the fuel cycle component transmutation matrix methods work."""
 
-"""\
+
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
@@ -793,7 +793,7 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
         assert(0.0 < self.r1g.IsosOut.mass)
         assert(self.r1g.IsosOut.mass < 1.0)
 
-"""\
+
 
 class TestReactor1GBasicCalculationMethods(TestCase):
     """Tests that the Reactor1G basic calculation methods work."""

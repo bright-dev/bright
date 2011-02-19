@@ -2200,6 +2200,36 @@ cdef class Reactor1G(FCComp):
 
 
 
+    def mkMj_F_(self):
+        """This function calculates and sets the Mj_F_ attribute from IsosIn and the 
+        raw reactor data Tij_F_.
+        """
+        self.r1g_pointer.mkMj_F_()
+
+
+    def mkMj_Fd_(self):
+        """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
+        The resultant isotopic dictionary is then converted into the IsosOut mass stream
+        for this pass through the reactor.  Thus if ever you need to calculate IsosOut
+        without going through doCalc(), use this function.
+        """
+        self.r1g_pointer.mkMj_Fd_()
+
+
+
+
+
+    def calcOutIso(self):
+        """This is a convenience function that wraps the transmutation matrix methods.  
+        It is equivalent to::
+
+            #Wrapper to calculate discharge isotopics.
+            mkMj_F_()
+            mkMj_Fd_()
+
+        """
+        self.r1g_pointer.calcOutIso()
+
     def calcSubStreams(self):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
         attributes:
@@ -2279,6 +2309,15 @@ cdef class Reactor1G(FCComp):
         cdef double PDk = self.r1g_pointer.batchAve(BUd, std.string(PDk_flag))
         return PDk
 
+
+    def BUd_BisectionMethod(self):
+        """Calculates the maximum discharge burnup via the Bisection Method for a given IsosIn
+        in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
+        that is closest to 1.0.
+
+        Other root finding methods for determining maximum discharge burnup are certainly possible.
+        """
+        self.r1g_pointer.BUd_BisectionMethod()
 
 
 
