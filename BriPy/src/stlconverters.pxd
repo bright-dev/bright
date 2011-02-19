@@ -53,3 +53,13 @@ cdef set cpp_to_py_set_str(cpp_set[std.string])
 # 1D Float arrays
 cdef cpp_vector[double] array_to_vector_1d_dbl(np.ndarray[np.float64_t, ndim=1])
 cdef np.ndarray[np.float64_t, ndim=1] vector_to_array_1d_dbl(cpp_vector[double])
+
+
+
+#
+# Map-Vector Conversions
+#
+
+# {int: np.array()} 
+cdef cpp_map[int, cpp_vector[double]] dict_to_map_int_vector_to_array_1d_dbl(dict)
+cdef dict map_to_dict_int_array_to_vector_1d_dbl(cpp_map[int, cpp_vector[double]])

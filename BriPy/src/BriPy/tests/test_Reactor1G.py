@@ -379,7 +379,6 @@ class TestReactor1GBasicDataAttributes(TestCase):
         self.r1g.F = np.arange(0.0, 10.0)        
         assert_array_equal(self.r1g.F, np.arange(0.0, 10.0))
 
-"""\
     def test_BUi_F_(self):
         BUi_F_ = self.r1g.BUi_F_
         for i in BUi_F_.keys():
@@ -388,6 +387,13 @@ class TestReactor1GBasicDataAttributes(TestCase):
             for f in range(1, len(self.r1g.F)):        
                 assert(BUi_F_[i][f-1] <= BUi_F_[i][f])
 
+
+        self.r1g.BUi_F_ = {1: np.arange(0.0, 10.0)}
+        assert_equal(self.r1g.BUi_F_.keys(), [1])
+        assert_array_equal(self.r1g.BUi_F_[1], np.arange(0.0, 10.0))
+
+
+"""\
     def test_pi_F_(self):
         pi_F_ = self.r1g.pi_F_
         for i in pi_F_.keys():

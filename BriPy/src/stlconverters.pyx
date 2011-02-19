@@ -177,3 +177,28 @@ cdef np.ndarray[np.float64_t, ndim=1] vector_to_array_1d_dbl(cpp_vector[double] 
         arr[n] = vec[n]
 
     return arr
+
+
+#
+# Map-Vector Conversions
+#
+
+# {int: np.array()} 
+cdef cpp_map[int, cpp_vector[double]] dict_to_map_int_vector_to_array_1d_dbl(dict pydict):
+    cdef cpp_map[int, cpp_vector[double]] cppmap = cpp_map[int, cpp_vector[double]]()
+
+    for key, value in pydict.items():
+        cppmap[key] = array_to_vector_1d_dbl(value)
+
+    return cppmap
+
+cdef dict map_to_dict_int_array_to_vector_1d_dbl(cpp_map[int, cpp_vector[double]] cppmap):
+    pydict = {}
+    cdef cpp_map[int, cpp_vector[double]].iterator mapiter = cppmap.begin()
+
+    while mapiter != cppmap.end():
+        pydict[deref(mapiter).first] = vector_to_array_1d_dbl(deref(mapiter).second)
+        inc(mapiter)
+
+    return pydict
+
