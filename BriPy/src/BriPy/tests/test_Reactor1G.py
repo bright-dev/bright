@@ -376,8 +376,12 @@ class TestReactor1GBasicDataAttributes(TestCase):
         for f in range(1, len(self.r1g.F)):        
             assert(self.r1g.F[f-1] < self.r1g.F[f])
 
+        old_F = self.r1g.F
+
         self.r1g.F = np.arange(0.0, 10.0)        
         assert_array_equal(self.r1g.F, np.arange(0.0, 10.0))
+
+        self.r1g.F = old_F
 
     def test_BUi_F_(self):
         BUi_F_ = self.r1g.BUi_F_
@@ -393,7 +397,6 @@ class TestReactor1GBasicDataAttributes(TestCase):
         assert_array_equal(self.r1g.BUi_F_[1], np.arange(0.0, 10.0))
 
 
-"""\
     def test_pi_F_(self):
         pi_F_ = self.r1g.pi_F_
         for i in pi_F_.keys():
@@ -404,6 +407,7 @@ class TestReactor1GBasicDataAttributes(TestCase):
         for i in di_F_.keys():
             assert_equal(len(self.r1g.F), len(di_F_[i]))
 
+"""\
     def test_Tij_F_(self):
         Tij_F_ = self.r1g.Tij_F_
         jsos   = BriPy.isos2track()

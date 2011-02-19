@@ -231,6 +231,9 @@ cdef extern from "../Reactor1G.h":
         std.string libfile
         vector[double] F
         map[int, vector[double]] BUi_F_
+        map[int, vector[double]] pi_F_
+        map[int, vector[double]] di_F_
+
 
         # Methods
         void loadLib(std.string)
