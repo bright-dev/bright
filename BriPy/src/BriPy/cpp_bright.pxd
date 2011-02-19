@@ -1,6 +1,7 @@
 """C++ wrapper for isoname library."""
 from libcpp.map cimport map
 from libcpp.set cimport set
+from libcpp.vector cimport vector
 
 cimport std
 cimport cpp_mass_stream
@@ -208,3 +209,22 @@ cdef extern from "../Reactor1G.h":
         Reactor1G(ReactorParameters, set[std.string], std.string)
 
         # Attributes
+        int B
+        double phi
+        map[std.string, double] FuelChemicalForm
+        map[std.string, double] CoolantChemicalForm
+        double rhoF
+        double rhoC
+        double P_NL
+        double TargetBU
+        bint useZeta
+        std.string Lattice
+        bint H_XS_Rescale
+
+        double r
+        double l
+        double S_O
+        double S_T
+        double VF
+        double VC
+

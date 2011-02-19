@@ -191,22 +191,21 @@ class TestReactor1GConstructors(TestCase):
         assert_equal(r1g.name, 'r1g')
         assert_equal(r1g.params2track, set())
 
-"""\
     def test_Reactor1G_3(self):
-        r1g = Reactor1G(["Mass"])
+        r1g = Reactor1G(params2track=set(["Mass"]))
         assert_equal(r1g.name, '')
-        assert_equal(r1g.params2track, ["Mass"])
+        assert_equal(r1g.params2track, set(["Mass"]))
 
     def test_Reactor1G_4(self):
-        r1g = Reactor1G(["Mass"], 'r1g')
+        r1g = Reactor1G(params2track=set(["Mass"]), name='r1g')
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, ["Mass"])
+        assert_equal(r1g.params2track, set(["Mass"]))
 
     def test_Reactor1G_5(self):
         rp = ReactorParameters()
-        r1g = Reactor1G(rp, "r1g")
+        r1g = Reactor1G(reactor_parameters=rp, name="r1g")
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, [])
+        assert_equal(r1g.params2track, set())
         assert_equal(r1g.B, 0)
         assert_equal(r1g.phi, 0.0)
         assert_equal(r1g.FuelChemicalForm, {})
@@ -225,9 +224,9 @@ class TestReactor1GConstructors(TestCase):
 
     def test_Reactor1G_6(self):
         rp = ReactorParameters()
-        r1g = Reactor1G(rp, ["Mass"], "r1g")
+        r1g = Reactor1G(reactor_paramters=rp, params2track=set(["Mass"]), name="r1g")
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, ["Mass"])
+        assert_equal(r1g.params2track, set(["Mass"]))
         assert_equal(r1g.B, 0)
         assert_equal(r1g.phi, 0.0)
         assert_equal(r1g.FuelChemicalForm, {})
@@ -244,13 +243,11 @@ class TestReactor1GConstructors(TestCase):
         assert_equal(r1g.S_O, 0.0)
         assert_equal(r1g.S_T, 0.0)
     
-"""\
 
 
 class TestReactor1GParameterAttributes(TestCase):
     """Tests that the Reactor1G parameter attributes work."""
 
-"""\
     @classmethod
     def teardown_class(cls):
         general_teardown()
@@ -340,7 +337,7 @@ class TestReactor1GParameterAttributes(TestCase):
         rp.Length = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
-        r1g = Reactor1G(rp, 'r1g')
+        r1g = Reactor1G(reactor_paramters=rp, name='r1g')
         assert_almost_equal(r1g.VF, 3.14159265*0.25) 
 
     def test_VC(self):
@@ -349,10 +346,9 @@ class TestReactor1GParameterAttributes(TestCase):
         rp.Length = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
-        r1g = Reactor1G(rp, 'r1g')
+        r1g = Reactor1G(reactor_paramters=rp, name='r1g')
         assert_almost_equal(r1g.VC, 1.0 - 3.14159265*0.25) 
 
-"""\
 
 class TestReactor1GBasicDataAttributes(TestCase):
     """Tests that the Reactor1G basic data attributes work."""

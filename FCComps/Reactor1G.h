@@ -97,6 +97,14 @@ protected:
     std::map<int, double> sigma_s_therm;			//Microscopic Thermal Scattering XS 
 
 public:
+    //Reactor1G Constructors
+    Reactor1G ();
+    Reactor1G (std::string);
+    Reactor1G (std::set<std::string>, std::string = "");
+    Reactor1G (ReactorParameters, std::string = "");
+    Reactor1G (ReactorParameters, std::set<std::string>, std::string = "");
+    ~Reactor1G ();
+    
     //Public data
     int B; 								//Total number of fuel loading batches
     double phi;							//Flux used for Fluence
@@ -171,14 +179,6 @@ public:
     Data_F_ LatticeE_F_;						//Values for lattice function E(F)
     Data_F_ LatticeF_F_;						//Values for lattice function F(F)
 
-    //Reactor1G Constructors
-    Reactor1G ();
-    Reactor1G (std::string);
-    Reactor1G (std::set<std::string>, std::string = "");
-    Reactor1G (ReactorParameters, std::string = "");
-    Reactor1G (ReactorParameters, std::set<std::string>, std::string = "");
-    ~Reactor1G ();
-    
     //Get Functions
     int                           get_B()                   const {return B;};
     double                        get_phi()                 const {return phi;};

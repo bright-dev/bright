@@ -1514,19 +1514,22 @@ cdef class Reactor1G(FCComp):
     cdef cpp_bright.Reactor1G * r1g_pointer
 
     def __cinit__(self, reactor_parameters=None, params2track=None, char * name="", *args, **kwargs):
+        cdef ReactorParameters rp
         cdef std.string cpp_name = std.string(name)
 
         if (reactor_parameters is None) and (params2track is None):
             self.r1g_pointer = new cpp_bright.Reactor1G(cpp_name)
 
-#        elif (reactor_parameters is None) and isinstance(params2track, set):
-#            self.r1g_pointer = new cpp_bright.Reactor1G(conv.py_to_cpp_set_str(params2track), cpp_name)
+        elif (reactor_parameters is None) and isinstance(params2track, set):
+            self.r1g_pointer = new cpp_bright.Reactor1G(conv.py_to_cpp_set_str(params2track), cpp_name)
 
-#        elif isinstance(reactor_parameters, ReactorParameters) and (params2track is None):
-#            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> reactor_parameters.rp_pointer, cpp_name)
+        elif isinstance(reactor_parameters, ReactorParameters) and (params2track is None):
+            rp = reactor_parameters
+            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], cpp_name)
 
-#        elif (reactor_parameters is None) and isinstance(params2track, set):
-#            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> reactor_parameters.rp_pointer, conv.py_to_cpp_set_str(params2track), cpp_name)
+        elif (reactor_parameters is None) and isinstance(params2track, set):
+            rp = reactor_parameters
+            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], conv.py_to_cpp_set_str(params2track), cpp_name)
 
         else:
             if reactor_parameters is not None:
@@ -1545,12 +1548,211 @@ cdef class Reactor1G(FCComp):
 
     # Stroage attributes
 
-    property decay_time:
+    property B:
         def __get__(self):
-            return self.s_pointer.decay_time
+            return self.r1g_pointer.B
 
-        def __set__(self, value):
-            self.s_pointer.decay_time = <double> value
+        def __set__(self, int value):
+            self.r1g_pointer.B = value
+
+
+    property phi:
+        def __get__(self):
+            return self.r1g_pointer.phi
+
+        def __set__(self, double value):
+            self.r1g_pointer.phi = value
+
+
+    property FuelChemicalForm:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.FuelChemicalForm)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.FuelChemicalForm = conv.dict_to_map_str_dbl(value)
+
+
+    property CoolantChemicalForm:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.CoolantChemicalForm)
+
+        def __set__(self, dict value):
+            self.r1g_pointer.CoolantChemicalForm = conv.dict_to_map_str_dbl(value)
+
+
+    property rhoF:
+        def __get__(self):
+            return self.r1g_pointer.rhoF
+
+        def __set__(self, double value):
+            self.r1g_pointer.rhoF = value
+
+
+    property rhoC:
+        def __get__(self):
+            return self.r1g_pointer.rhoC
+
+        def __set__(self, double value):
+            self.r1g_pointer.rhoC = value
+
+
+    property P_NL:
+        def __get__(self):
+            return self.r1g_pointer.P_NL
+
+        def __set__(self, double value):
+            self.r1g_pointer.P_NL = value
+
+
+    property TargetBU:
+        def __get__(self):
+            return self.r1g_pointer.TargetBU
+
+        def __set__(self, double value):
+            self.r1g_pointer.TargetBU = value
+
+
+    property useZeta:
+        def __get__(self):
+            return self.r1g_pointer.useZeta
+
+        def __set__(self, bint value):
+            self.r1g_pointer.useZeta = value
+
+
+    property Lattice:
+        def __get__(self):
+            cdef std.string value = self.r1g_pointer.Lattice
+            return value.c_str()
+
+        def __set__(self, char * value):
+            self.r1g_pointer.Lattice = std.string(value)
+
+
+    property H_XS_Rescale:
+        def __get__(self):
+            return self.r1g_pointer.H_XS_Rescale
+
+        def __set__(self, bint value):
+            self.r1g_pointer.H_XS_Rescale = value
+
+
+    property r:
+        def __get__(self):
+            return self.r1g_pointer.r
+
+        def __set__(self, double value):
+            self.r1g_pointer.r = value
+
+
+    property l:
+        def __get__(self):
+            return self.r1g_pointer.l
+
+        def __set__(self, double value):
+            self.r1g_pointer.l = value
+
+
+    property S_O:
+        def __get__(self):
+            return self.r1g_pointer.S_O
+
+        def __set__(self, double value):
+            self.r1g_pointer.S_O = value
+
+
+    property S_T:
+        def __get__(self):
+            return self.r1g_pointer.S_T
+
+        def __set__(self, double value):
+            self.r1g_pointer.S_T = value
+
+
+    property VF:
+        def __get__(self):
+            return self.r1g_pointer.VF
+
+        def __set__(self, double value):
+            self.r1g_pointer.VF = value
+
+
+    property VC:
+        def __get__(self):
+            return self.r1g_pointer.VC
+
+        def __set__(self, double value):
+            self.r1g_pointer.VC = value
 
 
     # FCComps inherited attributes
+
+    property name:
+        def __get__(self):
+            cdef std.string n = self.r1g_pointer.name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.r1g_pointer.name = std.string(n)
+
+
+    property natural_name:
+        def __get__(self):
+            cdef std.string n = self.r1g_pointer.natural_name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.r1g_pointer.natural_name = std.string(n)
+
+
+    property IsosIn:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.IsosIn
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property IsosOut:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.r1g_pointer.IsosOut
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.r1g_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property ParamsIn:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.ParamsIn)
+
+        def __set__(self, dict pi):
+            self.r1g_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+
+
+    property ParamsOut:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.ParamsOut)
+
+        def __set__(self, dict po):
+            self.r1g_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+
+
+    property PassNum:
+        def __get__(self):
+            return self.r1g_pointer.PassNum
+
+        def __set__(self, int pn):
+            self.r1g_pointer.PassNum = pn
+
+
+    property params2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_str(self.r1g_pointer.params2track)
+
+        def __set__(self, set p2t):
+            self.r1g_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+
