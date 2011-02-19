@@ -12,6 +12,8 @@ ReactorParameters::ReactorParameters()
     flux = 0.0;
     FuelForm = std::map<std::string, double>();
     CoolantForm = std::map<std::string, double>();
+    FuelDensity = 0.0;
+    CoolantDensity = 0.0;
     pnl = 0.0;
     BUt = 0.0;
     useDisadvantage = false;

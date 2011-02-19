@@ -1488,3 +1488,69 @@ cdef class ReactorParameters:
 
         def __set__(self, double value):
             self.rp_pointer.total_slots = value
+
+
+
+
+cdef class Reactor1G(FCComp):
+    """One-Group Reactor Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+
+    Args:
+        * reactor_parameters (ReactorParameters): A special data structure that contains information
+          on how to setup and run the reactor.
+        * params2track (string set): A set of strings that represents what parameter data the reactor should 
+          store and set.  Different reactor types may have different characteristic parameters that are of interest.
+        * name (str): The name of the reactor fuel cycle component instance.
+
+    Note that this automatically calls the public initialize() C function.
+
+    .. note:: 
+
+        Some data members and functions have names that end in '_F_'.  This indicates that these are a 
+        function of fluence, the time integral of the flux.  The '_Fd_' suffix implies that the data is 
+        evaluated at the discharge fluence.
+    """
+
+    cdef cpp_bright.Reactor1G * r1g_pointer
+
+    def __cinit__(self, reactor_parameters=None, params2track=None, char * name="", *args, **kwargs):
+        cdef std.string cpp_name = std.string(name)
+
+        if (reactor_parameters is None) and (params2track is None):
+            self.r1g_pointer = new cpp_bright.Reactor1G(cpp_name)
+
+#        elif (reactor_parameters is None) and isinstance(params2track, set):
+#            self.r1g_pointer = new cpp_bright.Reactor1G(conv.py_to_cpp_set_str(params2track), cpp_name)
+
+#        elif isinstance(reactor_parameters, ReactorParameters) and (params2track is None):
+#            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> reactor_parameters.rp_pointer, cpp_name)
+
+#        elif (reactor_parameters is None) and isinstance(params2track, set):
+#            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> reactor_parameters.rp_pointer, conv.py_to_cpp_set_str(params2track), cpp_name)
+
+        else:
+            if reactor_parameters is not None:
+                raise TypeError("The reactor_paramters keyword must be an instance of the ReactorParameters class or None.")
+
+            if params2track is not None:
+                raise TypeError("The params2track keyword must be a set of strings or None.")
+
+    def __dealloc__(self):
+        del self.r1g_pointer
+
+
+    #
+    # Class Attributes
+    #
+
+    # Stroage attributes
+
+    property decay_time:
+        def __get__(self):
+            return self.s_pointer.decay_time
+
+        def __set__(self, value):
+            self.s_pointer.decay_time = <double> value
+
+
+    # FCComps inherited attributes

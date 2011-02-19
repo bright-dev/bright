@@ -18,7 +18,7 @@ bright_config = BriPy.bright_config
 MassStream = mass_stream.MassStream
 FluencePoint = BriPy.FluencePoint
 ReactorParameters = BriPy.ReactorParameters
-#Reactor1G = BriPy.Reactor1G
+Reactor1G = BriPy.Reactor1G
 
 default_rp = BriPy.ReactorParameters()
 default_rp.batches = 3
@@ -94,7 +94,6 @@ class TestReactorParameters(TestCase):
         assert_almost_equal(rp.open_slots, 0.0)
         assert_almost_equal(rp.total_slots, 0.0)
 
-"""\
     def test_batches(self):
         rp = ReactorParameters()
         rp.batches = 3
@@ -174,12 +173,10 @@ class TestReactorParameters(TestCase):
         rp.total_slots = 180
         assert_equal(rp.total_slots, 180)
 
-"""\
 
 class TestReactor1GConstructors(TestCase):
     """Tests that the Reactor1G component constructors work."""
 
-"""\
     @classmethod
     def teardown_class(cls):
         general_teardown()
@@ -187,13 +184,14 @@ class TestReactor1GConstructors(TestCase):
     def test_Reactor1G_1(self):
         r1g = Reactor1G()
         assert_equal(r1g.name, '')
-        assert_equal(r1g.params2track, [])
+        assert_equal(r1g.params2track, set())
 
     def test_Reactor1G_2(self):
-        r1g = Reactor1G("r1g")
+        r1g = Reactor1G(name="r1g")
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, [])
+        assert_equal(r1g.params2track, set())
 
+"""\
     def test_Reactor1G_3(self):
         r1g = Reactor1G(["Mass"])
         assert_equal(r1g.name, '')

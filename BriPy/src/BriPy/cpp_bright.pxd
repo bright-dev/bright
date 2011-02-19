@@ -177,7 +177,6 @@ cdef extern from "../Reactor1G.h":
         double m
 
 
-    #cdef struct ReactorParameters:
     cdef cppclass ReactorParameters:
         # Constructors        
         ReactorParameters()
@@ -198,3 +197,14 @@ cdef extern from "../Reactor1G.h":
         double Length
         double open_slots
         double total_slots
+
+
+    cdef cppclass Reactor1G(FCComp):
+        # Constructors        
+        Reactor1G()
+        Reactor1G(std.string)
+        Reactor1G(set[std.string], std.string)
+        Reactor1G(ReactorParameters, std.string)
+        Reactor1G(ReactorParameters, set[std.string], std.string)
+
+        # Attributes
