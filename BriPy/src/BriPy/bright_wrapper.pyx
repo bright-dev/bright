@@ -519,7 +519,7 @@ cdef class Enrichment(FCComp):
 
     cdef cpp_bright.Enrichment * e_pointer
 
-    def __cinit__(self, enrich_params=None, char * name="", *args, **kwargs):
+    def __cinit__(self, enrich_params=None, char * name=""):
         cdef EnrichmentParameters enr_par
 
         if enrich_params is None:
@@ -909,7 +909,7 @@ cdef class Reprocess(FCComp):
 
         return sepeff
 
-    def __cinit__(self, dict sepeff={}, char * name="", *args, **kwargs):
+    def __cinit__(self, dict sepeff={}, char * name=""):
         sepeff = self._cpp_sepeff(sepeff)
         self.r_pointer = new cpp_bright.Reprocess(conv.dict_to_map_int_dbl(sepeff), std.string(name))
 
@@ -1081,7 +1081,7 @@ cdef class Storage(FCComp):
 
     cdef cpp_bright.Storage * s_pointer
 
-    def __cinit__(self, char * name="", *args, **kwargs):
+    def __cinit__(self, char * name=""):
         self.s_pointer = new cpp_bright.Storage(std.string(name))
 
     def __dealloc__(self):
@@ -1513,7 +1513,7 @@ cdef class Reactor1G(FCComp):
 
     cdef cpp_bright.Reactor1G * r1g_pointer
 
-    def __cinit__(self, reactor_parameters=None, params2track=None, char * name="", *args, **kwargs):
+    def __cinit__(self, reactor_parameters=None, params2track=None, char * name=""):
         cdef ReactorParameters rp
         cdef std.string cpp_name = std.string(name)
 
@@ -1527,16 +1527,16 @@ cdef class Reactor1G(FCComp):
             rp = reactor_parameters
             self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], cpp_name)
 
-        elif (reactor_parameters is None) and isinstance(params2track, set):
+        elif isinstance(reactor_parameters, ReactorParameters) and isinstance(params2track, set):
             rp = reactor_parameters
             self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], conv.py_to_cpp_set_str(params2track), cpp_name)
 
         else:
             if reactor_parameters is not None:
-                raise TypeError("The reactor_paramters keyword must be an instance of the ReactorParameters class or None.")
+                raise TypeError("The reactor_parameters keyword must be an instance of the ReactorParameters class or None.  Got " + str(type(reactor_parameters)))
 
             if params2track is not None:
-                raise TypeError("The params2track keyword must be a set of strings or None.")
+                raise TypeError("The params2track keyword must be a set of strings or None.  Got " + str(type(params2track)))
 
     def __dealloc__(self):
         del self.r1g_pointer

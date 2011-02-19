@@ -224,24 +224,24 @@ class TestReactor1GConstructors(TestCase):
 
     def test_Reactor1G_6(self):
         rp = ReactorParameters()
-        r1g = Reactor1G(reactor_paramters=rp, params2track=set(["Mass"]), name="r1g")
+        r1g = Reactor1G(reactor_parameters=rp, params2track=set(["Mass"]), name="r1g")
         assert_equal(r1g.name, 'r1g')
         assert_equal(r1g.params2track, set(["Mass"]))
         assert_equal(r1g.B, 0)
-        assert_equal(r1g.phi, 0.0)
+        assert_almost_equal(r1g.phi, 0.0)
         assert_equal(r1g.FuelChemicalForm, {})
         assert_equal(r1g.CoolantChemicalForm, {})
-        assert_equal(r1g.rhoF, 0.0)
-        assert_equal(r1g.rhoC, 0.0)
-        assert_equal(r1g.P_NL, 0.0)
-        assert_equal(r1g.TargetBU, 0.0)
+        assert_almost_equal(r1g.rhoF, 0.0)
+        assert_almost_equal(r1g.rhoC, 0.0)
+        assert_almost_equal(r1g.P_NL, 0.0)
+        assert_almost_equal(r1g.TargetBU, 0.0)
         assert_false(r1g.useZeta)
         assert_equal(r1g.Lattice, '')
         assert_false(r1g.H_XS_Rescale)
-        assert_equal(r1g.r, 0.0)
-        assert_equal(r1g.l, 0.0)
-        assert_equal(r1g.S_O, 0.0)
-        assert_equal(r1g.S_T, 0.0)
+        assert_almost_equal(r1g.r, 0.0)
+        assert_almost_equal(r1g.l, 0.0)
+        assert_almost_equal(r1g.S_O, 0.0)
+        assert_almost_equal(r1g.S_T, 0.0)
     
 
 
@@ -337,7 +337,7 @@ class TestReactor1GParameterAttributes(TestCase):
         rp.Length = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
-        r1g = Reactor1G(reactor_paramters=rp, name='r1g')
+        r1g = Reactor1G(reactor_parameters=rp, name='r1g')
         assert_almost_equal(r1g.VF, 3.14159265*0.25) 
 
     def test_VC(self):
@@ -346,7 +346,7 @@ class TestReactor1GParameterAttributes(TestCase):
         rp.Length = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
-        r1g = Reactor1G(reactor_paramters=rp, name='r1g')
+        r1g = Reactor1G(reactor_parameters=rp, name='r1g')
         assert_almost_equal(r1g.VC, 1.0 - 3.14159265*0.25) 
 
 
