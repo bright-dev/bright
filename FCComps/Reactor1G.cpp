@@ -2,6 +2,32 @@
 
 #include "Reactor1G.h"
 
+/*******************************/
+/*** ReactorParameters Class ***/
+/*******************************/
+
+ReactorParameters::ReactorParameters()
+{
+    batches = 0;
+    flux = 0.0;
+    FuelForm = std::map<std::string, double>();
+    CoolantForm = std::map<std::string, double>();
+    pnl = 0.0;
+    BUt = 0.0;
+    useDisadvantage = false;
+    LatticeType = std::string();
+    HydrogenRescale = false;
+    Radius = 0.0;
+    Length = 0.0;
+    open_slots = 0.0;
+    total_slots = 0.0;
+};
+
+
+ReactorParameters::~ReactorParameters()
+{
+};
+
 /***********************************************/
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/

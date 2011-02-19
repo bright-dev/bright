@@ -1248,6 +1248,12 @@ cdef class FluencePoint:
           Has the odd units of [MWd kb / kgIHM n].
     """
 
+    #cdef cpp_bright.FluencePoint * fp
+
+    #def __cinit__(self):
+    #    cdef cpp_bright.FluencePoint cpp_fp = cpp_bright.FluencePoint()
+    #    self.fp = &cpp_fp
+
     cdef cpp_bright.FluencePoint fp
 
     def __cinit__(self):
@@ -1350,14 +1356,13 @@ cdef class ReactorParameters:
           For a 17x17 bundle, S_T is 289.0. 
     """
 
-    cdef cpp_bright.ReactorParameters * rp 
+    cdef cpp_bright.ReactorParameters * rp_pointer
 
     def __cinit__(self):
-        cdef cpp_bright.ReactorParameters cpp_rp = cpp_bright.ReactorParameters()
-        self.rp = &cpp_rp
+        self.rp_pointer = new cpp_bright.ReactorParameters()
 
-    #def __dealloc__(self):
-    #    free(&self.fp)
+    def __dealloc__(self):
+        del self.rp_pointer
 
 
     #
@@ -1366,120 +1371,120 @@ cdef class ReactorParameters:
 
     property batches:
         def __get__(self):
-            return self.rp.batches
+            return self.rp_pointer.batches
 
         def __set__(self, int value):
-            self.rp.batches = value
+            self.rp_pointer.batches = value
 
 
     property flux:
         def __get__(self):
-            return self.rp.flux
+            return self.rp_pointer.flux
 
         def __set__(self, double value):
-            self.rp.flux = value
+            self.rp_pointer.flux = value
 
 
     property FuelForm:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rp.FuelForm)
+            return conv.map_to_dict_str_dbl(self.rp_pointer.FuelForm)
 
         def __set__(self, dict value):
-            self.rp.FuelForm = conv.dict_to_map_str_dbl(value)
+            self.rp_pointer.FuelForm = conv.dict_to_map_str_dbl(value)
 
 
     property CoolantForm:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rp.CoolantForm)
+            return conv.map_to_dict_str_dbl(self.rp_pointer.CoolantForm)
 
         def __set__(self, dict value):
-            self.rp.CoolantForm = conv.dict_to_map_str_dbl(value)
+            self.rp_pointer.CoolantForm = conv.dict_to_map_str_dbl(value)
 
 
     property FuelDensity:
         def __get__(self):
-            return self.rp.FuelDensity
+            return self.rp_pointer.FuelDensity
 
         def __set__(self, double value):
-            self.rp.FuelDensity = value
+            self.rp_pointer.FuelDensity = value
 
 
     property CoolantDensity:
         def __get__(self):
-            return self.rp.CoolantDensity
+            return self.rp_pointer.CoolantDensity
 
         def __set__(self, double value):
-            self.rp.CoolantDensity = value
+            self.rp_pointer.CoolantDensity = value
 
 
     property pnl:
         def __get__(self):
-            return self.rp.pnl
+            return self.rp_pointer.pnl
 
         def __set__(self, double value):
-            self.rp.pnl = value
+            self.rp_pointer.pnl = value
 
 
     property BUt:
         def __get__(self):
-            return self.rp.BUt
+            return self.rp_pointer.BUt
 
         def __set__(self, double value):
-            self.rp.BUt = value
+            self.rp_pointer.BUt = value
 
 
     property useDisadvantage:
         def __get__(self):
-            return self.rp.useDisadvantage
+            return self.rp_pointer.useDisadvantage
 
         def __set__(self, bint value):
-            self.rp.useDisadvantage = value
+            self.rp_pointer.useDisadvantage = value
 
 
     property LatticeType:
         def __get__(self):
-            cdef std.string value = self.rp.LatticeType
+            cdef std.string value = self.rp_pointer.LatticeType
             return value.c_str()
 
         def __set__(self, char * value):
-            self.rp.LatticeType = std.string(value)
+            self.rp_pointer.LatticeType = std.string(value)
 
 
     property HydrogenRescale:
         def __get__(self):
-            return self.rp.HydrogenRescale
+            return self.rp_pointer.HydrogenRescale
 
         def __set__(self, bint value):
-            self.rp.HydrogenRescale = value
+            self.rp_pointer.HydrogenRescale = value
 
 
     property Radius:
         def __get__(self):
-            return self.rp.Radius
+            return self.rp_pointer.Radius
 
         def __set__(self, double value):
-            self.rp.Radius = value
+            self.rp_pointer.Radius = value
 
 
     property Length:
         def __get__(self):
-            return self.rp.Length
+            return self.rp_pointer.Length
 
         def __set__(self, double value):
-            self.rp.Length = value
+            self.rp_pointer.Length = value
 
 
     property open_slots:
         def __get__(self):
-            return self.rp.open_slots
+            return self.rp_pointer.open_slots
 
         def __set__(self, double value):
-            self.rp.open_slots = value
+            self.rp_pointer.open_slots = value
 
 
     property total_slots:
         def __get__(self):
-            return self.rp.total_slots
+            return self.rp_pointer.total_slots
 
         def __set__(self, double value):
-            self.rp.total_slots = value
+            self.rp_pointer.total_slots = value

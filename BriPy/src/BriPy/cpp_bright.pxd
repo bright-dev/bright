@@ -177,7 +177,8 @@ cdef extern from "../Reactor1G.h":
         double m
 
 
-    cdef struct ReactorParameters:
+    #cdef struct ReactorParameters:
+    cdef cppclass ReactorParameters:
         # Constructors        
         ReactorParameters()
 

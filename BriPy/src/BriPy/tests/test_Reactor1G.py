@@ -21,7 +21,6 @@ ReactorParameters = BriPy.ReactorParameters
 #Reactor1G = BriPy.Reactor1G
 
 default_rp = BriPy.ReactorParameters()
-"""\
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
 default_rp.FuelForm = {"IHM": 1.0, "O16": 2.0}
@@ -47,7 +46,6 @@ def general_teardown():
             os.remove(f)
         elif f in [".h5", "r1g.h5"]:
             os.remove(f)
-"""\
 
 
 class TestFluencePoint(TestCase):
@@ -81,20 +79,20 @@ class TestReactorParameters(TestCase):
     def test_constructor(self):
         rp = ReactorParameters()
         assert_equal(rp.batches, 0)
-        assert_equal(rp.flux, 0.0)
+        assert_almost_equal(rp.flux, 0.0)
         assert_equal(rp.FuelForm, {})
         assert_equal(rp.CoolantForm, {})
-        assert_equal(rp.FuelDensity, 0.0)
-        assert_equal(rp.CoolantDensity, 0.0)
-        assert_equal(rp.pnl, 0.0)
-        assert_equal(rp.BUt, 0.0)
+        assert_almost_equal(rp.FuelDensity, 0.0)
+        assert_almost_equal(rp.CoolantDensity, 0.0)
+        assert_almost_equal(rp.pnl, 0.0)
+        assert_almost_equal(rp.BUt, 0.0)
         assert_false(rp.useDisadvantage)
         assert_equal(rp.LatticeType, '')
         assert_false(rp.HydrogenRescale)
-        assert_equal(rp.Radius, 0.0)
-        assert_equal(rp.Length, 0.0)
-        assert_equal(rp.open_slots, 0.0)
-        assert_equal(rp.total_slots, 0.0)
+        assert_almost_equal(rp.Radius, 0.0)
+        assert_almost_equal(rp.Length, 0.0)
+        assert_almost_equal(rp.open_slots, 0.0)
+        assert_almost_equal(rp.total_slots, 0.0)
 
 """\
     def test_batches(self):

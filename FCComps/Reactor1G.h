@@ -52,8 +52,15 @@ struct FluencePoint
 };
 
 
-struct ReactorParameters
+//struct ReactorParameters
+class ReactorParameters
 {
+public:
+    // Constructors
+    ReactorParameters();
+    ~ReactorParameters();
+
+    // Attributes
     int batches;
     double flux;
     std::map<std::string, double> FuelForm;
@@ -69,24 +76,6 @@ struct ReactorParameters
     double Length;
     double open_slots;
     double total_slots;
-
-    ReactorParameters()
-    {
-        batches = 0;
-        flux = 0.0;
-        FuelForm = std::map<std::string, double>();
-        CoolantForm = std::map<std::string, double>();
-        pnl = 0.0;
-        BUt = 0.0;
-        useDisadvantage = false;
-        LatticeType = std::string();
-        HydrogenRescale = false;
-
-        Radius = 0.0;
-        Length = 0.0;
-        open_slots = 0.0;
-        total_slots = 0.0;
-    };
 
 };
 
