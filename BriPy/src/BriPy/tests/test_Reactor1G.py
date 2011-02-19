@@ -426,12 +426,11 @@ class TestReactor1GBasicDataAttributes(TestCase):
 class TestReactor1GCalculatedWeightAttributes(TestCase):
     """Tests that the Reactor1G calculated weight attributes work."""
 
-"""\
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
@@ -449,6 +448,7 @@ class TestReactor1GCalculatedWeightAttributes(TestCase):
     def test_MWC(self):
         assert_almost_equal(self.r1g.MWC / 18.0, 1.0, 4)
 
+"""\
     def test_niF(self):
         assert_equal(self.r1g.niF[80160],  2.0)
         assert_equal(self.r1g.niF[922350], 0.5)

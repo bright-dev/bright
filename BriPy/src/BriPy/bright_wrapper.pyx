@@ -1737,6 +1737,30 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.Tij_F_ = conv.dict_to_map_int_int_vector_to_array_1d_dbl(value)
 
 
+    property A_IHM:
+        def __get__(self):
+            return self.r1g_pointer.A_IHM
+
+        def __set__(self, double value):
+            self.r1g_pointer.A_IHM = value
+
+
+    property MWF:
+        def __get__(self):
+            return self.r1g_pointer.MWF
+
+        def __set__(self, double value):
+            self.r1g_pointer.MWF = value
+
+
+    property MWC:
+        def __get__(self):
+            return self.r1g_pointer.MWC
+
+        def __set__(self, double value):
+            self.r1g_pointer.MWC = value
+
+
     # FCComps inherited attributes
 
     property name:
@@ -1822,3 +1846,18 @@ cdef class Reactor1G(FCComp):
             * libfile (str): Path to the reactor library.
         """
         self.r1g_pointer.loadLib(std.string(libfile))
+
+
+    def foldMassWeights(self):
+        """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
+        In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
+        as the values of IsosIn.  The raw data must have previously been read in from loadLib().  
+
+        .. warning::
+
+            Anytime any reactor parameter whatsoever (IsosIn, P_NL, *etc*) is altered in any way, 
+            the foldMassWeights() function must be called to reset all of the resultant data.
+            If you are unsure, please call this function anyway to be safe.  There is little 
+            harm in calling it twice by accident.
+        """
+        self.r1g_pointer.foldMassWeights()
