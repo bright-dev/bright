@@ -709,12 +709,11 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
 class TestReactor1GInitializationMethods(TestCase):
     """Tests that the fuel cycle component initialization methods work."""
 
-"""\
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
-        cls.r1g = Reactor1G(default_rp, 'r1g')
+        cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
@@ -752,7 +751,7 @@ class TestReactor1GInitializationMethods(TestCase):
         self.r1g.IsosIn = MassStream({922350: 0.5})
         self.r1g.foldMassWeights()
         assert(922380 not in self.r1g.miF.keys())
-"""\
+
         
 
 class TestReactor1GTransmutationMatrixMethods(TestCase):

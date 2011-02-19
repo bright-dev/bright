@@ -283,6 +283,7 @@ cdef extern from "../Reactor1G.h":
         vector[double] LatticeF_F_
 
         # Methods
+        void initialize(ReactorParameters)
         void loadLib(std.string)
         void foldMassWeights()
 

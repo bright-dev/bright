@@ -2159,6 +2159,18 @@ cdef class Reactor1G(FCComp):
     # Class Methods
     # 
 
+    def initialize(self, ReactorParameters reactor_parameters):
+        """The initialize() method for reactors copies all of the reactor specific parameters to this instance.
+        Additionally, it calculates and sets the volumes VF and VC.
+
+        Args:
+            * reactor_parameters (ReactorParameters): A special data structure that contains information
+              on how to setup and run the reactor.
+        """
+        cdef ReactorParameters rp = reactor_parameters
+        self.r1g_pointer.initialize(<cpp_bright.ReactorParameters> rp.rp_pointer[0])
+
+
     def loadLib(self, char * libfile="reactor.h5"):
         """This method finds the HDF5 library for this reactor and extracts the necessary information from it.
         This method is typically called by the constructor of the child reactor type object.  It must be 
