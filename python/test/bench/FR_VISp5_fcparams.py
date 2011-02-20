@@ -1,5 +1,5 @@
-from bright import FRDefaults
-fr_params = FRDefaults()
+from bright import fr_defaults
+fr_params = fr_defaults()
 
 #General Specifications
 Quiet = False

@@ -1,8 +1,8 @@
-from bright import LWRDefaults
-lwr_params = LWRDefaults()
+from bright import lwr_defaults
+lwr_params = lwr_defaults()
 
-from bright import FRDefaults
-fr_params = FRDefaults()
+from bright import fr_defaults
+fr_params = fr_defaults()
 
 #General Specifications
 Quiet = False

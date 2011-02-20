@@ -35,8 +35,8 @@ class TestFastReactorConstructors(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_FRDefaults(self):
-        frd = bright.FRDefaults()
+    def test_fr_defaults(self):
+        frd = bright.fr_defaults()
         assert_equal(frd.batches, 3)
         assert_equal(frd.flux, 2.0*(10.0**15))
         assert_equal(frd.fuel_form["IHM"], 1.0)
@@ -118,7 +118,7 @@ class TestFastReactorConstructors(TestCase):
         assert_equal(fr.S_T, 163.0)
 
     def test_FastReactor1G_4(self):
-        rp = bright.FRDefaults()
+        rp = bright.fr_defaults()
         rp.BUt = 140.0
         fr = FastReactor1G(reactor_parameters=rp)
         assert_equal(fr.name, '')
@@ -140,7 +140,7 @@ class TestFastReactorConstructors(TestCase):
         assert_equal(fr.S_T, 163.0)
 
     def test_FastReactor1G_5(self):
-        rp = bright.FRDefaults()
+        rp = bright.fr_defaults()
         rp.BUt = 140.0
         fr = FastReactor1G(reactor_parameters=rp, name='fr')
         assert_equal(fr.name, 'fr')
@@ -163,7 +163,7 @@ class TestFastReactorConstructors(TestCase):
 
     def test_FastReactor1G_6(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        rp = bright.FRDefaults()
+        rp = bright.fr_defaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(fr.libfile, lf)
@@ -187,7 +187,7 @@ class TestFastReactorConstructors(TestCase):
 
     def test_FastReactor1G_7(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        rp = bright.FRDefaults()
+        rp = bright.fr_defaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
         assert_equal(fr.libfile, lf)
@@ -233,7 +233,7 @@ class TestFastReactor1GMethods(TestCase):
     def test_calc_params(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
         bright.load_track_isos_hdf5(lf)
-        rp = bright.FRDefaults()
+        rp = bright.fr_defaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
         fr.calc(MassStream({922350: 0.30, 922380: 0.70}))

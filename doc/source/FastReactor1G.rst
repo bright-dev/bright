@@ -11,7 +11,7 @@ Lastly, this document displays a benchmark of this FR model to other published F
 FastReactor1G Class
 ===================
 
-.. class:: FastReactor1G([libfile, reactor_parameters=FRDefaults, name=""])
+.. class:: FastReactor1G([libfile, reactor_parameters=fr_defaults, name=""])
 
     A One-Group Fast Reactor Fuel Cycle Component.  This is a daughter class of :class:`Reactor1G` and 
     a granddaughter of :class:`FCComp`.
@@ -73,7 +73,7 @@ or have been otherwise altered.
 Fast Reactor Default Parameters
 ===============================
 
-.. function:: FRDefaults()
+.. function:: fr_defaults()
 
     This function returns a copy of the FR default presets.  These are applicable to most cases.  
     However, if you want to use your own FR parameters, it is recommended you use this function

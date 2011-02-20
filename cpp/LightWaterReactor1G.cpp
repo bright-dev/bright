@@ -2,7 +2,7 @@
 
 #include "LightWaterReactor1G.h"
 
-ReactorParameters fillLWRDefaults ()
+ReactorParameters filllwr_defaults ()
 {
     //Default LWR physical parameters
     ReactorParameters lwrd;
@@ -34,13 +34,13 @@ ReactorParameters fillLWRDefaults ()
 
     return lwrd;
 };
-ReactorParameters LWRDefaults (fillLWRDefaults());
+ReactorParameters lwr_defaults (filllwr_defaults());
 
-LightWaterReactor1G::LightWaterReactor1G() : Reactor1G(LWRDefaults, lwr_p2track)
+LightWaterReactor1G::LightWaterReactor1G() : Reactor1G(lwr_defaults, lwr_p2track)
 {
 };
 
-LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, std::string n) : Reactor1G(LWRDefaults, lwr_p2track, n)
+LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, std::string n) : Reactor1G(lwr_defaults, lwr_p2track, n)
 {
     libfile = h5lib;
     loadlib(h5lib);

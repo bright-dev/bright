@@ -14,8 +14,8 @@
 static std::string fr_p2t [] = {"BUd", "TRUCR", "P_NL", "U", "TRU", "ACT", "LAN", "FP"};
 static std::set<std::string> fr_p2track (fr_p2t, fr_p2t+8);
 
-ReactorParameters fillFRDefaults();
-extern ReactorParameters FRDefaults;
+ReactorParameters fillfr_defaults();
+extern ReactorParameters fr_defaults;
 
 /*****************************************************/
 /*** Fast Reactor 1G Component Class and Functions ***/

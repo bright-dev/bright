@@ -14,8 +14,8 @@
 static std::string lwr_p2t [] = {"BUd", "U", "TRU", "ACT", "LAN", "FP"};
 static std::set<std::string> lwr_p2track (lwr_p2t, lwr_p2t+6);
 
-ReactorParameters fillLWRDefaults();
-extern ReactorParameters LWRDefaults;
+ReactorParameters filllwr_defaults();
+extern ReactorParameters lwr_defaults;
 
 /************************************************************/
 /*** Light Water Reactor 1G Component Class and Functions ***/

@@ -90,7 +90,7 @@ Now that we have the Uranium with the concentration of U-235 needed to produce a
 
 Also, parameter data needs to be provided in order to initialize the Light Water Reactor. In this example, the parameters BUt is set to 40::
 
-    lwrd = bright.LWRDefaults()
+    lwrd = bright.lwr_defaults()
     lwrd.BUt = 40.0
 
 The Light Water Reactor is instantiated with the following line of code::
@@ -132,7 +132,7 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     enr.write()
 
     # Reactor Calculation
-    lwrd = bright.LWRDefaults()
+    lwrd = bright.lwr_defaults()
     lwrd.BUt = 35.0
     lwrd.batches = 3
     lwr = bright.LightWaterReactor1G(lwr_data, lwrd, "LWR")

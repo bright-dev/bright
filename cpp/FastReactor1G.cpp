@@ -2,7 +2,7 @@
 
 #include "FastReactor1G.h"
 
-ReactorParameters fillFRDefaults ()
+ReactorParameters fillfr_defaults ()
 {
     //Default FR physical parameters
     ReactorParameters frd;
@@ -30,13 +30,13 @@ ReactorParameters fillFRDefaults ()
 
     return frd;
 };
-ReactorParameters FRDefaults (fillFRDefaults());
+ReactorParameters fr_defaults (fillfr_defaults());
 
-FastReactor1G::FastReactor1G() : Reactor1G(FRDefaults, fr_p2track)
+FastReactor1G::FastReactor1G() : Reactor1G(fr_defaults, fr_p2track)
 {
 };
 
-FastReactor1G::FastReactor1G(std::string h5lib, std::string n) : Reactor1G(FRDefaults, fr_p2track, n)
+FastReactor1G::FastReactor1G(std::string h5lib, std::string n) : Reactor1G(fr_defaults, fr_p2track, n)
 {
     libfile = h5lib;
     loadlib(h5lib);

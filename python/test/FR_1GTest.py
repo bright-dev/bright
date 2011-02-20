@@ -61,7 +61,7 @@ def printReactorVals(r):
 track_isos([922350, 942390, 10010, 80160])
 
 print("Fast Reactor Default Parameters:")
-printReactorParameters(FRDefaults())
+printReactorParameters(fr_defaults())
 
 r0 = FastReactor1G()
 print("Empty Reprocessing Cycle Component")
@@ -86,7 +86,7 @@ r2.loadlib("LWR.h5")
 print(r2.F)
 print_ms()
 
-NewParams = FRDefaults()
+NewParams = fr_defaults()
 NewParams.batches = 6
 NewParams.fuel_density = 1200.0
 NewParams.use_disadvantage_factor = True

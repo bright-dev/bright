@@ -11,7 +11,7 @@ Lastly, this document displays a benchmark of this LWR model to other published 
 LightWaterReactor1G Class
 =========================
 
-.. class:: LightWaterReactor1G([libfile, reactor_parameters=LWRDefaults, name=""])
+.. class:: LightWaterReactor1G([libfile, reactor_parameters=lwr_defaults, name=""])
 
     A One-Group Light Water Reactor Fuel Cycle Component.  This is a daughter class of :class:`Reactor1G` and 
     a granddaughter of :class:`FCComp`.
@@ -67,7 +67,7 @@ or have been otherwise altered.
 Light Water Reactor Default Parameters
 ======================================
 
-.. function:: LWRDefaults()
+.. function:: lwr_defaults()
 
     This function returns a copy of the LWR default presets.  These are applicable to most cases.  
     However, if you want to use your own LWR parameters, it is recommended you use this function

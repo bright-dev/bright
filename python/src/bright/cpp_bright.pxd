@@ -330,7 +330,7 @@ cdef extern from "../Reactor1G.h":
 
 cdef extern from "../LightWaterReactor1G.h":
 
-    ReactorParameters fillLWRDefaults()
+    ReactorParameters filllwr_defaults()
 
     cdef cppclass LightWaterReactor1G(Reactor1G):
         # Constructors        
@@ -347,7 +347,7 @@ cdef extern from "../LightWaterReactor1G.h":
 
 cdef extern from "../FastReactor1G.h":
 
-    ReactorParameters fillFRDefaults()
+    ReactorParameters fillfr_defaults()
 
     cdef cppclass FastReactor1G(Reactor1G):
         # Constructors        

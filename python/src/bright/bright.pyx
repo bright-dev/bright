@@ -2518,8 +2518,8 @@ cdef class Reactor1G(FCComp):
 ##############################
 
 
-def LWRDefaults():
-    cdef cpp_bright.ReactorParameters cpp_lwrd = cpp_bright.fillLWRDefaults()
+def lwr_defaults():
+    cdef cpp_bright.ReactorParameters cpp_lwrd = cpp_bright.filllwr_defaults()
     cdef ReactorParameters lwrd = ReactorParameters()
     lwrd.rp_pointer[0] = cpp_lwrd
     return lwrd
@@ -3587,8 +3587,8 @@ cdef class LightWaterReactor1G(Reactor1G):
 #######################
 
 
-def FRDefaults():
-    cdef cpp_bright.ReactorParameters cpp_frd = cpp_bright.fillFRDefaults()
+def fr_defaults():
+    cdef cpp_bright.ReactorParameters cpp_frd = cpp_bright.fillfr_defaults()
     cdef ReactorParameters frd = ReactorParameters()
     frd.rp_pointer[0] = cpp_frd
     return frd

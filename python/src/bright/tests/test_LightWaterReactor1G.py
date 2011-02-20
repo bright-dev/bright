@@ -35,8 +35,8 @@ class TestLightWaterReactorConstructors(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_LWRDefaults(self):
-        lwrd = bright.LWRDefaults()
+    def test_lwr_defaults(self):
+        lwrd = bright.lwr_defaults()
         assert_equal(lwrd.batches, 3)
         assert_equal(lwrd.flux, 4.0*(10.0**14))
         assert_equal(lwrd.fuel_form["IHM"], 1.0)
@@ -134,7 +134,7 @@ class TestLightWaterReactorConstructors(TestCase):
         assert_equal(lwr.S_T, 289.0)
 
     def test_LightWaterReactor1G_4(self):
-        rp = bright.LWRDefaults()
+        rp = bright.lwr_defaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(reactor_parameters=rp)
         assert_equal(lwr.name, '')
@@ -160,7 +160,7 @@ class TestLightWaterReactorConstructors(TestCase):
         assert_equal(lwr.S_T, 289.0)
 
     def test_LightWaterReactor1G_5(self):
-        rp = bright.LWRDefaults()
+        rp = bright.lwr_defaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(reactor_parameters=rp, name='lwr')
         assert_equal(lwr.name, 'lwr')
@@ -187,7 +187,7 @@ class TestLightWaterReactorConstructors(TestCase):
 
     def test_LightWaterReactor1G_6(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        rp = bright.LWRDefaults()
+        rp = bright.lwr_defaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(lwr.libfile, lf)
@@ -215,7 +215,7 @@ class TestLightWaterReactorConstructors(TestCase):
 
     def test_LightWaterReactor1G_7(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        rp = bright.LWRDefaults()
+        rp = bright.lwr_defaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
         assert_equal(lwr.libfile, lf)
@@ -265,7 +265,7 @@ class TestLightWaterReactor1GMethods(TestCase):
     def test_calc_params(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
         bright.load_track_isos_hdf5(lf)
-        rp = bright.LWRDefaults()
+        rp = bright.lwr_defaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
         lwr.calc(MassStream({922350: 0.05, 922380:0.95}))

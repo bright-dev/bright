@@ -62,7 +62,7 @@ ms = MassStream("MassStreamtry02.txt")
 track_isos([922350, 942390, 10010, 80160, 50100, 50110])
 
 print("Light Water Reactor Default Parameters:")
-printReactorParameters(LWRDefaults())
+printReactorParameters(lwr_defaults())
 
 r0 = LightWaterReactor1G()
 print("Empty Reprocessing Cycle Component")
@@ -87,7 +87,7 @@ r2.loadlib("FR.h5")
 print(r2.F)
 print_ms()
 
-NewParams = LWRDefaults()
+NewParams = lwr_defaults()
 #NewParams.batches = 6
 #NewParams.fuel_density = 1200.0
 #NewParams.use_disadvantage_factor = True
