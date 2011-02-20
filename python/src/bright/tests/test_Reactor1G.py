@@ -217,7 +217,7 @@ class TestReactor1GConstructors(TestCase):
         assert_equal(r1g.P_NL, 0.0)
         assert_equal(r1g.target_BU, 0.0)
         assert_false(r1g.use_zeta)
-        assert_equal(r1g.Lattice, '')
+        assert_equal(r1g.lattice_flag, '')
         assert_false(r1g.H_XS_Rescale)
         assert_equal(r1g.r, 0.0)
         assert_equal(r1g.l, 0.0)
@@ -238,7 +238,7 @@ class TestReactor1GConstructors(TestCase):
         assert_almost_equal(r1g.P_NL, 0.0)
         assert_almost_equal(r1g.target_BU, 0.0)
         assert_false(r1g.use_zeta)
-        assert_equal(r1g.Lattice, '')
+        assert_equal(r1g.lattice_flag, '')
         assert_false(r1g.H_XS_Rescale)
         assert_almost_equal(r1g.r, 0.0)
         assert_almost_equal(r1g.l, 0.0)
@@ -305,8 +305,8 @@ class TestReactor1GParameterAttributes(TestCase):
 
     def test_Lattice(self):
         r1g = Reactor1G()
-        r1g.Lattice = 'Spherical'
-        assert_equal(r1g.Lattice, 'Spherical')
+        r1g.lattice_flag = 'Spherical'
+        assert_equal(r1g.lattice_flag, 'Spherical')
 
     def test_H_XS_Rescale(self):
         r1g = Reactor1G()
@@ -734,7 +734,7 @@ class TestReactor1GInitializationMethods(TestCase):
         assert_equal(self.r1g.P_NL, 0.0)
         assert_equal(self.r1g.target_BU, 0.0)
         assert_false(self.r1g.use_zeta)
-        assert_equal(self.r1g.Lattice, '')
+        assert_equal(self.r1g.lattice_flag, '')
         assert_false(self.r1g.H_XS_Rescale)
         assert_equal(self.r1g.r, 0.0)
         assert_equal(self.r1g.l, 0.0)
@@ -1002,7 +1002,7 @@ class TestReactor1GLatticeMethods(TestCase):
 
     def test_LatticeEPlanar(self):
         prev = self.r1g.LatticeE_F_
-        self.r1g.Lattice = "Planar"
+        self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
@@ -1012,7 +1012,7 @@ class TestReactor1GLatticeMethods(TestCase):
 
     def test_LatticeFPlanar(self):
         prev = self.r1g.LatticeF_F_
-        self.r1g.Lattice = "Planar"
+        self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
@@ -1022,7 +1022,7 @@ class TestReactor1GLatticeMethods(TestCase):
 
     def test_LatticeESpherical(self):
         prev = self.r1g.LatticeE_F_
-        self.r1g.Lattice = "Spherical"
+        self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
@@ -1032,7 +1032,7 @@ class TestReactor1GLatticeMethods(TestCase):
 
     def test_LatticeFSpherical(self):
         prev = self.r1g.LatticeF_F_
-        self.r1g.Lattice = "Spherical"
+        self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
@@ -1042,7 +1042,7 @@ class TestReactor1GLatticeMethods(TestCase):
 
     def test_LatticeECylindrical(self):
         prev = self.r1g.LatticeE_F_
-        self.r1g.Lattice = "Cylindrical"
+        self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
@@ -1052,7 +1052,7 @@ class TestReactor1GLatticeMethods(TestCase):
 
     def test_LatticeFCylindrical(self):
         prev = self.r1g.LatticeF_F_
-        self.r1g.Lattice = "Cylindrical"
+        self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()

@@ -92,7 +92,7 @@ void Reactor1G::initialize(ReactorParameters rp)
     P_NL = rp.pnl;				//Non-Leakage Probability
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
     use_zeta = rp.useDisadvantage;		//Boolean value on whether or not the disadvantage factor should be used
-    Lattice = rp.LatticeType;		//Lattice Type (Planar || Spherical || Cylindrical)
+    lattice_flag = rp.LatticeType;		//lattice_flagType (Planar || Spherical || Cylindrical)
     H_XS_Rescale = rp.HydrogenRescale;	//Rescale the Hydrogen-1 XS?
 
     //Calculates Volumes
@@ -1247,9 +1247,9 @@ void Reactor1G::calcZeta()
         kappaC_F_[f]   = sqrt( 3.0 * SigmaCtr_F_[f] * SigmaCa_F_[f] );
     };
 
-    //Calculate the Lattice Functions
+    //Calculate the lattice_flag Functions
     double a, b;
-    if (Lattice == "Planar")
+    if (lattice_flag == "Planar")
     {
         a = r;
         b = l / 2.0;
@@ -1257,7 +1257,7 @@ void Reactor1G::calcZeta()
         LatticeEPlanar(a, b);
         LatticeFPlanar(a, b);
     }
-    else if (Lattice == "Spherical")
+    else if (lattice_flag == "Spherical")
     {
         a = r;
         b = l / 2.0;
@@ -1265,7 +1265,7 @@ void Reactor1G::calcZeta()
         LatticeESpherical(a, b);
         LatticeFSpherical(a, b);
     }
-    else if (Lattice == "Cylindrical")
+    else if (lattice_flag == "Cylindrical")
     {
         a = r;
         b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
@@ -1338,21 +1338,21 @@ void Reactor1G::calcZeta()
 
 void Reactor1G::calcZetaPlanar()
 {
-    Lattice = "Planar";
+    lattice_flag = "Planar";
     calcZeta();
     return;
 };
 
 void Reactor1G::calcZetaSpherical()
 {
-    Lattice = "Spherical";
+    lattice_flag = "Spherical";
     calcZeta();
     return;
 };
 
 void Reactor1G::calcZetaCylindrical()
 {
-    Lattice = "Cylindrical";
+    lattice_flag = "Cylindrical";
     calcZeta();
     return;
 };

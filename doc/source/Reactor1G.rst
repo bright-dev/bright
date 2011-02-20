@@ -691,7 +691,7 @@ should this control be unnecessary for simple calculations.
 
 
 ------------------------
-Lattice Function Methods
+lattice_flag Function Methods
 ------------------------
 The lattice function methods below are all similar in that the calculate and set one of the 
 lattice functions, E(F) or F(F), for one of the geometries, Planar or Spherical or Cylindrical.
