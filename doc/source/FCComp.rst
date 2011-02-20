@@ -207,27 +207,27 @@ FCComp Methods
         Param   1in             1out	
         Mass    9.985828E-01    9.975915E-01
 
-.. method:: FCComp.writeText()
+.. method:: FCComp.write_text()
 
     This method calls :meth:`write_ms_pass` and then, if available, calls 
     :meth:`write_params_pass`.  This is convience function for producing 
-    text-based output.  However, using :meth:`writeout` is recommended.
+    text-based output.  However, using :meth:`write` is recommended.
 
-.. method:: FCComp.writeHDF5()
+.. method:: FCComp.write_hdf5()
 
     This method writes out the isotopic pass data to an HDF5 file. 
     Then, if available, it also writes parameter data as well.  
-    Using :meth:`writeout` instead is recommended.
+    Using :meth:`write` instead is recommended.
 
-.. method:: FCComp.writeout()
+.. method:: FCComp.write()
 
     This is a convenience function that first increments up :attr:`pass_num`.
     Then, it checks to see if there are any parameters for this component.
     If there are, it sets the current values using :meth:`calc_params`.
 
-    If :attr:`bright.write_hdf5` is set, then :meth:`writeHDF5` is called.
+    If :attr:`bright.write_hdf5` is set, then :meth:`write_hdf5` is called.
 
-    If :attr:`bright.write_text` is set, then :meth:`writeText` is called.
+    If :attr:`bright.write_text` is set, then :meth:`write_text` is called.
 
     This is what is most often used to write Bright output.  Therefore it is
     seen as the last step for every component in each pass.  

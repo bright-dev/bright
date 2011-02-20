@@ -332,35 +332,35 @@ cdef class FCComp:
         self.fccomp_pointer.write_params_pass()
         
 
-    def writeText(self):
+    def write_text(self):
         """This method calls write_ms_pass() and then, if available, calls 
         write_params_pass().  This is convience function for producing 
-        text-based output.  However, using writeout() is recommended.
+        text-based output.  However, using write() is recommended.
         """
-        self.fccomp_pointer.writeText()
+        self.fccomp_pointer.write_text()
 
 
-    def writeHDF5(self):
+    def write_hdf5(self):
         """This method writes out the isotopic pass data to an HDF5 file. 
         Then, if available, it also writes parameter data as well.  
-        Using writeout() instead is recommended.
+        Using write() instead is recommended.
         """
-        self.fccomp_pointer.writeHDF5()
+        self.fccomp_pointer.write_hdf5()
 
 
-    def writeout(self):
+    def write(self):
         """This is a convenience function that first increments up pass_num.
         Then, it checks to see if there are any parameters for this component.
         If there are, it sets the current values using :meth:`calc_params`.
 
-        If bright.write_hdf5 is set, then writeHDF5() is called.
+        If bright.write_hdf5 is set, then write_hdf5() is called.
 
-        If bright.write_text is set, then writeText() is called.
+        If bright.write_text is set, then write_text() is called.
 
         This is what is most often used to write Bright output.  Therefore it is
         seen as the last step for every component in each pass.
         """
-        self.fccomp_pointer.writeout()
+        self.fccomp_pointer.write()
 
 
     # Virtual methods

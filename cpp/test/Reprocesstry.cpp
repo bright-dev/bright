@@ -69,18 +69,18 @@ int main()
 	cd[942390] = 20.0;
 	cd[952421] = 5.0;
 	rssed.calc(cd).print_ms();
-	rssed.writeout();
+	rssed.write();
 	print("\t\t\tDone!");
 
 	print("Test calc(MassStream):");
 	rssed.calc(rssed.ms_prod).print_ms();
-	rssed.writeout();
+	rssed.write();
 	print("\t\t\tDone!");
 
 	print("Test calc():");
 	rssed.ms_feed = rssed.ms_prod;
 	rssed.calc().print_ms();
-	rssed.writeout();
+	rssed.write();
 	print("\t\t\tDone!");
 	
 	return 0;

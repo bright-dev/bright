@@ -114,7 +114,7 @@ def main():
         #Calculate and write output
         LWR.BUd_BisectionMethod()
         LWR.calcOutIso()
-        LWR.writeout()
+        LWR.write()
 
     if options.calibrate:
         LWR_CoreInput = U238 + U235 + U234 + U236

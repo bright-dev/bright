@@ -438,7 +438,7 @@ void FCComp::write_params_pass ()
     paramfileout.close();
 }
 
-void FCComp::writeText()
+void FCComp::write_text()
 {
     //Write the isotopic streams
     write_ms_pass();
@@ -465,7 +465,7 @@ hsize_t dims[], hsize_t offset[], hsize_t extend_size[])
     array_set.close();
 }
 
-void FCComp::writeHDF5 ()
+void FCComp::write_hdf5 ()
 {
     //Writes the fuel cycle component to an HDF5 file
     const int    RANK   = 1;
@@ -505,7 +505,7 @@ void FCComp::writeHDF5 ()
     dbFile.close();   
 }
 
-void FCComp::writeout ()
+void FCComp::write ()
 {
     //Now that we are ready to start writing out data, let's update the pass number that we are on.
     pass_num++;
@@ -516,10 +516,10 @@ void FCComp::writeout ()
 
     //Writes the output table files.
     if (FCComps::write_text)
-        writeText();
+        write_text();
     
     if (FCComps::write_hdf5)
-        writeHDF5();
+        write_hdf5();
 }
 
 MassStream FCComp::calc ()

@@ -49,9 +49,9 @@ cdef extern from "../FCComp.h":
         void calc_params()
         void write_ms_pass()
         void write_params_pass()
-        void writeText()
-        void writeHDF5()
-        void writeout()
+        void write_text()
+        void write_hdf5()
+        void write()
         cpp_mass_stream.MassStream calc()
 
 

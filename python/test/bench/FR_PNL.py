@@ -116,7 +116,7 @@ def main():
 
     #Write output
     FR.calcOutIso()
-    FR.writeout()
+    FR.write()
 
     with open(name + "_pnl.txt", 'w') as f:
         f.write(str(FR.P_NL))

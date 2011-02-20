@@ -89,10 +89,10 @@ int main()
 	ipFCC.write_params_pass();
 
 	//Third Pass, same data as second
-	ipFCC.writeout();
+	ipFCC.write();
 
-	//Also make sure writeout() bypasses the Params when track_params is empty
-	isoFCC.writeout();
+	//Also make sure write() bypasses the Params when track_params is empty
+	isoFCC.write();
 	print("\t\t\tDone!");
 
 	return 0;

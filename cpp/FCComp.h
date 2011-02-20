@@ -75,9 +75,9 @@ public:
     virtual void calc_params ();
     void write_ms_pass ();
     void write_params_pass ();
-    void writeText ();
-    void writeHDF5 ();
-    void writeout ();
+    void write_text ();
+    void write_hdf5 ();
+    void write ();
     virtual MassStream calc ();
     virtual MassStream calc (CompDict);
     virtual MassStream calc (MassStream);

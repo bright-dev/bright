@@ -106,7 +106,7 @@ It is important to know that ms_prod is calculated after calc is called. Finally
     st = bright.Storage("Storage")
     st.calc(lwr.ms_prod)
 
-Lastly, every fuel cycle component contains a ``writeout()`` method that is used for outputting 
+Lastly, every fuel cycle component contains a ``write()`` method that is used for outputting 
 data to the hard disk in either text or HDF5 format. 
 
 The complete program of this nuclear fuel cycle simulation is provided below::
@@ -129,7 +129,7 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     enrd.xP_j = 0.036
     enr = bright.Enrichment(enrd, "Enrichment")
     enr.calc(nu)
-    enr.writeout()
+    enr.write()
 
     # Reactor Calculation
     lwrd = bright.LWRDefaults()
@@ -137,10 +137,10 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     lwrd.batches = 3
     lwr = bright.LightWaterReactor1G(lwr_data, lwrd, "LWR")
     lwr.calc(enr.ms_prod)
-    lwr.writeout()
+    lwr.write()
 
     # Storage Calculation
     st = bright.Storage("Storage")
     st.decay_time = 5.0 * 365.25 * 24.0 * 3600.0
     st.calc(lwr.ms_prod)
-    st.writeout()
+    st.write()
