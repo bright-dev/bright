@@ -32,7 +32,7 @@ int main()
 	FCComp emptyFCC;
 	print("\tEmpty Name: " + emptyFCC.name);
 	print("\tEmpty Figure Directory: " + emptyFCC.figdir);
-	print("\tEmpty Pass Number: " + to_str(emptyFCC.PassNum) );
+	print("\tEmpty Pass Number: " + to_str(emptyFCC.pass_num) );
 	print("");
 
 	print("Testing Isotope Initialized Fuel Cycle Component:");
@@ -40,7 +40,7 @@ int main()
 	FCComp isoFCC(isoset, "FCC_Iso");
 	print("\tIso Name: " + isoFCC.name);
 	print("\tIso Figure Directory: " + isoFCC.figdir);
-	print("\tIso Pass Number: " + to_str(isoFCC.PassNum) );
+	print("\tIso Pass Number: " + to_str(isoFCC.pass_num) );
 	print("");
 
 	print("Testing Isotope & Paramter Initialized Fuel Cycle Component:");
@@ -49,7 +49,7 @@ int main()
 	FCComp ipFCC(isoset, parset, "FCC_IsoPar");
 	print("\tIsotope & Paramter Name: " + ipFCC.name);
 	print("\tIsotope & Paramter Figure Directory: " + ipFCC.figdir);
-	print("\tIsotope & Paramter Pass Number: " + to_str(ipFCC.PassNum) );
+	print("\tIsotope & Paramter Pass Number: " + to_str(ipFCC.pass_num) );
 	print("");
 
 	print("Testing Figure Adding:");
@@ -91,7 +91,7 @@ int main()
 	//Third Pass, same data as second
 	ipFCC.writeout();
 
-	//Also make sure writeout() bypasses the Params when params2track is empty
+	//Also make sure writeout() bypasses the Params when track_params is empty
 	isoFCC.writeout();
 	print("\t\t\tDone!");
 

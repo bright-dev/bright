@@ -42,8 +42,8 @@ cdef extern from "../FCComp.h":
         map[std.string, double] params_prior_calc
         map[std.string, double] params_after_calc
 
-        int PassNum
-        set[std.string] params2track
+        int pass_num
+        set[std.string] track_params
 
         # Methods
         void setParams()

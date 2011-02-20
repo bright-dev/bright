@@ -104,13 +104,13 @@ class TestEnrichmentConstructors(TestCase):
     def test_Enrichment_1(self):
         e = Enrichment()
         assert_equal(e.name, '')
-        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+        assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
 
     def test_Enrichment_2(self):
         e = Enrichment(name="e")
         assert_equal(e.name, 'e')
-        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+        assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
 
     def test_Enrichment_3(self):
@@ -118,7 +118,7 @@ class TestEnrichmentConstructors(TestCase):
         ep.xP_j = 0.1
         e = Enrichment(enrich_params=ep)
         assert_equal(e.name, '')
-        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+        assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
         assert_equal(e.alpha_0, 1.05)
         assert_equal(e.Mstar_0, 236.5)
@@ -134,7 +134,7 @@ class TestEnrichmentConstructors(TestCase):
         ep.j = 922360
         e = Enrichment(enrich_params=ep, name='e')
         assert_equal(e.name, 'e')
-        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+        assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
         assert_equal(e.alpha_0, 1.05)
         assert_equal(e.Mstar_0, 236.5)
@@ -153,12 +153,12 @@ class TestEnrichmentAttributes(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_params2track(self):
+    def test_track_params(self):
         e = Enrichment()
-        assert_equal(e.params2track, set(["M",  "MassFeed", "MassProduct", "MassTails", 
+        assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
-        e.params2track = set(["Om nom nom"])
-        assert_equal(e.params2track, set(["Om nom nom"]))
+        e.track_params = set(["Om nom nom"])
+        assert_equal(e.track_params, set(["Om nom nom"]))
                         
     def test_alpha_0(self):
         e = Enrichment()

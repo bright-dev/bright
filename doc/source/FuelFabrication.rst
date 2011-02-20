@@ -21,7 +21,7 @@ a more sophisticated optimizer may be implemented.
 
 .. currentmodule:: bright
     
-.. class:: FuelFabrication([mass_streams, mass_weights_in, reactor, params2track, name])
+.. class:: FuelFabrication([mass_streams, mass_weights_in, reactor, track_params, name])
 
     Fuel Fabrication Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
 
@@ -49,7 +49,7 @@ a more sophisticated optimizer may be implemented.
 
           would be valid for a light water reactor with half a percent of U-236 always present.
         * `reactor` (:class:`Reactor1G`): An instance of a Reactor1G class to fabricate fuel for.
-        * `params2track` (list of str): Additional parameters to track, if any.        
+        * `track_params` (list of str): Additional parameters to track, if any.        
         * `name` (str): The name of the fuel fabrication fuel cycle component instance.
 
     Note that this automatically calls the public :meth:`initialize` C function.
@@ -85,7 +85,7 @@ attributes specific to this class.
 
     An instance of a :class:`Reactor1G` class that the :attr:`ms_prod <FCComp.ms_prod>` is valid as a fuel for.
 
-.. attribute:: FuelFabrication.params2track
+.. attribute:: FuelFabrication.track_params
 
     For :class:`FuelFabrication`, the parameters that are automatically tracked are 
     the keys of :attr:`mass_streams` preceded by ``Weight_`` and ``deltaR_``.  For instance, 

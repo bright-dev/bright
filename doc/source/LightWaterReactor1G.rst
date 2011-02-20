@@ -29,7 +29,7 @@ LightWaterReactor1G Attributes
 As a daughter class of :class:`Reactor1G`, most of the LWR attributes are inherited.  The following are the ones that are not
 or have been otherwise altered.
 
-.. attribute:: LightWaterReactor1G.params2track
+.. attribute:: LightWaterReactor1G.track_params
 
     Light water reactors have a type specific set of data that they follow from pass-to-pass.  Thus this 
     attribute has be modified to contain following parameters: ``["BUd", "U", "TRU", "ACT", "LAN", "FP"]``. 

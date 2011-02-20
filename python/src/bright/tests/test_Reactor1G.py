@@ -186,28 +186,28 @@ class TestReactor1GConstructors(TestCase):
     def test_Reactor1G_1(self):
         r1g = Reactor1G()
         assert_equal(r1g.name, '')
-        assert_equal(r1g.params2track, set())
+        assert_equal(r1g.track_params, set())
 
     def test_Reactor1G_2(self):
         r1g = Reactor1G(name="r1g")
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, set())
+        assert_equal(r1g.track_params, set())
 
     def test_Reactor1G_3(self):
-        r1g = Reactor1G(params2track=set(["Mass"]))
+        r1g = Reactor1G(track_params=set(["Mass"]))
         assert_equal(r1g.name, '')
-        assert_equal(r1g.params2track, set(["Mass"]))
+        assert_equal(r1g.track_params, set(["Mass"]))
 
     def test_Reactor1G_4(self):
-        r1g = Reactor1G(params2track=set(["Mass"]), name='r1g')
+        r1g = Reactor1G(track_params=set(["Mass"]), name='r1g')
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, set(["Mass"]))
+        assert_equal(r1g.track_params, set(["Mass"]))
 
     def test_Reactor1G_5(self):
         rp = ReactorParameters()
         r1g = Reactor1G(reactor_parameters=rp, name="r1g")
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, set())
+        assert_equal(r1g.track_params, set())
         assert_equal(r1g.B, 0)
         assert_equal(r1g.phi, 0.0)
         assert_equal(r1g.FuelChemicalForm, {})
@@ -226,9 +226,9 @@ class TestReactor1GConstructors(TestCase):
 
     def test_Reactor1G_6(self):
         rp = ReactorParameters()
-        r1g = Reactor1G(reactor_parameters=rp, params2track=set(["Mass"]), name="r1g")
+        r1g = Reactor1G(reactor_parameters=rp, track_params=set(["Mass"]), name="r1g")
         assert_equal(r1g.name, 'r1g')
-        assert_equal(r1g.params2track, set(["Mass"]))
+        assert_equal(r1g.track_params, set(["Mass"]))
         assert_equal(r1g.B, 0)
         assert_almost_equal(r1g.phi, 0.0)
         assert_equal(r1g.FuelChemicalForm, {})

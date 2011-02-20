@@ -56,7 +56,7 @@ class TestFastReactorConstructors(TestCase):
     def test_FastReactor1G_1(self):
         fr = FastReactor1G()
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -78,7 +78,7 @@ class TestFastReactorConstructors(TestCase):
         fr = FastReactor1G(libfile=lf)
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -100,7 +100,7 @@ class TestFastReactorConstructors(TestCase):
         fr = FastReactor1G(libfile=lf, name="fr")
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, 'fr')
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -122,7 +122,7 @@ class TestFastReactorConstructors(TestCase):
         rp.BUt = 140.0
         fr = FastReactor1G(reactor_parameters=rp)
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -144,7 +144,7 @@ class TestFastReactorConstructors(TestCase):
         rp.BUt = 140.0
         fr = FastReactor1G(reactor_parameters=rp, name='fr')
         assert_equal(fr.name, 'fr')
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -168,7 +168,7 @@ class TestFastReactorConstructors(TestCase):
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -192,7 +192,7 @@ class TestFastReactorConstructors(TestCase):
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, 'fr')
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -217,11 +217,11 @@ class TestFastReactor1GAttributes(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_params2track(self):
+    def test_track_params(self):
         fr = FastReactor1G()
-        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
-        fr.params2track = set(["Mass"])
-        assert_equal(fr.params2track, set(["Mass"]))
+        assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        fr.track_params = set(["Mass"])
+        assert_equal(fr.track_params, set(["Mass"]))
 
 class TestFastReactor1GMethods(TestCase):
     """Tests that the fuel cycle component methods work."""

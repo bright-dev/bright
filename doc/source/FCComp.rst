@@ -70,7 +70,7 @@ FCComp Attributes
         The :attr:`params_prior_calc` and :attr:`params_after_calc` attributes do not have meaningful values until :meth:`FCComp.setParams` is
         called.  This should be done after :meth:`FCComp.doCalc` but prior to output.
 
-.. attribute:: FCComp.PassNum
+.. attribute:: FCComp.pass_num
 
     An integer representing the number of passes this component has been cycled through.  
     It starts at zero and is incremented by one each time ``FCComp.writeIsoPass()`` is called.
@@ -83,11 +83,11 @@ FCComp Attributes
 
     This attribute may be accessed and altered directly (public).
 
-.. attribute:: FCComp.params2track
+.. attribute:: FCComp.track_params
 
     A list (C set) of strings that holds the keys of :attr:`params_prior_calc` and :attr:`params_after_calc`.
     Every component type has its own set of parameters it is able to track.  This is why 
-    :attr:`params2track` is a component-specific attribute, while :func:`track_isos` is a module-level
+    :attr:`track_params` is a component-specific attribute, while :func:`track_isos` is a module-level
     object.
 
     This attribute is set during initialization and is protected.
@@ -123,8 +123,8 @@ FCComp Methods
     This performs basic component initialization and in called by all ``FCComp`` constructors.
     As such this function is protected and will not show up in the Python bindings of Bright.
 
-    The :meth:`initialize` method sets :attr:`params2track` and :attr:`name` as defined in the 
-    function call and sets :attr:`PassNum` to zero.  Additionally, it creates and prepares isotopic 
+    The :meth:`initialize` method sets :attr:`track_params` and :attr:`name` as defined in the 
+    function call and sets :attr:`pass_num` to zero.  Additionally, it creates and prepares isotopic 
     and parameter files for output.  These files are named "``{FCComp.name}Isos.txt``" and 
     "``{FCComp.name}Params.txt``" respectively.
 
@@ -200,7 +200,7 @@ FCComp Methods
     this function does for the components parameters.  To ensure that meaningful 
     data is available, :meth:`writeParamPass` first must have :meth:`setParams` 
     called elsewhere in the program.  Note that to get the pass numbering correct, 
-    :attr:`PassNum` should always be incremented prior to this method.  The 
+    :attr:`pass_num` should always be incremented prior to this method.  The 
     following is an example of "``{FCComp.name}Params.txt``" for a light water 
     reactor spent fuel reprocessing facility::
 
@@ -221,7 +221,7 @@ FCComp Methods
 
 .. method:: FCComp.writeout()
 
-    This is a convenience function that first increments up :attr:`PassNum`.
+    This is a convenience function that first increments up :attr:`pass_num`.
     Then, it checks to see if there are any parameters for this component.
     If there are, it sets the current values using :meth:`setParams`.
 

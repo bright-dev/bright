@@ -12,12 +12,12 @@ from bright import *
 
 def printFCComp(fc):
     print("Name: " + fc.name)
-    print("Params2Track: " + str(fc.params2track))
+    print("Params2Track: " + str(fc.track_params))
     print("ms_feed: " + str(fc.ms_feed))
     print("ms_prod: " + str(fc.ms_prod))
     print("params_prior_calc: " + str(fc.params_prior_calc))
     print("params_after_calc: " + str(fc.params_after_calc))
-    print("Pass Number: " + str(fc.PassNum))
+    print("Pass Number: " + str(fc.pass_num))
     return
 
 def printReactorParameters(rp):

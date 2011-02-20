@@ -250,20 +250,20 @@ cdef class FCComp:
             self.fccomp_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.fccomp_pointer.PassNum
+            return self.fccomp_pointer.pass_num
 
         def __set__(self, int pn):
-            self.fccomp_pointer.PassNum = pn
+            self.fccomp_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.fccomp_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.fccomp_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.fccomp_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.fccomp_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
     #
     # Class Methods
@@ -321,7 +321,7 @@ cdef class FCComp:
         this function does for the components parameters.  To ensure that meaningful 
         data is available, writeParamPass() first must have setParams()
         called elsewhere in the program.  Note that to get the pass numbering correct, 
-        PassNum should always be incremented prior to this method.  The 
+        pass_num should always be incremented prior to this method.  The 
         following is an example of "{FCComp.name}Params.txt" for a light water 
         reactor spent fuel reprocessing facility::
 
@@ -349,7 +349,7 @@ cdef class FCComp:
 
 
     def writeout(self):
-        """This is a convenience function that first increments up PassNum.
+        """This is a convenience function that first increments up pass_num.
         Then, it checks to see if there are any parameters for this component.
         If there are, it sets the current values using :meth:`setParams`.
 
@@ -716,20 +716,20 @@ cdef class Enrichment(FCComp):
             self.e_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.e_pointer.PassNum
+            return self.e_pointer.pass_num
 
         def __set__(self, int pn):
-            self.e_pointer.PassNum = pn
+            self.e_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.e_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.e_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.e_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.e_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
 
 
@@ -984,20 +984,20 @@ cdef class Reprocess(FCComp):
             self.r_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.r_pointer.PassNum
+            return self.r_pointer.pass_num
 
         def __set__(self, int pn):
-            self.r_pointer.PassNum = pn
+            self.r_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.r_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.r_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.r_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.r_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
 
 
@@ -1154,20 +1154,20 @@ cdef class Storage(FCComp):
             self.s_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.s_pointer.PassNum
+            return self.s_pointer.pass_num
 
         def __set__(self, int pn):
-            self.s_pointer.PassNum = pn
+            self.s_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.s_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.s_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.s_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.s_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
 
     #
@@ -1488,7 +1488,7 @@ cdef class Reactor1G(FCComp):
     Args:
         * reactor_parameters (ReactorParameters): A special data structure that contains information
           on how to setup and run the reactor.
-        * params2track (string set): A set of strings that represents what parameter data the reactor should 
+        * track_params (string set): A set of strings that represents what parameter data the reactor should 
           store and set.  Different reactor types may have different characteristic parameters that are of interest.
         * name (str): The name of the reactor fuel cycle component instance.
 
@@ -1503,30 +1503,30 @@ cdef class Reactor1G(FCComp):
 
     #cdef cpp_bright.Reactor1G * r1g_pointer
 
-    def __cinit__(self, reactor_parameters=None, params2track=None, char * name="", *args, **kwargs):
+    def __cinit__(self, reactor_parameters=None, track_params=None, char * name="", *args, **kwargs):
         cdef ReactorParameters rp
         cdef std.string cpp_name = std.string(name)
 
-        if (reactor_parameters is None) and (params2track is None):
+        if (reactor_parameters is None) and (track_params is None):
             self.r1g_pointer = new cpp_bright.Reactor1G(cpp_name)
 
-        elif (reactor_parameters is None) and isinstance(params2track, set):
-            self.r1g_pointer = new cpp_bright.Reactor1G(conv.py_to_cpp_set_str(params2track), cpp_name)
+        elif (reactor_parameters is None) and isinstance(track_params, set):
+            self.r1g_pointer = new cpp_bright.Reactor1G(conv.py_to_cpp_set_str(track_params), cpp_name)
 
-        elif isinstance(reactor_parameters, ReactorParameters) and (params2track is None):
+        elif isinstance(reactor_parameters, ReactorParameters) and (track_params is None):
             rp = reactor_parameters
             self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], cpp_name)
 
-        elif isinstance(reactor_parameters, ReactorParameters) and isinstance(params2track, set):
+        elif isinstance(reactor_parameters, ReactorParameters) and isinstance(track_params, set):
             rp = reactor_parameters
-            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], conv.py_to_cpp_set_str(params2track), cpp_name)
+            self.r1g_pointer = new cpp_bright.Reactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], conv.py_to_cpp_set_str(track_params), cpp_name)
 
         else:
             if reactor_parameters is not None:
                 raise TypeError("The reactor_parameters keyword must be an instance of the ReactorParameters class or None.  Got " + str(type(reactor_parameters)))
 
-            if params2track is not None:
-                raise TypeError("The params2track keyword must be a set of strings or None.  Got " + str(type(params2track)))
+            if track_params is not None:
+                raise TypeError("The track_params keyword must be a set of strings or None.  Got " + str(type(track_params)))
 
     def __dealloc__(self):
         del self.r1g_pointer
@@ -2138,20 +2138,20 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.r1g_pointer.PassNum
+            return self.r1g_pointer.pass_num
 
         def __set__(self, int pn):
-            self.r1g_pointer.PassNum = pn
+            self.r1g_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.r1g_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.r1g_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.r1g_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.r1g_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
 
     #
@@ -3177,20 +3177,20 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.lwr1g_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.lwr1g_pointer.PassNum
+            return self.lwr1g_pointer.pass_num
 
         def __set__(self, int pn):
-            self.lwr1g_pointer.PassNum = pn
+            self.lwr1g_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.lwr1g_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.lwr1g_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.lwr1g_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.lwr1g_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
 
 
@@ -4246,20 +4246,20 @@ cdef class FastReactor1G(Reactor1G):
             self.fr1g_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.fr1g_pointer.PassNum
+            return self.fr1g_pointer.pass_num
 
         def __set__(self, int pn):
-            self.fr1g_pointer.PassNum = pn
+            self.fr1g_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.fr1g_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.fr1g_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.fr1g_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.fr1g_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
 
 
@@ -4690,7 +4690,7 @@ cdef class FuelFabrication(FCComp):
 
           would be valid for a light water reactor with half a percent of U-236 always present.
         * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
-        * params2track (list of str): Additional parameters to track, if any.        
+        * track_params (list of str): Additional parameters to track, if any.        
         * name (str): The name of the fuel fabrication fuel cycle component instance.
 
     Note that this automatically calls the public initialize() C function.
@@ -4698,17 +4698,17 @@ cdef class FuelFabrication(FCComp):
 
     #cdef cpp_bright.FuelFabrication * ff_pointer
 
-    def __cinit__(self, mass_streams=None, mass_weights_in=None, reactor=None, params2track=None, char * name=""):
+    def __cinit__(self, mass_streams=None, mass_weights_in=None, reactor=None, track_params=None, char * name=""):
         cdef std.string cpp_name = std.string(name)
         cdef Reactor1G r1g 
 
-        if (mass_streams is None) and (mass_weights_in is None) and (reactor is None) and (params2track is None):
+        if (mass_streams is None) and (mass_weights_in is None) and (reactor is None) and (track_params is None):
             self.ff_pointer = new cpp_bright.FuelFabrication(std.string(name))
 
-        elif (mass_streams is None) and (mass_weights_in is None) and (reactor is None) and isinstance(params2track, set):
-            self.ff_pointer = new cpp_bright.FuelFabrication(conv.py_to_cpp_set_str(params2track), cpp_name)
+        elif (mass_streams is None) and (mass_weights_in is None) and (reactor is None) and isinstance(track_params, set):
+            self.ff_pointer = new cpp_bright.FuelFabrication(conv.py_to_cpp_set_str(track_params), cpp_name)
 
-        elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and (params2track is None):
+        elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and (track_params is None):
             r1g = reactor
             self.ff_pointer = new cpp_bright.FuelFabrication(
                                 mass_stream.dict_to_map_str_msp(mass_streams), 
@@ -4716,13 +4716,13 @@ cdef class FuelFabrication(FCComp):
                                 r1g.r1g_pointer[0], 
                                 std.string(name))
 
-        elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and isinstance(params2track, set):
+        elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and isinstance(track_params, set):
             r1g = reactor
             self.ff_pointer = new cpp_bright.FuelFabrication(
                                 mass_stream.dict_to_map_str_msp(mass_streams), 
                                 conv.dict_to_map_str_dbl(mass_weights_in), 
                                 r1g.r1g_pointer[0], 
-                                conv.py_to_cpp_set_str(params2track),
+                                conv.py_to_cpp_set_str(track_params),
                                 std.string(name))
 
         else:
@@ -4735,8 +4735,8 @@ cdef class FuelFabrication(FCComp):
             if reactor is not None:
                 raise TypeError("The reactor keyword must be a Reactor1G instance or None.  Got " + str(type(reactor)))
 
-            if params2track is not None:
-                raise TypeError("The params2track keyword must be a set of strings or None.  Got " + str(type(params2track)))
+            if track_params is not None:
+                raise TypeError("The track_params keyword must be a set of strings or None.  Got " + str(type(track_params)))
 
 
     def __dealloc__(self):
@@ -4847,20 +4847,20 @@ cdef class FuelFabrication(FCComp):
             self.ff_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
-    property PassNum:
+    property pass_num:
         def __get__(self):
-            return self.ff_pointer.PassNum
+            return self.ff_pointer.pass_num
 
         def __set__(self, int pn):
-            self.ff_pointer.PassNum = pn
+            self.ff_pointer.pass_num = pn
 
 
-    property params2track:
+    property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.ff_pointer.params2track)
+            return conv.cpp_to_py_set_str(self.ff_pointer.track_params)
 
         def __set__(self, set p2t):
-            self.ff_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+            self.ff_pointer.track_params = conv.py_to_cpp_set_str(p2t)
 
 
 

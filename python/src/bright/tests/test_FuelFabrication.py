@@ -59,22 +59,22 @@ class TestFuelFabricationConstructors(TestCase):
     def test_FuelFabrication_1(self):
         ff = FuelFabrication()
         assert_equal(ff.name, '')
-        assert_equal(ff.params2track, set())
+        assert_equal(ff.track_params, set())
 
     def test_FuelFabrication_2(self):
         ff = FuelFabrication(name="ff")
         assert_equal(ff.name, 'ff')
-        assert_equal(ff.params2track, set())
+        assert_equal(ff.track_params, set())
 
     def test_FuelFabrication_3(self):
-        ff = FuelFabrication(params2track=set(["Mass"]))
+        ff = FuelFabrication(track_params=set(["Mass"]))
         assert_equal(ff.name, '')
-        assert_equal(ff.params2track, set(["Mass"]))
+        assert_equal(ff.track_params, set(["Mass"]))
 
     def test_FuelFabrication_4(self):
-        ff = FuelFabrication(params2track=set(["Mass"]), name='ff')
+        ff = FuelFabrication(track_params=set(["Mass"]), name='ff')
         assert_equal(ff.name, 'ff')
-        assert_equal(ff.params2track, set(["Mass"]))
+        assert_equal(ff.track_params, set(["Mass"]))
 
     def test_FuelFabrication_5(self):
         # Reactor to use
@@ -102,7 +102,7 @@ class TestFuelFabricationConstructors(TestCase):
 
         assert_equal(ff.mass_weights_in, mws)
 
-        assert_equal(ff.params2track, set(["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
+        assert_equal(ff.track_params, set(["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
         assert_equal(ff.reactor.name, "r1g")
         r1g.name = "r1g name"
@@ -123,7 +123,7 @@ class TestFuelFabricationConstructors(TestCase):
         mws = {"U235": -1.0, "U238": -1.0}
 
         # Fuel Fabrication Facility
-        ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g, params2track=set(["Mass"]))
+        ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g, track_params=set(["Mass"]))
 
         keys = ["U235", "U238"]
         assert_equal(set(ff.mass_streams.keys()), set(keys))
@@ -134,7 +134,7 @@ class TestFuelFabricationConstructors(TestCase):
 
         assert_equal(ff.mass_weights_in, mws)
 
-        assert_equal(ff.params2track, set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
+        assert_equal(ff.track_params, set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
         assert_equal(ff.reactor.name, "r1g")
         r1g.name = "r1g name"
@@ -155,7 +155,7 @@ class TestFuelFabricationConstructors(TestCase):
         mws = {"U235": -1.0, "U238": -1.0}
 
         # Fuel Fabrication Facility
-        ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g, params2track=set(["Mass"]), name="ff")
+        ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g, track_params=set(["Mass"]), name="ff")
 
         keys = ["U235", "U238"]
         assert_equal(set(ff.mass_streams.keys()), set(keys))
@@ -166,7 +166,7 @@ class TestFuelFabricationConstructors(TestCase):
 
         assert_equal(ff.mass_weights_in, mws)
 
-        assert_equal(ff.params2track, set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
+        assert_equal(ff.track_params, set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
         assert_equal(ff.name, "ff")
 

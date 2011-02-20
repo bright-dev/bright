@@ -36,7 +36,7 @@ class TestReprocessConstructors(TestCase):
         assert_equal(r.name, '')
         for value in r.sepeff.values():
             assert_equal(value, 1.0)
-        assert_equal(r.params2track, set(["Mass"]))
+        assert_equal(r.track_params, set(["Mass"]))
 
     def test_Reprocess_2(self):
         bright_config.track_isos = set([922350, 922380, 942390])
@@ -45,21 +45,21 @@ class TestReprocessConstructors(TestCase):
         assert_almost_equal(r.sepeff[922350], 0.9)
         assert_almost_equal(r.sepeff[922380], 0.999)
         assert_almost_equal(r.sepeff[942390], 0.99)
-        assert_equal(r.params2track, set(["Mass"]))
+        assert_equal(r.track_params, set(["Mass"]))
 
     def test_Reprocess_3(self):
         bright_config.track_isos = set([922350])
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
         assert_equal(r.name, '')
         assert_equal(r.sepeff, {922350: 0.9})
-        assert_equal(r.params2track, set(["Mass"]))
+        assert_equal(r.track_params, set(["Mass"]))
 
     def test_Reprocess_4(self):
         bright_config.track_isos = set([922350])
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999}, name="r")
         assert_equal(r.name, 'r')
         assert_equal(r.sepeff, {922350: 0.9})
-        assert_equal(r.params2track, set(["Mass"]))
+        assert_equal(r.track_params, set(["Mass"]))
 
 
 class TestReprocessAttributes(TestCase):
@@ -82,11 +82,11 @@ class TestReprocessAttributes(TestCase):
         r.sepeff = {922350: 0.9}
         assert_equal(r.sepeff, {922350: 0.9})
 
-    def test_params2track(self):
+    def test_track_params(self):
         r = Reprocess()
-        assert_equal(r.params2track, set(["Mass"]))
-        r.params2track = set(["Om nom nom"])
-        assert_equal(r.params2track, set(["Om nom nom"]))
+        assert_equal(r.track_params, set(["Mass"]))
+        r.track_params = set(["Om nom nom"])
+        assert_equal(r.track_params, set(["Om nom nom"]))
                         
 
 class TestReprocessMethods(TestCase):

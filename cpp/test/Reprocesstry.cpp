@@ -29,7 +29,7 @@ int main()
 	print("Test Initialize Empty Reprocessing Facility:");
 	Reprocess repempty;
 	print("\tName\t\t\t" + repempty.name);
-	print("\tPass Number\t\t" + to_str(repempty.PassNum));
+	print("\tPass Number\t\t" + to_str(repempty.pass_num));
 	print("\tFigure Directory\t" + repempty.figdir);
 	print("");
 
@@ -42,7 +42,7 @@ int main()
 	sed[942390] = 0.99;
 	Reprocess rsed (sed, itrack, "Reprocess_SED");
 	print("\tName\t\t\t" + rsed.name);
-	print("\tPass Number\t\t" + to_str(rsed.PassNum));
+	print("\tPass Number\t\t" + to_str(rsed.pass_num));
 	print("\tFigure Directory\t" + rsed.figdir);
 	printSepEff(rsed);
 	print("");
@@ -56,7 +56,7 @@ int main()
 	ssed["HYIS"] = 0.99; //should fail, but not break the run
 	Reprocess rssed (ssed, itrack, "Reprocess_SSED");
 	print("\tName\t\t\t" + rssed.name);
-	print("\tPass Number\t\t" + to_str(rssed.PassNum));
+	print("\tPass Number\t\t" + to_str(rssed.pass_num));
 	print("\tFigure Directory\t" + rssed.figdir);
 	printSepEff(rssed);
 	print("");

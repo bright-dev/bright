@@ -23,7 +23,7 @@ int main()
 	print("Test Initialize Empty Reprocessing Facility:");
 	Storage sempty;
 	print("\tName\t\t\t" + sempty.name);
-	print("\tPass Number\t\t" + to_str(sempty.PassNum));
+	print("\tPass Number\t\t" + to_str(sempty.pass_num));
 	print("\tFigure Directory\t" + sempty.figdir);
 	print("");
 
@@ -33,7 +33,7 @@ int main()
 	print("Test Initialize Reprocessing Facility:");
 	Storage s (itrack, "Storage");
 	print("\tName\t\t\t" + s.name);
-	print("\tPass Number\t\t" + to_str(s.PassNum));
+	print("\tPass Number\t\t" + to_str(s.pass_num));
 	print("\tFigure Directory\t" + s.figdir);
 	print("");
 

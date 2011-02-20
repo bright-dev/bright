@@ -11,12 +11,12 @@ import bright
 
 def printFCComp(fc):
     print("Name: " + fc.name)
-    print("Params2Track: " + str(fc.params2track))
+    print("Params2Track: " + str(fc.track_params))
     print("ms_feed: " + str(fc.ms_feed))
     print("ms_prod: " + str(fc.ms_prod))
     print("params_prior_calc: " + str(fc.params_prior_calc))
     print("params_after_calc: " + str(fc.params_after_calc))
-    print("Pass Number: " + str(fc.PassNum))
+    print("Pass Number: " + str(fc.pass_num))
     print("Do Calc Empty: " + str( fc.doCalc() ))
     testCD = {922350: 10.0, 10010: 1.0}
     print("Do Calc Dictonary: " + str( fc.doCalc(testCD) ))

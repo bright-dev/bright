@@ -33,17 +33,17 @@ class TestFCCompConstructors(TestCase):
     def test_FCComp_1(self):
         fcc = FCComp()
         assert_equal(fcc.name, '')
-        assert_equal(fcc.params2track, set())
+        assert_equal(fcc.track_params, set())
 
     def test_FCComp_2(self):
         fcc = FCComp(["Spam", "Spam", "Eggs", "Spam"])
         assert_equal(fcc.name, '')
-        assert_equal(fcc.params2track, ["Eggs", "Spam"])
+        assert_equal(fcc.track_params, ["Eggs", "Spam"])
 
     def test_FCComp_2(self):
         fcc = FCComp(set(), "Waldo")
         assert_equal(fcc.name, 'Waldo')
-        assert_equal(fcc.params2track, set())
+        assert_equal(fcc.track_params, set())
 
 
 class TestFCCompAttributes(TestCase):
@@ -105,11 +105,11 @@ class TestFCCompAttributes(TestCase):
         fcc.params_after_calc = {"Mass": 1.0}
         assert_equal(fcc.params_after_calc, {"Mass": 1.0})
 
-    def test_PassNum(self):
+    def test_pass_num(self):
         fcc = FCComp()
-        assert_equal(fcc.PassNum, 0)
-        fcc.PassNum = 42
-        assert_equal(fcc.PassNum, 42)
+        assert_equal(fcc.pass_num, 0)
+        fcc.pass_num = 42
+        assert_equal(fcc.pass_num, 42)
 
     def test_name(self):
         fcc = FCComp()
@@ -133,11 +133,11 @@ class TestFCCompAttributes(TestCase):
         fcc = FCComp(set(), "\t Try\nMe...$")
         assert_equal(fcc.natural_name, '__Try_Me')
 
-    def test_params2track(self):
+    def test_track_params(self):
         fcc = FCComp()
-        assert_equal(fcc.params2track, set())
-        fcc.params2track = set(["Dave"])
-        assert_equal(fcc.params2track, set(["Dave"]))
+        assert_equal(fcc.track_params, set())
+        fcc.track_params = set(["Dave"])
+        assert_equal(fcc.track_params, set(["Dave"]))
 
 
 class TestFCCompMethods(TestCase):
@@ -185,7 +185,7 @@ class TestFCCompMethods(TestCase):
         fcc = FCComp(set(), 'fcc')
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
-        fcc.PassNum = 1
+        fcc.pass_num = 1
         fcc.writeHDF5()
 
     def test_writeHDF5_2(self):
@@ -195,7 +195,7 @@ class TestFCCompMethods(TestCase):
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
         fcc.setParams()
-        fcc.PassNum = 1
+        fcc.pass_num = 1
         fcc.writeHDF5()
 
     def test_writeout_1(self):

@@ -61,7 +61,7 @@ The following is a listing of the additional attributes specific to this class.
 
     This attribute may be accessed and altered directly (public).
 
-.. attribute:: Reprocess.params2track
+.. attribute:: Reprocess.track_params
 
     For :class:`Reprocess`, the only parameter that is tracked is the aggregate mass.  Thus this attribute
     is automatically set to ``["Mass"]``.

@@ -60,7 +60,7 @@ class TestLightWaterReactorConstructors(TestCase):
     def test_LightWaterReactor1G_1(self):
         lwr = LightWaterReactor1G()
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -86,7 +86,7 @@ class TestLightWaterReactorConstructors(TestCase):
         lwr = LightWaterReactor1G(libfile=lf)
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -112,7 +112,7 @@ class TestLightWaterReactorConstructors(TestCase):
         lwr = LightWaterReactor1G(libfile=lf, name="lwr")
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, 'lwr')
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -138,7 +138,7 @@ class TestLightWaterReactorConstructors(TestCase):
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(reactor_parameters=rp)
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -164,7 +164,7 @@ class TestLightWaterReactorConstructors(TestCase):
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(reactor_parameters=rp, name='lwr')
         assert_equal(lwr.name, 'lwr')
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -192,7 +192,7 @@ class TestLightWaterReactorConstructors(TestCase):
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -220,7 +220,7 @@ class TestLightWaterReactorConstructors(TestCase):
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, 'lwr')
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -249,11 +249,11 @@ class TestLightWaterReactor1GAttributes(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_params2track(self):
+    def test_track_params(self):
         lwr = LightWaterReactor1G()
-        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
-        lwr.params2track = set(["Mass"])
-        assert_equal(lwr.params2track, set(["Mass"]))
+        assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        lwr.track_params = set(["Mass"])
+        assert_equal(lwr.track_params, set(["Mass"]))
 
 class TestLightWaterReactor1GMethods(TestCase):
     """Tests that the fuel cycle component methods work."""

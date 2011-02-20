@@ -144,7 +144,7 @@ void FCComps::load_track_isos_text(std::string filename, bool clear_prev)
 void FCComp::initialize (std::set<std::string> ptrack, std::string n)
 {
     //Protected Variables
-    params2track = ptrack;
+    track_params = ptrack;
 
     //Public Variables
     name = n;
@@ -152,7 +152,7 @@ void FCComp::initialize (std::set<std::string> ptrack, std::string n)
     if (natural_name.length() == 0)
         natural_name = "this_is_not_a_name";
     
-    PassNum = 0;
+    pass_num = 0;
 
     if (FCComps::write_text)
         initialize_Text();
@@ -176,11 +176,11 @@ void FCComp::initialize_Text ()
     }
 
     //Initialize the Parameter tracking file.
-    if (!params2track.empty())
+    if (!track_params.empty())
     {	
         std::ofstream paramfile ( (name + "Params.txt").c_str() );
         paramfile << "Param\n";
-        for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
+        for ( std::set<std::string>::iterator p = track_params.begin(); p != track_params.end(); p++)
         {
                 paramfile << *p + "\n";
         }
@@ -282,7 +282,7 @@ void FCComp::initialize_HDF5 ()
     }
 
     //Initiallize the Parameters
-    if (!params2track.empty())
+    if (!track_params.empty())
     {	
         // Open/Create params_prior_calc group
         H5::Group gparams_prior_calc;
@@ -301,7 +301,7 @@ void FCComp::initialize_HDF5 ()
         // Open/Create /Params[In|Out]/param Datasets
         H5::DataSet dsparams_prior_calcParam;
         H5::DataSet dsparams_after_calcParam;
-        for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
+        for ( std::set<std::string>::iterator p = track_params.begin(); p != track_params.end(); p++)
         {
             try
                 { dsparams_prior_calcParam = dbFile.openDataSet(comp_path + "/params_prior_calc/"  + *p); }
@@ -355,7 +355,7 @@ FCComp::~FCComp ()
 void FCComp::setParams ()
 {
     //Placeholder function that sets the states of params_prior_calc and params_after_calc.
-    for ( std::set<std::string>::iterator p2t = params2track.begin(); p2t != params2track.end(); p2t++)
+    for ( std::set<std::string>::iterator p2t = track_params.begin(); p2t != track_params.end(); p2t++)
     {
         params_prior_calc[*p2t]  = 0.0;
         params_after_calc[*p2t] = 0.0;
@@ -381,7 +381,7 @@ void FCComp::writeIsoPass ()
 
         std::string isoflag = bright::getFlag(line, 10);
         if (isoflag == "Isotope")
-                isobuf << "\t" << bright::to_str(PassNum) << "in\t\t" << bright::to_str(PassNum) << "out\t";
+                isobuf << "\t" << bright::to_str(pass_num) << "in\t\t" << bright::to_str(pass_num) << "out\t";
         else
         {
             try
@@ -427,7 +427,7 @@ void FCComp::writeParamPass ()
 
         std::string paramflag = bright::getFlag(line, 10);
         if (paramflag == "Param")
-            parambuf << "\t" << bright::to_str(PassNum) << "in\t\t" << bright::to_str(PassNum) << "out\t";
+            parambuf << "\t" << bright::to_str(pass_num) << "in\t\t" << bright::to_str(pass_num) << "out\t";
         else if (0 < params_prior_calc.count(paramflag))
             parambuf << "\t" << params_prior_calc[paramflag] << "\t" << params_after_calc[paramflag];
         parambuf << "\n";
@@ -444,7 +444,7 @@ void FCComp::writeText()
     writeIsoPass();
 
     //Write the parameters if they are there to write!
-    if (!params2track.empty()) 
+    if (!track_params.empty()) 
         writeParamPass();
 }
 
@@ -470,8 +470,8 @@ void FCComp::writeHDF5 ()
     //Writes the fuel cycle component to an HDF5 file
     const int    RANK   = 1;
     hsize_t dims[1]     = {1};
-    hsize_t offset[1]   = {PassNum - 1};
-    hsize_t ext_size[1] = {PassNum};
+    hsize_t offset[1]   = {pass_num - 1};
+    hsize_t ext_size[1] = {pass_num};
         
     //Open the HDF5 file
     H5::H5File dbFile (FCComps::output_filename, H5F_ACC_RDWR);
@@ -492,9 +492,9 @@ void FCComp::writeHDF5 ()
     }    
 
     //Write the parameter tracking
-    if (!params2track.empty())
+    if (!track_params.empty())
     {
-        for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
+        for ( std::set<std::string>::iterator p = track_params.begin(); p != track_params.end(); p++)
         {
             appendHDF5array(&dbFile, comp_path + "/params_prior_calc/"  + (*p), &(params_prior_calc[*p]),  &RANK, dims, offset, ext_size);
             appendHDF5array(&dbFile, comp_path + "/params_after_calc/" + (*p), &(params_after_calc[*p]), &RANK, dims, offset, ext_size);
@@ -508,10 +508,10 @@ void FCComp::writeHDF5 ()
 void FCComp::writeout ()
 {
     //Now that we are ready to start writing out data, let's update the pass number that we are on.
-    PassNum++;
+    pass_num++;
 
     //Set the parameters for this pass.
-    if (!params2track.empty())
+    if (!track_params.empty())
         setParams();
 
     //Writes the output table files.

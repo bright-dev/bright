@@ -29,7 +29,7 @@ FastReactor1G Attributes
 As a daughter class of :class:`Reactor1G`, most of the FR attributes are inherited.  The following are the ones that are not
 or have been otherwise altered.
 
-.. attribute:: FastReactor1G.params2track
+.. attribute:: FastReactor1G.track_params
 
     Fast reactors have a type specific set of data that they follow from pass-to-pass.  Thus this 
     attribute has be modified to contain following parameters: ``["BUd", "TRUCR", "P_NL", "U", "TRU", "ACT", "LAN", "FP"]``.

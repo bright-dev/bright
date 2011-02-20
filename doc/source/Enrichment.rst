@@ -136,7 +136,7 @@ attributes specific to this class.
     product stream should always add up to the mass of the 
     :attr:`ms_feed <bright.FCComp.ms_feed>` feed stream.
 
-.. attribute:: Enrichment.params2track
+.. attribute:: Enrichment.track_params
 
     For :class:`Enrichment`, the parameters that are automatically tracked are 
     members of the following list: 

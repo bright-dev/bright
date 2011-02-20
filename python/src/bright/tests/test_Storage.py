@@ -34,12 +34,12 @@ class TestStorageConstructors(TestCase):
     def test_Storage_1(self):
         s = Storage()
         assert_equal(s.name, '')
-        assert_equal(s.params2track, set(["Mass"]))
+        assert_equal(s.track_params, set(["Mass"]))
 
     def test_Storage_2(self):
         s = Storage(name="s")
         assert_equal(s.name, 's')
-        assert_equal(s.params2track, set(["Mass"]))
+        assert_equal(s.track_params, set(["Mass"]))
 
 
 class TestStorageAttributes(TestCase):
@@ -62,11 +62,11 @@ class TestStorageAttributes(TestCase):
         s.decay_time = 628        
         assert_equal(s.decay_time, 628.0)
 
-    def test_params2track(self):
+    def test_track_params(self):
         s = Storage()
-        assert_equal(s.params2track, set(["Mass"]))
-        s.params2track = set(["Om nom nom"])
-        assert_equal(s.params2track, set(["Om nom nom"]))
+        assert_equal(s.track_params, set(["Mass"]))
+        s.track_params = set(["Om nom nom"])
+        assert_equal(s.track_params, set(["Om nom nom"]))
                         
 
 class TestStorageMethods(TestCase):

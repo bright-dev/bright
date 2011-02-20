@@ -17,14 +17,14 @@ All one energy group reactors are based on a algorithm published by the author i
 
 .. currentmodule:: bright
     
-.. class:: Reactor1G([reactor_parameters, params2track, name])
+.. class:: Reactor1G([reactor_parameters, track_params, name])
 
     One-Group Reactor Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
 
     Args:
         * `reactor_parameters` (:class:`ReactorParameters`): A special data structure that contains information
           on how to setup and run the reactor.
-        * `params2track` (string set): A set of strings that represents what parameter data the reactor should 
+        * `track_params` (string set): A set of strings that represents what parameter data the reactor should 
           store and set.  Different reactor types may have different characteristic parameters that are of interest.
         * `name` (str): The name of the reactor fuel cycle component instance.
 

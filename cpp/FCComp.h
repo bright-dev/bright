@@ -68,8 +68,8 @@ public:
     MassStream ms_prod;		        	//Nuclides flowing out of the component.
     ParamDict params_prior_calc;			        //Input paramater values.
     ParamDict params_after_calc;		        //Output parameter values.
-    int PassNum;			        	//Cycle Number currently on [int].
-    std::set<std::string> params2track;	//Set of Parameters to track for this component
+    int pass_num;			        	//Cycle Number currently on [int].
+    std::set<std::string> track_params;	//Set of Parameters to track for this component
 
     //Public access functions
     virtual void setParams ();
