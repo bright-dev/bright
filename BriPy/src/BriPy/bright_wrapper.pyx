@@ -4756,6 +4756,46 @@ cdef class FuelFabrication(FCComp):
 
     # FuelFabrication attributes
 
+    property mass_streams:
+        def __get__(self):
+            return mass_stream.map_to_dict_str_msp(self.ff_pointer.mass_streams)
+
+        def __set__(self, dict value):
+            self.ff_pointer.mass_streams = mass_stream.dict_to_map_str_msp(value)
+
+
+    property mass_weights_in:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.ff_pointer.mass_weights_in)
+
+        def __set__(self, dict value):
+            self.ff_pointer.mass_weights_in = conv.dict_to_map_str_dbl(value)
+
+
+    property mass_weights_out:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.ff_pointer.mass_weights_out)
+
+        def __set__(self, dict value):
+            self.ff_pointer.mass_weights_out = conv.dict_to_map_str_dbl(value)
+
+
+    property deltaRs:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.ff_pointer.deltaRs)
+
+        def __set__(self, dict value):
+            self.ff_pointer.deltaRs = conv.dict_to_map_str_dbl(value)
+
+
+    property reactor:
+        def __get__(self):
+            cdef Reactor1G value = Reactor1G()
+            value.r1g_pointer[0] = self.ff_pointer.reactor
+            return value
+
+        def __set__(self, Reactor1G value):
+            self.ff_pointer.reactor = <cpp_bright.Reactor1G> value.r1g_pointer[0]
 
 
     # FCComps inherited attributes
@@ -4845,7 +4885,7 @@ cdef class FuelFabrication(FCComp):
               and whose values are the associated weight (float) for that stream.
             * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
         """
-        cdef Reactor1G r1g 
+        cdef Reactor1G r1g = reactor
         self.ff_pointer.initialize(mass_stream.dict_to_map_str_msp(mass_streams), 
                                    conv.dict_to_map_str_dbl(mass_weights_in), 
                                    r1g.r1g_pointer[0])
@@ -4869,6 +4909,37 @@ cdef class FuelFabrication(FCComp):
         (<cpp_bright.FCComp *> self.ff_pointer).setParams()
 
 
+
+
+
+    def calc_deltaRs(self):
+        """Computes deltaRs for each mass stream."""
+        self.ff_pointer.calc_deltaRs()
+
+
+    def calc_core_input(self):
+        """Computes the core input mass stream that becomes IsosOut based on mass_streams and 
+        mass_weights_out.
+
+        Returns:
+            * core_input (MassStream): IsosOut.
+        """
+        cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+        py_ms.ms_pointer[0] = self.ff_pointer.calc_core_input()
+        return py_ms
+
+
+    def calc_mass_ratios(self):
+        """Calculates mass_weights_out by varying the values of the two parameter which had 
+        negative values in mass_weights_in.  Therefore, this is the portion of the code that 
+        performs the optimization calculation.
+        """
+        self.ff_pointer.calc_mass_ratios()
+
+
+
+
+
     def doCalc(self, mass_streams=None, mass_weights_in=None, reactor=None):
         """This method performs an optimization calculation on all input mass streams to determine
         the mass ratios that generate the correct fuel form for the reactor.  It then compiles 
@@ -4890,6 +4961,7 @@ cdef class FuelFabrication(FCComp):
             core_input.ms_pointer[0] = (<cpp_bright.FCComp *> self.ff_pointer).doCalc()
 
         elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G):
+            r1g = reactor
             core_input.ms_pointer[0] = self.ff_pointer.doCalc(
                                                             mass_stream.dict_to_map_str_msp(mass_streams), 
                                                             conv.dict_to_map_str_dbl(mass_weights_in), 

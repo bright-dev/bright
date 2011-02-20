@@ -13,12 +13,14 @@ import numpy as np
 
 import BriPy
 import mass_stream
+import isoname
 
 Reactor1G = BriPy.Reactor1G
 FluencePoint = BriPy.FluencePoint
 ReactorParameters = BriPy.ReactorParameters
 MassStream = mass_stream.MassStream
 FuelFabrication = BriPy.FuelFabrication
+bright_config = BriPy.bright_config
 
 default_rp = BriPy.ReactorParameters()
 default_rp.batches = 3
@@ -57,27 +59,27 @@ class TestFuelFabricationConstructors(TestCase):
     def test_FuelFabrication_1(self):
         ff = FuelFabrication()
         assert_equal(ff.name, '')
-        assert_equal(ff.params2track, [])
+        assert_equal(ff.params2track, set())
 
     def test_FuelFabrication_2(self):
-        ff = FuelFabrication("ff")
+        ff = FuelFabrication(name="ff")
         assert_equal(ff.name, 'ff')
-        assert_equal(ff.params2track, [])
+        assert_equal(ff.params2track, set())
 
     def test_FuelFabrication_3(self):
-        ff = FuelFabrication(["Mass"])
+        ff = FuelFabrication(params2track=set(["Mass"]))
         assert_equal(ff.name, '')
-        assert_equal(ff.params2track, ["Mass"])
+        assert_equal(ff.params2track, set(["Mass"]))
 
     def test_FuelFabrication_4(self):
-        ff = FuelFabrication(["Mass"], 'ff')
+        ff = FuelFabrication(params2track=set(["Mass"]), name='ff')
         assert_equal(ff.name, 'ff')
-        assert_equal(ff.params2track, ["Mass"])
+        assert_equal(ff.params2track, set(["Mass"]))
 
     def test_FuelFabrication_5(self):
         # Reactor to use
         rp = ReactorParameters()
-        r1g = Reactor1G(rp, "r1g")
+        r1g = Reactor1G(reactor_parameters=rp, name="r1g")
 
         # Mass streams to use
         u235 = MassStream({922350: 1.0}, 1.0, "U-235")
@@ -88,18 +90,19 @@ class TestFuelFabricationConstructors(TestCase):
         mws = {"U235": -1.0, "U238": -1.0}
 
         # Fuel Fabrication Facility
-        ff = FuelFabrication(mss, mws, r1g)
+        ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g)
 
         keys = ["U235", "U238"]
+        print ff.mass_streams
         assert_equal(set(ff.mass_streams.keys()), set(keys))
 
         for iso in keys:
             assert_equal(ff.mass_streams[iso].mass, 1.0)
-            assert_equal(ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
+            assert_equal(ff.mass_streams[iso].comp[isoname.LLAAAM_2_zzaaam(iso)], 1.0)
 
         assert_equal(ff.mass_weights_in, mws)
 
-        assert_equal(set(ff.params2track), set(["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
+        assert_equal(ff.params2track, set(["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
         assert_equal(ff.reactor.name, "r1g")
         r1g.name = "r1g name"
@@ -109,7 +112,7 @@ class TestFuelFabricationConstructors(TestCase):
     def test_FuelFabrication_6(self):
         # Reactor to use
         rp = ReactorParameters()
-        r1g = Reactor1G(rp, "r1g")
+        r1g = Reactor1G(reactor_parameters=rp, name="r1g")
 
         # Mass streams to use
         u235 = MassStream({922350: 1.0}, 1.0, "U-235")
@@ -120,18 +123,18 @@ class TestFuelFabricationConstructors(TestCase):
         mws = {"U235": -1.0, "U238": -1.0}
 
         # Fuel Fabrication Facility
-        ff = FuelFabrication(mss, mws, r1g, ["Mass"])
+        ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g, params2track=set(["Mass"]))
 
         keys = ["U235", "U238"]
         assert_equal(set(ff.mass_streams.keys()), set(keys))
 
         for iso in keys:
             assert_equal(ff.mass_streams[iso].mass, 1.0)
-            assert_equal(ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
+            assert_equal(ff.mass_streams[iso].comp[isoname.LLAAAM_2_zzaaam(iso)], 1.0)
 
         assert_equal(ff.mass_weights_in, mws)
 
-        assert_equal(set(ff.params2track), set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
+        assert_equal(ff.params2track, set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
         assert_equal(ff.reactor.name, "r1g")
         r1g.name = "r1g name"
@@ -141,7 +144,7 @@ class TestFuelFabricationConstructors(TestCase):
     def test_FuelFabrication_7(self):
         # Reactor to use
         rp = ReactorParameters()
-        r1g = Reactor1G(rp, "r1g")
+        r1g = Reactor1G(reactor_parameters=rp, name="r1g")
 
         # Mass streams to use
         u235 = MassStream({922350: 1.0}, 1.0, "U-235")
@@ -152,18 +155,18 @@ class TestFuelFabricationConstructors(TestCase):
         mws = {"U235": -1.0, "U238": -1.0}
 
         # Fuel Fabrication Facility
-        ff = FuelFabrication(mss, mws, r1g, ["Mass"], "ff")
+        ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g, params2track=set(["Mass"]), name="ff")
 
         keys = ["U235", "U238"]
         assert_equal(set(ff.mass_streams.keys()), set(keys))
 
         for iso in keys:
             assert_equal(ff.mass_streams[iso].mass, 1.0)
-            assert_equal(ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
+            assert_equal(ff.mass_streams[iso].comp[isoname.LLAAAM_2_zzaaam(iso)], 1.0)
 
         assert_equal(ff.mass_weights_in, mws)
 
-        assert_equal(set(ff.params2track), set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
+        assert_equal(ff.params2track, set(["Mass", "Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]))
 
         assert_equal(ff.name, "ff")
 
@@ -171,6 +174,7 @@ class TestFuelFabricationConstructors(TestCase):
         r1g.name = "r1g name"
         ff.initialize(mss, mws, r1g)
         assert_equal(ff.reactor.name, "r1g name")
+
 
 class TestFuelFabricationAttributes(TestCase):
     """Tests that the FuelFabrication basic data attributes work."""
@@ -180,7 +184,7 @@ class TestFuelFabricationAttributes(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
 
-        r1g = Reactor1G(default_rp)
+        r1g = Reactor1G(reactor_parameters=default_rp)
         r1g.loadLib(libfile)
         cls.r1g = r1g
 
@@ -192,7 +196,7 @@ class TestFuelFabricationAttributes(TestCase):
         mws = {"U235": -1.0, "U238": -1.0}
         cls.mws = mws
 
-        cls.ff = FuelFabrication(mss, mws, r1g)
+        cls.ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=r1g)
 
     @classmethod
     def teardown_class(cls):
@@ -209,7 +213,7 @@ class TestFuelFabricationAttributes(TestCase):
 
         for iso in keys:
             assert_equal(self.ff.mass_streams[iso].mass, 1.0)
-            assert_equal(self.ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
+            assert_equal(self.ff.mass_streams[iso].comp[isoname.LLAAAM_2_zzaaam(iso)], 1.0)
 
         u235 = MassStream({922350: 1.0}, 1.0, "U-235")
         u238 = MassStream({922380: 1.0}, 1.0, "U-238")
@@ -222,7 +226,7 @@ class TestFuelFabricationAttributes(TestCase):
 
         for iso in keys:
             assert_equal(self.ff.mass_streams[iso].mass, 1.0)
-            assert_equal(self.ff.mass_streams[iso].comp[BriPy.LLAAAM_2_zzaaam(iso)], 1.0)
+            assert_equal(self.ff.mass_streams[iso].comp[isoname.LLAAAM_2_zzaaam(iso)], 1.0)
 
 
 
@@ -234,7 +238,7 @@ class TestFuelFabricationMethodss(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         BriPy.load_isos2track_hdf5(libfile)
 
-        r1g = Reactor1G(default_rp)
+        r1g = Reactor1G(reactor_parameters=default_rp)
         r1g.loadLib(libfile)
         cls.r1g = r1g
 
@@ -246,7 +250,7 @@ class TestFuelFabricationMethodss(TestCase):
         mws = {"U235": -1.0, "U238": -1.0}
         cls.mws = mws
 
-        cls.ff = FuelFabrication(mss, mws, cls.r1g)
+        cls.ff = FuelFabrication(mass_streams=mss, mass_weights_in=mws, reactor=cls.r1g)
 
     @classmethod
     def teardown_class(cls):

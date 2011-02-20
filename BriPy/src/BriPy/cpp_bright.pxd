@@ -367,9 +367,21 @@ cdef extern from "../FuelFabrication.h":
         FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, std.string)
         FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, set[std.string], std.string)
 
+        # Attributes
+        map[std.string, mass_stream.msp] mass_streams
+        map[std.string, double] mass_weights_in
+        map[std.string, double] mass_weights_out
+        map[std.string, double] deltaRs
+
+        Reactor1G reactor
+
         # Methods
         void initialize(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)
         void setParams()
+
+        void calc_deltaRs()
+        cpp_mass_stream.MassStream calc_core_input()
+        void calc_mass_ratios()
 
         cpp_mass_stream.MassStream doCalc()
         cpp_mass_stream.MassStream doCalc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)

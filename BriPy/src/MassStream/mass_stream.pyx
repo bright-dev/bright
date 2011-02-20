@@ -477,7 +477,7 @@ cdef dict map_to_dict_str_msp(cpp_map[std.string, msp] cppmap):
 
     while mapiter != cppmap.end():
         pyms = MassStream()
-        pyms.ms_pointer = deref(mapiter).second
+        pyms.ms_pointer[0] = deref(deref(mapiter).second)
         pydict[deref(mapiter).first.c_str()] = pyms
         inc(mapiter)
 
