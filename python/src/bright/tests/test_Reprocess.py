@@ -28,13 +28,14 @@ class TestReprocessConstructors(TestCase):
                 os.remove(f)
             elif "Params.txt" in f:
                 os.remove(f)
-            elif f in [".h5", "r.h5"]:
+            elif f in [".h5", "r.h5"] or (".h5" in f):
                 os.remove(f)
 
     def test_Reprocess_1(self):
         r = Reprocess()
         assert_equal(r.name, '')
-        assert_equal(r.sepeff, {})
+        for value in r.sepeff.values():
+            assert_equal(value, 1.0)
         assert_equal(r.params2track, set(["Mass"]))
 
     def test_Reprocess_2(self):
@@ -71,12 +72,13 @@ class TestReprocessAttributes(TestCase):
                 os.remove(f)
             elif "Params.txt" in f:
                 os.remove(f)
-            elif f in [".h5", "r.h5"]:
+            elif f in [".h5", "r.h5"] or (".h5" in f):
                 os.remove(f)
 
     def test_sepeff(self):
         r = Reprocess()
-        assert_equal(r.sepeff, {})
+        for value in r.sepeff.values():
+            assert_equal(value, 1.0)
         r.sepeff = {922350: 0.9}
         assert_equal(r.sepeff, {922350: 0.9})
 
