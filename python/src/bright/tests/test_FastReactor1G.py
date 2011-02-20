@@ -241,7 +241,7 @@ class TestFastReactor1GMethods(TestCase):
         assert_equal(fr.params_prior_calc["BUd"],  0.0)
         assert_equal(fr.params_after_calc["BUd"], fr.BUd)
         assert_equal(fr.params_prior_calc["TRUCR"],  0.0)
-        assert_equal(fr.params_after_calc["TRUCR"], fr.TruCR)
+        assert_equal(fr.params_after_calc["TRUCR"], fr.tru_cr)
         assert_equal(fr.params_prior_calc["P_NL"],  0.0)
         assert_equal(fr.params_after_calc["P_NL"], fr.P_NL)
         assert_equal(fr.params_prior_calc["U"],  fr.ms_feed_u.mass)

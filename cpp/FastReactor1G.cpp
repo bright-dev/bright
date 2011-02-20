@@ -68,7 +68,7 @@ void FastReactor1G::calc_params()
     params_after_calc["BUd"] = BUd;
 
     params_prior_calc["TRUCR"]  = 0.0;
-    params_after_calc["TRUCR"] = calcTruCR();
+    params_after_calc["TRUCR"] = calc_tru_cr();
 
     params_prior_calc["P_NL"]  = 0.0;
     params_after_calc["P_NL"] = P_NL;

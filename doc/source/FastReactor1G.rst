@@ -49,7 +49,7 @@ or have been otherwise altered.
         self.params_after_calc["BUd"] = self.BUd
 
         self.params_prior_calc["TRUCR"]  = 0.0
-        self.params_after_calc["TRUCR"] = self.calcTruCR()
+        self.params_after_calc["TRUCR"] = self.calc_tru_cr()
 
         self.params_prior_calc["P_NL"]  = 0.0
         self.params_after_calc["P_NL"] = self.P_NL

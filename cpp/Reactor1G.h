@@ -164,7 +164,7 @@ public:
     MassStream ms_prod_act; 						//Output Actinide MassStream
 
     double deltaR;                          // The production rate subtracted by the destruction rate at target_BU
-    double TruCR;							//Transuranic Conversion Ratio
+    double tru_cr;							//Transuranic Conversion Ratio
 
     Data_F_ SigmaFa_F_;						//Fuel Macro Absorption XS, Sigma^F_a(F)
     Data_F_ SigmaFtr_F_;						//Fuel Macro Transport XS, Sigma^F_tr(F)
@@ -174,8 +174,8 @@ public:
     Data_F_ SigmaCtr_F_;						//Coolant Macro Transport XS, Sigma^C_tr(F)
     Data_F_ kappaC_F_;						//Coolant kappa, kappa^C(F)
 
-    Data_F_ LatticeE_F_;						//Values for lattice function E(F)
-    Data_F_ LatticeF_F_;						//Values for lattice function F(F)
+    Data_F_ lattice_E_F_;						//Values for lattice function E(F)
+    Data_F_ lattice_F_F_;						//Values for lattice function F(F)
 
 
     //Public access functions
@@ -188,7 +188,7 @@ public:
 
     void         calcOutIso();
     void         calcSubStreams();
-    double       calcTruCR();
+    double       calc_tru_cr();
 
     double       calc_deltaR();
     double       calc_deltaR(CompDict);

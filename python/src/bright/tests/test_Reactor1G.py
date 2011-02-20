@@ -599,7 +599,7 @@ class TestReactor1GDischargeAttributes(TestCase):
         assert_almost_equal(self.r1g.k, 1.0)
 
 
-class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
+class TestReactor1GSubStreamAndtru_crAttributes(TestCase):
     """Tests that the Reactor1G sub-stream and transuranic conversion ratio
     attributes are right."""
 
@@ -641,10 +641,10 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
     def test_ms_prod_act(self):
         assert(self.r1g.ms_prod_act.mass < 1.0)
 
-    def test_TruCR(self):
-        self.r1g.calcTruCR()
-        tmp_TruCR = 1.0 - (self.r1g.ms_feed_tru.mass - self.r1g.ms_prod_tru.mass) / (self.r1g.BUd / 931.46)
-        assert_almost_equal(self.r1g.TruCR / tmp_TruCR, 1.0)
+    def test_tru_cr(self):
+        self.r1g.calc_tru_cr()
+        tmp_tru_cr = 1.0 - (self.r1g.ms_feed_tru.mass - self.r1g.ms_prod_tru.mass) / (self.r1g.BUd / 931.46)
+        assert_almost_equal(self.r1g.tru_cr / tmp_tru_cr, 1.0)
 
     def test_deltaR(self):
         self.r1g.calc_deltaR()
@@ -701,9 +701,9 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
             tmp_kappaC = np.sqrt(3.0 * SigmaCtr_F_[f] * SigmaCa_F_[f])
             assert_almost_equal(kappaC_F_[f] / tmp_kappaC, 1.0)
 
-    #Test LatticeE_F_ here
+    #Test lattice_E_F_ here
 
-    #Test LatticeF_F_ here
+    #Test lattice_F_F_ here
 
 
 class TestReactor1GInitializationMethods(TestCase):
@@ -831,10 +831,10 @@ class TestReactor1GBasicCalculationMethods(TestCase):
         assert(0.0 < self.r1g.ms_prod_lan.mass)
         assert(self.r1g.ms_prod_act.mass < 1.0)
 
-    def test_calcTruCR(self):
+    def test_calc_tru_cr(self):
         self.r1g.calc()
-        tmp_TruCR = 1.0 - (self.r1g.ms_feed_tru.mass - self.r1g.ms_prod_tru.mass) / (self.r1g.BUd / 931.46)
-        assert_almost_equal(self.r1g.calcTruCR() / tmp_TruCR, 1.0)
+        tmp_tru_cr = 1.0 - (self.r1g.ms_feed_tru.mass - self.r1g.ms_prod_tru.mass) / (self.r1g.BUd / 931.46)
+        assert_almost_equal(self.r1g.calc_tru_cr() / tmp_tru_cr, 1.0)
 
     def test_deltaR1(self):
         self.r1g.calc_deltaR()
@@ -1001,62 +1001,62 @@ class TestReactor1GLatticeMethods(TestCase):
         general_teardown()
 
     def test_LatticeEPlanar(self):
-        prev = self.r1g.LatticeE_F_
+        prev = self.r1g.lattice_E_F_
         self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
-        curr = self.r1g.LatticeE_F_
+        curr = self.r1g.lattice_E_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
     def test_LatticeFPlanar(self):
-        prev = self.r1g.LatticeF_F_
+        prev = self.r1g.lattice_F_F_
         self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
-        curr = self.r1g.LatticeF_F_
+        curr = self.r1g.lattice_F_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
     def test_LatticeESpherical(self):
-        prev = self.r1g.LatticeE_F_
+        prev = self.r1g.lattice_E_F_
         self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
-        curr = self.r1g.LatticeE_F_
+        curr = self.r1g.lattice_E_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
     def test_LatticeFSpherical(self):
-        prev = self.r1g.LatticeF_F_
+        prev = self.r1g.lattice_F_F_
         self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
-        curr = self.r1g.LatticeF_F_
+        curr = self.r1g.lattice_F_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
     def test_LatticeECylindrical(self):
-        prev = self.r1g.LatticeE_F_
+        prev = self.r1g.lattice_E_F_
         self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
-        curr = self.r1g.LatticeE_F_
+        curr = self.r1g.lattice_E_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
     def test_LatticeFCylindrical(self):
-        prev = self.r1g.LatticeF_F_
+        prev = self.r1g.lattice_F_F_
         self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
         self.r1g.foldMassWeights()
-        curr = self.r1g.LatticeF_F_
+        curr = self.r1g.lattice_F_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 

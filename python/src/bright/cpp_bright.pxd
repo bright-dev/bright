@@ -273,7 +273,7 @@ cdef extern from "../Reactor1G.h":
         cpp_mass_stream.MassStream ms_prod_act
 
         double deltaR
-        double TruCR
+        double tru_cr
 
         vector[double] SigmaFa_F_
         vector[double] SigmaFtr_F_
@@ -283,8 +283,8 @@ cdef extern from "../Reactor1G.h":
         vector[double] SigmaCtr_F_
         vector[double] kappaC_F_
 
-        vector[double] LatticeE_F_
-        vector[double] LatticeF_F_
+        vector[double] lattice_E_F_
+        vector[double] lattice_F_F_
 
         # Methods
         void initialize(ReactorParameters)
@@ -296,7 +296,7 @@ cdef extern from "../Reactor1G.h":
 
         void calcOutIso()
         void calcSubStreams()
-        double calcTruCR()
+        double calc_tru_cr()
 
         double calc_deltaR()
         double calc_deltaR(map[int, double])

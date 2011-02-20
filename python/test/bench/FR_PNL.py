@@ -122,7 +122,7 @@ def main():
         f.write(str(FR.P_NL))
 
     with open(name + "_trucr.txt", 'w') as f:
-        f.write(str(FR.TruCR))
+        f.write(str(FR.tru_cr))
 
 if __name__ == "__main__":
     main()

@@ -410,9 +410,9 @@ Other Attributes
 
     This is computed via the ``Reactor1G.calc_deltaR()`` method.
 
-.. attribute:: Reactor1G.TruCR
+.. attribute:: Reactor1G.tru_cr
 
-    The transuranic conversion ratio of the reactor (float).  This is set via :meth:`calcTruCR`.  
+    The transuranic conversion ratio of the reactor (float).  This is set via :meth:`calc_tru_cr`.  
 
 
 --------------------------------------
@@ -448,11 +448,11 @@ float data.
     One over the thermal diffusion length of the coolant.  In units of [1/cm].
 
 
-.. attribute:: Reactor1G.LatticeE_F_
+.. attribute:: Reactor1G.lattice_E_F_
 
     The lattice function E(:attr:`F`).
 
-.. attribute:: Reactor1G.LatticeF_F_
+.. attribute:: Reactor1G.lattice_F_F_
 
     The lattice function F(:attr:`F`).
 
@@ -557,14 +557,14 @@ The following functions represent basic calculations common to most reactor type
         * :attr:`ms_prod_lan`
         * :attr:`ms_prod_act`
 
-.. method:: Reactor1G.calcTruCR()
+.. method:: Reactor1G.calc_tru_cr()
 
-    This calculates and sets the transuranic conversion ratio :attr:`TruCR` through the equation:
+    This calculates and sets the transuranic conversion ratio :attr:`tru_cr` through the equation:
 
-    .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+    .. math:: \mbox{tru_cr} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
     Returns:
-        * `TruCR` (float): The value of the transuranic conversion ratio just calculated.
+        * `tru_cr` (float): The value of the transuranic conversion ratio just calculated.
 
 .. method:: Reactor1G.calc_deltaR([input])
 
@@ -703,7 +703,7 @@ for more information.
 
 .. method:: Reactor1G.LatticeEPlanar(a, b)
 
-    Calculates the lattice function E(F) for planar geometry.  Sets value as :attr:`LatticeE_F_`
+    Calculates the lattice function E(F) for planar geometry.  Sets value as :attr:`lattice_E_F_`
 
     Args:
         * `a` (float): Fuel region radius equivalent [cm].
@@ -711,7 +711,7 @@ for more information.
 
 .. method:: Reactor1G.LatticeFPlanar(a, b)
 
-    Calculates the lattice function F(F) for planar geometry.  Sets value as :attr:`LatticeF_F_`
+    Calculates the lattice function F(F) for planar geometry.  Sets value as :attr:`lattice_F_F_`
 
     Args:
         * `a` (float): Fuel region radius equivalent [cm].
@@ -719,7 +719,7 @@ for more information.
 
 .. method:: Reactor1G.LatticeESpherical(a, b)
 
-    Calculates the lattice function E(F) for spherical geometry.  Sets value as :attr:`LatticeE_F_`
+    Calculates the lattice function E(F) for spherical geometry.  Sets value as :attr:`lattice_E_F_`
 
     Args:
         * `a` (float): Fuel region radius equivalent [cm].
@@ -727,7 +727,7 @@ for more information.
 
 .. method:: Reactor1G.LatticeFSpherical(a, b)
 
-    Calculates the lattice function F(F) for spherical geometry.  Sets value as :attr:`LatticeF_F_`
+    Calculates the lattice function F(F) for spherical geometry.  Sets value as :attr:`lattice_F_F_`
 
     Args:
         * `a` (float): Fuel region radius equivalent [cm].
@@ -735,7 +735,7 @@ for more information.
 
 .. method:: Reactor1G.LatticeECylindrical(a, b)
 
-    Calculates the lattice function E(F) for cylindrical geometry.  Sets value as :attr:`LatticeE_F_`
+    Calculates the lattice function E(F) for cylindrical geometry.  Sets value as :attr:`lattice_E_F_`
 
     Args:
         * `a` (float): Fuel region radius equivalent [cm].
@@ -743,7 +743,7 @@ for more information.
 
 .. method:: Reactor1G.LatticeFCylindrical(a, b)
 
-    Calculates the lattice function F(F) for cylindrical geometry.  Sets value as :attr:`LatticeF_F_`
+    Calculates the lattice function F(F) for cylindrical geometry.  Sets value as :attr:`lattice_F_F_`
 
     Args:
         * `a` (float): Fuel region radius equivalent [cm].

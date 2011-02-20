@@ -602,11 +602,11 @@ double Reactor1G::calc_deltaR(MassStream ms)
 };
 
 
-double Reactor1G::calcTruCR()
+double Reactor1G::calc_tru_cr()
 {
     //Calculates the reactor's transuranic conversion ratio.
-    TruCR = 1.0 - ((ms_feed_tru.mass - ms_prod_tru.mass) / (BUd/931.46));
-    return TruCR;
+    tru_cr = 1.0 - ((ms_feed_tru.mass - ms_prod_tru.mass) / (BUd/931.46));
+    return tru_cr;
 };
 
 
@@ -1051,49 +1051,49 @@ MassStream Reactor1G::calc (MassStream instream)
 
 void Reactor1G::LatticeEPlanar(double a, double b)
 {
-    LatticeE_F_.clear();
-        LatticeE_F_.assign( F.size(), 0.0 );
+    lattice_E_F_.clear();
+        lattice_E_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
         if (0.0 == kappaC_F_[f])
-            LatticeE_F_[f] = 0.0;
+            lattice_E_F_[f] = 0.0;
         else
-            LatticeE_F_[f] = kappaC_F_[f] * (b - a) * bright::COTH(kappaC_F_[f]*(b-a));
+            lattice_E_F_[f] = kappaC_F_[f] * (b - a) * bright::COTH(kappaC_F_[f]*(b-a));
     };
     return;
 };
 
 void Reactor1G::LatticeFPlanar(double a, double b)
 {
-    LatticeF_F_.clear();
-        LatticeF_F_.assign( F.size(), 0.0 );
+    lattice_F_F_.clear();
+        lattice_F_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
         if (0.0 == kappaF_F_[f])
-            LatticeF_F_[f] = 0.0;
+            lattice_F_F_[f] = 0.0;
         else
-            LatticeF_F_[f] = LatticeF_F_[f] * a * bright::COTH(LatticeF_F_[f]*a) ;
+            lattice_F_F_[f] = lattice_F_F_[f] * a * bright::COTH(lattice_F_F_[f]*a) ;
     };
     return; 
 };
 
 void Reactor1G::LatticeESpherical(double a, double b)
 {
-    LatticeE_F_.clear();
-        LatticeE_F_.assign( F.size(), 0.0 );
+    lattice_E_F_.clear();
+        lattice_E_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
         if (0.0 == kappaC_F_[f])
-            LatticeE_F_[f] = 0.0;
+            lattice_E_F_[f] = 0.0;
         else
         {
             double coef = pow(kappaC_F_[f], 3) * (pow(b,3) - pow(a,3)) / (3*kappaC_F_[f]*a);
             double num = 1.0 - ( kappaC_F_[f] * b * bright::COTH(kappaC_F_[f]*(b-a)) );
             double den = 1.0 - (pow(kappaC_F_[f], 2)*a*b) - ( kappaC_F_[f]*(b-a) * bright::COTH(kappaC_F_[f]*(b-a)) );
-            LatticeE_F_[f] = coef * num / den;
+            lattice_E_F_[f] = coef * num / den;
         };
     };
     return;
@@ -1101,15 +1101,15 @@ void Reactor1G::LatticeESpherical(double a, double b)
     
 void Reactor1G::LatticeFSpherical(double a, double b)
 {
-    LatticeF_F_.clear();
-        LatticeF_F_.assign( F.size(), 0.0 );
+    lattice_F_F_.clear();
+        lattice_F_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
         double coef = pow(kappaF_F_[f], 2) * pow(a, 2) / 3.0;
         double num = bright::TANH(kappaF_F_[f]*a); 
         double den = (kappaF_F_[f]*a) - bright::TANH(kappaF_F_[f]*a); 
-        LatticeF_F_[f] = coef * num / den;
+        lattice_F_F_[f] = coef * num / den;
     };
     return; 
 };
@@ -1118,13 +1118,13 @@ void Reactor1G::LatticeECylindrical(double a, double b)
 {
     namespace bm = boost::math;
 
-    LatticeE_F_.clear();
-        LatticeE_F_.assign( F.size(), 0.0 );
+    lattice_E_F_.clear();
+        lattice_E_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
         if (0.0 == kappaC_F_[f])
-            LatticeE_F_[f] = 0.0;
+            lattice_E_F_[f] = 0.0;
         else
         {
             double coef = kappaC_F_[f] * (pow(b,2) - pow(a,2)) / (2.0*a);
@@ -1132,7 +1132,7 @@ void Reactor1G::LatticeECylindrical(double a, double b)
                 ( bm::cyl_bessel_k(0, kappaC_F_[f]*a) * bm::cyl_bessel_i(1, kappaC_F_[f]*b) );
             double den = ( bm::cyl_bessel_i(1, kappaC_F_[f]*b) * bm::cyl_bessel_k(1, kappaC_F_[f]*a) ) - \
                 ( bm::cyl_bessel_k(1, kappaC_F_[f]*b) * bm::cyl_bessel_i(1, kappaC_F_[f]*a) );
-            LatticeE_F_[f] = coef * num / den;
+            lattice_E_F_[f] = coef * num / den;
         };
     };
     return;
@@ -1142,18 +1142,18 @@ void Reactor1G::LatticeFCylindrical(double a, double b)
 {
     namespace bm = boost::math;
 
-    LatticeF_F_.clear();
-        LatticeF_F_.assign( F.size(), 0.0 );
+    lattice_F_F_.clear();
+        lattice_F_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
         if (0.0 == kappaF_F_[f])
-            LatticeE_F_[f] = 0.0;
+            lattice_E_F_[f] = 0.0;
         else
         {
             double num =  kappaF_F_[f] * a * bm::cyl_bessel_i(0, kappaF_F_[f]*a);
             double den = 2.0 * bm::cyl_bessel_i(1, kappaF_F_[f]*a);
-            LatticeF_F_[f] = num / den;
+            lattice_F_F_[f] = num / den;
         };
     };
     return;
@@ -1293,7 +1293,7 @@ void Reactor1G::calcZeta()
         if (0.0 == SigmaCa_F_[f])
             zeta_F_[f] = 1.0;
         else
-            zeta_F_[f] = LatticeF_F_[f] + ( SigmaFa_F_[f] * VF * (LatticeE_F_[f] - 1.0) / (SigmaCa_F_[f] * VC) );
+            zeta_F_[f] = lattice_F_F_[f] + ( SigmaFa_F_[f] * VF * (lattice_E_F_[f] - 1.0) / (SigmaCa_F_[f] * VC) );
     };
 
 

@@ -101,7 +101,7 @@ r2.calcSubStreams()
 #print(r2.ms_prod_lan)
 #print(r2.ms_prod_act)
 
-r2.calcTruCR()
+r2.calc_tru_cr()
 
 fp = r2.FluenceAtBU(10.0)
 

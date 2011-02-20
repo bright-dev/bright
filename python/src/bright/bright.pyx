@@ -2000,12 +2000,12 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.deltaR = value
 
 
-    property TruCR:
+    property tru_cr:
         def __get__(self):
-            return self.r1g_pointer.TruCR
+            return self.r1g_pointer.tru_cr
 
         def __set__(self, double value):
-            self.r1g_pointer.TruCR = value
+            self.r1g_pointer.tru_cr = value
 
 
 
@@ -2065,20 +2065,20 @@ cdef class Reactor1G(FCComp):
 
 
 
-    property LatticeE_F_:
+    property lattice_E_F_:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.r1g_pointer.LatticeE_F_)
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.lattice_E_F_)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.r1g_pointer.LatticeE_F_ = conv.array_to_vector_1d_dbl(value)
+            self.r1g_pointer.lattice_E_F_ = conv.array_to_vector_1d_dbl(value)
 
 
-    property LatticeF_F_:
+    property lattice_F_F_:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.r1g_pointer.LatticeF_F_)
+            return conv.vector_to_array_1d_dbl(self.r1g_pointer.lattice_F_F_)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.r1g_pointer.LatticeF_F_ = conv.array_to_vector_1d_dbl(value)
+            self.r1g_pointer.lattice_F_F_ = conv.array_to_vector_1d_dbl(value)
 
 
 
@@ -2246,15 +2246,15 @@ cdef class Reactor1G(FCComp):
         self.r1g_pointer.calcSubStreams()
 
 
-    def calcTruCR(self):
-        """This calculates and sets the transuranic conversion ratio TruCR through the equation:
+    def calc_tru_cr(self):
+        """This calculates and sets the transuranic conversion ratio tru_cr through the equation:
 
-        .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: \mbox{tru_cr} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
         Returns:
-            * TruCR (float): The value of the transuranic conversion ratio just calculated.
+            * tru_cr (float): The value of the transuranic conversion ratio just calculated.
         """
-        return self.r1g_pointer.calcTruCR()
+        return self.r1g_pointer.calc_tru_cr()
 
 
 
@@ -2420,7 +2420,7 @@ cdef class Reactor1G(FCComp):
 
 
     def LatticeEPlanar(self, double a, double b):
-        """Calculates the lattice function E(F) for planar geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -2430,7 +2430,7 @@ cdef class Reactor1G(FCComp):
 
 
     def LatticeFPlanar(self, double a, double b):
-        """Calculates the lattice function F(F) for planar geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -2440,7 +2440,7 @@ cdef class Reactor1G(FCComp):
 
 
     def LatticeESpherical(self, double a, double b):
-        """Calculates the lattice function E(F) for spherical geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -2450,7 +2450,7 @@ cdef class Reactor1G(FCComp):
 
 
     def LatticeFSpherical(self, double a, double b):
-        """Calculates the lattice function F(F) for spherical geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -2460,7 +2460,7 @@ cdef class Reactor1G(FCComp):
 
 
     def LatticeECylindrical(self, double a, double b):
-        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -2470,7 +2470,7 @@ cdef class Reactor1G(FCComp):
 
 
     def LatticeFCylindrical(self, double a, double b):
-        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -3039,12 +3039,12 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.lwr1g_pointer.deltaR = value
 
 
-    property TruCR:
+    property tru_cr:
         def __get__(self):
-            return self.lwr1g_pointer.TruCR
+            return self.lwr1g_pointer.tru_cr
 
         def __set__(self, double value):
-            self.lwr1g_pointer.TruCR = value
+            self.lwr1g_pointer.tru_cr = value
 
 
 
@@ -3104,20 +3104,20 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
 
-    property LatticeE_F_:
+    property lattice_E_F_:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.lwr1g_pointer.LatticeE_F_)
+            return conv.vector_to_array_1d_dbl(self.lwr1g_pointer.lattice_E_F_)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.lwr1g_pointer.LatticeE_F_ = conv.array_to_vector_1d_dbl(value)
+            self.lwr1g_pointer.lattice_E_F_ = conv.array_to_vector_1d_dbl(value)
 
 
-    property LatticeF_F_:
+    property lattice_F_F_:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.lwr1g_pointer.LatticeF_F_)
+            return conv.vector_to_array_1d_dbl(self.lwr1g_pointer.lattice_F_F_)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.lwr1g_pointer.LatticeF_F_ = conv.array_to_vector_1d_dbl(value)
+            self.lwr1g_pointer.lattice_F_F_ = conv.array_to_vector_1d_dbl(value)
 
 
 
@@ -3315,15 +3315,15 @@ cdef class LightWaterReactor1G(Reactor1G):
         (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcSubStreams()
 
 
-    def calcTruCR(self):
-        """This calculates and sets the transuranic conversion ratio TruCR through the equation:
+    def calc_tru_cr(self):
+        """This calculates and sets the transuranic conversion ratio tru_cr through the equation:
 
-        .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: \mbox{tru_cr} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
         Returns:
-            * TruCR (float): The value of the transuranic conversion ratio just calculated.
+            * tru_cr (float): The value of the transuranic conversion ratio just calculated.
         """
-        return (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcTruCR()
+        return (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_tru_cr()
 
 
 
@@ -3489,7 +3489,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def LatticeEPlanar(self, double a, double b):
-        """Calculates the lattice function E(F) for planar geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -3499,7 +3499,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def LatticeFPlanar(self, double a, double b):
-        """Calculates the lattice function F(F) for planar geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -3509,7 +3509,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def LatticeESpherical(self, double a, double b):
-        """Calculates the lattice function E(F) for spherical geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -3519,7 +3519,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def LatticeFSpherical(self, double a, double b):
-        """Calculates the lattice function F(F) for spherical geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -3529,7 +3529,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def LatticeECylindrical(self, double a, double b):
-        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -3539,7 +3539,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def LatticeFCylindrical(self, double a, double b):
-        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -4108,12 +4108,12 @@ cdef class FastReactor1G(Reactor1G):
             self.fr1g_pointer.deltaR = value
 
 
-    property TruCR:
+    property tru_cr:
         def __get__(self):
-            return self.fr1g_pointer.TruCR
+            return self.fr1g_pointer.tru_cr
 
         def __set__(self, double value):
-            self.fr1g_pointer.TruCR = value
+            self.fr1g_pointer.tru_cr = value
 
 
 
@@ -4173,20 +4173,20 @@ cdef class FastReactor1G(Reactor1G):
 
 
 
-    property LatticeE_F_:
+    property lattice_E_F_:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.LatticeE_F_)
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.lattice_E_F_)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.fr1g_pointer.LatticeE_F_ = conv.array_to_vector_1d_dbl(value)
+            self.fr1g_pointer.lattice_E_F_ = conv.array_to_vector_1d_dbl(value)
 
 
-    property LatticeF_F_:
+    property lattice_F_F_:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.LatticeF_F_)
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.lattice_F_F_)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.fr1g_pointer.LatticeF_F_ = conv.array_to_vector_1d_dbl(value)
+            self.fr1g_pointer.lattice_F_F_ = conv.array_to_vector_1d_dbl(value)
 
 
 
@@ -4277,7 +4277,7 @@ cdef class FastReactor1G(Reactor1G):
             self.params_after_calc["BUd"] = self.BUd
 
             self.params_prior_calc["TRUCR"]  = 0.0
-            self.params_after_calc["TRUCR"] = self.calcTruCR()
+            self.params_after_calc["TRUCR"] = self.calc_tru_cr()
 
             self.params_prior_calc["P_NL"]  = 0.0
             self.params_after_calc["P_NL"] = self.P_NL
@@ -4391,15 +4391,15 @@ cdef class FastReactor1G(Reactor1G):
         (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcSubStreams()
 
 
-    def calcTruCR(self):
-        """This calculates and sets the transuranic conversion ratio TruCR through the equation:
+    def calc_tru_cr(self):
+        """This calculates and sets the transuranic conversion ratio tru_cr through the equation:
 
-        .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: \mbox{tru_cr} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
         Returns:
-            * TruCR (float): The value of the transuranic conversion ratio just calculated.
+            * tru_cr (float): The value of the transuranic conversion ratio just calculated.
         """
-        return (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcTruCR()
+        return (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_tru_cr()
 
 
 
@@ -4565,7 +4565,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def LatticeEPlanar(self, double a, double b):
-        """Calculates the lattice function E(F) for planar geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -4575,7 +4575,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def LatticeFPlanar(self, double a, double b):
-        """Calculates the lattice function F(F) for planar geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -4585,7 +4585,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def LatticeESpherical(self, double a, double b):
-        """Calculates the lattice function E(F) for spherical geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -4595,7 +4595,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def LatticeFSpherical(self, double a, double b):
-        """Calculates the lattice function F(F) for spherical geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -4605,7 +4605,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def LatticeECylindrical(self, double a, double b):
-        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as LatticeE_F_
+        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
@@ -4615,7 +4615,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def LatticeFCylindrical(self, double a, double b):
-        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as LatticeF_F_
+        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
