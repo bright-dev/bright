@@ -17,8 +17,6 @@ three naming conventions are supported.
     to zzaaam form, except that it lacks the metastable flag.  For information on how metastable isotopes are named, 
     please consult the MCNPX documentation for more information.
 
-Presented below are the various isoname functions and attributes.  For a listing of isonames raw docstrings 
-(helpful if you need to know C++ signatures), please see :doc:`isoname_raw`.
 
 ================================
 :mod:`isoname` -- Isoname Module
@@ -312,7 +310,3 @@ Other isoname functions
    Returns:
       * `weight` (float): Atomic weight of this nuclide.  
 
-.. toctree::
-   :hidden:
-
-   isoname_raw

@@ -4,9 +4,8 @@ FCComps Extension Module
 The `FCComps` extension module contains all of the fuel cycle components that Bright may use and exists 
 within the `bright` package.  
 
-The documentation for `FCComps` is split up based on component object (or class).  This demonstrates the heirarchy 
+The documentation for `bright` is split up based on component object (or class).  This demonstrates the heirarchy 
 between classes and allows for greater exploration of each components methodology.
-For a listing of isonames raw docstrings (helpful if you need to know C++ signatures), please see :doc:`FCComps_raw`.
 
 **Components**
 
@@ -26,7 +25,7 @@ from the top-level `FCComp` object.  Generally, a Bright user will only need to 
 directly.
 
 
-.. inheritance-diagram:: FCCompInherit
+.. inheritance-diagram:: bright
    :parts: 1
 
 Additionally, a multi-component enrichment model also has been developed.  However, it has yet to be brought up to 

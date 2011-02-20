@@ -13,7 +13,6 @@ Furthermore, mass streams are supposed to represent a new (if highly specialized
 Thus, some of the often-used numeric 
 
 Presented below is the MassStream package, which contains the MassStream object and its member functions and attributes.  
-For a listing of isonames raw docstrings (helpful if you need to know C++ signatures), please see :doc:`MassStream_raw`.
 
 =======================================
 :mod:`MassStream` -- Mass Stream Module
@@ -359,7 +358,3 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
         * `substream` (MassStream): A new mass stream object that only 
           has Fission Product members. 
 
-.. toctree::
-   :hidden:
-
-   MassStream_raw

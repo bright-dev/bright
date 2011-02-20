@@ -1,6 +1,6 @@
-=================================
+==================================
 Welcome to bright's documentation!
-=================================
+==================================
 bright (*Br-eye Pie*), or Bright/Python, is a set of Python bindings for the Bright nuclear fuel cycle model.
 Bright is a pure C++ library that models many canonical components such as reactors, 
 storage facilities, and more.  These components are then linked to one another using 
@@ -49,7 +49,7 @@ Contents
     Tutorial
     isoname   
     MassStream
-    bright
+    BriPy
     DevNotes
 
 =============

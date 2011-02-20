@@ -21,13 +21,12 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
 .. toctree::
    :maxdepth: 3
 
-   FCComps   
-   FCComps_raw   
+   bright
 
 
-====================================
+=====================================
 :mod:`bright` -- Bright/Python Module
-====================================
+=====================================
 .. currentmodule:: bright
 
 .. function:: bright_start()

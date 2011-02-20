@@ -561,14 +561,16 @@ The following functions represent basic calculations common to most reactor type
 
     This calculates and sets the transuranic conversion ratio :attr:`tru_cr` through the equation:
 
-    .. math:: \mbox{tru_cr} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+    .. math:: 
+
+        \mbox{tru\_cr} = 1.0 - \frac{\mbox{ms\_feed\_tru.mass} - \mbox{ms\_prod\_tru.mass}}{\frac{\mbox{BUd}}{931.46}}
 
     Returns:
         * `tru_cr` (float): The value of the transuranic conversion ratio just calculated.
 
 .. method:: Reactor1G.calc_deltaR([input])
 
-    Calculates and sets the :math:`\delta R` (:attr:`deltaR`) value of the reactor.  
+    Calculates and sets the :math:`\\delta R` (:attr:`deltaR`) value of the reactor.  
     This is equal to the production rate minus the destruction rate at the target burnup::
 
         deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
@@ -691,7 +693,7 @@ should this control be unnecessary for simple calculations.
 
 
 ------------------------
-lattice_flag Function Methods
+Lattice Function Methods
 ------------------------
 The lattice function methods below are all similar in that the calculate and set one of the 
 lattice functions, E(F) or F(F), for one of the geometries, Planar or Spherical or Cylindrical.

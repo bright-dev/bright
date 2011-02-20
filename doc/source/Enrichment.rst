@@ -72,7 +72,7 @@ attributes specific to this class.
 
 .. attribute:: Enrichment.xP_j
 
-    This is the target enrichment of the :attr:`j`th isotope in the 
+    This is the target enrichment of the :attr:`j` th isotope in the 
     product stream :attr:`ms_prod <bright.FCComp.ms_prod>`.  The
     :math:`x^P_j` value is set by the user at initialization or
     run-time.  For typical uranium vectors, this value is about 
@@ -80,7 +80,7 @@ attributes specific to this class.
 
 .. attribute:: Enrichment.xW_j
 
-    This is the target enrichment of the :attr:`j`th isotope in the 
+    This is the target enrichment of the :attr:`j` th isotope in the 
     waste stream :attr:`ms_tail`.  The :math:`x^W_j` value is set 
     by the user at initialization or runtime.  For typical uranium vectors, 
     this value is about U-235 = 0.0025.

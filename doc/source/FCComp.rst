@@ -164,9 +164,9 @@ FCComp Methods
 
     .. math::
 
-        \mbox{inpcol[iso]} = \mbox{ms_feed.comp[iso]}
+        \mbox{inpcol[iso]} = \mbox{ms\_feed.comp[iso]}
 
-        \mbox{outcol[iso]} = \mbox{ms_prod.comp[iso]} \times \frac{\mbox{ms_prod.mass}}{\mbox{ms_feed.mass}}
+        \mbox{outcol[iso]} = \mbox{ms\_prod.comp[iso]} \times \frac{\mbox{ms\_prod.mass}}{\mbox{ms\_feed.mass}}
 
     Because of the units of these two columns, total mass flow data may often only be recovered via the 
     a "Mass" parameter in the "``{FCComp.name}Params.txt``" file.  Here is a sample ``LWRIsos.txt`` file for a

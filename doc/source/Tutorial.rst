@@ -1,6 +1,6 @@
-******************
-The bright Tutorial
-******************
+*******************
+The Bright Tutorial
+*******************
 bright (Br-eye Pie), or Bright/Python, is a set of Python bindings for the Bright nuclear fuel cycle model. Bright is a pure C++ library that models many canonical components such as reactors, storage facilities, and more. These components are then linked to one another using a Mass Stream object. Lastly, an isotopic naming module is available that conveniently converts between several standard nuclide naming schemes.
 
 bright contains three modules. This modules are isoname, MassStream, and FCComps.
