@@ -43,7 +43,7 @@ LightWaterReactor1G::LightWaterReactor1G() : Reactor1G(LWRDefaults, lwr_p2track)
 LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, std::string n) : Reactor1G(LWRDefaults, lwr_p2track, n)
 {
     libfile = h5lib;
-    loadLib(h5lib);
+    loadlib(h5lib);
 };
 
 LightWaterReactor1G::LightWaterReactor1G(ReactorParameters rp, std::string n) : Reactor1G(rp, lwr_p2track, n)
@@ -53,7 +53,7 @@ LightWaterReactor1G::LightWaterReactor1G(ReactorParameters rp, std::string n) : 
 LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : Reactor1G(rp, lwr_p2track, n)
 {
     libfile = h5lib;
-    loadLib(h5lib);
+    loadlib(h5lib);
 };
 
 LightWaterReactor1G::~LightWaterReactor1G() 

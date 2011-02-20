@@ -82,7 +82,7 @@ print("")
 
 print(r2.F)
 print_ms()
-r2.loadLib("LWR.h5")
+r2.loadlib("LWR.h5")
 print(r2.F)
 print_ms()
 

@@ -190,7 +190,7 @@ in different manners in the same fuel cycle code.
 Basic Reactor Data Attributes
 -----------------------------
 These attributes represent the raw data that is read in from a reactor type library.  These are loaded 
-into memory when the :meth:`Reactor1G.loadLib` function is called.
+into memory when the :meth:`Reactor1G.loadlib` function is called.
 
 .. attribute:: Reactor1G.libfile
 
@@ -233,7 +233,7 @@ into memory when the :meth:`Reactor1G.loadLib` function is called.
 Calculated Weight Attributes
 ----------------------------
 This data represents mass weights that are calculated from the initial isotopics :attr:`ms_feed <bright.FCComp.ms_feed>`.
-They are assigned appropriate values during the :meth:`Reactor1G.foldMassWeights` execution.
+They are assigned appropriate values during the :meth:`Reactor1G.fold_mass_weights` execution.
 
 .. attribute:: Reactor1G.A_IHM
 
@@ -281,7 +281,7 @@ They are assigned appropriate values during the :meth:`Reactor1G.foldMassWeights
 Calculated Data Attributes
 --------------------------
 The following represents reactor that are calculated from the initial isotopics :attr:`ms_feed <bright.FCComp.ms_feed>`.
-These attributes are assigned appropriate values when :meth:`Reactor1G.foldMassWeights` is called.  Almost all of these
+These attributes are assigned appropriate values when :meth:`Reactor1G.fold_mass_weights` is called.  Almost all of these
 are C-vectors of doubles or floats.
 
 .. attribute:: Reactor1G.dF_F_
@@ -406,7 +406,7 @@ Other Attributes
     The :math:`\delta R` value of the core with ``ms_feed``.  This is equal to the 
     production rate minus the destruction rate at the target burnup::
 
-        deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
+        deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
 
     This is computed via the ``Reactor1G.calc_deltaR()`` method.
 
@@ -471,7 +471,7 @@ Initialization Related Methods
 ------------------------------
 Unlike other fuel cycle objects, the reactor component contains more than one setup related method.
 Moreover, some of these will be often be called outside of a strict object instantiation context.
-For instance, every time :attr:`ms_feed <bright.FCComp.ms_feed>` is changed, :meth:`foldMassWeights`
+For instance, every time :attr:`ms_feed <bright.FCComp.ms_feed>` is changed, :meth:`fold_mass_weights`
 should be called as well.
 
 .. method:: Reactor1G.initialize(reactor_parameters)
@@ -483,7 +483,7 @@ should be called as well.
         * `reactor_parameters` (:class:`ReactorParameters`): A special data structure that contains information
           on how to setup and run the reactor.
 
-.. method:: Reactor1G.loadLib([libfile="Reactor.h5"])
+.. method:: Reactor1G.loadlib([libfile="Reactor.h5"])
 
     This method finds the HDF5 library for this reactor and extracts the necessary information from it.
     This method is typically called by the constructor of the child reactor type object.  It must be 
@@ -493,17 +493,17 @@ should be called as well.
         * `libfile` (string): Path to the reactor library.
 
 
-.. method:: Reactor1G.foldMassWeights()
+.. method:: Reactor1G.fold_mass_weights()
 
     This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
     In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
     as the values of :attr:`ms_feed <bright.FCComp.ms_feed>`.  The raw data must have previously been 
-    read in from :meth:`loadLib`.  
+    read in from :meth:`loadlib`.  
 
     .. warning::
 
         Anytime any reactor parameter whatsoever (:attr:`ms_feed <bright.FCComp.ms_feed>`, :attr:`P_NL`, *etc*) is 
-        altered in any way, the :meth:`foldMassWeights` function must be called to reset all of the resultant data.
+        altered in any way, the :meth:`fold_mass_weights` function must be called to reset all of the resultant data.
         If you are unsure, please call this function anyway to be safe.  There is little harm in calling it twice by accident
         as it is computationally cheap to do so.  
 
@@ -517,14 +517,14 @@ because transmutation is implicitly a function of three parameters: the input is
 only be called as needed (*ie* for generating :attr:`ms_prod <bright.FCComp.ms_prod>`).
 
 
-.. method:: Reactor1G.mkMj_F_()
+.. method:: Reactor1G.calc_Mj_F_()
 
     This function calculates and sets the :attr:`Mj_F_` attribute from :attr:`ms_feed <bright.FCComp.ms_feed>` and the 
     raw reactor data :attr:`Tij_F_`.
 
-.. method:: Reactor1G.mkMj_Fd_()
+.. method:: Reactor1G.calc_Mj_Fd_()
 
-    This function evaluates :attr:`Mj_F_` calculated from :meth:`mkMj_F_` at the discharge fluence :attr:`Fd`.
+    This function evaluates :attr:`Mj_F_` calculated from :meth:`calc_Mj_F_` at the discharge fluence :attr:`Fd`.
     The resultant isotopic dictionary is then converted into the :attr:`ms_prod <bright.FCComp.ms_prod>` mass stream
     for this pass through the reactor.  Thus if ever you need to calculate :attr:`ms_prod <bright.FCComp.ms_prod>`
     without going through :meth:`calc`, use this function.
@@ -535,13 +535,13 @@ Basic Calculation Methods
 -------------------------
 The following functions represent basic calculations common to most reactor types.
 
-.. method:: Reactor1G.calcOutIso()
+.. method:: Reactor1G.calc_ms_prod()
 
     This is a convenience function that wraps the transmutation matrix methods.  It is equivalent to::
 
         #Wrapper to calculate discharge isotopics.
-        mkMj_F_()
-        mkMj_Fd_()
+        calc_Mj_F_()
+        calc_Mj_Fd_()
 
 .. method:: Reactor1G.calcSubStreams()
 
@@ -571,7 +571,7 @@ The following functions represent basic calculations common to most reactor type
     Calculates and sets the :math:`\delta R` (:attr:`deltaR`) value of the reactor.  
     This is equal to the production rate minus the destruction rate at the target burnup::
 
-        deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
+        deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
@@ -590,7 +590,7 @@ stream.  The burnup functionality is separated out into so many functions so tha
 degree of control over the burnup operation, if desired.  Higher level functions are also provided 
 should this control be unnecessary for simple calculations.
 
-.. method:: Reactor1G.FluenceAtBU(burnup)
+.. method:: Reactor1G.fluence_at_BU(burnup)
 
     This function takes a burnup value  and returns a special fluence point object.  
     The fluence point is an amalgamation of data where the at which the burnup occurs.
@@ -607,7 +607,7 @@ should this control be unnecessary for simple calculations.
         * `FP` (:class:`FluencePoint`): A class containing fluence information.
 
 
-.. method:: Reactor1G.batchAve(BUd[, PDk_flag = "K"])
+.. method:: Reactor1G.batch_average(BUd[, PDk_flag = "K"])
 
     Finds the batch-averaged ``P(F)``, ``D(F)``, or ``k(F)`` when at discharge burnup BUd.
     This function is typically iterated over until a BUd is found such that ``k(F) = 1.0 + err``.
@@ -621,9 +621,9 @@ should this control be unnecessary for simple calculations.
         * `PDk` (float): the batch averaged neutron production rate,
           neutron destruction rate, or the multiplication factor as determined by the input.
 
-.. method:: Reactor1G.batchAveK(BUd)
+.. method:: Reactor1G.batch_average_k(BUd)
 
-    Convenience function that calls :meth:`batchAve(BUd, "K") <batchAve>`.
+    Convenience function that calls :meth:`batch_average(BUd, "K") <batch_average>`.
 
     Args:
         * `BUd` (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
@@ -632,7 +632,7 @@ should this control be unnecessary for simple calculations.
         * `k` (float): the batch averaged multiplication factor.
 
 
-.. method:: Reactor1G.BUd_BisectionMethod()
+.. method:: Reactor1G.BUd_bisection_method()
 
     Calculates the maximum discharge burnup via the Bisection Method for a given :attr:`ms_feed <bright.FCComp.ms_feed>`
     in this reactor.  This iterates over values of ``BUd`` to find a batch averaged multiplication factor 
@@ -642,23 +642,23 @@ should this control be unnecessary for simple calculations.
     However, with Bright's piecewise reactor data, the bisection method was found to return the most reliable results.
 
 
-.. method:: Reactor1G.Run_PNL(pnl)
+.. method:: Reactor1G.run_P_NL(pnl)
 
     Performs a reactor run for a specific non-leakage probability value.
     This requires that :attr:`ms_feed <bright.FCComp.ms_feed>` be (meaningfully) set and is
-    for use with :meth:`Calibrate_PNL_2_BUd`.
+    for use with :meth:`calibrate_P_NL_to_BUd`.
 
     This function amounts to the following code::
 
         self.P_NL = pnl
-        self.foldMassWeights()
-        self.BUd_BisectionMethod()
+        self.fold_mass_weights()
+        self.BUd_bisection_method()
 
     Args:
         * `pnl` (float): The new non-leakage probability for the reactor.
 
 
-.. method:: Reactor1G.Calibrate_PNL_2_BUd()
+.. method:: Reactor1G.calibrate_P_NL_to_BUd()
 
     Often times the non-leakage probability of a reactor is not known, though the input isotopics 
     and the target discharge burnup are.  This function handles that situation by
@@ -673,9 +673,9 @@ should this control be unnecessary for simple calculations.
     the :meth:`calc` method is relatively simple::
 
         self.ms_feed = input
-        self.foldMassWeights()
-        self.BUd_BisectionMethod()
-        self.calcOutIso()
+        self.fold_mass_weights()
+        self.BUd_bisection_method()
+        self.calc_ms_prod()
         return self.ms_prod
 
     As you can see, all this function does is set burn an input stream to its maximum discharge burnup and then

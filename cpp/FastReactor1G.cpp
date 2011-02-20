@@ -39,7 +39,7 @@ FastReactor1G::FastReactor1G() : Reactor1G(FRDefaults, fr_p2track)
 FastReactor1G::FastReactor1G(std::string h5lib, std::string n) : Reactor1G(FRDefaults, fr_p2track, n)
 {
     libfile = h5lib;
-    loadLib(h5lib);
+    loadlib(h5lib);
 };
 
 FastReactor1G::FastReactor1G(ReactorParameters rp, std::string n) : Reactor1G(rp, fr_p2track, n)
@@ -49,7 +49,7 @@ FastReactor1G::FastReactor1G(ReactorParameters rp, std::string n) : Reactor1G(rp
 FastReactor1G::FastReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : Reactor1G(rp, fr_p2track, n)
 {
     libfile = h5lib;
-    loadLib(h5lib);
+    loadlib(h5lib);
 };
 
 FastReactor1G::~FastReactor1G() 

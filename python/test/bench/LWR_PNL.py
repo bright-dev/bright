@@ -72,11 +72,11 @@ def main():
     def LWR_delR_BU_(ms):
         "Calculates the delta Reaction Rates at the target burnup."
         LWR.ms_feed = ms
-        LWR.foldMassWeights()
-        dR = LWR.batchAve(lwr_params.BUt, "p") - LWR.batchAve(lwr_params.BUt, "d")
+        LWR.fold_mass_weights()
+        dR = LWR.batch_average(lwr_params.BUt, "p") - LWR.batch_average(lwr_params.BUt, "d")
         return dR
 
-    def Run_PNL(temp_pnl):
+    def run_P_NL(temp_pnl):
         LWR.P_NL = temp_pnl
 
         delR_U235 = LWR_delR_BU_(U235)
@@ -88,7 +88,7 @@ def main():
         LWR_CoreInput.normalize()
         LWR_delR_Guess = LWR_delR_BU_(LWR_CoreInput)
 
-        k = LWR.batchAveK(lwr_params.BUt)
+        k = LWR.batch_average_k(lwr_params.BUt)
         n = 0
         if not Quiet:
             print str(1) + ")",  k, 
@@ -103,7 +103,7 @@ def main():
             LWR_CoreInput = U238 + U235 + U234 + U236
             LWR_CoreInput.name = "LWR_CoreInput"
             LWR_delR_Guess = LWR_delR_BU_(LWR_CoreInput)
-            k = LWR.batchAveK(lwr_params.BUt)
+            k = LWR.batch_average_k(lwr_params.BUt)
             n = n+1
             if not Quiet:
                 print k, 
@@ -112,8 +112,8 @@ def main():
             print
 
         #Calculate and write output
-        LWR.BUd_BisectionMethod()
-        LWR.calcOutIso()
+        LWR.BUd_bisection_method()
+        LWR.calc_ms_prod()
         LWR.write()
 
     if options.calibrate:
@@ -125,19 +125,19 @@ def main():
 
         print(LWR.ms_feed)
 
-        LWR.Calibrate_PNL_2_BUd()
+        LWR.calibrate_P_NL_to_BUd()
 
         print
         print "Non-Leakage Probability = ", LWR.P_NL
 
         print
-        Run_PNL(LWR.P_NL)
+        run_P_NL(LWR.P_NL)
 
         with open(name + "_pnl.txt", 'w') as f:
             f.write(str(LWR.P_NL))
     else:
         print
-        Run_PNL(0.98)
+        run_P_NL(0.98)
 
 
 if __name__ == "__main__":

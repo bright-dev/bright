@@ -180,13 +180,13 @@ public:
 
     //Public access functions
     void         initialize(ReactorParameters);
-    void         loadLib(std::string libfile = "Reactor.h5");
-    void         foldMassWeights();
+    void         loadlib(std::string libfile = "Reactor.h5");
+    void         fold_mass_weights();
 
-    void         mkMj_F_();
-    void         mkMj_Fd_();
+    void         calc_Mj_F_();
+    void         calc_Mj_Fd_();
 
-    void         calcOutIso();
+    void         calc_ms_prod();
     void         calcSubStreams();
     double       calc_tru_cr();
 
@@ -194,12 +194,12 @@ public:
     double       calc_deltaR(CompDict);
     double       calc_deltaR(MassStream);
 
-    FluencePoint FluenceAtBU(double);
-    double       batchAve(double, std::string = "K");
-    double       batchAveK(double);
-    void         BUd_BisectionMethod();
-    void         Run_PNL(double);
-    void         Calibrate_PNL_2_BUd();
+    FluencePoint fluence_at_BU(double);
+    double       batch_average(double, std::string = "K");
+    double       batch_average_k(double);
+    void         BUd_bisection_method();
+    void         run_P_NL(double);
+    void         calibrate_P_NL_to_BUd();
 
     MassStream   calc ();
     MassStream   calc (CompDict);

@@ -36,7 +36,7 @@ r2 = Reactor1G("SE with name!")
 printFCComp(r2)
 print("")
 
-r2.loadLib("FR.h5")
+r2.loadlib("FR.h5")
 #print(r2.F[0])
 #print(r2.BUi_F_[10010])
 #print(r2.pi_F_[922350])
@@ -80,15 +80,15 @@ print("VF",  r2.VF)
 print("VC",  r2.VC)
 print_ms()
 
-r2.foldMassWeights()
+r2.fold_mass_weights()
 #print(r2.P_F_)
 
-#r2.mkMj_F_()
+#r2.calc_Mj_F_()
 #print(r2.Mj_F_)
-#r2.mkMj_Fd_()
+#r2.calc_Mj_Fd_()
 
 #print(r2.ms_prod)
-r2.calcOutIso()
+r2.calc_ms_prod()
 #print(r2.ms_prod)
 
 r2.calcSubStreams()
@@ -103,14 +103,14 @@ r2.calcSubStreams()
 
 r2.calc_tru_cr()
 
-fp = r2.FluenceAtBU(10.0)
+fp = r2.fluence_at_BU(10.0)
 
 verbosity(100)
-bAK = r2.batchAve(40.0, "P")
+bAK = r2.batch_average(40.0, "P")
 #print(bAK)
 
 #print(r2.P_NL)
-#r2.Run_PNL(0.5)
+#r2.run_P_NL(0.5)
 #print(r2.P_NL)
 
 

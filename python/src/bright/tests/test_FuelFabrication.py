@@ -185,7 +185,7 @@ class TestFuelFabricationAttributes(TestCase):
         bright.load_track_isos_hdf5(libfile)
 
         r1g = Reactor1G(reactor_parameters=default_rp)
-        r1g.loadLib(libfile)
+        r1g.loadlib(libfile)
         cls.r1g = r1g
 
         u235 = MassStream({922350: 1.0}, 1.0, "U-235")
@@ -239,7 +239,7 @@ class TestFuelFabricationMethodss(TestCase):
         bright.load_track_isos_hdf5(libfile)
 
         r1g = Reactor1G(reactor_parameters=default_rp)
-        r1g.loadLib(libfile)
+        r1g.loadlib(libfile)
         cls.r1g = r1g
 
         u235 = MassStream({922350: 1.0}, 1.0, "U-235")

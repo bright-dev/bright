@@ -288,13 +288,13 @@ cdef extern from "../Reactor1G.h":
 
         # Methods
         void initialize(ReactorParameters)
-        void loadLib(std.string)
-        void foldMassWeights()
+        void loadlib(std.string)
+        void fold_mass_weights()
 
-        void mkMj_F_()
-        void mkMj_Fd_()
+        void calc_Mj_F_()
+        void calc_Mj_Fd_()
 
-        void calcOutIso()
+        void calc_ms_prod()
         void calcSubStreams()
         double calc_tru_cr()
 
@@ -302,12 +302,12 @@ cdef extern from "../Reactor1G.h":
         double calc_deltaR(map[int, double])
         double calc_deltaR(cpp_mass_stream.MassStream)
 
-        FluencePoint FluenceAtBU(double)
-        double batchAve(double, std.string)
-        double batchAveK(double)
-        void BUd_BisectionMethod()
-        void Run_PNL(double)
-        void Calibrate_PNL_2_BUd()
+        FluencePoint fluence_at_BU(double)
+        double batch_average(double, std.string)
+        double batch_average_k(double)
+        void BUd_bisection_method()
+        void run_P_NL(double)
+        void calibrate_P_NL_to_BUd()
 
         cpp_mass_stream.MassStream calc()
         cpp_mass_stream.MassStream calc(map[int, double])

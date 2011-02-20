@@ -58,23 +58,23 @@ def main():
     #Fuel Cycle Components
     FR = bright.FastReactor1G("../FR.h5", fr_params, name)
 
-    def Run_PNL(temp_pnl):
+    def run_P_NL(temp_pnl):
         FR.P_NL = temp_pnl
 
         #Calculate output
         FR.ms_feed = InStream
-        FR.foldMassWeights()
-        FR.BUd_BisectionMethod()
+        FR.fold_mass_weights()
+        FR.BUd_bisection_method()
 
 
     #Calibration proceeds by bisection method...
     pnl_a = 0.6
-    Run_PNL(pnl_a)
+    run_P_NL(pnl_a)
     bud_a = FR.BUd
     sign_a = (bud_a - bud_t) / abs(bud_a - bud_t)
 
     pnl_b = 0.7
-    Run_PNL(pnl_b)
+    run_P_NL(pnl_b)
     bud_b = FR.BUd
     sign_b = (bud_b - bud_t) / abs(bud_b - bud_t)
 
@@ -82,7 +82,7 @@ def main():
     q = 0
     while (DoA < abs(pnl_a - pnl_b)) and (DoA < abs(bud_a - bud_b)) and q < 100:
         pnl_c = (pnl_a + pnl_b) / 2.0
-        Run_PNL(pnl_c)
+        run_P_NL(pnl_c)
         bud_c = FR.BUd
         sign_c = (bud_c - bud_t) / abs(bud_c - bud_t)
 
@@ -115,7 +115,7 @@ def main():
         print "pnl_%(ltr)s = %(pnl).16f\tBUd_%(ltr)s = %(bud)f\tsign_%(ltr)s = %(sign)f"%{'ltr': 'c', 'pnl': pnl_c, 'bud': bud_c, 'sign': sign_c}
 
     #Write output
-    FR.calcOutIso()
+    FR.calc_ms_prod()
     FR.write()
 
     with open(name + "_pnl.txt", 'w') as f:

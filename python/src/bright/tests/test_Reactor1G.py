@@ -360,7 +360,7 @@ class TestReactor1GBasicDataAttributes(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G()
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
 
     @classmethod
     def teardown_class(cls):
@@ -431,9 +431,9 @@ class TestReactor1GCalculatedWeightAttributes(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.foldMassWeights()
+        cls.r1g.fold_mass_weights()
 
     @classmethod
     def teardown_class(cls):
@@ -486,9 +486,9 @@ class TestReactor1GCalculatedDataAttributes(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.foldMassWeights()
+        cls.r1g.fold_mass_weights()
 
     @classmethod
     def teardown_class(cls):
@@ -575,7 +575,7 @@ class TestReactor1GDischargeAttributes(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.calc()
 
@@ -608,7 +608,7 @@ class TestReactor1GSubStreamAndtru_crAttributes(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.calc()
         cls.r1g.calcSubStreams()
@@ -648,7 +648,7 @@ class TestReactor1GSubStreamAndtru_crAttributes(TestCase):
 
     def test_deltaR(self):
         self.r1g.calc_deltaR()
-        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
+        tmp_deltaR = self.r1g.batch_average(self.r1g.target_BU, "p") - self.r1g.batch_average(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
 
@@ -660,9 +660,9 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.foldMassWeights()
+        cls.r1g.fold_mass_weights()
 
     @classmethod
     def teardown_class(cls):
@@ -714,9 +714,9 @@ class TestReactor1GInitializationMethods(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.foldMassWeights()
+        cls.r1g.fold_mass_weights()
 
     @classmethod
     def teardown_class(cls):
@@ -741,15 +741,15 @@ class TestReactor1GInitializationMethods(TestCase):
         assert_equal(self.r1g.S_O, 0.0)
         assert_equal(self.r1g.S_T, 0.0)
 
-    def test_loadLib(self):
-        self.r1g.loadLib(os.getenv("BRIGHT_DATA") + '/FR.h5')
-        self.r1g.loadLib(os.getenv("BRIGHT_DATA") + '/LWR.h5')
+    def test_loadlib(self):
+        self.r1g.loadlib(os.getenv("BRIGHT_DATA") + '/FR.h5')
+        self.r1g.loadlib(os.getenv("BRIGHT_DATA") + '/LWR.h5')
 
-    def test_foldMassWeights(self):
+    def test_fold_mass_weights(self):
         prevkey = self.r1g.miF.keys()
         assert(922380 in self.r1g.miF.keys())
         self.r1g.ms_feed = MassStream({922350: 0.5})
-        self.r1g.foldMassWeights()
+        self.r1g.fold_mass_weights()
         assert(922380 not in self.r1g.miF.keys())
 
         
@@ -763,16 +763,16 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.foldMassWeights()
+        cls.r1g.fold_mass_weights()
 
     @classmethod
     def teardown_class(cls):
         general_teardown()
 
-    def test_mkMj_F_(self):
-        self.r1g.mkMj_F_()
+    def test_calc_Mj_F_(self):
+        self.r1g.calc_Mj_F_()
         # Test below is the same as test_Mj_F_()
         Mj_F_  = self.r1g.Mj_F_
         Tij_F_ = self.r1g.Tij_F_
@@ -786,10 +786,10 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
                 else:
                     assert_almost_equal(Mj_F_[j][f] / tmp_Mj, 1.0, 4)
 
-    def test_mkMj_Fd_(self):
-        self.r1g.BUd_BisectionMethod()
-        self.r1g.mkMj_F_()
-        self.r1g.mkMj_Fd_()
+    def test_calc_Mj_Fd_(self):
+        self.r1g.BUd_bisection_method()
+        self.r1g.calc_Mj_F_()
+        self.r1g.calc_Mj_Fd_()
         assert(0.0 < self.r1g.ms_prod.mass)
         assert(self.r1g.ms_prod.mass < 1.0)
 
@@ -804,17 +804,17 @@ class TestReactor1GBasicCalculationMethods(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.foldMassWeights()
+        cls.r1g.fold_mass_weights()
 
     @classmethod
     def teardown_class(cls):
         general_teardown()
 
-    def test_calcOutIso(self):
-        self.r1g.BUd_BisectionMethod()
-        self.r1g.calcOutIso()
+    def test_calc_ms_prod(self):
+        self.r1g.BUd_bisection_method()
+        self.r1g.calc_ms_prod()
         assert(0.0 < self.r1g.ms_prod.mass)
         assert(self.r1g.ms_prod.mass < 1.0)
 
@@ -838,18 +838,18 @@ class TestReactor1GBasicCalculationMethods(TestCase):
 
     def test_deltaR1(self):
         self.r1g.calc_deltaR()
-        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
+        tmp_deltaR = self.r1g.batch_average(self.r1g.target_BU, "p") - self.r1g.batch_average(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
     def test_deltaR2(self):
         self.r1g.calc_deltaR({922350: 0.5, 922380: 0.5, 80160: 0.125})
-        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
+        tmp_deltaR = self.r1g.batch_average(self.r1g.target_BU, "p") - self.r1g.batch_average(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
     def test_deltaR3(self):
         ms = MassStream({922350: 0.5, 922380: 0.5, 80160: 0.125})
         self.r1g.calc_deltaR(ms)
-        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
+        tmp_deltaR = self.r1g.batch_average(self.r1g.target_BU, "p") - self.r1g.batch_average(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
 
@@ -863,7 +863,7 @@ class TestReactor1GBurnupMethods(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.calc()
 
@@ -871,8 +871,8 @@ class TestReactor1GBurnupMethods(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_FluenceAtBU(self):
-        fp = self.r1g.FluenceAtBU(80.0)
+    def test_fluence_at_BU(self):
+        fp = self.r1g.fluence_at_BU(80.0)
         assert(0 <= fp.f)
         assert(fp.f <= len(self.r1g.F))
         assert(self.r1g.F[fp.f] <= fp.F)
@@ -882,18 +882,18 @@ class TestReactor1GBurnupMethods(TestCase):
         tmp_m = (self.r1g.BU_F_[fp.f+1] - self.r1g.BU_F_[fp.f]) / (self.r1g.F[fp.f+1] - self.r1g.F[fp.f])
         assert_equal(fp.m / tmp_m, 1.0)
 
-    def test_batchAve(self):
+    def test_batch_average(self):
         BUd = self.r1g.BUd
-        p = self.r1g.batchAve(BUd, "P")
-        d = self.r1g.batchAve(BUd, "D")
-        k = self.r1g.batchAve(BUd, "K")
-        kk = self.r1g.batchAve(BUd)
+        p = self.r1g.batch_average(BUd, "P")
+        d = self.r1g.batch_average(BUd, "D")
+        k = self.r1g.batch_average(BUd, "K")
+        kk = self.r1g.batch_average(BUd)
         assert_equal(k, kk)
         #assert_equal(p/d, k) # Averaging messes this up.
 
-    def test_batchAveK(self):
+    def test_batch_average_k(self):
         BUd = self.r1g.BUd
-        assert_almost_equal(self.r1g.batchAveK(BUd), 1.0)
+        assert_almost_equal(self.r1g.batch_average_k(BUd), 1.0)
 
     def test_calc_1(self):
         self.r1g.calc()
@@ -916,7 +916,7 @@ class TestReactor1GBurnupMethods2(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.calc()
 
@@ -924,10 +924,10 @@ class TestReactor1GBurnupMethods2(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_BUd_BisectionMethod(self):
+    def test_BUd_bisection_method(self):
         assert_almost_equal(self.r1g.k, 1.0, 5)
         self.r1g.B = 1
-        self.r1g.BUd_BisectionMethod()
+        self.r1g.BUd_bisection_method()
         assert_almost_equal(self.r1g.k, 1.0, 5)
         self.r1g.B = 3
 
@@ -941,7 +941,7 @@ class TestReactor1GBurnupMethods3(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.calc()
 
@@ -949,12 +949,12 @@ class TestReactor1GBurnupMethods3(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_Run_PNL(self):
+    def test_run_P_NL(self):
         # Convergence is not gaurenteed!
-        self.r1g.Run_PNL(0.99)
+        self.r1g.run_P_NL(0.99)
         assert_equal(self.r1g.P_NL, 0.99)
         assert_almost_equal(self.r1g.k, 1.0, 1)
-        self.r1g.Run_PNL(0.98)
+        self.r1g.run_P_NL(0.98)
 
 
 
@@ -967,7 +967,7 @@ class TestReactor1GBurnupMethods4(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.calc()
 
@@ -975,8 +975,8 @@ class TestReactor1GBurnupMethods4(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_Calibrate_PNL_2_BUd(self):
-        self.r1g.Calibrate_PNL_2_BUd()
+    def test_calibrate_P_NL_to_BUd(self):
+        self.r1g.calibrate_P_NL_to_BUd()
         assert_not_equal(self.r1g.P_NL, 0.98)
         assert_almost_equal(self.r1g.BUd / self.r1g.target_BU, 1.0, 5)
         
@@ -992,7 +992,7 @@ class TestReactor1GLatticeMethods(TestCase):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
-        cls.r1g.loadLib(libfile)
+        cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.calc()
 
@@ -1005,7 +1005,7 @@ class TestReactor1GLatticeMethods(TestCase):
         self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
-        self.r1g.foldMassWeights()
+        self.r1g.fold_mass_weights()
         curr = self.r1g.lattice_E_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
@@ -1015,7 +1015,7 @@ class TestReactor1GLatticeMethods(TestCase):
         self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
-        self.r1g.foldMassWeights()
+        self.r1g.fold_mass_weights()
         curr = self.r1g.lattice_F_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
@@ -1025,7 +1025,7 @@ class TestReactor1GLatticeMethods(TestCase):
         self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
-        self.r1g.foldMassWeights()
+        self.r1g.fold_mass_weights()
         curr = self.r1g.lattice_E_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
@@ -1035,7 +1035,7 @@ class TestReactor1GLatticeMethods(TestCase):
         self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
-        self.r1g.foldMassWeights()
+        self.r1g.fold_mass_weights()
         curr = self.r1g.lattice_F_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
@@ -1045,7 +1045,7 @@ class TestReactor1GLatticeMethods(TestCase):
         self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
-        self.r1g.foldMassWeights()
+        self.r1g.fold_mass_weights()
         curr = self.r1g.lattice_E_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
@@ -1055,7 +1055,7 @@ class TestReactor1GLatticeMethods(TestCase):
         self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
         self.r1g.l = 1.0
-        self.r1g.foldMassWeights()
+        self.r1g.fold_mass_weights()
         curr = self.r1g.lattice_F_F_
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])

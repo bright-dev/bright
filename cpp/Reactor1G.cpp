@@ -106,7 +106,7 @@ void Reactor1G::initialize(ReactorParameters rp)
     VC = ((l*l - bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T) + (S_O/S_T);
 };
 
-void Reactor1G::loadLib(std::string libfile)
+void Reactor1G::loadlib(std::string libfile)
 {
     //Loads Apporiate Libraries for Reactor and makes them into Burnup Parameters [F, pi(F), di(F), BUi(F), Tij(F)].
 
@@ -297,7 +297,7 @@ void Reactor1G::loadLib(std::string libfile)
     return;
 };
 
-void Reactor1G::foldMassWeights()
+void Reactor1G::fold_mass_weights()
 {
     /** Multiplies the burnup parameters by the mass weights."
      *  Calculates BU(F), P(F), D(F), and k(F)"
@@ -486,7 +486,7 @@ void Reactor1G::foldMassWeights()
     };
 };
 
-void Reactor1G::mkMj_F_()
+void Reactor1G::calc_Mj_F_()
 {
     //Generates the Mj(F) table.
     Mj_F_.clear();
@@ -506,7 +506,7 @@ void Reactor1G::mkMj_F_()
     };
 };
 
-void Reactor1G::mkMj_Fd_()
+void Reactor1G::calc_Mj_Fd_()
 {
     /** Calculates the output isotopics of Mj(Fd).
      *  NOTE: Mj(Fd) is effectively the same variable as ms_prod before normalization!
@@ -530,11 +530,11 @@ void Reactor1G::mkMj_Fd_()
     ms_prod = MassStream(tempOut);	
 };
 
-void Reactor1G::calcOutIso()
+void Reactor1G::calc_ms_prod()
 {
     //Wrapper to calculate discharge isotopics.
-    mkMj_F_();
-    mkMj_Fd_();
+    calc_Mj_F_();
+    calc_Mj_Fd_();
 };
 
 void Reactor1G::calcSubStreams()
@@ -582,8 +582,8 @@ void Reactor1G::calcSubStreams()
 double Reactor1G::calc_deltaR()
 {
     //Calculates the deltaR of the reactor with the current ms_feed
-    foldMassWeights();
-    deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D");
+    fold_mass_weights();
+    deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D");
     return deltaR;
 };
 
@@ -611,7 +611,7 @@ double Reactor1G::calc_tru_cr()
 
 
 
-FluencePoint Reactor1G::FluenceAtBU(double BU)
+FluencePoint Reactor1G::fluence_at_BU(double BU)
 {
     /** Gives the fluence at which the burnup BU occurs.
      *  Data returned as FluenceIndex stucture:
@@ -643,7 +643,7 @@ FluencePoint Reactor1G::FluenceAtBU(double BU)
     return fp;
 };
 
-double Reactor1G::batchAve(double BUd, std::string PDk_flag)
+double Reactor1G::batch_average(double BUd, std::string PDk_flag)
 {
     //Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
     std::string PDk = bright::ToUpper(PDk_flag); 
@@ -660,7 +660,7 @@ double Reactor1G::batchAve(double BUd, std::string PDk_flag)
     fps.resize(B);
     for (int b = 0; b < B; b++)
     {
-        fps[b] = FluenceAtBU(bu[b]);
+        fps[b] = fluence_at_BU(bu[b]);
     };
 
     std::vector<double> PDks (B, 0.0);
@@ -708,12 +708,12 @@ double Reactor1G::batchAve(double BUd, std::string PDk_flag)
     return numerator/denominator;
 };
 
-double Reactor1G::batchAveK(double BUd) 
+double Reactor1G::batch_average_k(double BUd) 
 {
-        return batchAve(BUd, "K");
+        return batch_average(BUd, "K");
 };
 
-void Reactor1G::BUd_BisectionMethod()
+void Reactor1G::BUd_bisection_method()
 {
     //Calculates the maximum discharge burnup via the Bisection Method.
     int tempk = 1;
@@ -729,7 +729,7 @@ void Reactor1G::BUd_BisectionMethod()
         tempk = 0;
 
     BUd_a = BU_F_[tempk] * 2.0 * ((double) B) / ((double) B + 1.0);
-    k_a = batchAveK( BUd_a );
+    k_a = batch_average_k( BUd_a );
     if (k_a == 1.0)
     {
         BUd = BUd_a;
@@ -740,7 +740,7 @@ void Reactor1G::BUd_BisectionMethod()
     
     //Find a BUd that serves as a valid second guess.  Remember, this is the bisection method here.
     BUd_b = BUd_a + sign_a * 5.0;
-    k_b = batchAveK( BUd_b );
+    k_b = batch_average_k( BUd_b );
     if (k_b == 1.0)
     {
         BUd = BUd_b;
@@ -758,7 +758,7 @@ void Reactor1G::BUd_BisectionMethod()
     while (sign_a == sign_b)
     {
         BUd_b = BUd_b + sign_a * 5.0;
-        k_b = batchAveK( BUd_b );
+        k_b = batch_average_k( BUd_b );
         if (k_b == 1.0)
         {
             BUd = BUd_b;
@@ -787,7 +787,7 @@ void Reactor1G::BUd_BisectionMethod()
     while ( ((DoA < fabs(1.0 - k_a)) || (DoA < fabs(1.0 - k_b))) && (0.0 < fabs(BUd_a - BUd_b)) && (q < 100) )
     {
         BUd_c = (BUd_a + BUd_b) / 2.0;
-        k_c = batchAveK( BUd_c );
+        k_c = batch_average_k( BUd_c );
         if (k_c == 1.0)
         {
             sign_c = 0.0;
@@ -893,25 +893,25 @@ void Reactor1G::BUd_BisectionMethod()
         };
     };
 
-    FluencePoint fp = FluenceAtBU(BUd);
+    FluencePoint fp = fluence_at_BU(BUd);
     fd = fp.f;				//lower index of fluence at discharge
     Fd = fp.F;				//Fluence at discharge
     return;
 };
 
-void Reactor1G::Run_PNL(double temp_pnl)
+void Reactor1G::run_P_NL(double temp_pnl)
 {
     /** Does a reactor run for a specific P_NL.
      *  Requires that ms_feed be (meaningfully) set.
-     *  For use with Calibrate_PNL_2_BUd
+     *  For use with calibrate_P_NL_to_BUd
      */
 
     P_NL = temp_pnl;
-    foldMassWeights();
-    BUd_BisectionMethod();
+    fold_mass_weights();
+    BUd_bisection_method();
 };
 
-void Reactor1G::Calibrate_PNL_2_BUd()
+void Reactor1G::calibrate_P_NL_to_BUd()
 {
     /** Calibrates the non-leakage probability of a reactors to hit a target burnup.
      *  Calibration proceeds by bisection method...
@@ -928,7 +928,7 @@ void Reactor1G::Calibrate_PNL_2_BUd()
     {
         try
         {
-            Run_PNL(pnl_a);
+            run_P_NL(pnl_a);
             bud_a = BUd;
             sign_a = (bud_a - target_BU) / fabs(bud_a - target_BU);
             FoundA = true;
@@ -950,7 +950,7 @@ void Reactor1G::Calibrate_PNL_2_BUd()
     {
         try
         {
-            Run_PNL(pnl_b);
+            run_P_NL(pnl_b);
             bud_b = BUd;
             sign_b = (bud_b - target_BU) / fabs(bud_b - target_BU);
             FoundB = true;
@@ -972,7 +972,7 @@ void Reactor1G::Calibrate_PNL_2_BUd()
     while ( (DoA < fabs(pnl_a - pnl_b)) && (DoA < fabs(bud_a - bud_b)) && (q < 100) )
     {
         pnl_c = (pnl_a + pnl_b) / 2.0;
-        Run_PNL(pnl_c);
+        run_P_NL(pnl_c);
         bud_c = BUd;
         sign_c = (bud_c - target_BU) / fabs(bud_c - target_BU);
 
@@ -1023,11 +1023,11 @@ void Reactor1G::Calibrate_PNL_2_BUd()
 MassStream Reactor1G::calc ()
 {
     //Finds BUd and output isotopics.
-    foldMassWeights();
+    fold_mass_weights();
 
-    BUd_BisectionMethod();
+    BUd_bisection_method();
 
-    calcOutIso();
+    calc_ms_prod();
 
     return ms_prod;
 };

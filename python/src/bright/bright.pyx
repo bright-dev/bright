@@ -2170,7 +2170,7 @@ cdef class Reactor1G(FCComp):
         self.r1g_pointer.initialize(<cpp_bright.ReactorParameters> rp.rp_pointer[0])
 
 
-    def loadLib(self, char * libfile="reactor.h5"):
+    def loadlib(self, char * libfile="reactor.h5"):
         """This method finds the HDF5 library for this reactor and extracts the necessary information from it.
         This method is typically called by the constructor of the child reactor type object.  It must be 
         called before attempting to do any real computation.
@@ -2178,56 +2178,56 @@ cdef class Reactor1G(FCComp):
         Args: 
             * libfile (str): Path to the reactor library.
         """
-        self.r1g_pointer.loadLib(std.string(libfile))
+        self.r1g_pointer.loadlib(std.string(libfile))
 
 
-    def foldMassWeights(self):
+    def fold_mass_weights(self):
         """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
         In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-        as the values of ms_feed.  The raw data must have previously been read in from loadLib().  
+        as the values of ms_feed.  The raw data must have previously been read in from loadlib().  
 
         .. warning::
 
             Anytime any reactor parameter whatsoever (ms_feed, P_NL, *etc*) is altered in any way, 
-            the foldMassWeights() function must be called to reset all of the resultant data.
+            the fold_mass_weights() function must be called to reset all of the resultant data.
             If you are unsure, please call this function anyway to be safe.  There is little 
             harm in calling it twice by accident.
         """
-        self.r1g_pointer.foldMassWeights()
+        self.r1g_pointer.fold_mass_weights()
 
 
 
 
 
-    def mkMj_F_(self):
+    def calc_Mj_F_(self):
         """This function calculates and sets the Mj_F_ attribute from ms_feed and the 
         raw reactor data Tij_F_.
         """
-        self.r1g_pointer.mkMj_F_()
+        self.r1g_pointer.calc_Mj_F_()
 
 
-    def mkMj_Fd_(self):
-        """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
+    def calc_Mj_Fd_(self):
+        """This function evaluates Mj_F_ calculated from calc_Mj_F_() at the discharge fluence Fd.
         The resultant isotopic dictionary is then converted into the ms_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate ms_prod
         without going through calc(), use this function.
         """
-        self.r1g_pointer.mkMj_Fd_()
+        self.r1g_pointer.calc_Mj_Fd_()
 
 
 
 
 
-    def calcOutIso(self):
+    def calc_ms_prod(self):
         """This is a convenience function that wraps the transmutation matrix methods.  
         It is equivalent to::
 
             #Wrapper to calculate discharge isotopics.
-            mkMj_F_()
-            mkMj_Fd_()
+            calc_Mj_F_()
+            calc_Mj_Fd_()
 
         """
-        self.r1g_pointer.calcOutIso()
+        self.r1g_pointer.calc_ms_prod()
 
     def calcSubStreams(self):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
@@ -2264,7 +2264,7 @@ cdef class Reactor1G(FCComp):
         """Calculates and sets the deltaR value of the reactor.  
         This is equal to the production rate minus the destruction rate at the target burnup::
 
-            deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
@@ -2291,7 +2291,7 @@ cdef class Reactor1G(FCComp):
 
 
 
-    def FluenceAtBU(self, double burnup):
+    def fluence_at_BU(self, double burnup):
         """This function takes a burnup value  and returns a special fluence point object.  
         The fluence point is an amalgamation of data where the at which the burnup occurs.
         This object instance FP contains three pieces of information::
@@ -2307,11 +2307,11 @@ cdef class Reactor1G(FCComp):
             * fp (FluencePoint): A class containing fluence information.
         """
         cdef FluencePoint fp = FluencePoint()
-        fp.fp_pointer[0] = self.r1g_pointer.FluenceAtBU(burnup)
+        fp.fp_pointer[0] = self.r1g_pointer.fluence_at_BU(burnup)
         return fp
 
 
-    def batchAve(self, double BUd, char * PDk_flag="K"):
+    def batch_average(self, double BUd, char * PDk_flag="K"):
         """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
         This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
 
@@ -2325,12 +2325,12 @@ cdef class Reactor1G(FCComp):
         Returns:
             * PDk (float): the batch averaged neutron production rate,
         """
-        cdef double PDk = self.r1g_pointer.batchAve(BUd, std.string(PDk_flag))
+        cdef double PDk = self.r1g_pointer.batch_average(BUd, std.string(PDk_flag))
         return PDk
 
 
-    def batchAveK(self, double BUd):
-        """Convenience function that calls batchAve(BUd, "K").
+    def batch_average_k(self, double BUd):
+        """Convenience function that calls batch_average(BUd, "K").
 
         Args:
             * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
@@ -2338,44 +2338,44 @@ cdef class Reactor1G(FCComp):
         Returns:
             * k (float): the batch averaged multiplication factor.
         """
-        cdef double PDk = self.r1g_pointer.batchAveK(BUd)
+        cdef double PDk = self.r1g_pointer.batch_average_k(BUd)
         return PDk
 
 
-    def BUd_BisectionMethod(self):
+    def BUd_bisection_method(self):
         """Calculates the maximum discharge burnup via the Bisection Method for a given ms_feed
         in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
         that is closest to 1.0.
 
         Other root finding methods for determining maximum discharge burnup are certainly possible.
         """
-        self.r1g_pointer.BUd_BisectionMethod()
+        self.r1g_pointer.BUd_bisection_method()
 
 
-    def Run_PNL(self, double pnl):
+    def run_P_NL(self, double pnl):
         """Performs a reactor run for a specific non-leakage probability value.
-        This requires that ms_feed be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+        This requires that ms_feed be (meaningfully) set and is for use with calibrate_P_NL_to_BUd().
 
         This function amounts to the following code::
 
             self.P_NL = pnl
-            self.foldMassWeights()
-            self.BUd_BisectionMethod()
+            self.fold_mass_weights()
+            self.BUd_bisection_method()
 
         Args:
             * pnl (float): The new non-leakage probability for the reactor.
         """
-        self.r1g_pointer.Run_PNL(pnl)
+        self.r1g_pointer.run_P_NL(pnl)
     
 
-    def Calibrate_PNL_2_BUd(self):
+    def calibrate_P_NL_to_BUd(self):
         """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
         and the target discharge burnup are.  This function handles that situation by
         calibrating the non-leakage probability of this reactor P_NL to hit its target burnup target_BU.
         Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
         benchmarking calculations.
         """
-        self.r1g_pointer.Calibrate_PNL_2_BUd()
+        self.r1g_pointer.calibrate_P_NL_to_BUd()
 
 
 
@@ -2385,9 +2385,9 @@ cdef class Reactor1G(FCComp):
         the calc() method is relatively simple::
 
             self.ms_feed = input
-            self.foldMassWeights()
-            self.BUd_BisectionMethod()
-            self.calcOutIso()
+            self.fold_mass_weights()
+            self.BUd_bisection_method()
+            self.calc_ms_prod()
             return self.ms_prod
 
         As you can see, all this function does is set burn an input stream to its maximum 
@@ -2531,7 +2531,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
     Keyword Args:
         * libfile (string): The path the the LWR HDF5 data library.  This value is set to 
-          Reactor1G.libfile and used by Reactor1G.loadLib.
+          Reactor1G.libfile and used by Reactor1G.loadlib.
         * reactor_parameters (ReactorParameters): The physical reactor parameter data to initialize this
           LWR instance with.  If this argument is not provided, default values are taken.
         * name (string): The name of this LWR instance.
@@ -3239,7 +3239,7 @@ cdef class LightWaterReactor1G(Reactor1G):
         (<cpp_bright.Reactor1G *> self.lwr1g_pointer).initialize(<cpp_bright.ReactorParameters> rp.rp_pointer[0])
 
 
-    def loadLib(self, char * libfile="reactor.h5"):
+    def loadlib(self, char * libfile="reactor.h5"):
         """This method finds the HDF5 library for this reactor and extracts the necessary information from it.
         This method is typically called by the constructor of the child reactor type object.  It must be 
         called before attempting to do any real computation.
@@ -3247,56 +3247,56 @@ cdef class LightWaterReactor1G(Reactor1G):
         Args: 
             * libfile (str): Path to the reactor library.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).loadLib(std.string(libfile))
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).loadlib(std.string(libfile))
 
 
-    def foldMassWeights(self):
+    def fold_mass_weights(self):
         """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
         In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-        as the values of ms_feed.  The raw data must have previously been read in from loadLib().  
+        as the values of ms_feed.  The raw data must have previously been read in from loadlib().  
 
         .. warning::
 
             Anytime any reactor parameter whatsoever (ms_feed, P_NL, *etc*) is altered in any way, 
-            the foldMassWeights() function must be called to reset all of the resultant data.
+            the fold_mass_weights() function must be called to reset all of the resultant data.
             If you are unsure, please call this function anyway to be safe.  There is little 
             harm in calling it twice by accident.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).foldMassWeights()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).fold_mass_weights()
 
 
 
 
 
-    def mkMj_F_(self):
+    def calc_Mj_F_(self):
         """This function calculates and sets the Mj_F_ attribute from ms_feed and the 
         raw reactor data Tij_F_.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).mkMj_F_()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_Mj_F_()
 
 
-    def mkMj_Fd_(self):
-        """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
+    def calc_Mj_Fd_(self):
+        """This function evaluates Mj_F_ calculated from calc_Mj_F_() at the discharge fluence Fd.
         The resultant isotopic dictionary is then converted into the ms_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate ms_prod
         without going through calc(), use this function.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).mkMj_Fd_()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_Mj_Fd_()
 
 
 
 
 
-    def calcOutIso(self):
+    def calc_ms_prod(self):
         """This is a convenience function that wraps the transmutation matrix methods.  
         It is equivalent to::
 
             #Wrapper to calculate discharge isotopics.
-            mkMj_F_()
-            mkMj_Fd_()
+            calc_Mj_F_()
+            calc_Mj_Fd_()
 
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcOutIso()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_ms_prod()
 
     def calcSubStreams(self):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
@@ -3333,7 +3333,7 @@ cdef class LightWaterReactor1G(Reactor1G):
         """Calculates and sets the deltaR value of the reactor.  
         This is equal to the production rate minus the destruction rate at the target burnup::
 
-            deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
@@ -3360,7 +3360,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
 
-    def FluenceAtBU(self, double burnup):
+    def fluence_at_BU(self, double burnup):
         """This function takes a burnup value  and returns a special fluence point object.  
         The fluence point is an amalgamation of data where the at which the burnup occurs.
         This object instance FP contains three pieces of information::
@@ -3376,11 +3376,11 @@ cdef class LightWaterReactor1G(Reactor1G):
             * fp (FluencePoint): A class containing fluence information.
         """
         cdef FluencePoint fp = FluencePoint()
-        fp.fp_pointer[0] = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).FluenceAtBU(burnup)
+        fp.fp_pointer[0] = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).fluence_at_BU(burnup)
         return fp
 
 
-    def batchAve(self, double BUd, char * PDk_flag="K"):
+    def batch_average(self, double BUd, char * PDk_flag="K"):
         """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
         This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
 
@@ -3394,12 +3394,12 @@ cdef class LightWaterReactor1G(Reactor1G):
         Returns:
             * PDk (float): the batch averaged neutron production rate,
         """
-        cdef double PDk = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).batchAve(BUd, std.string(PDk_flag))
+        cdef double PDk = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).batch_average(BUd, std.string(PDk_flag))
         return PDk
 
 
-    def batchAveK(self, double BUd):
-        """Convenience function that calls batchAve(BUd, "K").
+    def batch_average_k(self, double BUd):
+        """Convenience function that calls batch_average(BUd, "K").
 
         Args:
             * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
@@ -3407,44 +3407,44 @@ cdef class LightWaterReactor1G(Reactor1G):
         Returns:
             * k (float): the batch averaged multiplication factor.
         """
-        cdef double PDk = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).batchAveK(BUd)
+        cdef double PDk = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).batch_average_k(BUd)
         return PDk
 
 
-    def BUd_BisectionMethod(self):
+    def BUd_bisection_method(self):
         """Calculates the maximum discharge burnup via the Bisection Method for a given ms_feed
         in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
         that is closest to 1.0.
 
         Other root finding methods for determining maximum discharge burnup are certainly possible.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).BUd_BisectionMethod()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).BUd_bisection_method()
 
 
-    def Run_PNL(self, double pnl):
+    def run_P_NL(self, double pnl):
         """Performs a reactor run for a specific non-leakage probability value.
-        This requires that ms_feed be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+        This requires that ms_feed be (meaningfully) set and is for use with calibrate_P_NL_to_BUd().
 
         This function amounts to the following code::
 
             self.P_NL = pnl
-            self.foldMassWeights()
-            self.BUd_BisectionMethod()
+            self.fold_mass_weights()
+            self.BUd_bisection_method()
 
         Args:
             * pnl (float): The new non-leakage probability for the reactor.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).Run_PNL(pnl)
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).run_P_NL(pnl)
     
 
-    def Calibrate_PNL_2_BUd(self):
+    def calibrate_P_NL_to_BUd(self):
         """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
         and the target discharge burnup are.  This function handles that situation by
         calibrating the non-leakage probability of this reactor P_NL to hit its target burnup target_BU.
         Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
         benchmarking calculations.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).Calibrate_PNL_2_BUd()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calibrate_P_NL_to_BUd()
 
 
 
@@ -3454,9 +3454,9 @@ cdef class LightWaterReactor1G(Reactor1G):
         the calc() method is relatively simple::
 
             self.ms_feed = input
-            self.foldMassWeights()
-            self.BUd_BisectionMethod()
-            self.calcOutIso()
+            self.fold_mass_weights()
+            self.BUd_bisection_method()
+            self.calc_ms_prod()
             return self.ms_prod
 
         As you can see, all this function does is set burn an input stream to its maximum 
@@ -3600,7 +3600,7 @@ cdef class FastReactor1G(Reactor1G):
 
     Keyword Args:
         * libfile (string): The path the the FR HDF5 data library.  This value is set to 
-          Reactor1G.libfile and used by Reactor1G.loadLib.
+          Reactor1G.libfile and used by Reactor1G.loadlib.
         * reactor_parameters (ReactorParameters): The physical reactor parameter data to initialize this
           LWR instance with.  If this argument is not provided, default values are taken.
         * name (string): The name of this FR instance.
@@ -4315,7 +4315,7 @@ cdef class FastReactor1G(Reactor1G):
         (<cpp_bright.Reactor1G *> self.fr1g_pointer).initialize(<cpp_bright.ReactorParameters> rp.rp_pointer[0])
 
 
-    def loadLib(self, char * libfile="reactor.h5"):
+    def loadlib(self, char * libfile="reactor.h5"):
         """This method finds the HDF5 library for this reactor and extracts the necessary information from it.
         This method is typically called by the constructor of the child reactor type object.  It must be 
         called before attempting to do any real computation.
@@ -4323,56 +4323,56 @@ cdef class FastReactor1G(Reactor1G):
         Args: 
             * libfile (str): Path to the reactor library.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).loadLib(std.string(libfile))
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).loadlib(std.string(libfile))
 
 
-    def foldMassWeights(self):
+    def fold_mass_weights(self):
         """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
         In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-        as the values of ms_feed.  The raw data must have previously been read in from loadLib().  
+        as the values of ms_feed.  The raw data must have previously been read in from loadlib().  
 
         .. warning::
 
             Anytime any reactor parameter whatsoever (ms_feed, P_NL, *etc*) is altered in any way, 
-            the foldMassWeights() function must be called to reset all of the resultant data.
+            the fold_mass_weights() function must be called to reset all of the resultant data.
             If you are unsure, please call this function anyway to be safe.  There is little 
             harm in calling it twice by accident.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).foldMassWeights()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).fold_mass_weights()
 
 
 
 
 
-    def mkMj_F_(self):
+    def calc_Mj_F_(self):
         """This function calculates and sets the Mj_F_ attribute from ms_feed and the 
         raw reactor data Tij_F_.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).mkMj_F_()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_Mj_F_()
 
 
-    def mkMj_Fd_(self):
-        """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
+    def calc_Mj_Fd_(self):
+        """This function evaluates Mj_F_ calculated from calc_Mj_F_() at the discharge fluence Fd.
         The resultant isotopic dictionary is then converted into the ms_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate ms_prod
         without going through calc(), use this function.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).mkMj_Fd_()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_Mj_Fd_()
 
 
 
 
 
-    def calcOutIso(self):
+    def calc_ms_prod(self):
         """This is a convenience function that wraps the transmutation matrix methods.  
         It is equivalent to::
 
             #Wrapper to calculate discharge isotopics.
-            mkMj_F_()
-            mkMj_Fd_()
+            calc_Mj_F_()
+            calc_Mj_Fd_()
 
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcOutIso()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_ms_prod()
 
     def calcSubStreams(self):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
@@ -4409,7 +4409,7 @@ cdef class FastReactor1G(Reactor1G):
         """Calculates and sets the deltaR value of the reactor.  
         This is equal to the production rate minus the destruction rate at the target burnup::
 
-            deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
@@ -4436,7 +4436,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
 
-    def FluenceAtBU(self, double burnup):
+    def fluence_at_BU(self, double burnup):
         """This function takes a burnup value  and returns a special fluence point object.  
         The fluence point is an amalgamation of data where the at which the burnup occurs.
         This object instance FP contains three pieces of information::
@@ -4452,11 +4452,11 @@ cdef class FastReactor1G(Reactor1G):
             * fp (FluencePoint): A class containing fluence information.
         """
         cdef FluencePoint fp = FluencePoint()
-        fp.fp_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).FluenceAtBU(burnup)
+        fp.fp_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).fluence_at_BU(burnup)
         return fp
 
 
-    def batchAve(self, double BUd, char * PDk_flag="K"):
+    def batch_average(self, double BUd, char * PDk_flag="K"):
         """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
         This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
 
@@ -4470,12 +4470,12 @@ cdef class FastReactor1G(Reactor1G):
         Returns:
             * PDk (float): the batch averaged neutron production rate,
         """
-        cdef double PDk = (<cpp_bright.Reactor1G *> self.fr1g_pointer).batchAve(BUd, std.string(PDk_flag))
+        cdef double PDk = (<cpp_bright.Reactor1G *> self.fr1g_pointer).batch_average(BUd, std.string(PDk_flag))
         return PDk
 
 
-    def batchAveK(self, double BUd):
-        """Convenience function that calls batchAve(BUd, "K").
+    def batch_average_k(self, double BUd):
+        """Convenience function that calls batch_average(BUd, "K").
 
         Args:
             * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
@@ -4483,44 +4483,44 @@ cdef class FastReactor1G(Reactor1G):
         Returns:
             * k (float): the batch averaged multiplication factor.
         """
-        cdef double PDk = (<cpp_bright.Reactor1G *> self.fr1g_pointer).batchAveK(BUd)
+        cdef double PDk = (<cpp_bright.Reactor1G *> self.fr1g_pointer).batch_average_k(BUd)
         return PDk
 
 
-    def BUd_BisectionMethod(self):
+    def BUd_bisection_method(self):
         """Calculates the maximum discharge burnup via the Bisection Method for a given ms_feed
         in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
         that is closest to 1.0.
 
         Other root finding methods for determining maximum discharge burnup are certainly possible.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).BUd_BisectionMethod()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).BUd_bisection_method()
 
 
-    def Run_PNL(self, double pnl):
+    def run_P_NL(self, double pnl):
         """Performs a reactor run for a specific non-leakage probability value.
-        This requires that ms_feed be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+        This requires that ms_feed be (meaningfully) set and is for use with calibrate_P_NL_to_BUd().
 
         This function amounts to the following code::
 
             self.P_NL = pnl
-            self.foldMassWeights()
-            self.BUd_BisectionMethod()
+            self.fold_mass_weights()
+            self.BUd_bisection_method()
 
         Args:
             * pnl (float): The new non-leakage probability for the reactor.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).Run_PNL(pnl)
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).run_P_NL(pnl)
     
 
-    def Calibrate_PNL_2_BUd(self):
+    def calibrate_P_NL_to_BUd(self):
         """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
         and the target discharge burnup are.  This function handles that situation by
         calibrating the non-leakage probability of this reactor P_NL to hit its target burnup target_BU.
         Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
         benchmarking calculations.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).Calibrate_PNL_2_BUd()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calibrate_P_NL_to_BUd()
 
 
 
@@ -4530,9 +4530,9 @@ cdef class FastReactor1G(Reactor1G):
         the calc() method is relatively simple::
 
             self.ms_feed = input
-            self.foldMassWeights()
-            self.BUd_BisectionMethod()
-            self.calcOutIso()
+            self.fold_mass_weights()
+            self.BUd_bisection_method()
+            self.calc_ms_prod()
             return self.ms_prod
 
         As you can see, all this function does is set burn an input stream to its maximum 

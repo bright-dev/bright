@@ -18,7 +18,7 @@ FastReactor1G Class
 
     Args:
         * `libfile` (string): The path the the FR HDF5 data library.  This value is set to :attr:`Reactor1G.libfile` and used
-          by :meth:`Reactor1G.loadLib`.
+          by :meth:`Reactor1G.loadlib`.
         * `reactor_parameters` (:class:`ReactorParameters`): The physical reactor parameter data to initialize this
           FR instance with.  If this argument is not provided, default values are taken.
         * `name` (string): The name of this FR instance.

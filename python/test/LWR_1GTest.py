@@ -83,7 +83,7 @@ print("")
 
 print(r2.F)
 print_ms()
-r2.loadLib("FR.h5")
+r2.loadlib("FR.h5")
 print(r2.F)
 print_ms()
 
@@ -111,7 +111,7 @@ printReactorVals(r4)
 print_ms()
 
 r4.ms_feed = ms
-r4.foldMassWeights()
+r4.fold_mass_weights()
 print(r4.MWF)
 print(r4.MWC)
 
