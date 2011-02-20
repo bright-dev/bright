@@ -93,7 +93,7 @@ void Reactor1G::initialize(ReactorParameters rp)
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
     use_zeta = rp.useDisadvantage;		//Boolean value on whether or not the disadvantage factor should be used
     lattice_flag = rp.LatticeType;		//lattice_flagType (Planar || Spherical || Cylindrical)
-    H_XS_Rescale = rp.HydrogenRescale;	//Rescale the Hydrogen-1 XS?
+    rescale_hydrogen_xs = rp.HydrogenRescale;	//Rescale the Hydrogen-1 XS?
 
     //Calculates Volumes
     r = rp.Radius;			//Fuel region radius
@@ -438,7 +438,7 @@ void Reactor1G::foldMassWeights()
     dC_F_.assign( F.size(), 0.0 );
     for (CompIter i = miC.begin(); i != miC.end(); i++)
     {
-        if (H_XS_Rescale && (i->first) == 10010)
+        if (rescale_hydrogen_xs && (i->first) == 10010)
         {
             for (int f = 0; f < dC_F_.size(); f++)
             {

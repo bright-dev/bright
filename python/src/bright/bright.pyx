@@ -1619,12 +1619,12 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.lattice_flag = std.string(value)
 
 
-    property H_XS_Rescale:
+    property rescale_hydrogen_xs:
         def __get__(self):
-            return self.r1g_pointer.H_XS_Rescale
+            return self.r1g_pointer.rescale_hydrogen_xs
 
         def __set__(self, bint value):
-            self.r1g_pointer.H_XS_Rescale = value
+            self.r1g_pointer.rescale_hydrogen_xs = value
 
 
 
@@ -2658,12 +2658,12 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.lwr1g_pointer.lattice_flag = std.string(value)
 
 
-    property H_XS_Rescale:
+    property rescale_hydrogen_xs:
         def __get__(self):
-            return self.lwr1g_pointer.H_XS_Rescale
+            return self.lwr1g_pointer.rescale_hydrogen_xs
 
         def __set__(self, bint value):
-            self.lwr1g_pointer.H_XS_Rescale = value
+            self.lwr1g_pointer.rescale_hydrogen_xs = value
 
 
 
@@ -3727,12 +3727,12 @@ cdef class FastReactor1G(Reactor1G):
             self.fr1g_pointer.lattice_flag = std.string(value)
 
 
-    property H_XS_Rescale:
+    property rescale_hydrogen_xs:
         def __get__(self):
-            return self.fr1g_pointer.H_XS_Rescale
+            return self.fr1g_pointer.rescale_hydrogen_xs
 
         def __set__(self, bint value):
-            self.fr1g_pointer.H_XS_Rescale = value
+            self.fr1g_pointer.rescale_hydrogen_xs = value
 
 
 

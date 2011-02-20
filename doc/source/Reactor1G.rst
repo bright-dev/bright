@@ -152,7 +152,7 @@ in different manners in the same fuel cycle code.
     A string flag that represents what lattice type the fuel assemblies are arranged in.  Currently accepted values 
     are ``"Planar"``, ``"Spherical"``, and ``"Cylindrical"``.
 
-.. attribute:: Reactor1G.H_XS_Rescale
+.. attribute:: Reactor1G.rescale_hydrogen_xs
 
     This boolean determines whether the reactor should rescale the Hydrogen-1 destruction rate in the coolant as a
     function of fluence.  The scaling factor is calculated via the following equation:

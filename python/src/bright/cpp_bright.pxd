@@ -223,7 +223,7 @@ cdef extern from "../Reactor1G.h":
         double target_BU
         bint use_zeta
         std.string lattice_flag
-        bint H_XS_Rescale
+        bint rescale_hydrogen_xs
 
         double r
         double l

@@ -114,7 +114,7 @@ public:
     double target_BU; 						//Target Discharge Burnup, only used for graphing inside of this component
     bool use_zeta; 							//Boolean value on whether or not the disadvantage factor should be used
     std::string lattice_flag;						//lattice_flag Type (Planar || Spherical || Cylindrical)
-    bool H_XS_Rescale;						//Rescale the Hydrogen-1 XS?
+    bool rescale_hydrogen_xs;						//Rescale the Hydrogen-1 XS?
 
     double r; 							//Fuel region radius
     double l; 							//Unit cell side length

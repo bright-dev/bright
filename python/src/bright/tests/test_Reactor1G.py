@@ -218,7 +218,7 @@ class TestReactor1GConstructors(TestCase):
         assert_equal(r1g.target_BU, 0.0)
         assert_false(r1g.use_zeta)
         assert_equal(r1g.lattice_flag, '')
-        assert_false(r1g.H_XS_Rescale)
+        assert_false(r1g.rescale_hydrogen_xs)
         assert_equal(r1g.r, 0.0)
         assert_equal(r1g.l, 0.0)
         assert_equal(r1g.S_O, 0.0)
@@ -239,7 +239,7 @@ class TestReactor1GConstructors(TestCase):
         assert_almost_equal(r1g.target_BU, 0.0)
         assert_false(r1g.use_zeta)
         assert_equal(r1g.lattice_flag, '')
-        assert_false(r1g.H_XS_Rescale)
+        assert_false(r1g.rescale_hydrogen_xs)
         assert_almost_equal(r1g.r, 0.0)
         assert_almost_equal(r1g.l, 0.0)
         assert_almost_equal(r1g.S_O, 0.0)
@@ -308,10 +308,10 @@ class TestReactor1GParameterAttributes(TestCase):
         r1g.lattice_flag = 'Spherical'
         assert_equal(r1g.lattice_flag, 'Spherical')
 
-    def test_H_XS_Rescale(self):
+    def test_rescale_hydrogen_xs(self):
         r1g = Reactor1G()
-        r1g.H_XS_Rescale = True
-        assert_true(r1g.H_XS_Rescale)
+        r1g.rescale_hydrogen_xs = True
+        assert_true(r1g.rescale_hydrogen_xs)
 
     def test_r(self):
         r1g = Reactor1G()
@@ -529,7 +529,7 @@ class TestReactor1GCalculatedDataAttributes(TestCase):
         for f in range(len(self.r1g.F)):
             tmp_dC = 0.0
             for i in self.r1g.miC.keys():
-                if i == 10010 and self.r1g.H_XS_Rescale:
+                if i == 10010 and self.r1g.rescale_hydrogen_xs:
                     tmp_dC = tmp_dC + (self.r1g.miC[i] * di_F_[i][f] * (1.36927-(0.01119*self.r1g.BU_F_[f])) )
                 else:
                     tmp_dC = tmp_dC + (self.r1g.miC[i] * di_F_[i][f])
@@ -735,7 +735,7 @@ class TestReactor1GInitializationMethods(TestCase):
         assert_equal(self.r1g.target_BU, 0.0)
         assert_false(self.r1g.use_zeta)
         assert_equal(self.r1g.lattice_flag, '')
-        assert_false(self.r1g.H_XS_Rescale)
+        assert_false(self.r1g.rescale_hydrogen_xs)
         assert_equal(self.r1g.r, 0.0)
         assert_equal(self.r1g.l, 0.0)
         assert_equal(self.r1g.S_O, 0.0)
