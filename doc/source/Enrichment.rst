@@ -178,32 +178,32 @@ Enrichment Methods
 
     Here the parameters for :class:`Enrichment` are set::
 
-        self.ParamsIn["MassFeed"]  = self.ms_feed.mass
-        self.ParamsOut["MassFeed"] = 0.0
+        self.params_prior_calc["MassFeed"]  = self.ms_feed.mass
+        self.params_after_calc["MassFeed"] = 0.0
 
-        self.ParamsIn["MassProduct"]  = 0.0
-        self.ParamsOut["MassProduct"] = self.ms_prod.mass
+        self.params_prior_calc["MassProduct"]  = 0.0
+        self.params_after_calc["MassProduct"] = self.ms_prod.mass
 
-        self.ParamsIn["MassTails"]  = 0.0
-        self.ParamsOut["MassTails"] = self.ms_tail.mass
+        self.params_prior_calc["MassTails"]  = 0.0
+        self.params_after_calc["MassTails"] = self.ms_tail.mass
 
-        self.ParamsIn["N"]  = self.N
-        self.ParamsOut["N"] = self.N
+        self.params_prior_calc["N"]  = self.N
+        self.params_after_calc["N"] = self.N
 
-        self.ParamsIn["M"]  = self.M
-        self.ParamsOut["M"] = self.M
+        self.params_prior_calc["M"]  = self.M
+        self.params_after_calc["M"] = self.M
 
-        self.ParamsIn["Mstar"]  = self.Mstar
-        self.ParamsOut["Mstar"] = self.Mstar
+        self.params_prior_calc["Mstar"]  = self.Mstar
+        self.params_after_calc["Mstar"] = self.Mstar
 
-        self.ParamsIn["TotalPerFeed"]  = self.TotalPerFeed
-        self.ParamsOut["TotalPerFeed"] = self.TotalPerFeed
+        self.params_prior_calc["TotalPerFeed"]  = self.TotalPerFeed
+        self.params_after_calc["TotalPerFeed"] = self.TotalPerFeed
 
-        self.ParamsIn["SWUperFeed"]  = self.SWUperFeed
-        self.ParamsOut["SWUperFeed"] = 0.0
+        self.params_prior_calc["SWUperFeed"]  = self.SWUperFeed
+        self.params_after_calc["SWUperFeed"] = 0.0
 
-        self.ParamsIn["SWUperProduct"]  = 0.0
-        self.ParamsOut["SWUperProduct"] = self.SWUperProduct
+        self.params_prior_calc["SWUperProduct"]  = 0.0
+        self.params_after_calc["SWUperProduct"] = self.SWUperProduct
 
 
 

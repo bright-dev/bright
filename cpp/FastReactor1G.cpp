@@ -64,29 +64,29 @@ void FastReactor1G::setParams()
 
     calcSubStreams();
 
-    ParamsIn["BUd"]  = 0.0;
-    ParamsOut["BUd"] = BUd;
+    params_prior_calc["BUd"]  = 0.0;
+    params_after_calc["BUd"] = BUd;
 
-    ParamsIn["TRUCR"]  = 0.0;
-    ParamsOut["TRUCR"] = calcTruCR();
+    params_prior_calc["TRUCR"]  = 0.0;
+    params_after_calc["TRUCR"] = calcTruCR();
 
-    ParamsIn["P_NL"]  = 0.0;
-    ParamsOut["P_NL"] = P_NL;
+    params_prior_calc["P_NL"]  = 0.0;
+    params_after_calc["P_NL"] = P_NL;
 
-    ParamsIn["U"]  = InU.mass;
-    ParamsOut["U"] = OutU.mass;
+    params_prior_calc["U"]  = InU.mass;
+    params_after_calc["U"] = OutU.mass;
 
-    ParamsIn["TRU"]  = InTRU.mass;
-    ParamsOut["TRU"] = OutTRU.mass;
+    params_prior_calc["TRU"]  = InTRU.mass;
+    params_after_calc["TRU"] = OutTRU.mass;
 
-    ParamsIn["ACT"]  = InACT.mass;
-    ParamsOut["ACT"] = OutACT.mass;
+    params_prior_calc["ACT"]  = InACT.mass;
+    params_after_calc["ACT"] = OutACT.mass;
 
-    ParamsIn["LAN"]  = InLAN.mass;
-    ParamsOut["LAN"] = OutLAN.mass;
+    params_prior_calc["LAN"]  = InLAN.mass;
+    params_after_calc["LAN"] = OutLAN.mass;
 
-    ParamsIn["FP"]  = 1.0 - InACT.mass  - InLAN.mass;
-    ParamsOut["FP"] = 1.0 - OutACT.mass - OutLAN.mass;
+    params_prior_calc["FP"]  = 1.0 - InACT.mass  - InLAN.mass;
+    params_after_calc["FP"] = 1.0 - OutACT.mass - OutLAN.mass;
 
     return;
 };

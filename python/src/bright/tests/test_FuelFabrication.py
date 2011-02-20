@@ -310,17 +310,17 @@ class TestFuelFabricationMethodss(TestCase):
         core_input = self.ff.doCalc()
         self.ff.setParams()
 
-        assert_equal(self.ff.ParamsIn["Weight_U235"], -1.0)
-        assert_equal(self.ff.ParamsIn["Weight_U238"], -1.0)
+        assert_equal(self.ff.params_prior_calc["Weight_U235"], -1.0)
+        assert_equal(self.ff.params_prior_calc["Weight_U238"], -1.0)
 
-        assert_equal(self.ff.ParamsOut["Weight_U235"], self.ff.mass_weights_out["U235"])
-        assert_equal(self.ff.ParamsOut["Weight_U238"], self.ff.mass_weights_out["U238"])
+        assert_equal(self.ff.params_after_calc["Weight_U235"], self.ff.mass_weights_out["U235"])
+        assert_equal(self.ff.params_after_calc["Weight_U238"], self.ff.mass_weights_out["U238"])
 
-        assert_equal(self.ff.ParamsIn["deltaR_U235"], self.ff.deltaRs["U235"])
-        assert_equal(self.ff.ParamsIn["deltaR_U238"], self.ff.deltaRs["U238"])
+        assert_equal(self.ff.params_prior_calc["deltaR_U235"], self.ff.deltaRs["U235"])
+        assert_equal(self.ff.params_prior_calc["deltaR_U238"], self.ff.deltaRs["U238"])
 
-        assert_equal(self.ff.ParamsOut["deltaR_U235"], self.ff.deltaRs["U235"])
-        assert_equal(self.ff.ParamsOut["deltaR_U238"], self.ff.deltaRs["U238"])
+        assert_equal(self.ff.params_after_calc["deltaR_U235"], self.ff.deltaRs["U235"])
+        assert_equal(self.ff.params_after_calc["deltaR_U238"], self.ff.deltaRs["U238"])
 
 
 if __name__ == "__main__":

@@ -284,34 +284,34 @@ void FCComp::initialize_HDF5 ()
     //Initiallize the Parameters
     if (!params2track.empty())
     {	
-        // Open/Create ParamsIn group
-        H5::Group gParamsIn;
+        // Open/Create params_prior_calc group
+        H5::Group gparams_prior_calc;
         try
-          { gParamsIn = dbFile.openGroup(comp_path + "/ParamsIn"); }
+          { gparams_prior_calc = dbFile.openGroup(comp_path + "/params_prior_calc"); }
         catch (H5::Exception fgerror)
-          { gParamsIn = dbFile.createGroup(comp_path + "/ParamsIn"); }
+          { gparams_prior_calc = dbFile.createGroup(comp_path + "/params_prior_calc"); }
 
-        // Open/Create ParamsOut group
-        H5::Group gParamsOut;
+        // Open/Create params_after_calc group
+        H5::Group gparams_after_calc;
         try
-            { gParamsOut = dbFile.openGroup(comp_path + "/ParamsOut"); }
+            { gparams_after_calc = dbFile.openGroup(comp_path + "/params_after_calc"); }
         catch (H5::Exception fgerror)
-            { gParamsOut = dbFile.createGroup(comp_path + "/ParamsOut"); }
+            { gparams_after_calc = dbFile.createGroup(comp_path + "/params_after_calc"); }
 
         // Open/Create /Params[In|Out]/param Datasets
-        H5::DataSet dsParamsInParam;
-        H5::DataSet dsParamsOutParam;
+        H5::DataSet dsparams_prior_calcParam;
+        H5::DataSet dsparams_after_calcParam;
         for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
         {
             try
-                { dsParamsInParam = dbFile.openDataSet(comp_path + "/ParamsIn/"  + *p); }
+                { dsparams_prior_calcParam = dbFile.openDataSet(comp_path + "/params_prior_calc/"  + *p); }
             catch (H5::Exception fgerror)
-                { dsParamsInParam = dbFile.createDataSet(comp_path + "/ParamsIn/"  + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+                { dsparams_prior_calcParam = dbFile.createDataSet(comp_path + "/params_prior_calc/"  + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
 
             try
-                { dsParamsOutParam = dbFile.openDataSet(comp_path + "/ParamsOut/" + *p); }
+                { dsparams_after_calcParam = dbFile.openDataSet(comp_path + "/params_after_calc/" + *p); }
             catch (H5::Exception fgerror)
-                { dsParamsOutParam = dbFile.createDataSet(comp_path + "/ParamsOut/" + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+                { dsparams_after_calcParam = dbFile.createDataSet(comp_path + "/params_after_calc/" + *p, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
         }
     }
 
@@ -354,11 +354,11 @@ FCComp::~FCComp ()
 
 void FCComp::setParams ()
 {
-    //Placeholder function that sets the states of ParamsIn and ParamsOut.
+    //Placeholder function that sets the states of params_prior_calc and params_after_calc.
     for ( std::set<std::string>::iterator p2t = params2track.begin(); p2t != params2track.end(); p2t++)
     {
-        ParamsIn[*p2t]  = 0.0;
-        ParamsOut[*p2t] = 0.0;
+        params_prior_calc[*p2t]  = 0.0;
+        params_after_calc[*p2t] = 0.0;
     }
 }
 
@@ -428,8 +428,8 @@ void FCComp::writeParamPass ()
         std::string paramflag = bright::getFlag(line, 10);
         if (paramflag == "Param")
             parambuf << "\t" << bright::to_str(PassNum) << "in\t\t" << bright::to_str(PassNum) << "out\t";
-        else if (0 < ParamsIn.count(paramflag))
-            parambuf << "\t" << ParamsIn[paramflag] << "\t" << ParamsOut[paramflag];
+        else if (0 < params_prior_calc.count(paramflag))
+            parambuf << "\t" << params_prior_calc[paramflag] << "\t" << params_after_calc[paramflag];
         parambuf << "\n";
     }
     paramfilein.close();
@@ -496,8 +496,8 @@ void FCComp::writeHDF5 ()
     {
         for ( std::set<std::string>::iterator p = params2track.begin(); p != params2track.end(); p++)
         {
-            appendHDF5array(&dbFile, comp_path + "/ParamsIn/"  + (*p), &(ParamsIn[*p]),  &RANK, dims, offset, ext_size);
-            appendHDF5array(&dbFile, comp_path + "/ParamsOut/" + (*p), &(ParamsOut[*p]), &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/params_prior_calc/"  + (*p), &(params_prior_calc[*p]),  &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/params_after_calc/" + (*p), &(params_after_calc[*p]), &RANK, dims, offset, ext_size);
         }
     }
 

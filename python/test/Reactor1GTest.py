@@ -15,8 +15,8 @@ def printFCComp(fc):
     print("Params2Track: " + str(fc.params2track))
     print("ms_feed: " + str(fc.ms_feed))
     print("ms_prod: " + str(fc.ms_prod))
-    print("ParamsIn: " + str(fc.ParamsIn))
-    print("ParamsOut: " + str(fc.ParamsOut))
+    print("params_prior_calc: " + str(fc.params_prior_calc))
+    print("params_after_calc: " + str(fc.params_after_calc))
     print("Pass Number: " + str(fc.PassNum))
     return
 

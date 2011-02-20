@@ -87,23 +87,23 @@ class TestFCCompAttributes(TestCase):
         assert_equal(fcc.ms_prod.mass, 1.0)
         assert_equal(fcc.ms_prod.name, 'ms')
 
-    def test_ParamsIn_Empty(self):
+    def test_params_prior_calc_Empty(self):
         fcc = FCComp()
-        assert_equal(fcc.ParamsIn, {})
+        assert_equal(fcc.params_prior_calc, {})
 
-    def test_ParamsIn_Filled(self):
+    def test_params_prior_calc_Filled(self):
         fcc = FCComp(set(["Mass"]))
-        fcc.ParamsIn = {"Mass": 1.0}
-        assert_equal(fcc.ParamsIn, {"Mass": 1.0})
+        fcc.params_prior_calc = {"Mass": 1.0}
+        assert_equal(fcc.params_prior_calc, {"Mass": 1.0})
 
-    def test_ParamsOut_Empty(self):
+    def test_params_after_calc_Empty(self):
         fcc = FCComp()
-        assert_equal(fcc.ParamsOut, {})
+        assert_equal(fcc.params_after_calc, {})
 
-    def test_ParamsOut_Filled(self):
+    def test_params_after_calc_Filled(self):
         fcc = FCComp(set(["Mass"]))
-        fcc.ParamsOut = {"Mass": 1.0}
-        assert_equal(fcc.ParamsOut, {"Mass": 1.0})
+        fcc.params_after_calc = {"Mass": 1.0}
+        assert_equal(fcc.params_after_calc, {"Mass": 1.0})
 
     def test_PassNum(self):
         fcc = FCComp()
@@ -156,8 +156,8 @@ class TestFCCompMethods(TestCase):
     def test_setParams(self):
         fcc = FCComp(set(["Mass"]))
         fcc.setParams()
-        assert_equal(fcc.ParamsIn["Mass"],  0.0)
-        assert_equal(fcc.ParamsOut["Mass"], 0.0)
+        assert_equal(fcc.params_prior_calc["Mass"],  0.0)
+        assert_equal(fcc.params_after_calc["Mass"], 0.0)
 
     def test_writeIsoPass(self):
         bright_config.track_isos = set([922350])

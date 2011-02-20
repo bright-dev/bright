@@ -62,12 +62,12 @@ int main()
 	print("Testing setParams:");
 	ipFCC.setParams();
 	print("\tTesting Input Params:");
-	for (ParamDictIter p = ipFCC.ParamsIn.begin(); p !=  ipFCC.ParamsIn.end(); p++)
+	for (ParamDictIter p = ipFCC.params_prior_calc.begin(); p !=  ipFCC.params_prior_calc.end(); p++)
 	{
 		print("\t\t" + p->first + "\t" + to_str(p->second));
 	}
 	print("\tTesting Output Params:");
-	for (ParamDictIter p = ipFCC.ParamsOut.begin(); p !=  ipFCC.ParamsOut.end(); p++)
+	for (ParamDictIter p = ipFCC.params_after_calc.begin(); p !=  ipFCC.params_after_calc.end(); p++)
 	{
 		print("\t\t" + p->first + "\t" + to_str(p->second));
 	}
@@ -84,8 +84,8 @@ int main()
 	ipFCC.ms_prod.mass = 1.0;
 	ipFCC.ms_prod.comp[922350] = 0.008;
 	ipFCC.writeIsoPass();
-	ipFCC.ParamsIn["mass"]  = 10.0;
-	ipFCC.ParamsOut["mass"] = 5.0;
+	ipFCC.params_prior_calc["mass"]  = 10.0;
+	ipFCC.params_after_calc["mass"] = 5.0;
 	ipFCC.writeParamPass();
 
 	//Third Pass, same data as second

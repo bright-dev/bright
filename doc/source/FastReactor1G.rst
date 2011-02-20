@@ -45,29 +45,29 @@ or have been otherwise altered.
     Along with its own parameter set to track, the FR model implements its own function to set these
     parameters.  This function is equivalent to the following::
 
-        self.ParamsIn["BUd"]  = 0.0
-        self.ParamsOut["BUd"] = self.BUd
+        self.params_prior_calc["BUd"]  = 0.0
+        self.params_after_calc["BUd"] = self.BUd
 
-        self.ParamsIn["TRUCR"]  = 0.0
-        self.ParamsOut["TRUCR"] = self.calcTruCR()
+        self.params_prior_calc["TRUCR"]  = 0.0
+        self.params_after_calc["TRUCR"] = self.calcTruCR()
 
-        self.ParamsIn["P_NL"]  = 0.0
-        self.ParamsOut["P_NL"] = self.P_NL
+        self.params_prior_calc["P_NL"]  = 0.0
+        self.params_after_calc["P_NL"] = self.P_NL
 
-        self.ParamsIn["U"]  = self.InU.mass
-        self.ParamsOut["U"] = self.OutU.mass
+        self.params_prior_calc["U"]  = self.InU.mass
+        self.params_after_calc["U"] = self.OutU.mass
 
-        self.ParamsIn["TRU"]  = self.InTRU.mass
-        self.ParamsOut["TRU"] = self.OutTRU.mass
+        self.params_prior_calc["TRU"]  = self.InTRU.mass
+        self.params_after_calc["TRU"] = self.OutTRU.mass
 
-        self.ParamsIn["ACT"]  = self.InACT.mass
-        self.ParamsOut["ACT"] = self.OutACT.mass
+        self.params_prior_calc["ACT"]  = self.InACT.mass
+        self.params_after_calc["ACT"] = self.OutACT.mass
 
-        self.ParamsIn["LAN"]  = self.InLAN.mass
-        self.ParamsOut["LAN"] = self.OutLAN.mass
+        self.params_prior_calc["LAN"]  = self.InLAN.mass
+        self.params_after_calc["LAN"] = self.OutLAN.mass
 
-        self.ParamsIn["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
-        self.ParamsOut["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
+        self.params_prior_calc["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
+        self.params_after_calc["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
 
 ===============================
 Fast Reactor Default Parameters

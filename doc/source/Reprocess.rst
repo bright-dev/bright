@@ -109,6 +109,6 @@ Reprocess Methods
     Here the parameters for :class:`Reprocess` are set.  For reprocessing, this amounts to just
     a "Mass" parameter::
 
-        self.ParamsIn["Mass"]  = self.ms_feed.mass
-        self.ParamsOut["Mass"] = self.ms_prod.mass
+        self.params_prior_calc["Mass"]  = self.ms_feed.mass
+        self.params_after_calc["Mass"] = self.ms_prod.mass
 

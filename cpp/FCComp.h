@@ -66,8 +66,8 @@ public:
     std::string natural_name;           //Component natural name
     MassStream ms_feed;			        //Nuclides flowing into the component.
     MassStream ms_prod;		        	//Nuclides flowing out of the component.
-    ParamDict ParamsIn;			        //Input paramater values.
-    ParamDict ParamsOut;		        //Output parameter values.
+    ParamDict params_prior_calc;			        //Input paramater values.
+    ParamDict params_after_calc;		        //Output parameter values.
     int PassNum;			        	//Cycle Number currently on [int].
     std::set<std::string> params2track;	//Set of Parameters to track for this component
 

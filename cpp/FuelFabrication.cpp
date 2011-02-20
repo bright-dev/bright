@@ -239,11 +239,11 @@ void FuelFabrication::setParams ()
         std::string mw_key ("Weight_" + (*mws).first);
         std::string dR_key ("deltaR_" + (*mws).first);
 
-        ParamsIn[mw_key]  = mass_weights_in[(*mws).first];
-        ParamsOut[mw_key] = mass_weights_out[(*mws).first];
+        params_prior_calc[mw_key]  = mass_weights_in[(*mws).first];
+        params_after_calc[mw_key] = mass_weights_out[(*mws).first];
 
-        ParamsIn[dR_key]  = deltaRs[(*mws).first];
-        ParamsOut[dR_key] = deltaRs[(*mws).first];
+        params_prior_calc[dR_key]  = deltaRs[(*mws).first];
+        params_after_calc[dR_key] = deltaRs[(*mws).first];
     };
 };
 

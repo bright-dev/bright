@@ -157,8 +157,8 @@ Storage::~Storage ()
 
 void Storage::setParams()
 {
-    ParamsIn["Mass"]  = ms_feed.mass;
-    ParamsOut["Mass"] = ms_prod.mass;
+    params_prior_calc["Mass"]  = ms_feed.mass;
+    params_after_calc["Mass"] = ms_prod.mass;
 }
 
 MassStream Storage::doCalc()

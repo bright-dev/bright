@@ -119,8 +119,8 @@ class TestStorageMethods(TestCase):
         s = Storage()
         s.doCalc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
         s.setParams()
-        assert_equal(s.ParamsIn["Mass"],  1.00)
-        assert(0.5 < s.ParamsOut["Mass"] < 1.0)
+        assert_equal(s.params_prior_calc["Mass"],  1.00)
+        assert(0.5 < s.params_after_calc["Mass"] < 1.0)
         
 
 if __name__ == "__main__":

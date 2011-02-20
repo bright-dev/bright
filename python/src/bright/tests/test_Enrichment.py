@@ -307,32 +307,32 @@ class TestEnrichmentMethods(TestCase):
         e.doCalc(ms)
         e.setParams()
 
-        assert_equal(e.ParamsIn["MassFeed"],  e.ms_feed.mass)
-        assert_equal(e.ParamsOut["MassFeed"], 0.0)
+        assert_equal(e.params_prior_calc["MassFeed"],  e.ms_feed.mass)
+        assert_equal(e.params_after_calc["MassFeed"], 0.0)
 
-        assert_equal(e.ParamsIn["MassProduct"],  0.0)
-        assert_equal(e.ParamsOut["MassProduct"], e.ms_prod.mass)
+        assert_equal(e.params_prior_calc["MassProduct"],  0.0)
+        assert_equal(e.params_after_calc["MassProduct"], e.ms_prod.mass)
 
-        assert_equal(e.ParamsIn["MassTails"],  0.0)
-        assert_equal(e.ParamsOut["MassTails"], e.ms_tail.mass)
+        assert_equal(e.params_prior_calc["MassTails"],  0.0)
+        assert_equal(e.params_after_calc["MassTails"], e.ms_tail.mass)
 
-        assert_equal(e.ParamsIn["N"],  e.N)
-        assert_equal(e.ParamsOut["N"], e.N)
+        assert_equal(e.params_prior_calc["N"],  e.N)
+        assert_equal(e.params_after_calc["N"], e.N)
 
-        assert_equal(e.ParamsIn["M"],  e.M)
-        assert_equal(e.ParamsOut["M"], e.M)
+        assert_equal(e.params_prior_calc["M"],  e.M)
+        assert_equal(e.params_after_calc["M"], e.M)
 
-        assert_equal(e.ParamsIn["Mstar"],  e.Mstar)
-        assert_equal(e.ParamsOut["Mstar"], e.Mstar)
+        assert_equal(e.params_prior_calc["Mstar"],  e.Mstar)
+        assert_equal(e.params_after_calc["Mstar"], e.Mstar)
 
-        assert_equal(e.ParamsIn["TotalPerFeed"],  e.TotalPerFeed)
-        assert_equal(e.ParamsOut["TotalPerFeed"], e.TotalPerFeed)
+        assert_equal(e.params_prior_calc["TotalPerFeed"],  e.TotalPerFeed)
+        assert_equal(e.params_after_calc["TotalPerFeed"], e.TotalPerFeed)
 
-        assert_equal(e.ParamsIn["SWUperFeed"],  e.SWUperFeed)
-        assert_equal(e.ParamsOut["SWUperFeed"], 0.0)
+        assert_equal(e.params_prior_calc["SWUperFeed"],  e.SWUperFeed)
+        assert_equal(e.params_after_calc["SWUperFeed"], 0.0)
 
-        assert_equal(e.ParamsIn["SWUperProduct"],  0.0)
-        assert_equal(e.ParamsOut["SWUperProduct"], e.SWUperProduct)
+        assert_equal(e.params_prior_calc["SWUperProduct"],  0.0)
+        assert_equal(e.params_after_calc["SWUperProduct"], e.SWUperProduct)
 
 
 class TestEnrichmentBenchmarks(TestCase):

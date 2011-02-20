@@ -105,32 +105,32 @@ Enrichment::~Enrichment ()
 
 void Enrichment::setParams ()
 {
-    ParamsIn["MassFeed"]  = ms_feed.mass;
-    ParamsOut["MassFeed"] = 0.0;	
+    params_prior_calc["MassFeed"]  = ms_feed.mass;
+    params_after_calc["MassFeed"] = 0.0;	
 
-    ParamsIn["MassProduct"]  = 0.0;
-    ParamsOut["MassProduct"] = ms_prod.mass;	
+    params_prior_calc["MassProduct"]  = 0.0;
+    params_after_calc["MassProduct"] = ms_prod.mass;	
 
-    ParamsIn["MassTails"]  = 0.0;
-    ParamsOut["MassTails"] = ms_tail.mass;	
+    params_prior_calc["MassTails"]  = 0.0;
+    params_after_calc["MassTails"] = ms_tail.mass;	
 
-    ParamsIn["N"]  = N;
-    ParamsOut["N"] = N;	
+    params_prior_calc["N"]  = N;
+    params_after_calc["N"] = N;	
 
-    ParamsIn["M"]  = M;
-    ParamsOut["M"] = M;	
+    params_prior_calc["M"]  = M;
+    params_after_calc["M"] = M;	
 
-    ParamsIn["Mstar"]  = Mstar;
-    ParamsOut["Mstar"] = Mstar;	
+    params_prior_calc["Mstar"]  = Mstar;
+    params_after_calc["Mstar"] = Mstar;	
 
-    ParamsIn["TotalPerFeed"]  = TotalPerFeed;
-    ParamsOut["TotalPerFeed"] = TotalPerFeed;	
+    params_prior_calc["TotalPerFeed"]  = TotalPerFeed;
+    params_after_calc["TotalPerFeed"] = TotalPerFeed;	
 
-    ParamsIn["SWUperFeed"]  = SWUperFeed;
-    ParamsOut["SWUperFeed"] = 0.0;	
+    params_prior_calc["SWUperFeed"]  = SWUperFeed;
+    params_after_calc["SWUperFeed"] = 0.0;	
 
-    ParamsIn["SWUperProduct"]  = 0.0;
-    ParamsOut["SWUperProduct"] = SWUperProduct;	
+    params_prior_calc["SWUperProduct"]  = 0.0;
+    params_after_calc["SWUperProduct"] = SWUperProduct;	
 }
 
 MassStream Enrichment::doCalc ()

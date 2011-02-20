@@ -148,8 +148,8 @@ class TestReprocessMethods(TestCase):
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
         r.doCalc(MassStream({942390: 1.0}))
         r.setParams()
-        assert_equal(r.ParamsIn["Mass"],  1.00)
-        assert_equal(r.ParamsOut["Mass"], 0.99)
+        assert_equal(r.params_prior_calc["Mass"],  1.00)
+        assert_equal(r.params_after_calc["Mass"], 0.99)
         
 
 if __name__ == "__main__":

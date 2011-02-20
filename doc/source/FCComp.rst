@@ -47,7 +47,7 @@ FCComp Attributes
     .. note:: Calling :meth:`FCComp.doCalc` should calculate :attr:`ms_prod` from the :attr:`ms_feed` values.
 
 
-.. attribute:: FCComp.ParamsIn
+.. attribute:: FCComp.params_prior_calc
 
     This is a dictionary (or C map) that represents component specific parameters at input for this pass.  
     The keys are restricted to strings while their associated values are floats (doubles).  For example, 
@@ -55,7 +55,7 @@ FCComp Attributes
         
     This attribute may be accessed and altered directly (public).
 
-.. attribute:: FCComp.ParamsOut
+.. attribute:: FCComp.params_after_calc
 
     This is a dictionary (or C map) that represents component specific parameters at output for this pass.  
     The keys are restricted to strings while their associated values are floats (doubles).  For example, 
@@ -67,7 +67,7 @@ FCComp Attributes
         
     .. note::
 
-        The :attr:`ParamsIn` and :attr:`ParamsOut` attributes do not have meaningful values until :meth:`FCComp.setParams` is
+        The :attr:`params_prior_calc` and :attr:`params_after_calc` attributes do not have meaningful values until :meth:`FCComp.setParams` is
         called.  This should be done after :meth:`FCComp.doCalc` but prior to output.
 
 .. attribute:: FCComp.PassNum
@@ -85,7 +85,7 @@ FCComp Attributes
 
 .. attribute:: FCComp.params2track
 
-    A list (C set) of strings that holds the keys of :attr:`ParamsIn` and :attr:`ParamsOut`.
+    A list (C set) of strings that holds the keys of :attr:`params_prior_calc` and :attr:`params_after_calc`.
     Every component type has its own set of parameters it is able to track.  This is why 
     :attr:`params2track` is a component-specific attribute, while :func:`track_isos` is a module-level
     object.
@@ -145,8 +145,8 @@ FCComp Methods
     has a "Mass" parameter.  Translated into Python, :meth:`setParams` here looks like the following::
 
         def setParams(self):
-            self.ParamsIn["Mass"]  = self.ms_feed.mass
-            self.ParamsOut["Mass"] = self.ms_prod.mass
+            self.params_prior_calc["Mass"]  = self.ms_feed.mass
+            self.params_after_calc["Mass"] = self.ms_prod.mass
             return
 
 

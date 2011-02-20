@@ -234,20 +234,20 @@ cdef class FCComp:
             self.fccomp_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fccomp_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.fccomp_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.fccomp_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.fccomp_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fccomp_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.fccomp_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.fccomp_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.fccomp_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -374,8 +374,8 @@ cdef class FCComp:
         has a "Mass" parameter.  Translated into Python, setParams() here looks like the following::
 
             def setParams(self):
-                self.ParamsIn["Mass"]  = self.ms_feed.mass
-                self.ParamsOut["Mass"] = self.ms_prod.mass
+                self.params_prior_calc["Mass"]  = self.ms_feed.mass
+                self.params_after_calc["Mass"] = self.ms_prod.mass
                 return
         """
         self.fccomp_pointer.setParams()
@@ -700,20 +700,20 @@ cdef class Enrichment(FCComp):
             self.e_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.e_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.e_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.e_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.e_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.e_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.e_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.e_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.e_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -752,32 +752,32 @@ cdef class Enrichment(FCComp):
     def setParams(self):
         """Here the parameters for Enrichment are set::
 
-            self.ParamsIn["MassFeed"]  = self.ms_feed.mass
-            self.ParamsOut["MassFeed"] = 0.0
+            self.params_prior_calc["MassFeed"]  = self.ms_feed.mass
+            self.params_after_calc["MassFeed"] = 0.0
 
-            self.ParamsIn["MassProduct"]  = 0.0
-            self.ParamsOut["MassProduct"] = self.ms_prod.mass
+            self.params_prior_calc["MassProduct"]  = 0.0
+            self.params_after_calc["MassProduct"] = self.ms_prod.mass
 
-            self.ParamsIn["MassTails"]  = 0.0
-            self.ParamsOut["MassTails"] = self.ms_tail.mass
+            self.params_prior_calc["MassTails"]  = 0.0
+            self.params_after_calc["MassTails"] = self.ms_tail.mass
 
-            self.ParamsIn["N"]  = self.N
-            self.ParamsOut["N"] = self.N
+            self.params_prior_calc["N"]  = self.N
+            self.params_after_calc["N"] = self.N
 
-            self.ParamsIn["M"]  = self.M
-            self.ParamsOut["M"] = self.M
+            self.params_prior_calc["M"]  = self.M
+            self.params_after_calc["M"] = self.M
 
-            self.ParamsIn["Mstar"]  = self.Mstar
-            self.ParamsOut["Mstar"] = self.Mstar
+            self.params_prior_calc["Mstar"]  = self.Mstar
+            self.params_after_calc["Mstar"] = self.Mstar
 
-            self.ParamsIn["TotalPerFeed"]  = self.TotalPerFeed
-            self.ParamsOut["TotalPerFeed"] = self.TotalPerFeed
+            self.params_prior_calc["TotalPerFeed"]  = self.TotalPerFeed
+            self.params_after_calc["TotalPerFeed"] = self.TotalPerFeed
 
-            self.ParamsIn["SWUperFeed"]  = self.SWUperFeed
-            self.ParamsOut["SWUperFeed"] = 0.0
+            self.params_prior_calc["SWUperFeed"]  = self.SWUperFeed
+            self.params_after_calc["SWUperFeed"] = 0.0
 
-            self.ParamsIn["SWUperProduct"]  = 0.0
-            self.ParamsOut["SWUperProduct"] = self.SWUperProduct
+            self.params_prior_calc["SWUperProduct"]  = 0.0
+            self.params_after_calc["SWUperProduct"] = self.SWUperProduct
 
         """
         (<cpp_bright.FCComp *> self.e_pointer).setParams()
@@ -968,20 +968,20 @@ cdef class Reprocess(FCComp):
             self.r_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.r_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.r_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.r_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.r_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.r_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.r_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.r_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.r_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -1022,8 +1022,8 @@ cdef class Reprocess(FCComp):
         """Here the parameters for Reprocess are set.  For reprocessing, this amounts to just
         a "Mass" parameter::
 
-            self.ParamsIn["Mass"]  = self.ms_feed.mass
-            self.ParamsOut["Mass"] = self.ms_prod.mass
+            self.params_prior_calc["Mass"]  = self.ms_feed.mass
+            self.params_after_calc["Mass"] = self.ms_prod.mass
 
         """
         (<cpp_bright.FCComp *> self.r_pointer).setParams()
@@ -1138,20 +1138,20 @@ cdef class Storage(FCComp):
             self.s_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.s_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.s_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.s_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.s_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.s_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.s_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.s_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.s_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -1178,8 +1178,8 @@ cdef class Storage(FCComp):
         """Here the parameters for Storage are set.  For storage, this amounts to just
         a "Mass" parameter::
 
-            self.ParamsIn["Mass"]  = self.ms_feed.mass
-            self.ParamsOut["Mass"] = self.ms_prod.mass
+            self.params_prior_calc["Mass"]  = self.ms_feed.mass
+            self.params_after_calc["Mass"] = self.ms_prod.mass
         """
         (<cpp_bright.FCComp *> self.s_pointer).setParams()
 
@@ -2122,20 +2122,20 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.r1g_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.r1g_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.r1g_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.r1g_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.r1g_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.r1g_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -3161,20 +3161,20 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.lwr1g_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.lwr1g_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.lwr1g_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.lwr1g_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.lwr1g_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -3204,22 +3204,22 @@ cdef class LightWaterReactor1G(Reactor1G):
         """Along with its own parameter set to track, the LWR model implements its own function to set these
         parameters.  This function is equivalent to the following::
 
-            self.ParamsIn["BUd"]  = 0.0
-            self.ParamsOut["BUd"] = self.BUd
+            self.params_prior_calc["BUd"]  = 0.0
+            self.params_after_calc["BUd"] = self.BUd
 
-            self.ParamsIn["U"]  = self.InU.mass
-            self.ParamsOut["U"] = self.OutU.mass
+            self.params_prior_calc["U"]  = self.InU.mass
+            self.params_after_calc["U"] = self.OutU.mass
 
-            self.ParamsIn["TRU"]  = self.InTRU.mass
-            self.ParamsOut["TRU"] = self.OutTRU.mass
+            self.params_prior_calc["TRU"]  = self.InTRU.mass
+            self.params_after_calc["TRU"] = self.OutTRU.mass
 
-            self.ParamsIn["ACT"]  = self.InACT.mass
-            self.ParamsOut["ACT"] = self.OutACT.mass
+            self.params_prior_calc["ACT"]  = self.InACT.mass
+            self.params_after_calc["ACT"] = self.OutACT.mass
 
-            self.ParamsIn["LAN"]  = self.InLAN.mass
-            self.ParamsOut["LAN"] = self.OutLAN.mass
+            self.params_prior_calc["LAN"]  = self.InLAN.mass
+            self.params_after_calc["LAN"] = self.OutLAN.mass
 
-            self.ParamsIn["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
+            self.params_prior_calc["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
 
         """
         (<cpp_bright.FCComp *> self.lwr1g_pointer).setParams()
@@ -4230,20 +4230,20 @@ cdef class FastReactor1G(Reactor1G):
             self.fr1g_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fr1g_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.fr1g_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.fr1g_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fr1g_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.fr1g_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.fr1g_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -4273,29 +4273,29 @@ cdef class FastReactor1G(Reactor1G):
         """Along with its own parameter set to track, the FR model implements its own function to set these
         parameters.  This function is equivalent to the following::
 
-            self.ParamsIn["BUd"]  = 0.0
-            self.ParamsOut["BUd"] = self.BUd
+            self.params_prior_calc["BUd"]  = 0.0
+            self.params_after_calc["BUd"] = self.BUd
 
-            self.ParamsIn["TRUCR"]  = 0.0
-            self.ParamsOut["TRUCR"] = self.calcTruCR()
+            self.params_prior_calc["TRUCR"]  = 0.0
+            self.params_after_calc["TRUCR"] = self.calcTruCR()
 
-            self.ParamsIn["P_NL"]  = 0.0
-            self.ParamsOut["P_NL"] = self.P_NL
+            self.params_prior_calc["P_NL"]  = 0.0
+            self.params_after_calc["P_NL"] = self.P_NL
 
-            self.ParamsIn["U"]  = self.InU.mass
-            self.ParamsOut["U"] = self.OutU.mass
+            self.params_prior_calc["U"]  = self.InU.mass
+            self.params_after_calc["U"] = self.OutU.mass
 
-            self.ParamsIn["TRU"]  = self.InTRU.mass
-            self.ParamsOut["TRU"] = self.OutTRU.mass
+            self.params_prior_calc["TRU"]  = self.InTRU.mass
+            self.params_after_calc["TRU"] = self.OutTRU.mass
 
-            self.ParamsIn["ACT"]  = self.InACT.mass
-            self.ParamsOut["ACT"] = self.OutACT.mass
+            self.params_prior_calc["ACT"]  = self.InACT.mass
+            self.params_after_calc["ACT"] = self.OutACT.mass
 
-            self.ParamsIn["LAN"]  = self.InLAN.mass
-            self.ParamsOut["LAN"] = self.OutLAN.mass
+            self.params_prior_calc["LAN"]  = self.InLAN.mass
+            self.params_after_calc["LAN"] = self.OutLAN.mass
 
-            self.ParamsIn["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
-            self.ParamsOut["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
+            self.params_prior_calc["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
+            self.params_after_calc["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
 
         """
         (<cpp_bright.FCComp *> self.fr1g_pointer).setParams()
@@ -4831,20 +4831,20 @@ cdef class FuelFabrication(FCComp):
             self.ff_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property ParamsIn:
+    property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.ff_pointer.ParamsIn)
+            return conv.map_to_dict_str_dbl(self.ff_pointer.params_prior_calc)
 
         def __set__(self, dict pi):
-            self.ff_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+            self.ff_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
-    property ParamsOut:
+    property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.ff_pointer.ParamsOut)
+            return conv.map_to_dict_str_dbl(self.ff_pointer.params_after_calc)
 
         def __set__(self, dict po):
-            self.ff_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+            self.ff_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property PassNum:
@@ -4887,16 +4887,16 @@ cdef class FuelFabrication(FCComp):
     def setParams(self):
         """Here the parameters for FuelFabrication are set.  For example::
 
-            self.ParamsIn["Weight_U235"]  = self.mass_weights_in["U235"]
+            self.params_prior_calc["Weight_U235"]  = self.mass_weights_in["U235"]
             self.Paramsout["Weight_U235"] = self.mass_weights_out["U235"]
 
-            self.ParamsIn["deltaR_U235"]  = self.deltaRs["U235"]
+            self.params_prior_calc["deltaR_U235"]  = self.deltaRs["U235"]
             self.Paramsout["deltaR_U235"] = self.deltaRs["U235"]
 
-            self.ParamsIn["Weight_U238"]  = self.mass_weights_in["U238"]
+            self.params_prior_calc["Weight_U238"]  = self.mass_weights_in["U238"]
             self.Paramsout["Weight_U238"] = self.mass_weights_out["U238"]
 
-            self.ParamsIn["deltaR_U238"]  = self.deltaRs["U238"]
+            self.params_prior_calc["deltaR_U238"]  = self.deltaRs["U238"]
             self.Paramsout["deltaR_U238"] = self.deltaRs["U238"]
         """
         (<cpp_bright.FCComp *> self.ff_pointer).setParams()

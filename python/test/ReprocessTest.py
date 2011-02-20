@@ -14,8 +14,8 @@ def printFCComp(fc):
     print("Params2Track: " + str(fc.params2track))
     print("ms_feed: " + str(fc.ms_feed))
     print("ms_prod: " + str(fc.ms_prod))
-    print("ParamsIn: " + str(fc.ParamsIn))
-    print("ParamsOut: " + str(fc.ParamsOut))
+    print("params_prior_calc: " + str(fc.params_prior_calc))
+    print("params_after_calc: " + str(fc.params_after_calc))
     print("Pass Number: " + str(fc.PassNum))
     print("Do Calc Empty: " + str( fc.doCalc() ))
     testCD = {922350: 10.0, 10010: 1.0}
@@ -74,12 +74,12 @@ print(str(R.ms_feed))
 print(str(R.ms_prod))
 print("")
 
-print(str(R.ParamsIn))
-print(str(R.ParamsOut))
+print(str(R.params_prior_calc))
+print(str(R.params_after_calc))
 print("")
 R.setParams()
-print(str(R.ParamsIn))
-print(str(R.ParamsOut))
+print(str(R.params_prior_calc))
+print(str(R.params_after_calc))
 print("")
 
 

@@ -39,8 +39,8 @@ cdef extern from "../FCComp.h":
         cpp_mass_stream.MassStream ms_feed
         cpp_mass_stream.MassStream ms_prod
 
-        map[std.string, double] ParamsIn
-        map[std.string, double] ParamsOut
+        map[std.string, double] params_prior_calc
+        map[std.string, double] params_after_calc
 
         int PassNum
         set[std.string] params2track
