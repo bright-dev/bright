@@ -1910,84 +1910,84 @@ cdef class Reactor1G(FCComp):
 
 
 
-    property InU:
+    property ms_feed_u:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.InU
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_feed_u
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.InU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_feed_u = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InTRU:
+    property ms_feed_tru:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.InTRU
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_feed_tru
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.InTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_feed_tru = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InLAN:
+    property ms_feed_lan:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.InLAN
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_feed_lan
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.InLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_feed_lan = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InACT:
+    property ms_feed_act:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.InACT
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_feed_act
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.InACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_feed_act = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutU:
+    property ms_prod_u:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.OutU
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_prod_u
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.OutU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_prod_u = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutTRU:
+    property ms_prod_tru:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.OutTRU
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_prod_tru
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.OutTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_prod_tru = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutLAN:
+    property ms_prod_lan:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.OutLAN
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_prod_lan
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.OutLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_prod_lan = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutACT:
+    property ms_prod_act:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.OutACT
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_prod_act
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.OutACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_prod_act = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
 
@@ -2233,14 +2233,14 @@ cdef class Reactor1G(FCComp):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
         attributes:
 
-            * InU
-            * InTRU
-            * InLAN
-            * InACT
-            * OutU
-            * OutTRU
-            * OutLAN
-            * OutACT
+            * ms_feed_u
+            * ms_feed_tru
+            * ms_feed_lan
+            * ms_feed_act
+            * ms_prod_u
+            * ms_prod_tru
+            * ms_prod_lan
+            * ms_prod_act
 
         """
         self.r1g_pointer.calcSubStreams()
@@ -2249,7 +2249,7 @@ cdef class Reactor1G(FCComp):
     def calcTruCR(self):
         """This calculates and sets the transuranic conversion ratio TruCR through the equation:
 
-        .. math:: \mbox{TruCR} = \frac{\mbox{InTRU.mass} - \mbox{OutTRU.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
         Returns:
             * TruCR (float): The value of the transuranic conversion ratio just calculated.
@@ -2949,84 +2949,84 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
 
-    property InU:
+    property ms_feed_u:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.InU
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_feed_u
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.InU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_feed_u = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InTRU:
+    property ms_feed_tru:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.InTRU
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_feed_tru
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.InTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_feed_tru = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InLAN:
+    property ms_feed_lan:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.InLAN
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_feed_lan
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.InLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_feed_lan = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InACT:
+    property ms_feed_act:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.InACT
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_feed_act
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.InACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_feed_act = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutU:
+    property ms_prod_u:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.OutU
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_prod_u
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.OutU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_prod_u = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutTRU:
+    property ms_prod_tru:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.OutTRU
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_prod_tru
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.OutTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_prod_tru = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutLAN:
+    property ms_prod_lan:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.OutLAN
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_prod_lan
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.OutLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_prod_lan = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutACT:
+    property ms_prod_act:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.OutACT
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_prod_act
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.OutACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_prod_act = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
 
@@ -3207,19 +3207,19 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.params_prior_calc["BUd"]  = 0.0
             self.params_after_calc["BUd"] = self.BUd
 
-            self.params_prior_calc["U"]  = self.InU.mass
-            self.params_after_calc["U"] = self.OutU.mass
+            self.params_prior_calc["U"]  = self.ms_feed_u.mass
+            self.params_after_calc["U"] = self.ms_prod_u.mass
 
-            self.params_prior_calc["TRU"]  = self.InTRU.mass
-            self.params_after_calc["TRU"] = self.OutTRU.mass
+            self.params_prior_calc["TRU"]  = self.ms_feed_tru.mass
+            self.params_after_calc["TRU"] = self.ms_prod_tru.mass
 
-            self.params_prior_calc["ACT"]  = self.InACT.mass
-            self.params_after_calc["ACT"] = self.OutACT.mass
+            self.params_prior_calc["ACT"]  = self.ms_feed_act.mass
+            self.params_after_calc["ACT"] = self.ms_prod_act.mass
 
-            self.params_prior_calc["LAN"]  = self.InLAN.mass
-            self.params_after_calc["LAN"] = self.OutLAN.mass
+            self.params_prior_calc["LAN"]  = self.ms_feed_lan.mass
+            self.params_after_calc["LAN"] = self.ms_prod_lan.mass
 
-            self.params_prior_calc["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
+            self.params_prior_calc["FP"]  = 1.0 - self.ms_feed_act.mass  - self.ms_feed_lan.mass
 
         """
         (<cpp_bright.FCComp *> self.lwr1g_pointer).calc_params()
@@ -3302,14 +3302,14 @@ cdef class LightWaterReactor1G(Reactor1G):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
         attributes:
 
-            * InU
-            * InTRU
-            * InLAN
-            * InACT
-            * OutU
-            * OutTRU
-            * OutLAN
-            * OutACT
+            * ms_feed_u
+            * ms_feed_tru
+            * ms_feed_lan
+            * ms_feed_act
+            * ms_prod_u
+            * ms_prod_tru
+            * ms_prod_lan
+            * ms_prod_act
 
         """
         (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcSubStreams()
@@ -3318,7 +3318,7 @@ cdef class LightWaterReactor1G(Reactor1G):
     def calcTruCR(self):
         """This calculates and sets the transuranic conversion ratio TruCR through the equation:
 
-        .. math:: \mbox{TruCR} = \frac{\mbox{InTRU.mass} - \mbox{OutTRU.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
         Returns:
             * TruCR (float): The value of the transuranic conversion ratio just calculated.
@@ -4018,84 +4018,84 @@ cdef class FastReactor1G(Reactor1G):
 
 
 
-    property InU:
+    property ms_feed_u:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.InU
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_feed_u
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.InU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_feed_u = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InTRU:
+    property ms_feed_tru:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.InTRU
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_feed_tru
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.InTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_feed_tru = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InLAN:
+    property ms_feed_lan:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.InLAN
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_feed_lan
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.InLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_feed_lan = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property InACT:
+    property ms_feed_act:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.InACT
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_feed_act
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.InACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_feed_act = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutU:
+    property ms_prod_u:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.OutU
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_prod_u
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.OutU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_prod_u = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutTRU:
+    property ms_prod_tru:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.OutTRU
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_prod_tru
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.OutTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_prod_tru = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutLAN:
+    property ms_prod_lan:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.OutLAN
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_prod_lan
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.OutLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_prod_lan = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property OutACT:
+    property ms_prod_act:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.OutACT
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_prod_act
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.OutACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_prod_act = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
 
@@ -4282,20 +4282,20 @@ cdef class FastReactor1G(Reactor1G):
             self.params_prior_calc["P_NL"]  = 0.0
             self.params_after_calc["P_NL"] = self.P_NL
 
-            self.params_prior_calc["U"]  = self.InU.mass
-            self.params_after_calc["U"] = self.OutU.mass
+            self.params_prior_calc["U"]  = self.ms_feed_u.mass
+            self.params_after_calc["U"] = self.ms_prod_u.mass
 
-            self.params_prior_calc["TRU"]  = self.InTRU.mass
-            self.params_after_calc["TRU"] = self.OutTRU.mass
+            self.params_prior_calc["TRU"]  = self.ms_feed_tru.mass
+            self.params_after_calc["TRU"] = self.ms_prod_tru.mass
 
-            self.params_prior_calc["ACT"]  = self.InACT.mass
-            self.params_after_calc["ACT"] = self.OutACT.mass
+            self.params_prior_calc["ACT"]  = self.ms_feed_act.mass
+            self.params_after_calc["ACT"] = self.ms_prod_act.mass
 
-            self.params_prior_calc["LAN"]  = self.InLAN.mass
-            self.params_after_calc["LAN"] = self.OutLAN.mass
+            self.params_prior_calc["LAN"]  = self.ms_feed_lan.mass
+            self.params_after_calc["LAN"] = self.ms_prod_lan.mass
 
-            self.params_prior_calc["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
-            self.params_after_calc["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
+            self.params_prior_calc["FP"]  = 1.0 - self.ms_feed_act.mass  - self.ms_feed_lan.mass
+            self.params_after_calc["FP"] = 1.0 - self.ms_prod_act.mass - self.ms_prod_lan.mass
 
         """
         (<cpp_bright.FCComp *> self.fr1g_pointer).calc_params()
@@ -4378,14 +4378,14 @@ cdef class FastReactor1G(Reactor1G):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
         attributes:
 
-            * InU
-            * InTRU
-            * InLAN
-            * InACT
-            * OutU
-            * OutTRU
-            * OutLAN
-            * OutACT
+            * ms_feed_u
+            * ms_feed_tru
+            * ms_feed_lan
+            * ms_feed_act
+            * ms_prod_u
+            * ms_prod_tru
+            * ms_prod_lan
+            * ms_prod_act
 
         """
         (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcSubStreams()
@@ -4394,7 +4394,7 @@ cdef class FastReactor1G(Reactor1G):
     def calcTruCR(self):
         """This calculates and sets the transuranic conversion ratio TruCR through the equation:
 
-        .. math:: \mbox{TruCR} = \frac{\mbox{InTRU.mass} - \mbox{OutTRU.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
         Returns:
             * TruCR (float): The value of the transuranic conversion ratio just calculated.

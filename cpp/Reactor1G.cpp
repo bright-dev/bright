@@ -542,40 +542,40 @@ void Reactor1G::calcSubStreams()
     //Sets possibly relevant reactor input and output substreams.
 
     //Uranium
-    InU  = ms_feed.get_u();
-    OutU = ms_prod.get_u();
+    ms_feed_u  = ms_feed.get_u();
+    ms_prod_u = ms_prod.get_u();
 
     //TRU
     try 
     {
-        InTRU = ms_feed.get_tru();
+        ms_feed_tru = ms_feed.get_tru();
     }
     catch (...)
     {
         CompDict cd;
         cd[942390] = 1.0;
-        InTRU = MassStream(cd, 1.0);
-        InTRU.mass = 0.0;
+        ms_feed_tru = MassStream(cd, 1.0);
+        ms_feed_tru.mass = 0.0;
     };
-    OutTRU = ms_prod.get_tru();
+    ms_prod_tru = ms_prod.get_tru();
 
     //Lanthanides
     try
     {
-        InLAN = ms_feed.get_lan();
+        ms_feed_lan = ms_feed.get_lan();
     }
     catch (...)
     {
         CompDict cd;
         cd[581440] = 1.0;
-        InLAN  = MassStream(cd, 1.0);
-        InLAN.mass = 0.0;
+        ms_feed_lan  = MassStream(cd, 1.0);
+        ms_feed_lan.mass = 0.0;
     };
-    OutLAN = ms_prod.get_lan();
+    ms_prod_lan = ms_prod.get_lan();
 
     //Actinides
-    InACT  = ms_feed.get_act();
-    OutACT = ms_prod.get_act();
+    ms_feed_act  = ms_feed.get_act();
+    ms_prod_act = ms_prod.get_act();
 };
 
 
@@ -605,7 +605,7 @@ double Reactor1G::calc_deltaR(MassStream ms)
 double Reactor1G::calcTruCR()
 {
     //Calculates the reactor's transuranic conversion ratio.
-    TruCR = 1.0 - ((InTRU.mass - OutTRU.mass) / (BUd/931.46));
+    TruCR = 1.0 - ((ms_feed_tru.mass - ms_prod_tru.mass) / (BUd/931.46));
     return TruCR;
 };
 

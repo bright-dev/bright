@@ -73,20 +73,20 @@ void FastReactor1G::calc_params()
     params_prior_calc["P_NL"]  = 0.0;
     params_after_calc["P_NL"] = P_NL;
 
-    params_prior_calc["U"]  = InU.mass;
-    params_after_calc["U"] = OutU.mass;
+    params_prior_calc["U"]  = ms_feed_u.mass;
+    params_after_calc["U"] = ms_prod_u.mass;
 
-    params_prior_calc["TRU"]  = InTRU.mass;
-    params_after_calc["TRU"] = OutTRU.mass;
+    params_prior_calc["TRU"]  = ms_feed_tru.mass;
+    params_after_calc["TRU"] = ms_prod_tru.mass;
 
-    params_prior_calc["ACT"]  = InACT.mass;
-    params_after_calc["ACT"] = OutACT.mass;
+    params_prior_calc["ACT"]  = ms_feed_act.mass;
+    params_after_calc["ACT"] = ms_prod_act.mass;
 
-    params_prior_calc["LAN"]  = InLAN.mass;
-    params_after_calc["LAN"] = OutLAN.mass;
+    params_prior_calc["LAN"]  = ms_feed_lan.mass;
+    params_after_calc["LAN"] = ms_prod_lan.mass;
 
-    params_prior_calc["FP"]  = 1.0 - InACT.mass  - InLAN.mass;
-    params_after_calc["FP"] = 1.0 - OutACT.mass - OutLAN.mass;
+    params_prior_calc["FP"]  = 1.0 - ms_feed_act.mass  - ms_feed_lan.mass;
+    params_after_calc["FP"] = 1.0 - ms_prod_act.mass - ms_prod_lan.mass;
 
     return;
 };

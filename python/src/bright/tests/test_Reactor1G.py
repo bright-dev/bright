@@ -617,33 +617,33 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_InU(self):
-        assert_equal(self.r1g.InU.mass, 1.0)
+    def test_ms_feed_u(self):
+        assert_equal(self.r1g.ms_feed_u.mass, 1.0)
 
-    def test_InTRU(self):
-        assert_equal(self.r1g.InTRU.mass, 0.0)
+    def test_ms_feed_tru(self):
+        assert_equal(self.r1g.ms_feed_tru.mass, 0.0)
 
-    def test_InLAN(self):
-        assert_equal(self.r1g.InLAN.mass, 0.0)
+    def test_ms_feed_lan(self):
+        assert_equal(self.r1g.ms_feed_lan.mass, 0.0)
 
-    def test_InACT(self):
-        assert_equal(self.r1g.InACT.mass, 1.0)
+    def test_ms_feed_act(self):
+        assert_equal(self.r1g.ms_feed_act.mass, 1.0)
 
-    def test_OutU(self):
-        assert(self.r1g.OutU.mass < 1.0)
+    def test_ms_prod_u(self):
+        assert(self.r1g.ms_prod_u.mass < 1.0)
 
-    def test_OutTRU(self):
-        assert(0.0 < self.r1g.OutTRU.mass)
+    def test_ms_prod_tru(self):
+        assert(0.0 < self.r1g.ms_prod_tru.mass)
 
-    def test_OutLAN(self):
-        assert(0.0 < self.r1g.OutLAN.mass)
+    def test_ms_prod_lan(self):
+        assert(0.0 < self.r1g.ms_prod_lan.mass)
 
-    def test_OutACT(self):
-        assert(self.r1g.OutACT.mass < 1.0)
+    def test_ms_prod_act(self):
+        assert(self.r1g.ms_prod_act.mass < 1.0)
 
     def test_TruCR(self):
         self.r1g.calcTruCR()
-        tmp_TruCR = 1.0 - (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 931.46)
+        tmp_TruCR = 1.0 - (self.r1g.ms_feed_tru.mass - self.r1g.ms_prod_tru.mass) / (self.r1g.BUd / 931.46)
         assert_almost_equal(self.r1g.TruCR / tmp_TruCR, 1.0)
 
     def test_deltaR(self):
@@ -822,18 +822,18 @@ class TestReactor1GBasicCalculationMethods(TestCase):
     def test_calcSubStreams(self):
         self.r1g.calc()
         self.r1g.calcSubStreams()
-        assert_equal(self.r1g.InU.mass, 1.0)
-        assert_equal(self.r1g.InTRU.mass, 0.0)
-        assert_equal(self.r1g.InLAN.mass, 0.0)
-        assert_equal(self.r1g.InACT.mass, 1.0)
-        assert(self.r1g.OutU.mass < 1.0)
-        assert(0.0 < self.r1g.OutTRU.mass)
-        assert(0.0 < self.r1g.OutLAN.mass)
-        assert(self.r1g.OutACT.mass < 1.0)
+        assert_equal(self.r1g.ms_feed_u.mass, 1.0)
+        assert_equal(self.r1g.ms_feed_tru.mass, 0.0)
+        assert_equal(self.r1g.ms_feed_lan.mass, 0.0)
+        assert_equal(self.r1g.ms_feed_act.mass, 1.0)
+        assert(self.r1g.ms_prod_u.mass < 1.0)
+        assert(0.0 < self.r1g.ms_prod_tru.mass)
+        assert(0.0 < self.r1g.ms_prod_lan.mass)
+        assert(self.r1g.ms_prod_act.mass < 1.0)
 
     def test_calcTruCR(self):
         self.r1g.calc()
-        tmp_TruCR = 1.0 - (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 931.46)
+        tmp_TruCR = 1.0 - (self.r1g.ms_feed_tru.mass - self.r1g.ms_prod_tru.mass) / (self.r1g.BUd / 931.46)
         assert_almost_equal(self.r1g.calcTruCR() / tmp_TruCR, 1.0)
 
     def test_deltaR1(self):

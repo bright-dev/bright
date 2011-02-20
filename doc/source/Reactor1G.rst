@@ -364,35 +364,35 @@ Several parameters are dependent on knowing the mass or composition of specific 
 :attr:`ms_feed <bright.FCComp.ms_feed>` while the ``Out`` SubStreams are derived from :attr:`ms_prod <BriPy.FCComp.ms_prod>`.
 The easiest way to set these attributes is through the :meth:`Reactor1G.calcSubStreams` method.
 
-.. attribute:: Reactor1G.InU
+.. attribute:: Reactor1G.ms_feed_u
 
     The input uranium mass stream, ``Reactor1G.ms_feed.get_u()``.
 
-.. attribute:: Reactor1G.InTRU
+.. attribute:: Reactor1G.ms_feed_tru
 
     The input transuranic mass stream, ``Reactor1G.ms_feed.get_tru()``.
 
-.. attribute:: Reactor1G.InLAN
+.. attribute:: Reactor1G.ms_feed_lan
 
     The input lanthanide mass stream, ``Reactor1G.ms_feed.get_lan()``.
 
-.. attribute:: Reactor1G.InACT
+.. attribute:: Reactor1G.ms_feed_act
 
     The input actinide mass stream, ``Reactor1G.ms_feed.get_act()``.
 
-.. attribute:: Reactor1G.OutU
+.. attribute:: Reactor1G.ms_prod_u
 
     The output uranium mass stream, ``Reactor1G.ms_prod.get_u()``.
 
-.. attribute:: Reactor1G.OutTRU
+.. attribute:: Reactor1G.ms_prod_tru
 
     The output transuranic mass stream, ``Reactor1G.ms_prod.get_tru()``.
 
-.. attribute:: Reactor1G.OutLAN
+.. attribute:: Reactor1G.ms_prod_lan
 
     The output lanthanide mass stream, ``Reactor1G.ms_prod.get_lan()``.
 
-.. attribute:: Reactor1G.OutACT
+.. attribute:: Reactor1G.ms_prod_act
 
     The output actinide mass stream, ``Reactor1G.ms_prod.get_act()``.
 
@@ -548,20 +548,20 @@ The following functions represent basic calculations common to most reactor type
     This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
     attributes:
 
-        * :attr:`InU`
-        * :attr:`InTRU`
-        * :attr:`InLAN`
-        * :attr:`InACT`
-        * :attr:`OutU`
-        * :attr:`OutTRU`
-        * :attr:`OutLAN`
-        * :attr:`OutACT`
+        * :attr:`ms_feed_u`
+        * :attr:`ms_feed_tru`
+        * :attr:`ms_feed_lan`
+        * :attr:`ms_feed_act`
+        * :attr:`ms_prod_u`
+        * :attr:`ms_prod_tru`
+        * :attr:`ms_prod_lan`
+        * :attr:`ms_prod_act`
 
 .. method:: Reactor1G.calcTruCR()
 
     This calculates and sets the transuranic conversion ratio :attr:`TruCR` through the equation:
 
-    .. math:: \mbox{TruCR} = \frac{\mbox{InTRU.mass} - \mbox{OutTRU.mass}}{\frac{\mbox{BUd}}{935.0}}
+    .. math:: \mbox{TruCR} = \frac{\mbox{ms_feed_tru.mass} - \mbox{ms_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
 
     Returns:
         * `TruCR` (float): The value of the transuranic conversion ratio just calculated.

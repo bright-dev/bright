@@ -154,14 +154,14 @@ public:
     double BUd;							//Discharge Burnup
     double k;							//Multiplication factor 
 
-    MassStream InU; 						//Input Uranium MassStream
-    MassStream InTRU; 						//Input Transuranic MassStream
-    MassStream InLAN; 						//Input Lanthinide MassStream
-    MassStream InACT; 						//Input Actinide MassStream
-    MassStream OutU; 						//Output Uranium MassStream
-    MassStream OutTRU; 						//Output Transuranic MassStream
-    MassStream OutLAN; 						//Output Lanthinide MassStream
-    MassStream OutACT; 						//Output Actinide MassStream
+    MassStream ms_feed_u; 						//Input Uranium MassStream
+    MassStream ms_feed_tru; 						//Input Transuranic MassStream
+    MassStream ms_feed_lan; 						//Input Lanthinide MassStream
+    MassStream ms_feed_act; 						//Input Actinide MassStream
+    MassStream ms_prod_u; 						//Output Uranium MassStream
+    MassStream ms_prod_tru; 						//Output Transuranic MassStream
+    MassStream ms_prod_lan; 						//Output Lanthinide MassStream
+    MassStream ms_prod_act; 						//Output Actinide MassStream
 
     double deltaR;                          // The production rate subtracted by the destruction rate at target_BU
     double TruCR;							//Transuranic Conversion Ratio

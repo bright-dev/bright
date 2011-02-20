@@ -54,20 +54,20 @@ or have been otherwise altered.
         self.params_prior_calc["P_NL"]  = 0.0
         self.params_after_calc["P_NL"] = self.P_NL
 
-        self.params_prior_calc["U"]  = self.InU.mass
-        self.params_after_calc["U"] = self.OutU.mass
+        self.params_prior_calc["U"]  = self.ms_feed_u.mass
+        self.params_after_calc["U"] = self.ms_prod_u.mass
 
-        self.params_prior_calc["TRU"]  = self.InTRU.mass
-        self.params_after_calc["TRU"] = self.OutTRU.mass
+        self.params_prior_calc["TRU"]  = self.ms_feed_tru.mass
+        self.params_after_calc["TRU"] = self.ms_prod_tru.mass
 
-        self.params_prior_calc["ACT"]  = self.InACT.mass
-        self.params_after_calc["ACT"] = self.OutACT.mass
+        self.params_prior_calc["ACT"]  = self.ms_feed_act.mass
+        self.params_after_calc["ACT"] = self.ms_prod_act.mass
 
-        self.params_prior_calc["LAN"]  = self.InLAN.mass
-        self.params_after_calc["LAN"] = self.OutLAN.mass
+        self.params_prior_calc["LAN"]  = self.ms_feed_lan.mass
+        self.params_after_calc["LAN"] = self.ms_prod_lan.mass
 
-        self.params_prior_calc["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
-        self.params_after_calc["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
+        self.params_prior_calc["FP"]  = 1.0 - self.ms_feed_act.mass  - self.ms_feed_lan.mass
+        self.params_after_calc["FP"] = 1.0 - self.ms_prod_act.mass - self.ms_prod_lan.mass
 
 ===============================
 Fast Reactor Default Parameters
