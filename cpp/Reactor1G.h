@@ -61,17 +61,17 @@ public:
     // Attributes
     int batches;
     double flux;
-    std::map<std::string, double> FuelForm;
-    std::map<std::string, double> CoolantForm;
-    double FuelDensity;
-    double CoolantDensity;
+    std::map<std::string, double> fuel_form;
+    std::map<std::string, double> coolant_form;
+    double fuel_density;
+    double coolant_density;
     double pnl;
     double BUt;
-    bool useDisadvantage;
-    std::string LatticeType;
-    bool HydrogenRescale;
-    double Radius;
-    double Length;
+    bool use_disadvantage_factor;
+    std::string lattice_type;
+    bool rescale_hydrogen;
+    double radius;
+    double pitch;
     double open_slots;
     double total_slots;
 
@@ -222,16 +222,16 @@ public:
 /*** Exceptions ***/
 /******************/
 
-class BadFuelForm : public std::exception
+class Badfuel_form : public std::exception
 {
 //Exception for valid fuel form.
 public:
-    BadFuelForm () {};
-    ~BadFuelForm () throw () {};
+    Badfuel_form () {};
+    ~Badfuel_form () throw () {};
 
     static char * name ()
     {
-        return (char *) "BadFuelForm";
+        return (char *) "Badfuel_form";
     };
 
     virtual const char* what() const throw()

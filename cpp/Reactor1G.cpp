@@ -27,17 +27,17 @@ ReactorParameters::ReactorParameters()
 {
     batches = 0;
     flux = 0.0;
-    FuelForm = std::map<std::string, double>();
-    CoolantForm = std::map<std::string, double>();
-    FuelDensity = 0.0;
-    CoolantDensity = 0.0;
+    fuel_form = std::map<std::string, double>();
+    coolant_form = std::map<std::string, double>();
+    fuel_density = 0.0;
+    coolant_density = 0.0;
     pnl = 0.0;
     BUt = 0.0;
-    useDisadvantage = false;
-    LatticeType = std::string();
-    HydrogenRescale = false;
-    Radius = 0.0;
-    Length = 0.0;
+    use_disadvantage_factor = false;
+    lattice_type = std::string();
+    rescale_hydrogen = false;
+    radius = 0.0;
+    pitch = 0.0;
     open_slots = 0.0;
     total_slots = 0.0;
 };
@@ -85,19 +85,19 @@ void Reactor1G::initialize(ReactorParameters rp)
 
     B = rp.batches;				//Total number of fuel loading batches
     phi = rp.flux;				//Flux used for Fluence
-    fuel_chemical_form = rp.FuelForm;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
-    coolant_chemical_form = rp.CoolantForm;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
-    rhoF = rp.FuelDensity;			//Fuel Density
-    rhoC = rp.CoolantDensity;		//Coolant Density
+    fuel_chemical_form = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+    coolant_chemical_form = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
+    rhoF = rp.fuel_density;			//Fuel Density
+    rhoC = rp.coolant_density;		//Coolant Density
     P_NL = rp.pnl;				//Non-Leakage Probability
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
-    use_zeta = rp.useDisadvantage;		//Boolean value on whether or not the disadvantage factor should be used
-    lattice_flag = rp.LatticeType;		//lattice_flagType (Planar || Spherical || Cylindrical)
-    rescale_hydrogen_xs = rp.HydrogenRescale;	//Rescale the Hydrogen-1 XS?
+    use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
+    lattice_flag = rp.lattice_type;		//lattice_flagType (Planar || Spherical || Cylindrical)
+    rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
 
     //Calculates Volumes
-    r = rp.Radius;			//Fuel region radius
-    l = rp.Length;			//Unit cell side length
+    r = rp.radius;			//Fuel region radius
+    l = rp.pitch;			//Unit cell side length
     S_O = rp.open_slots;		//Number of open slots in fuel assembly
     S_T = rp.total_slots;		//Total number of Fuel assembly slots.
     //Fuel Volume
@@ -775,7 +775,7 @@ void Reactor1G::BUd_bisection_method()
         };
 
         if ( (BUd_b < 0.0) || (1000.0 < BUd_b) )
-            throw BadFuelForm ();
+            throw Badfuel_form ();
     };
 
     BUd_c = 0.0;
@@ -933,7 +933,7 @@ void Reactor1G::calibrate_P_NL_to_BUd()
             sign_a = (bud_a - target_BU) / fabs(bud_a - target_BU);
             FoundA = true;
         }
-        catch (BadFuelForm e)
+        catch (Badfuel_form e)
         {
             pnl_a = pnl_a + 0.05;
         }
@@ -955,7 +955,7 @@ void Reactor1G::calibrate_P_NL_to_BUd()
             sign_b = (bud_b - target_BU) / fabs(bud_b - target_BU);
             FoundB = true;
         }
-        catch (BadFuelForm e)
+        catch (Badfuel_form e)
         {
             pnl_b = pnl_b - 0.05;
         }

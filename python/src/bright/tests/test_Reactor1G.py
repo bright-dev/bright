@@ -25,17 +25,17 @@ Reactor1G = bright.Reactor1G
 default_rp = bright.ReactorParameters()
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
-default_rp.FuelForm = {"IHM": 1.0, "O16": 2.0}
-default_rp.CoolantForm = {"H1": 2.0, "O16": 1.0}
-default_rp.FuelDensity = 10.7
-default_rp.CoolantDensity = 0.73
+default_rp.fuel_form = {"IHM": 1.0, "O16": 2.0}
+default_rp.coolant_form = {"H1": 2.0, "O16": 1.0}
+default_rp.fuel_density = 10.7
+default_rp.coolant_density = 0.73
 default_rp.pnl = 0.98
 default_rp.BUt = 50.0
-default_rp.useDisadvantage = True
-default_rp.LatticeType = 'Cylindrical'
-default_rp.HydrogenRescale = True
-default_rp.Radius = 0.411
-default_rp.Length = 0.7
+default_rp.use_disadvantage_factor = True
+default_rp.lattice_type = 'Cylindrical'
+default_rp.rescale_hydrogen = True
+default_rp.radius = 0.411
+default_rp.pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
 
@@ -82,17 +82,17 @@ class TestReactorParameters(TestCase):
         rp = ReactorParameters()
         assert_equal(rp.batches, 0)
         assert_almost_equal(rp.flux, 0.0)
-        assert_equal(rp.FuelForm, {})
-        assert_equal(rp.CoolantForm, {})
-        assert_almost_equal(rp.FuelDensity, 0.0)
-        assert_almost_equal(rp.CoolantDensity, 0.0)
+        assert_equal(rp.fuel_form, {})
+        assert_equal(rp.coolant_form, {})
+        assert_almost_equal(rp.fuel_density, 0.0)
+        assert_almost_equal(rp.coolant_density, 0.0)
         assert_almost_equal(rp.pnl, 0.0)
         assert_almost_equal(rp.BUt, 0.0)
-        assert_false(rp.useDisadvantage)
-        assert_equal(rp.LatticeType, '')
-        assert_false(rp.HydrogenRescale)
-        assert_almost_equal(rp.Radius, 0.0)
-        assert_almost_equal(rp.Length, 0.0)
+        assert_false(rp.use_disadvantage_factor)
+        assert_equal(rp.lattice_type, '')
+        assert_false(rp.rescale_hydrogen)
+        assert_almost_equal(rp.radius, 0.0)
+        assert_almost_equal(rp.pitch, 0.0)
         assert_almost_equal(rp.open_slots, 0.0)
         assert_almost_equal(rp.total_slots, 0.0)
 
@@ -106,29 +106,29 @@ class TestReactorParameters(TestCase):
         rp.flux = 2*(10**14)
         assert_equal(rp.flux, 2*(10**14))
 
-    def test_FuelForm(self):
+    def test_fuel_form(self):
         rp = ReactorParameters()
-        rp.FuelForm = {"IHM": 1.0, "O16": 2.0}
-        assert_equal(rp.FuelForm, {"IHM": 1.0, "O16": 2.0})
+        rp.fuel_form = {"IHM": 1.0, "O16": 2.0}
+        assert_equal(rp.fuel_form, {"IHM": 1.0, "O16": 2.0})
 
-    def test_CoolantForm(self):
+    def test_coolant_form(self):
         rp = ReactorParameters()
-        rp.CoolantForm = {"H1": 2.0, "O16": 1.0,
+        rp.coolant_form = {"H1": 2.0, "O16": 1.0,
             "B10": 0.199 * 550 * 10.0**-6, 
             "B11": 0.801 * 550 * 10.0**-6}
-        assert_equal(rp.CoolantForm, {"H1": 2.0, "O16": 1.0,
+        assert_equal(rp.coolant_form, {"H1": 2.0, "O16": 1.0,
             "B10": 0.199 * 550 * 10.0**-6,
             "B11": 0.801 * 550 * 10.0**-6})
 
-    def test_FuelDensity(self):
+    def test_fuel_density(self):
         rp = ReactorParameters()
-        rp.FuelDensity = 10.7
-        assert_equal(rp.FuelDensity, 10.7)
+        rp.fuel_density = 10.7
+        assert_equal(rp.fuel_density, 10.7)
 
-    def test_CoolantDensity(self):
+    def test_coolant_density(self):
         rp = ReactorParameters()
-        rp.CoolantDensity = 0.73
-        assert_equal(rp.CoolantDensity, 0.73)
+        rp.coolant_density = 0.73
+        assert_equal(rp.coolant_density, 0.73)
 
     def test_pnl(self):
         rp = ReactorParameters()
@@ -140,30 +140,30 @@ class TestReactorParameters(TestCase):
         rp.BUt = 50.0
         assert_equal(rp.BUt, 50.0)
 
-    def test_useDisadvantage(self):
+    def test_use_disadvantage_factor(self):
         rp = ReactorParameters()
-        rp.useDisadvantage = True
-        assert_true(rp.useDisadvantage)
+        rp.use_disadvantage_factor = True
+        assert_true(rp.use_disadvantage_factor)
 
-    def test_LatticeType(self):
+    def test_lattice_type(self):
         rp = ReactorParameters()
-        rp.LatticeType = 'Spherical'
-        assert_equal(rp.LatticeType, 'Spherical')
+        rp.lattice_type = 'Spherical'
+        assert_equal(rp.lattice_type, 'Spherical')
 
-    def test_HydrogenRescale(self):
+    def test_rescale_hydrogen(self):
         rp = ReactorParameters()
-        rp.HydrogenRescale = True
-        assert_true(rp.HydrogenRescale)
+        rp.rescale_hydrogen = True
+        assert_true(rp.rescale_hydrogen)
 
-    def test_Radius(self):
+    def test_radius(self):
         rp = ReactorParameters()
-        rp.Radius = 0.411
-        assert_equal(rp.Radius, 0.411)
+        rp.radius = 0.411
+        assert_equal(rp.radius, 0.411)
 
-    def test_Length(self):
+    def test_pitch(self):
         rp = ReactorParameters()
-        rp.Length = 0.7
-        assert_equal(rp.Length, 0.7)
+        rp.pitch = 0.7
+        assert_equal(rp.pitch, 0.7)
 
     def test_open_slots(self):
         rp = ReactorParameters()
@@ -335,8 +335,8 @@ class TestReactor1GParameterAttributes(TestCase):
 
     def test_VF(self):
         rp = ReactorParameters()
-        rp.Radius = 0.5
-        rp.Length = 1.0
+        rp.radius = 0.5
+        rp.pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         r1g = Reactor1G(reactor_parameters=rp, name='r1g')
@@ -344,8 +344,8 @@ class TestReactor1GParameterAttributes(TestCase):
 
     def test_VC(self):
         rp = ReactorParameters()
-        rp.Radius = 0.5
-        rp.Length = 1.0
+        rp.radius = 0.5
+        rp.pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         r1g = Reactor1G(reactor_parameters=rp, name='r1g')

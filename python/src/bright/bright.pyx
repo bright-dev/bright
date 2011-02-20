@@ -1294,41 +1294,41 @@ cdef class ReactorParameters:
           This is typically indexed by b.
         * flux (float): The nominal flux value that the library for this reactor 
           type was generated with.  Used to correctly weight batch-specific fluxes.
-        * FuelForm (dict): This is the chemical form of fuel as dictionary.  Keys are 
+        * fuel_form (dict): This is the chemical form of fuel as dictionary.  Keys are 
           strings that represent isotopes (mixed form) while values represent the 
           corresponding mass weights.  The heavy metal concentration by the key "IHM".  
           This will automatically fill in the nuclides in ms_feed for the "IHM" weight.  
           For example, LWRs typically use a UOX fuel form::
 
-            ReactorParameters.FuelForm = {"IHM": 1.0, "O16": 2.0}
+            ReactorParameters.fuel_form = {"IHM": 1.0, "O16": 2.0}
 
-        * CoolantForm (dict): This is the chemical form of coolant as dictionary.  
-          This uses the same notation as FuelForm except that "IHM" is no longer 
+        * coolant_form (dict): This is the chemical form of coolant as dictionary.  
+          This uses the same notation as fuel_form except that "IHM" is no longer 
           a valid key.  The term 'coolant' is used in preference over the term 
           'moderator' because not all reactors moderate neutrons.  For example, 
           LWRs often cool the reactor core with borated water::
 
-            ReactorParamters.CoolantForm = {}
+            ReactorParamters.coolant_form = {}
 
-            ReactorParamters.CoolantForm["H1"]  = 2.0
-            ReactorParamters.CoolantForm["O16"] = 1.0
-            ReactorParamters.CoolantForm["B10"] = 0.199 * 550 * 10.0**-6
-            ReactorParamters.CoolantForm["B11"] = 0.801 * 550 * 10.0**-6
+            ReactorParamters.coolant_form["H1"]  = 2.0
+            ReactorParamters.coolant_form["O16"] = 1.0
+            ReactorParamters.coolant_form["B10"] = 0.199 * 550 * 10.0**-6
+            ReactorParamters.coolant_form["B11"] = 0.801 * 550 * 10.0**-6
 
-        * FuelDensity (float): The fuel region density.  A float in units of [g/cm^3].
-        * CoolantDensity (float): The coolant region density.  A float in units of [g/cm^3].
+        * fuel_density (float): The fuel region density.  A float in units of [g/cm^3].
+        * coolant_density (float): The coolant region density.  A float in units of [g/cm^3].
         * pnl (float): The reactor's non-leakage probability.  This is often 
           used as a calibration parameter.
         * BUt (float): The reactor's target discharge burnup.  This is given 
           in units of [MWd/kgIHM].  Often the actual discharge burnup BUd does not 
           quite hit this value, but comes acceptably close.
-        * useDisadvantage (bool): Determines whether the thermal disadvantage 
+        * use_disadvantage_factor (bool): Determines whether the thermal disadvantage 
           factor is employed or not.  LWRs typically set this as True while FRs 
           have a False value.
-        * LatticeType (str): A flag that represents what lattice type the fuel 
+        * lattice_type (str): A flag that represents what lattice type the fuel 
           assemblies are arranged in.  Currently accepted values are "Planar", 
           "Spherical", and "Cylindrical".
-        * HydrogenRescale (bool): This determines whether the reactor should 
+        * rescale_hydrogen (bool): This determines whether the reactor should 
           rescale the Hydrogen-1 destruction rate in the coolant as a
           function of fluence.  The scaling factor is calculated via the 
           following equation
@@ -1337,8 +1337,8 @@ cdef class ReactorParameters:
 
           This is typically not done for fast reactors but is a useful correction 
           for LWRs.
-        * Radius (float): The radius of the fuel region.  In units of [cm].
-        * Length (float): The pitch or length of the unit fuel pin cell.  In units of [cm].
+        * radius (float): The radius of the fuel region.  In units of [cm].
+        * pitch (float): The pitch or length of the unit fuel pin cell.  In units of [cm].
         * open_slots (float): The number of slots in a fuel assembly that are open.  
           Thus this is the number of slots that do not contain a fuel pin and are instead 
           filled in by coolant. 
@@ -1375,36 +1375,36 @@ cdef class ReactorParameters:
             self.rp_pointer.flux = value
 
 
-    property FuelForm:
+    property fuel_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rp_pointer.FuelForm)
+            return conv.map_to_dict_str_dbl(self.rp_pointer.fuel_form)
 
         def __set__(self, dict value):
-            self.rp_pointer.FuelForm = conv.dict_to_map_str_dbl(value)
+            self.rp_pointer.fuel_form = conv.dict_to_map_str_dbl(value)
 
 
-    property CoolantForm:
+    property coolant_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rp_pointer.CoolantForm)
+            return conv.map_to_dict_str_dbl(self.rp_pointer.coolant_form)
 
         def __set__(self, dict value):
-            self.rp_pointer.CoolantForm = conv.dict_to_map_str_dbl(value)
+            self.rp_pointer.coolant_form = conv.dict_to_map_str_dbl(value)
 
 
-    property FuelDensity:
+    property fuel_density:
         def __get__(self):
-            return self.rp_pointer.FuelDensity
+            return self.rp_pointer.fuel_density
 
         def __set__(self, double value):
-            self.rp_pointer.FuelDensity = value
+            self.rp_pointer.fuel_density = value
 
 
-    property CoolantDensity:
+    property coolant_density:
         def __get__(self):
-            return self.rp_pointer.CoolantDensity
+            return self.rp_pointer.coolant_density
 
         def __set__(self, double value):
-            self.rp_pointer.CoolantDensity = value
+            self.rp_pointer.coolant_density = value
 
 
     property pnl:
@@ -1423,45 +1423,45 @@ cdef class ReactorParameters:
             self.rp_pointer.BUt = value
 
 
-    property useDisadvantage:
+    property use_disadvantage_factor:
         def __get__(self):
-            return self.rp_pointer.useDisadvantage
+            return self.rp_pointer.use_disadvantage_factor
 
         def __set__(self, bint value):
-            self.rp_pointer.useDisadvantage = value
+            self.rp_pointer.use_disadvantage_factor = value
 
 
-    property LatticeType:
+    property lattice_type:
         def __get__(self):
-            cdef std.string value = self.rp_pointer.LatticeType
+            cdef std.string value = self.rp_pointer.lattice_type
             return value.c_str()
 
         def __set__(self, char * value):
-            self.rp_pointer.LatticeType = std.string(value)
+            self.rp_pointer.lattice_type = std.string(value)
 
 
-    property HydrogenRescale:
+    property rescale_hydrogen:
         def __get__(self):
-            return self.rp_pointer.HydrogenRescale
+            return self.rp_pointer.rescale_hydrogen
 
         def __set__(self, bint value):
-            self.rp_pointer.HydrogenRescale = value
+            self.rp_pointer.rescale_hydrogen = value
 
 
-    property Radius:
+    property radius:
         def __get__(self):
-            return self.rp_pointer.Radius
+            return self.rp_pointer.radius
 
         def __set__(self, double value):
-            self.rp_pointer.Radius = value
+            self.rp_pointer.radius = value
 
 
-    property Length:
+    property pitch:
         def __get__(self):
-            return self.rp_pointer.Length
+            return self.rp_pointer.pitch
 
         def __set__(self, double value):
-            self.rp_pointer.Length = value
+            self.rp_pointer.pitch = value
 
 
     property open_slots:

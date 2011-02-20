@@ -47,16 +47,16 @@ print_ms()
 rp = ReactorParameters()
 rp.batches = 3
 rp.flux = 5.0**15
-rp.FuelForm = {"U235": 1.0, "O16": 2.0}
-rp.CoolantForm = {"H1": 2.0, "O16": 1.0}
-rp.FuelDensity = 10.7
-rp.CoolantDensity = 0.73
+rp.fuel_form = {"U235": 1.0, "O16": 2.0}
+rp.coolant_form = {"H1": 2.0, "O16": 1.0}
+rp.fuel_density = 10.7
+rp.coolant_density = 0.73
 rp.pnl = 0.98
 rp.BUt = 1.4
-rp.useDisadvantage = False
+rp.use_disadvantage_factor = False
 
-rp.Radius = 0.411
-rp.Length = 1.4
+rp.radius = 0.411
+rp.pitch = 1.4
 rp.open_slots = 32
 rp.total_slots = 156
 

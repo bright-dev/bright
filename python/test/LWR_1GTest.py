@@ -23,16 +23,16 @@ def printFCComp(fc):
 def printReactorParameters(rp):
     print(rp.batches)
     print(rp.flux)
-    print(rp.FuelForm)
-    print(rp.CoolantForm)
-    print(rp.FuelDensity)
-    print(rp.CoolantDensity)
+    print(rp.fuel_form)
+    print(rp.coolant_form)
+    print(rp.fuel_density)
+    print(rp.coolant_density)
     print(rp.pnl)
     print(rp.BUt)
-    print(rp.useDisadvantage)
+    print(rp.use_disadvantage_factor)
     print_ms()
-    print(rp.Radius)
-    print(rp.Length)
+    print(rp.radius)
+    print(rp.pitch)
     print(rp.open_slots)
     print(rp.total_slots)
     print_ms()
@@ -89,11 +89,11 @@ print_ms()
 
 NewParams = LWRDefaults()
 #NewParams.batches = 6
-#NewParams.FuelDensity = 1200.0
-#NewParams.useDisadvantage = True
+#NewParams.fuel_density = 1200.0
+#NewParams.use_disadvantage_factor = True
 #NewParams.total_slots = 400
-#NewParams.CoolantForm    = {'O16': 1.0, 'H1': 2.0}
-NewParams.CoolantDensity = 1.0
+#NewParams.coolant_form    = {'O16': 1.0, 'H1': 2.0}
+NewParams.coolant_density = 1.0
 
 printReactorParameters(NewParams)
 

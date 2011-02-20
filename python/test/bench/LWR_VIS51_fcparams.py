@@ -12,7 +12,7 @@ LWR_LibDir     =              "libs/LWR/"
 lwr_params.BUt =              51.0 
 lwr_params.batches   =        3 
 lwr_params.pnl      =         0.98 
-lwr_params.CoolantForm = {"H1": 2.0, "O16": 1.0}
+lwr_params.coolant_form = {"H1": 2.0, "O16": 1.0}
                             
 #LWR Storage                
 LWR_SNF_Storage_Time        =  6

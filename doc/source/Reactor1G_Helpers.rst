@@ -52,33 +52,33 @@ Reactor Parameters Class
         The nominal flux value (float) that the library for this reactor type was generated with.  Used to correctly
         weight batch-specific fluxes.
 
-    .. attribute:: FuelForm
+    .. attribute:: fuel_form
 
         This is the chemical form of fuel as dictionary.  Keys are strings that represent isotopes (mixed form) while 
         values represent the corresponding mass weights.  The heavy metal concentration by the key ``"IHM"``.  This 
         will automatically fill in the nuclides in :attr:`ms_feed <bright.FCComp.ms_feed>` for the ``"IHM"`` weight.  For 
         example, LWRs typically use a UOX fuel form::
 
-            ReactorParameters.FuelForm = {"IHM": 1.0, "O16": 2.0}
+            ReactorParameters.fuel_form = {"IHM": 1.0, "O16": 2.0}
 
-    .. attribute:: CoolantForm
+    .. attribute:: coolant_form
 
-        This is the chemical form of coolant as dictionary.  This uses the same notation as :attr:`FuelForm` except 
+        This is the chemical form of coolant as dictionary.  This uses the same notation as :attr:`fuel_form` except 
         that ``"IHM"`` is no longer a valid key.  The term 'coolant' is used in preference over the term 'moderator' because
         not all reactors moderate neutrons.  For example, LWRs often cool the reactor core with borated water::
 
-            ReactorParamters.CoolantForm = {}
+            ReactorParamters.coolant_form = {}
 
-            ReactorParamters.CoolantForm["H1"]  = 2.0
-            ReactorParamters.CoolantForm["O16"] = 1.0
-            ReactorParamters.CoolantForm["B10"] = 0.199 * 550 * 10.0**-6
-            ReactorParamters.CoolantForm["B11"] = 0.801 * 550 * 10.0**-6
+            ReactorParamters.coolant_form["H1"]  = 2.0
+            ReactorParamters.coolant_form["O16"] = 1.0
+            ReactorParamters.coolant_form["B10"] = 0.199 * 550 * 10.0**-6
+            ReactorParamters.coolant_form["B11"] = 0.801 * 550 * 10.0**-6
 
-    .. attribute:: FuelDensity
+    .. attribute:: fuel_density
 
         The fuel region density.  A float in units of [g/cm^3].
 
-    .. attribute:: CoolantDensity
+    .. attribute:: coolant_density
 
         The coolant region density.  A float in units of [g/cm^3].
 
@@ -91,17 +91,17 @@ Reactor Parameters Class
         The reactor's target discharge burnup (float).  This is given in units of [MWd/kgIHM].  Often the
         actual discharge burnup :attr:`BUd` does not quite hit this value, but comes acceptably close.
 
-    .. attribute:: useDisadvantage
+    .. attribute:: use_disadvantage_factor
 
         A boolean value that determines whether the thermal disadvantage factor is employed or not.  LWRs 
         typically set this as ``True`` while FRs have a ``False`` value.
 
-    .. attribute:: LatticeType
+    .. attribute:: lattice_type
 
         A string flag that represents what lattice type the fuel assemblies are arranged in.  Currently accepted values 
         are ``"Planar"``, ``"Spherical"``, and ``"Cylindrical"``.
 
-    .. attribute:: HydrogenRescale
+    .. attribute:: rescale_hydrogen
 
         This boolean determines whether the reactor should rescale the Hydrogen-1 destruction rate in the coolant as a
         function of fluence.  The scaling factor is calculated via the following equation:
@@ -110,11 +110,11 @@ Reactor Parameters Class
 
         This is typically not done for fast reactors but is a useful correction for LWRs.
 
-    .. attribute:: Radius
+    .. attribute:: radius
 
         The radius (float) of the fuel region.  In units of [cm].
 
-    .. attribute:: Length
+    .. attribute:: pitch
 
         The pitch or length (float) of the unit fuel pin cell.  In units of [cm].
 

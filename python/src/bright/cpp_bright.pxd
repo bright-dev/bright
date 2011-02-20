@@ -189,17 +189,17 @@ cdef extern from "../Reactor1G.h":
         # Attributes
         int batches
         double flux
-        map[std.string, double] FuelForm
-        map[std.string, double] CoolantForm
-        double FuelDensity
-        double CoolantDensity
+        map[std.string, double] fuel_form
+        map[std.string, double] coolant_form
+        double fuel_density
+        double coolant_density
         double pnl
         double BUt
-        bint useDisadvantage
-        std.string LatticeType
-        bint HydrogenRescale
-        double Radius
-        double Length
+        bint use_disadvantage_factor
+        std.string lattice_type
+        bint rescale_hydrogen
+        double radius
+        double pitch
         double open_slots
         double total_slots
 
