@@ -421,13 +421,13 @@ cdef class EnrichmentParameters:
     instance has all values (weakly) set to zero.
     """
 
-    cdef cpp_bright.EnrichmentParameters ep
+    cdef cpp_bright.EnrichmentParameters * ep_pointer
 
     def __cinit__(self):
-        self.ep = cpp_bright.EnrichmentParameters()
+        self.ep_pointer = new cpp_bright.EnrichmentParameters()
 
-    #def __dealloc__(self):
-    #    free(&self.ep)
+    def __dealloc__(self):
+        del self.ep_pointer
 
 
     #
@@ -436,73 +436,73 @@ cdef class EnrichmentParameters:
 
     property alpha_0:
         def __get__(self):
-            return self.ep.alpha_0
+            return self.ep_pointer.alpha_0
 
         def __set__(self, value):
-            self.ep.alpha_0 = <double> value
+            self.ep_pointer.alpha_0 = <double> value
 
 
     property Mstar_0:
         def __get__(self):
-            return self.ep.Mstar_0
+            return self.ep_pointer.Mstar_0
 
         def __set__(self, value):
-            self.ep.Mstar_0 = <double> value
+            self.ep_pointer.Mstar_0 = <double> value
 
 
     property j:
         def __get__(self):
-            return self.ep.j
+            return self.ep_pointer.j
 
         def __set__(self, value):
-            self.ep.j = <int> value
+            self.ep_pointer.j = <int> value
 
 
     property k:
         def __get__(self):
-            return self.ep.k
+            return self.ep_pointer.k
 
         def __set__(self, value):
-            self.ep.k = <int> value
+            self.ep_pointer.k = <int> value
 
 
     property N0:
         def __get__(self):
-            return self.ep.N0
+            return self.ep_pointer.N0
 
         def __set__(self, value):
-            self.ep.N0 = <double> value
+            self.ep_pointer.N0 = <double> value
 
 
     property M0:
         def __get__(self):
-            return self.ep.M0
+            return self.ep_pointer.M0
 
         def __set__(self, value):
-            self.ep.M0 = <double> value
+            self.ep_pointer.M0 = <double> value
 
 
     property xP_j:
         def __get__(self):
-            return self.ep.xP_j
+            return self.ep_pointer.xP_j
 
         def __set__(self, value):
-            self.ep.xP_j = <double> value
+            self.ep_pointer.xP_j = <double> value
 
 
     property xW_j:
         def __get__(self):
-            return self.ep.xW_j
+            return self.ep_pointer.xW_j
 
         def __set__(self, value):
-            self.ep.xW_j = <double> value
+            self.ep_pointer.xW_j = <double> value
 
 
 
 def UraniumEnrichmentDefaults():
     cdef cpp_bright.EnrichmentParameters cpp_ued = cpp_bright.fillUraniumEnrichmentDefaults()
     cdef EnrichmentParameters ued = EnrichmentParameters()
-    ued.ep = cpp_ued
+    ued.ep_pointer[0] = cpp_ued
     return ued
 
 
@@ -529,7 +529,7 @@ cdef class Enrichment(FCComp):
             self.e_pointer = new cpp_bright.Enrichment(std.string(name))
         elif isinstance(enrich_params, EnrichmentParameters):
             enr_par = enrich_params
-            self.e_pointer = new cpp_bright.Enrichment(<cpp_bright.EnrichmentParameters> enr_par.ep, std.string(name))
+            self.e_pointer = new cpp_bright.Enrichment(<cpp_bright.EnrichmentParameters> enr_par.ep_pointer[0], std.string(name))
 
         # Set the base class pointer to this new instance 
         #so that inheritied attributes are picked up
@@ -753,7 +753,8 @@ cdef class Enrichment(FCComp):
             * enrich_params (EnrichmentParameters): A class containing the values to
               (re-)initialize an Enrichment cascade with.
         """
-        self.e_pointer.initialize(<cpp_bright.EnrichmentParameters> enrich_params.ep)
+        cdef EnrichmentParameters enr_par = enrich_params
+        self.e_pointer.initialize(<cpp_bright.EnrichmentParameters> enr_par.ep_pointer[0])
 
 
     def setParams(self):

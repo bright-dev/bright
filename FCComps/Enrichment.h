@@ -24,11 +24,17 @@ extern std::string enr_p2t [];
 extern std::set<std::string> enr_p2track;
 
 
-struct EnrichmentParameters 
+class EnrichmentParameters 
 {
     /** Set of physical parameters used to specify an enrichment cascade.
      */
 
+public:
+    // Constructors
+    EnrichmentParameters();
+    ~EnrichmentParameters();
+
+    // Attributes
     double alpha_0; //Initial stage separation factor
     double Mstar_0; //Initial guess for mass separation factor
 

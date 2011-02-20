@@ -57,7 +57,11 @@ cdef extern from "../FCComp.h":
 
 cdef extern from "../Enrichment.h":
 
-    cdef struct EnrichmentParameters:
+    cdef cppclass EnrichmentParameters:
+        # Constructors
+        EnrichmentParameters()
+
+        # Attributes
         double alpha_0
         double Mstar_0
 

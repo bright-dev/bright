@@ -9,6 +9,26 @@ std::set<std::string> enr_p2track (enr_p2t, enr_p2t+9);
 /*********************************/
 /*** Enrichment Helper Classes ***/
 /*********************************/
+EnrichmentParameters::EnrichmentParameters()
+{
+    alpha_0 = 0.0;
+    Mstar_0 = 0.0;
+
+    j = 0;
+    k = 0;
+
+    N0 = 0.0;
+    M0 = 0.0;
+
+    xP_j = 0.0;
+    xW_j = 0.0;
+};
+
+
+EnrichmentParameters::~EnrichmentParameters()
+{
+};
+
 
 EnrichmentParameters fillUraniumEnrichmentDefaults()
 {
