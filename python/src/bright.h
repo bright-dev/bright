@@ -1,1 +1,1 @@
-../../FCComps/bright.h
+../../cpp/bright.h

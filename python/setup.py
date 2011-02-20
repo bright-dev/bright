@@ -36,7 +36,7 @@ if os.name == 'posix':
     dat_dir = 'src/bright/'
     ext_kwargs["libraries"] = ["boost_python"]
 elif os.name == 'nt':
-    src_dir = '../FCComps/'
+    src_dir = '../cpp/'
     dat_dir = '../data/'
     ext_kwargs["extra_compile_args"] = ["/EHsc"]
     ext_kwargs["define_macros"] = [("_WIN32", None)]
@@ -74,7 +74,7 @@ elif os.name == 'nt':
         ("HDF5CPP_USEDLL", None),
         ])
 
-#For FCComps
+# For bright
 bright_ext_kwargs = deepcopy(ext_kwargs)
 
 if os.name == 'posix':

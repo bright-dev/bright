@@ -1,1 +1,1 @@
-../../FCComps/isoname.cpp
+../../cpp/isoname.cpp

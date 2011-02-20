@@ -1,1 +1,1 @@
-../../FCComps/bright.cpp
+../../cpp/bright.cpp
