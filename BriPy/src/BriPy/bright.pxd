@@ -15,3 +15,43 @@ cimport cpp_bright
 
 cdef class FCComp:
     cdef cpp_bright.FCComp * fccomp_pointer
+
+
+cdef class EnrichmentParameters:
+    cdef cpp_bright.EnrichmentParameters * ep_pointer
+
+
+cdef class Enrichment:
+    cdef cpp_bright.Enrichment * e_pointer
+
+
+cdef class Reprocess:
+    cdef cpp_bright.Reprocess * r_pointer
+
+
+cdef class Storage:
+    cdef cpp_bright.Storage * s_pointer
+
+
+cdef class FluencePoint:
+    cdef cpp_bright.FluencePoint * fp_pointer
+
+
+cdef class ReactorParameters:
+    cdef cpp_bright.ReactorParameters * rp_pointer
+
+
+cdef class Reactor1G:
+    cdef cpp_bright.Reactor1G * r1g_pointer
+
+
+cdef class LightWaterReactor1G:
+    cdef cpp_bright.LightWaterReactor1G * lwr1g_pointer
+
+
+cdef class FastReactor1G:
+    cdef cpp_bright.FastReactor1G * fr1g_pointer
+
+
+cdef class FuelFabrication:
+    cdef cpp_bright.FuelFabrication * ff_pointer
