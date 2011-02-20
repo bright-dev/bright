@@ -264,7 +264,7 @@ void Reactor1G::loadLib(std::string libfile)
     int sigma_a_n = bright::find_index_char( (char *) "sigma_a", xs_field_names, xs_nfields);
     int sigma_s_n = bright::find_index_char( (char *) "sigma_s", xs_field_names, xs_nfields);
 
-    for (std::set<int>::iterator i = FCComps::isos2track.begin(); i != FCComps::isos2track.end(); i++)
+    for (std::set<int>::iterator i = FCComps::track_isos.begin(); i != FCComps::track_isos.end(); i++)
     {
         int iso_n = bright::find_index<int>(*i, isozz, xs_nrows);
         if (iso_n < 0)		

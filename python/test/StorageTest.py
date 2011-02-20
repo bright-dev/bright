@@ -23,7 +23,7 @@ print("Empty Storage Component")
 printFCComp(st0)
 print("")
 
-bright.isos2track([922350, 942390, 10010])
+bright.track_isos([922350, 942390, 10010])
 cd = {922350: 10.0, 10010: 1.0}
 ms = bright.MassStream("MassStreamtry02.txt")
 
@@ -32,7 +32,7 @@ print("Storage No Name...")
 printFCComp(st1)
 print("")
 
-bright.isos2track(ms.comp.keys())
+bright.track_isos(ms.comp.keys())
 st2 = bright.Storage("Storage With Name!")
 printFCComp(st2)
 print("")

@@ -121,7 +121,7 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     # Customize output
     bright.write_text(False)
     bright.write_hdf5(True)
-    bright.load_isos2track_hdf5(lwr_data)
+    bright.load_track_isos_hdf5(lwr_data)
     
     # Enrichment Calculation
     nu = bright.MassStream({922340 : 0.000055, 922350 : 0.0072, 922380: 0.992745})

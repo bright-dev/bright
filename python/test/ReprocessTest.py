@@ -30,7 +30,7 @@ printFCComp(rp0)
 print("")
 
 SE1 = {92: 0.99, 94: 0.9}
-bright.isos2track([922350, 942390, 10010])
+bright.track_isos([922350, 942390, 10010])
 
 rp1 = bright.Reprocess({})
 rp1.initialize(SE1)

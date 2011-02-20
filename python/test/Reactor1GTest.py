@@ -25,7 +25,7 @@ print("Empty Reprocessing Cycle Component")
 printFCComp(r0)
 print("")
 
-isos2track([922350, 942390, 10010, 80160])
+track_isos([922350, 942390, 10010, 80160])
 
 r1 = Reactor1G()
 print("SE with no name...")

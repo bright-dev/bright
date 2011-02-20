@@ -27,12 +27,12 @@ class TestBright(TestCase):
         assert_equal(new, "/foo/bar")
         os.environ["BRIGHT_DATA"] = current
 
-    def test_isos2track(self):
-        old_isolist = bright_config.isos2track
+    def test_track_isos(self):
+        old_isolist = bright_config.track_isos
         new_isolist = isoname.mixed_2_zzaaam_List([92235, "H1"])
-        bright_config.isos2track = set(new_isolist)
-        assert_equal(bright_config.isos2track, set([10010, 922350]))
-        bright_config.isos2track = old_isolist
+        bright_config.track_isos = set(new_isolist)
+        assert_equal(bright_config.track_isos, set([10010, 922350]))
+        bright_config.track_isos = old_isolist
 
     def test_verbosity(self):
         old_verbosity = bright_config.verbosity
@@ -63,7 +63,7 @@ class TestBright(TestCase):
         
 
 class TestLoadFromHDF5(TestCase):
-    """Tests isos2track can be loaded from an HDF5 file."""
+    """Tests track_isos can be loaded from an HDF5 file."""
 
     @classmethod
     def setup_class(cls):
@@ -76,36 +76,36 @@ class TestLoadFromHDF5(TestCase):
     def teardown_class(cls):
         os.remove('isos.h5')
 
-    def test_load_isos2track_hdf5_1(self):
-        old_isos = bright_config.isos2track
-        bright_config.isos2track = set([80160])
-        bright.load_isos2track_hdf5('isos.h5')
-        assert_equal(bright_config.isos2track, set([10010, 80160, 922350, 922380]))
-        bright_config.isos2track = old_isos
+    def test_load_track_isos_hdf5_1(self):
+        old_isos = bright_config.track_isos
+        bright_config.track_isos = set([80160])
+        bright.load_track_isos_hdf5('isos.h5')
+        assert_equal(bright_config.track_isos, set([10010, 80160, 922350, 922380]))
+        bright_config.track_isos = old_isos
 
-    def test_load_isos2track_hdf5_2(self):
-        old_isos = bright_config.isos2track
-        bright_config.isos2track = set([80160])
-        bright.load_isos2track_hdf5('isos.h5', '/NotIsos')
-        assert_equal(bright_config.isos2track, set([10010, 80160, 922350, 922380]))
-        bright_config.isos2track = old_isos
+    def test_load_track_isos_hdf5_2(self):
+        old_isos = bright_config.track_isos
+        bright_config.track_isos = set([80160])
+        bright.load_track_isos_hdf5('isos.h5', '/NotIsos')
+        assert_equal(bright_config.track_isos, set([10010, 80160, 922350, 922380]))
+        bright_config.track_isos = old_isos
 
-    def test_load_isos2track_hdf5_3(self):
-        old_isos = bright_config.isos2track
-        bright_config.isos2track = set([80160])
-        bright.load_isos2track_hdf5('isos.h5', '', True)
-        assert_equal(bright_config.isos2track, set([10010, 922350, 922380]))
-        bright_config.isos2track = old_isos
+    def test_load_track_isos_hdf5_3(self):
+        old_isos = bright_config.track_isos
+        bright_config.track_isos = set([80160])
+        bright.load_track_isos_hdf5('isos.h5', '', True)
+        assert_equal(bright_config.track_isos, set([10010, 922350, 922380]))
+        bright_config.track_isos = old_isos
 
-    def test_load_isos2track_hdf5_4(self):
-        old_isos = bright_config.isos2track
-        bright_config.isos2track = set([80160])
-        bright.load_isos2track_hdf5('isos.h5', '/NotIsos', True)
-        assert_equal(bright_config.isos2track, set([10010, 922350, 922380]))
-        bright_config.isos2track = old_isos
+    def test_load_track_isos_hdf5_4(self):
+        old_isos = bright_config.track_isos
+        bright_config.track_isos = set([80160])
+        bright.load_track_isos_hdf5('isos.h5', '/NotIsos', True)
+        assert_equal(bright_config.track_isos, set([10010, 922350, 922380]))
+        bright_config.track_isos = old_isos
 
 class TestLoadFromText(TestCase):
-    """Tests isos2track can be loaded from a text file."""
+    """Tests track_isos can be loaded from a text file."""
 
     @classmethod
     def setup_class(cls):
@@ -116,19 +116,19 @@ class TestLoadFromText(TestCase):
     def teardown_class(cls):
         os.remove('isos.txt')
 
-    def test_load_isos2track_text_1(self):
-        old_isos = bright_config.isos2track
-        bright_config.isos2track = set([80160])
-        bright.load_isos2track_text('isos.txt')
-        assert_equal(bright_config.isos2track, set([10010, 80160, 922350, 922380]))
-        bright_config.isos2track = old_isos
+    def test_load_track_isos_text_1(self):
+        old_isos = bright_config.track_isos
+        bright_config.track_isos = set([80160])
+        bright.load_track_isos_text('isos.txt')
+        assert_equal(bright_config.track_isos, set([10010, 80160, 922350, 922380]))
+        bright_config.track_isos = old_isos
 
-    def test_load_isos2track_text_2(self):
-        old_isos = bright_config.isos2track
-        bright_config.isos2track = set([80160])
-        bright.load_isos2track_text('isos.txt', True)
-        assert_equal(bright_config.isos2track, set([10010, 922350, 922380]))
-        bright_config.isos2track = old_isos
+    def test_load_track_isos_text_2(self):
+        old_isos = bright_config.track_isos
+        bright_config.track_isos = set([80160])
+        bright.load_track_isos_text('isos.txt', True)
+        assert_equal(bright_config.track_isos, set([10010, 922350, 922380]))
+        bright_config.track_isos = old_isos
 
 if __name__ == "__main__":
     nose.main()

@@ -47,7 +47,7 @@ def main():
     trackfile = tables.openFile("../FR.h5", 'r')
     itrack = trackfile.root.ToIso_zz.read()
     trackfile.close()
-    bright.isos2track(itrack)
+    bright.track_isos(itrack)
 
     ######################
     ### FR Computation ###

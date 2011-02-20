@@ -83,7 +83,7 @@ class TestStorageMethods(TestCase):
                 os.remove(f)
 
     def test_doCalc_1(self):
-        bright_config.isos2track = set([922350, 922380, 942390])
+        bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.decay_time = 0.0
         s.IsosIn = MassStream({942390: 1.0})
@@ -92,7 +92,7 @@ class TestStorageMethods(TestCase):
         assert_almost_equal(s.IsosOut.comp[942390], 1.0) 
 
     def test_doCalc_2(self):
-        bright_config.isos2track = set([922350, 922380, 942390])
+        bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.decay_time = 0.0
         s.doCalc(MassStream({942390: 1.0}))
@@ -100,7 +100,7 @@ class TestStorageMethods(TestCase):
         assert_equal(s.IsosOut.comp[942390], 1.0) 
 
     def test_doCalc_3(self):
-        bright_config.isos2track = set([922350, 922380, 942390])
+        bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.IsosIn = MassStream({942390: 1.0})
         s.doCalc(decay_time=24110*365.25*24*3600)
@@ -108,14 +108,14 @@ class TestStorageMethods(TestCase):
         assert_almost_equal(s.IsosOut.comp[942390], 0.5, 3) 
 
     def test_doCalc_4(self):
-        bright_config.isos2track = set([922350, 922380, 942390])
+        bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.doCalc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
         assert(s.IsosOut.mass < 1.0)
         assert_almost_equal(s.IsosOut.comp[942390], 0.5, 3) 
 
     def test_setParams(self):
-        bright_config.isos2track = set([922350, 922380, 942390])
+        bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.doCalc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
         s.setParams()

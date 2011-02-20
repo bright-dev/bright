@@ -68,13 +68,13 @@ cdef class BrightConfig:
 
     # From FCComps namespace
 
-    property isos2track:
+    property track_isos:
         def __get__(self):
-            return conv.cpp_to_py_set_int(cpp_bright.isos2track)
+            return conv.cpp_to_py_set_int(cpp_bright.track_isos)
 
         def __set__(self, value):
             s = set([isoname.mixed_2_zzaaam(v) for v in value])
-            cpp_bright.isos2track = conv.py_to_cpp_set_int(s)
+            cpp_bright.track_isos = conv.py_to_cpp_set_int(s)
 
 
     property verbosity:
@@ -114,9 +114,9 @@ cdef class BrightConfig:
 bright_config = BrightConfig()
 
 
-# Load isos2track from file functions
-def load_isos2track_hdf5(char * filename, char * datasetname="", bint clear=False):
-    """This convience function tries to load the isos2track set from a dataset 
+# Load track_isos from file functions
+def load_track_isos_hdf5(char * filename, char * datasetname="", bint clear=False):
+    """This convience function tries to load the track_isos set from a dataset 
     in an HDF5 file.  The dataset *must* be of integer type.  String-based
     nuclide names are currently not supported. 
 
@@ -124,12 +124,12 @@ def load_isos2track_hdf5(char * filename, char * datasetname="", bint clear=Fals
         * filename (str): Path to the data library.
         * dataset (str):  Dataset name to grab nuclides from.
         * clear (bool):   Flag that if set removes the currrent entries
-          from isos2track prior to loading in new values.
+          from track_isos prior to loading in new values.
 
     If the dataset argument is not provided or empty, the function tries to 
     load from various default datasets in the following order::
 
-        "/isos2track"  
+        "/track_isos"  
         "/Isos2Track"
         "/isostrack"   
         "/IsosTrack"
@@ -144,11 +144,11 @@ def load_isos2track_hdf5(char * filename, char * datasetname="", bint clear=Fals
         "/FromIso_zz" 
         "/FromIso_MCNP"
     """
-    cpp_bright.load_isos2track_hdf5(std.string(filename), std.string(datasetname), clear)
+    cpp_bright.load_track_isos_hdf5(std.string(filename), std.string(datasetname), clear)
 
 
-def load_isos2track_text(char * filename, bint clear=False):
-    """This convience function tries to load the isos2track set from a text
+def load_track_isos_text(char * filename, bint clear=False):
+    """This convience function tries to load the track_isos set from a text
     file.  The nuclide names may use any naming convention.  Mixing different
     conventions in the same file is allowed.  Whitespace is required between
     isotopic names.
@@ -156,9 +156,9 @@ def load_isos2track_text(char * filename, bint clear=False):
     Args:
         * filename (str): Path to the data library.
         * clear (bool):   Flag that if set removes the currrent entries
-          from isos2track prior to loading in new values.
+          from track_isos prior to loading in new values.
     """
-    cpp_bright.load_isos2track_text(std.string(filename), clear)
+    cpp_bright.load_track_isos_text(std.string(filename), clear)
 
 
 
@@ -1009,7 +1009,7 @@ cdef class Reprocess(FCComp):
         """The initialize() function calculates the sepeff from an integer-keyed dictionary
         of separation efficiencies.  The difference is that sepdict may contain either elemental or
         isotopic keys and need not contain every isotope tracked.  On the other hand, sepeff
-        must have only zzaaam keys that match exactly the isotopes in bright.isos2track.
+        must have only zzaaam keys that match exactly the isotopes in bright.track_isos.
 
         Args:
             * sepdict (dict): Integer valued dictionary of SE to be converted to sepeff.
@@ -1187,7 +1187,7 @@ cdef class Storage(FCComp):
     def doCalc(self, input=None, decay_time=None):
         """As usual, doCalc sets up the Storage component's input stream and calculates the corresponding 
         output MassStream.  Here, this amounts to calling bateman() for every nuclide in 
-        IsosIn, for each chain that ends with a nuclide in isos2track.
+        IsosIn, for each chain that ends with a nuclide in track_isos.
 
         This method is public and accessible from Python.
 

@@ -59,7 +59,7 @@ def printReactorVals(r):
     return
 
 ms = MassStream("MassStreamtry02.txt")
-isos2track([922350, 942390, 10010, 80160, 50100, 50110])
+track_isos([922350, 942390, 10010, 80160, 50100, 50110])
 
 print("Light Water Reactor Default Parameters:")
 printReactorParameters(LWRDefaults())
@@ -103,7 +103,7 @@ printReactorVals(r3)
 print_ms()
 
 ms = MassStream("MassStreamtry03.txt")
-isos2track([ 922350, 922380, 942390, 10010, 80160, 50100, 50110])
+track_isos([ 922350, 922380, 942390, 10010, 80160, 50100, 50110])
 
 r4 = LightWaterReactor1G("LWR.h5", NewParams, "Reactor4")
 printFCComp(r4)

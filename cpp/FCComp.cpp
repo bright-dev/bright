@@ -8,10 +8,10 @@
 
 #ifdef _WIN32
     int null_set [1] = {922350};
-    std::set<int> FCComps::isos2track (null_set, null_set+1);
+    std::set<int> FCComps::track_isos (null_set, null_set+1);
 #else
     int null_set [0] = {};
-    std::set<int> FCComps::isos2track (null_set, null_set+0);
+    std::set<int> FCComps::track_isos (null_set, null_set+0);
 #endif
 
 int FCComps::verbosity  = 0;
@@ -20,17 +20,17 @@ int FCComps::write_hdf5 = 0;
 
 std::string FCComps::output_filename = "fuel_cycle.h5";
 
-void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname, bool clear_prev)
+void FCComps::load_track_isos_hdf5(std::string filename, std::string datasetname, bool clear_prev)
 {
     // Check that the file is there
     if (!bright::FileExists(filename))
         throw bright::FileNotFound(filename);
 
-    //Load values into isos2track from an hdf5 file.
+    //Load values into track_isos from an hdf5 file.
     //If the dataspace name is not given, try some defaults.
     int dslen = 14;
     std::string defaultsets [14] = {
-        "/isos2track",
+        "/track_isos",
         "/Isos2Track",
         "/isostrack",   
         "/IsosTrack",
@@ -73,7 +73,7 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
             n++;
         };
         if (n == dslen)
-            throw H5::FileIException("load_isos2track", "Dataset not found!");
+            throw H5::FileIException("load_track_isos", "Dataset not found!");
     };
 
     //Read in isos from dataset.
@@ -94,17 +94,17 @@ void FCComps::load_isos2track_hdf5(std::string filename, std::string datasetname
 
     //Clear previous entries
     if (clear_prev)
-        isos2track.clear();
+        track_isos.clear();
 
-    //load into isos2track
+    //load into track_isos
     for(int n = 0; n < isolen[0]; n++)
     {
-        isos2track.insert(isoname::mixed_2_zzaaam(iso_out_int[n]));
+        track_isos.insert(isoname::mixed_2_zzaaam(iso_out_int[n]));
     };
     
 };
 
-void FCComps::load_isos2track_text(std::string filename, bool clear_prev)
+void FCComps::load_track_isos_text(std::string filename, bool clear_prev)
 {
     // Check that the file is there
     if (!bright::FileExists(filename))
@@ -112,7 +112,7 @@ void FCComps::load_isos2track_text(std::string filename, bool clear_prev)
 
     //Clear previous entries
     if (clear_prev)
-        isos2track.clear();
+        track_isos.clear();
 
     //open file
     std::fstream isofile;
@@ -126,7 +126,7 @@ void FCComps::load_isos2track_text(std::string filename, bool clear_prev)
         isofile >> isoraw;
         isostr.assign(isoraw);
         isostr = bright::MultiStrip(isostr, "()[],.;{}!#|");
-        isos2track.insert(isoname::mixed_2_zzaaam(isostr));
+        track_isos.insert(isoname::mixed_2_zzaaam(isostr));
     };
 
     //close file
@@ -164,11 +164,11 @@ void FCComp::initialize (std::set<std::string> ptrack, std::string n)
 void FCComp::initialize_Text ()
 {
     //Initialize the Isotopic tracking file
-    if (!FCComps::isos2track.empty())
+    if (!FCComps::track_isos.empty())
     {
         std::ofstream isofile ( (name + "Isos.txt").c_str() );
         isofile << "Isotope\n";
-        for (std::set<int>::iterator iso = FCComps::isos2track.begin(); iso != FCComps::isos2track.end(); iso++)
+        for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
         {
             isofile << isoname::zzaaam_2_LLAAAM(*iso) << "\n"; 
         }
@@ -232,7 +232,7 @@ void FCComp::initialize_HDF5 ()
         { gFCComp = dbFile.createGroup(comp_path); }
 
     //Initialize the IsoStreams 
-    if (!FCComps::isos2track.empty())
+    if (!FCComps::track_isos.empty())
     {
         // Open/Create IsosIn group
         H5::Group gIsosIn;
@@ -265,7 +265,7 @@ void FCComp::initialize_HDF5 ()
         // Open/Create /Isos[In|Out]/iso Datasets
         H5::DataSet dsIsosInIso;
         H5::DataSet dsIsosOutIso;
-        for (std::set<int>::iterator iso = FCComps::isos2track.begin(); iso != FCComps::isos2track.end(); iso++)
+        for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
         {
             std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
 
@@ -478,12 +478,12 @@ void FCComp::writeHDF5 ()
     std::string comp_path ("/" + natural_name);
 
     //Write the isotopic component input and output streams
-    if (!FCComps::isos2track.empty())
+    if (!FCComps::track_isos.empty())
     {
         appendHDF5array(&dbFile, comp_path + "/IsosIn/Mass",  &(IsosIn.mass),  &RANK, dims, offset, ext_size);
         appendHDF5array(&dbFile, comp_path + "/IsosOut/Mass", &(IsosOut.mass), &RANK, dims, offset, ext_size);
 
-        for (std::set<int>::iterator iso = FCComps::isos2track.begin(); iso != FCComps::isos2track.end(); iso++)
+        for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
         {
             std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
             appendHDF5array(&dbFile, comp_path + "/IsosIn/"  + isoLL, &(IsosIn.comp[*iso]),  &RANK, dims, offset, ext_size);

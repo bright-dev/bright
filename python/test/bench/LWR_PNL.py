@@ -44,7 +44,7 @@ def main():
     trackfile = tables.openFile("../LWR.h5", 'r')
     itrack = trackfile.root.ToIso_zz.read()
     trackfile.close()
-    bright.isos2track(itrack)
+    bright.track_isos(itrack)
 
     if name == "LWR_NEA":
         #NEA

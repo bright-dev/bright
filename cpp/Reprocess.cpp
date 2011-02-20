@@ -14,7 +14,7 @@ void Reprocess::initialize(SepEffDict sed)
 {
     //Initializes the reprocessing component with specific separation efficiencies.
     //sepeff = dictioanry of separation efficiencies.  Of form {aazzzm: 0.99}, eg {922350, 0.999, 942390: 0.99}
-    for (std::set<int>::iterator iso = FCComps::isos2track.begin(); iso != FCComps::isos2track.end(); iso++)
+    for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
     {
         if (0 < sed.count(*iso))
             sepeff[*iso] = sed[*iso];

@@ -166,7 +166,7 @@ MassStream Storage::doCalc()
     //Main part of the cooling code.
     //	instream is a mass stream of nuclides as the keys with the mass as a float as the value.
     //	decay_time is a float value for the time in seconds.
-    //	FCComps::isos2track throws out any values not in the list before returning vector
+    //	FCComps::track_isos throws out any values not in the list before returning vector
 
     //Initialize the components.
     CompDict cdin, cdout;
@@ -188,7 +188,7 @@ MassStream Storage::doCalc()
     {
         mom = (*icsi)[0];
         daughter = (*icsi)[(*icsi).size()-1];
-        if ( (0 < cdin.count(mom)) && (0 < FCComps::isos2track.count(daughter)) )
+        if ( (0 < cdin.count(mom)) && (0 < FCComps::track_isos.count(daughter)) )
         {
             if (0 < cdout.count(daughter))
                 cdout[daughter] = cdout[daughter] + bateman(daughter, cdin[mom], *icsi);

@@ -51,7 +51,7 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
     can find its common data libraries that hold information on common cross-section data, half-lives, *etc*.
 
 
-.. function:: isos2track([isolist])
+.. function:: track_isos([isolist])
 
     This function gets/sets the Bright global variable that determines which nuclides are tracked through
     the fuel cycle components.  Historically, each component was allowed to track its own unique set of 
@@ -59,18 +59,18 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
     all components now refer to a common isotopic set.
 
     In posix, this set is empty by default.  In Windows, it only contains U-235.  Therefore 
-    calling `isos2track()` becomes necessary at the beginning of most Bright codes so that the components 
+    calling `track_isos()` becomes necessary at the beginning of most Bright codes so that the components 
     may be executed appropriately.  Moreover, this isotopic list is given and received in zzaaam form.  
     However, using `isoname` functions you can specify isotopic lists in a more natural way::
 
         import bright
 
-        #Set isos2track
+        #Set track_isos
         isolist = bright.mixed_2_zzaaam_List(["U235", 94239, "H1", 80160])
-        bright.isos2track(isolist)
+        bright.track_isos(isolist)
 
-        #Get isos2track
-        bright.isos2track()  #returns the list [922350, 942390, 10010, 80160]
+        #Get track_isos
+        bright.track_isos()  #returns the list [922350, 942390, 10010, 80160]
 
     Args:
         * `isolist` (zzaaam list): Integer list of isotopes (in zzaaam form) for fuel cycle components to track.
@@ -81,9 +81,9 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
           was not set.
 
 
-.. function:: load_isos2track_hdf5(filename[, dataset='', clear=False])
+.. function:: load_track_isos_hdf5(filename[, dataset='', clear=False])
 
-    This convience function tries to load the isos2track set from a dataset 
+    This convience function tries to load the track_isos set from a dataset 
     in an HDF5 file.  The dataset *must* be of integer type.  String-based
     nuclide names are currently not supported. 
 
@@ -91,12 +91,12 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
         * `filename` (str): Path to the data library.
         * `dataset` (str):  Dataset name to grab nuclides from.
         * `clear` (bool):   Flag that if set removes the currrent entries
-            from isos2track prior to loading in new values.
+            from track_isos prior to loading in new values.
 
     If the dataset argument is not provided or empty, the function tries to 
     load from various default datasets in the following order::
 
-        "/isos2track"  
+        "/track_isos"  
         "/Isos2Track"
         "/isostrack"   
         "/IsosTrack"
@@ -112,9 +112,9 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
         "/FromIso_MCNP"
         
 
-.. function:: load_isos2track_text(filename[, clear=False])
+.. function:: load_track_isos_text(filename[, clear=False])
 
-    This convience function tries to load the isos2track set from a text
+    This convience function tries to load the track_isos set from a text
     file.  The nuclide names may use any naming convention.  Mixing different
     conventions in the same file is allowed.  Whitespace is required between
     isotopic names.
@@ -122,7 +122,7 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
     Args:
         * `filename` (str): Path to the data library.
         * `clear` (bool):   Flag that if set removes the currrent entries
-            from isos2track prior to loading in new values.
+            from track_isos prior to loading in new values.
 
 
 .. function:: verbosity([v])

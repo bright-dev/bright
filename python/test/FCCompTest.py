@@ -28,9 +28,9 @@ print("Empty Fuel Cycle Component")
 printFCComp(fc0)
 print("")
 
-print(bright.isos2track())
-bright.isos2track( [922350, 942390, 10010] )
-print(bright.isos2track())
+print(bright.track_isos())
+bright.track_isos( [922350, 942390, 10010] )
+print(bright.track_isos())
 
 
 

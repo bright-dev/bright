@@ -264,7 +264,7 @@ class TestLightWaterReactor1GMethods(TestCase):
 
     def test_setParams(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        bright.load_isos2track_hdf5(lf)
+        bright.load_track_isos_hdf5(lf)
         rp = bright.LWRDefaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')

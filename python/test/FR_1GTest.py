@@ -58,7 +58,7 @@ def printReactorVals(r):
     print_ms()
     return
 
-isos2track([922350, 942390, 10010, 80160])
+track_isos([922350, 942390, 10010, 80160])
 
 print("Fast Reactor Default Parameters:")
 printReactorParameters(FRDefaults())
