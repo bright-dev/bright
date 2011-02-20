@@ -14,8 +14,8 @@ import numpy as np
 # Clean up old files
 cython_cpp_files = ['src/stlconverters.cpp', 
                     'src/isoname/isoname.cpp', 
-                    'src/MassStream/mass_stream.cpp', 
-                    'src/BriPy/bright.cpp', 
+                    'src/mass_stream/mass_stream.cpp', 
+                    'src/bright/bright.cpp', 
                     ]
 
 for f in cython_cpp_files:
@@ -23,13 +23,17 @@ for f in cython_cpp_files:
         print "Removing {0}...".format(f)
         os.remove(f)
 
+# Get numpy include dir
+numpy_include = np.get_include()
+
 ###########################################
 ### Set compiler options for extensions ###
 ###########################################
 ext_kwargs = {}
+
 if os.name == 'posix':
     src_dir = 'src/'
-    dat_dir = 'src/BriPy/'
+    dat_dir = 'src/bright/'
     ext_kwargs["libraries"] = ["boost_python"]
 elif os.name == 'nt':
     src_dir = '../FCComps/'
@@ -41,9 +45,10 @@ elif os.name == 'nt':
 user_home = os.path.expanduser('~')
 
 # For MassStream
-MassStream_ext_kwargs = deepcopy(ext_kwargs)
+mass_stream_ext_kwargs = deepcopy(ext_kwargs)
+
 if os.name == 'posix':
-    MassStream_ext_kwargs["libraries"].extend( [
+    mass_stream_ext_kwargs["libraries"].extend( [
         "z", 
         "m", 
         "hdf5", 
@@ -52,7 +57,7 @@ if os.name == 'posix':
         "hdf5_hl_cpp",
         ] )
 elif os.name == 'nt':
-    MassStream_ext_kwargs["extra_link_args"] = [
+    mass_stream_ext_kwargs["extra_link_args"] = [
         "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
@@ -63,15 +68,17 @@ elif os.name == 'nt':
         "/DEFAULTLIB:hdf5_cppdll.lib",
         "/DEFAULTLIB:hdf5_hl_cppdll.lib",
         ] 
-    MassStream_ext_kwargs["define_macros"].extend([
+
+    mass_stream_ext_kwargs["define_macros"].extend([
         ("_HDF5USEDLL_", None),
         ("HDF5CPP_USEDLL", None),
         ])
 
 #For FCComps
-FCComps_ext_kwargs = deepcopy(ext_kwargs)
+bright_ext_kwargs = deepcopy(ext_kwargs)
+
 if os.name == 'posix':
-    FCComps_ext_kwargs["libraries"].extend( [
+    bright_ext_kwargs["libraries"].extend( [
         "hdf5", 
         "z", 
         "m", 
@@ -80,7 +87,7 @@ if os.name == 'posix':
         "hdf5_hl_cpp", 
         ] )
 elif os.name == 'nt':
-    FCComps_ext_kwargs["extra_link_args"] = [
+    bright_ext_kwargs["extra_link_args"] = [
         "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
@@ -98,7 +105,7 @@ elif os.name == 'nt':
         "/DEFAULTLIB:hdf5_cppdll.lib",
         "/DEFAULTLIB:hdf5_hl_cppdll.lib"
         ] 
-    FCComps_ext_kwargs["define_macros"].extend([
+    bright_ext_kwargs["define_macros"].extend([
         ("_HDF5USEDLL_", None),
         ("HDF5CPP_USEDLL", None),        
         ])
@@ -107,15 +114,15 @@ elif os.name == 'nt':
 ### Setup Package Data ###
 ##########################
 pack_dir = {
-    'BriPy': 'src/BriPy', 
-    'MassStream': 'src/MassStream', 
     'isoname': 'src/isoname',
+    'mass_stream': 'src/mass_stream', 
+    'bright': 'src/bright', 
     'bright_data': 'src/bright_data',
     }
     
-pack_data = {'BriPy': []}
+pack_data = {'bright': []}
 
-BriPy_data_files = [
+bright_data_files = [
     'decay.h5', 
     'KaeriData.h5', 
     'FR.h5', 
@@ -123,6 +130,7 @@ BriPy_data_files = [
     ]
         
 pack_dlls_boost= ["boost_python-vc90-mt-1_44.dll"]
+
 pack_dlls_hdf5  = [
     "szip.dll",
     "zlib1.dll",
@@ -133,18 +141,18 @@ pack_dlls_hdf5  = [
     ]
 
 if os.name == 'posix':
-    pack_data['BriPy'].extend(BriPy_data_files)
+    pack_data['bright'].extend(bright_data_files)
 elif os.name == "nt":
     pack_data['isoname'] = []
     pack_data['isoname'].extend(pack_dlls_boost)
 
-    pack_data['MassStream'] = []
-    pack_data['MassStream'].extend(pack_dlls_boost)
-    pack_data['MassStream'].extend(pack_dlls_hdf5)
+    pack_data['mass_stream'] = []
+    pack_data['mass_stream'].extend(pack_dlls_boost)
+    pack_data['mass_stream'].extend(pack_dlls_hdf5)
 
-    pack_data['BriPy'].extend(BriPy_data_files)
-    pack_data['BriPy'].extend(pack_dlls_boost)
-    pack_data['BriPy'].extend(pack_dlls_hdf5)
+    pack_data['bright'].extend(bright_data_files)
+    pack_data['bright'].extend(pack_dlls_boost)
+    pack_data['bright'].extend(pack_dlls_hdf5)
 
     # Copy over actual data files, instead of symlinks
     cp_symlinks = True
@@ -155,22 +163,20 @@ elif os.name == "nt":
     if cp_symlinks:
         mkpath('build/temp/')
         for f in BriPy_data_files:
-            copy_file(pack_dir['BriPy'] + '/' + f, 'build/temp/' + f, verbose=True)
+            copy_file(pack_dir['bright'] + '/' + f, 'build/temp/' + f, verbose=True)
 
         for f in BriPy_data_files:
-            copy_file(dat_dir + f, pack_dir['BriPy'] + '/' + f, verbose=True)
+            copy_file(dat_dir + f, pack_dir['bright'] + '/' + f, verbose=True)
 
 ###################
 ### Call setup! ###
 ###################
-setup(name="BriPy",
-    version = '0.23',
+setup(name="bright",
+    version = '0.25',
     description = 'Bright/Python',
     author = 'Anthony Scopatz',
     author_email = 'scopatz@gmail.com',
     url = 'http://www.scopatz.com/',
-#    packages = ['BriPy', 'mass_stream', 'isoname'],
-#    package_dir = pack_dir,
     packages = ['bright_data'],
     package_dir = pack_dir,
     package_data = {'bright_data': BriPy_data_files},
@@ -188,7 +194,7 @@ setup(name="BriPy",
                    'src/isoname.cpp', 
                    'src/isoname/isoname.pyx',
                    ],
-                  include_dirs=['src/isoname/', 'src/', np.get_include()],
+                  include_dirs=['src/isoname/', 'src/', numpy_include],
                   libraries=[],
                   language="c++",
                   ), 
@@ -196,13 +202,13 @@ setup(name="BriPy",
                   ['src/bright.cpp', 
                    'src/isoname.cpp', 
                    'src/MassStream.cpp',
-                   'src/MassStream/mass_stream.pyx',
+                   'src/mass_stream/mass_stream.pyx',
                    ],
-                  include_dirs=['src/MassStream/', 'src/isoname/', 'src/', np.get_include()],
+                  include_dirs=['src/mass_stream/', 'src/isoname/', 'src/', numpy_include],
                   libraries=MassStream_ext_kwargs["libraries"], 
                   language="c++",
                   ), 
-        Extension("BriPy", 
+        Extension("bright", 
                   ['src/bright.cpp', 
                    'src/isoname.cpp', 
                    'src/MassStream.cpp', 
@@ -214,25 +220,12 @@ setup(name="BriPy",
                    'src/LightWaterReactor1G.cpp', 
                    'src/FastReactor1G.cpp', 
                    'src/FuelFabrication.cpp', 
-                   'src/BriPy/bright.pyx',
+                   'src/mass_stream/bright.pyx',
                    ],
-                  include_dirs=['src/BriPy/', 'src/MassStream/', 'src/', np.get_include()],
+                  include_dirs=['src/bright/', 'src/mass_stream/', 'src/', numpy_include],
                   libraries=FCComps_ext_kwargs["libraries"], 
                   language="c++",
                   ), 
-#        Extension("BriPy.FCComps", [
-#            src_dir + "bright.cpp", 
-#            src_dir + "isoname.cpp", 
-#            src_dir + "MassStream.cpp", 
-#            src_dir + "FCComp.cpp", 
-#            src_dir + "Reprocess.cpp", 
-#            src_dir + "Storage.cpp", 
-#            src_dir + "Enrichment.cpp", 
-#            src_dir + "Reactor1G.cpp", 
-#            src_dir + "LightWaterReactor1G.cpp", 
-#            src_dir + "FastReactor1G.cpp", 
-#            src_dir + "FuelFabrication.cpp", 
-#            "BriPy_FCComps.cpp"], **FCComps_ext_kwargs),
         ],
     )
 
@@ -243,7 +236,7 @@ elif os.name == "nt":
 
     # Copy symlinks over data files. 
     # Hopefully, leaving the repository in the previous state.
-    for f in BriPy_data_files:
-        copy_file('build/temp/' + f, pack_dir['BriPy'] + '/' + f, verbose=True)
+    for f in bright_data_files:
+        copy_file('build/temp/' + f, pack_dir['bright'] + '/' + f, verbose=True)
 
     remove_tree('build/temp/', verbose=True)
