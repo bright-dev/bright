@@ -21,15 +21,15 @@ cdef class EnrichmentParameters:
     cdef cpp_bright.EnrichmentParameters * ep_pointer
 
 
-cdef class Enrichment:
+cdef class Enrichment(FCComp):
     cdef cpp_bright.Enrichment * e_pointer
 
 
-cdef class Reprocess:
+cdef class Reprocess(FCComp):
     cdef cpp_bright.Reprocess * r_pointer
 
 
-cdef class Storage:
+cdef class Storage(FCComp):
     cdef cpp_bright.Storage * s_pointer
 
 
@@ -41,17 +41,17 @@ cdef class ReactorParameters:
     cdef cpp_bright.ReactorParameters * rp_pointer
 
 
-cdef class Reactor1G:
+cdef class Reactor1G(FCComp):
     cdef cpp_bright.Reactor1G * r1g_pointer
 
 
-cdef class LightWaterReactor1G:
+cdef class LightWaterReactor1G(Reactor1G):
     cdef cpp_bright.LightWaterReactor1G * lwr1g_pointer
 
 
-cdef class FastReactor1G:
+cdef class FastReactor1G(Reactor1G):
     cdef cpp_bright.FastReactor1G * fr1g_pointer
 
 
-cdef class FuelFabrication:
+cdef class FuelFabrication(FCComp):
     cdef cpp_bright.FuelFabrication * ff_pointer

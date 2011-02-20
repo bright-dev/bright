@@ -178,10 +178,9 @@ cdef class FCComp:
     Note that this automatically calls the protected :meth:`initialize` C function.
     """
 
-    cdef cpp_bright.FCComp * fccomp_pointer
+    #cdef cpp_bright.FCComp * fccomp_pointer
 
     def __cinit__(self, params=None, char * name="", *args, **kwargs):
-#    def __init__(self, params=None, char * name="", *args, **kwargs):
         cdef cpp_set[std.string] param_set
 
         if params is None:
@@ -421,7 +420,7 @@ cdef class EnrichmentParameters:
     instance has all values (weakly) set to zero.
     """
 
-    cdef cpp_bright.EnrichmentParameters * ep_pointer
+    #cdef cpp_bright.EnrichmentParameters * ep_pointer
 
     def __cinit__(self):
         self.ep_pointer = new cpp_bright.EnrichmentParameters()
@@ -520,7 +519,7 @@ cdef class Enrichment(FCComp):
     Note that this automatically calls the public initialize() C function.
     """
 
-    cdef cpp_bright.Enrichment * e_pointer
+    #cdef cpp_bright.Enrichment * e_pointer
 
     def __cinit__(self, enrich_params=None, char * name=""):
         cdef EnrichmentParameters enr_par
@@ -530,11 +529,6 @@ cdef class Enrichment(FCComp):
         elif isinstance(enrich_params, EnrichmentParameters):
             enr_par = enrich_params
             self.e_pointer = new cpp_bright.Enrichment(<cpp_bright.EnrichmentParameters> enr_par.ep_pointer[0], std.string(name))
-
-        # Set the base class pointer to this new instance 
-        #so that inheritied attributes are picked up
-#        self.fccomp_pointer[0] = self.e_pointer[0]
-        #self.fccomp_pointer[0] = deref(self.e_pointer)
 
     def __dealloc__(self):
         del self.e_pointer
@@ -893,7 +887,7 @@ cdef class Reprocess(FCComp):
 
     """
 
-    cdef cpp_bright.Reprocess * r_pointer
+    #cdef cpp_bright.Reprocess * r_pointer
 
     def _cpp_sepeff(self, dict d):
         sepeff = {}
@@ -1083,7 +1077,7 @@ cdef class Storage(FCComp):
         * name (str): The name of the storage fuel cycle component instance.
     """
 
-    cdef cpp_bright.Storage * s_pointer
+    #cdef cpp_bright.Storage * s_pointer
 
     def __cinit__(self, char * name=""):
         self.s_pointer = new cpp_bright.Storage(std.string(name))
@@ -1252,7 +1246,7 @@ cdef class FluencePoint:
           Has the odd units of [MWd kb / kgIHM n].
     """
 
-    cdef cpp_bright.FluencePoint * fp_pointer
+    #cdef cpp_bright.FluencePoint * fp_pointer
 
     def __cinit__(self):
         self.fp_pointer = new cpp_bright.FluencePoint()
@@ -1354,7 +1348,7 @@ cdef class ReactorParameters:
           For a 17x17 bundle, S_T is 289.0. 
     """
 
-    cdef cpp_bright.ReactorParameters * rp_pointer
+    #cdef cpp_bright.ReactorParameters * rp_pointer
 
     def __cinit__(self):
         self.rp_pointer = new cpp_bright.ReactorParameters()
@@ -1509,7 +1503,7 @@ cdef class Reactor1G(FCComp):
         evaluated at the discharge fluence.
     """
 
-    cdef cpp_bright.Reactor1G * r1g_pointer
+    #cdef cpp_bright.Reactor1G * r1g_pointer
 
     def __cinit__(self, reactor_parameters=None, params2track=None, char * name="", *args, **kwargs):
         cdef ReactorParameters rp
@@ -2545,7 +2539,7 @@ cdef class LightWaterReactor1G(Reactor1G):
         * name (string): The name of this LWR instance.
     """
 
-    cdef cpp_bright.LightWaterReactor1G * lwr1g_pointer
+    #cdef cpp_bright.LightWaterReactor1G * lwr1g_pointer
 
     def __cinit__(self, libfile=None, reactor_parameters=None, char * name=""):
         cdef ReactorParameters rp
@@ -3614,7 +3608,7 @@ cdef class FastReactor1G(Reactor1G):
         * name (string): The name of this FR instance.
     """
 
-    cdef cpp_bright.FastReactor1G * fr1g_pointer
+    #cdef cpp_bright.FastReactor1G * fr1g_pointer
 
     def __cinit__(self, libfile=None, reactor_parameters=None, char * name=""):
         cdef ReactorParameters rp
@@ -4704,7 +4698,7 @@ cdef class FuelFabrication(FCComp):
     Note that this automatically calls the public initialize() C function.
     """
 
-    cdef cpp_bright.FuelFabrication * ff_pointer
+    #cdef cpp_bright.FuelFabrication * ff_pointer
 
     def __cinit__(self, mass_streams=None, mass_weights_in=None, reactor=None, params2track=None, char * name=""):
         cdef std.string cpp_name = std.string(name)
