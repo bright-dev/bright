@@ -335,3 +335,18 @@ cdef extern from "../LightWaterReactor1G.h":
         LightWaterReactor1G(std.string, ReactorParameters, std.string)
 
         void setParams()
+
+
+
+
+cdef extern from "../FastReactor1G.h":
+
+    ReactorParameters fillFRDefaults()
+
+    cdef cppclass FastReactor1G(Reactor1G):
+        FastReactor1G()
+        FastReactor1G(std.string, std.string)
+        FastReactor1G(ReactorParameters, std.string)
+        FastReactor1G(std.string, ReactorParameters, std.string)
+
+        void setParams()

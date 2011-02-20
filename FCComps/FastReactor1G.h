@@ -33,8 +33,8 @@ public:
     //FastReactor1G Constructors
     FastReactor1G();
     FastReactor1G(std::string, std::string = "");
-        FastReactor1G(ReactorParameters, std::string = "");
-        FastReactor1G(std::string, ReactorParameters, std::string = "");
+    FastReactor1G(ReactorParameters, std::string = "");
+    FastReactor1G(std::string, ReactorParameters, std::string = "");
     ~FastReactor1G();
 
     //Get Functions

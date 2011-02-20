@@ -12,8 +12,11 @@ import tables as tb
 import numpy as np
 
 import BriPy
+import mass_stream
+
 FastReactor1G = BriPy.FastReactor1G
-MassStream = BriPy.MassStream
+MassStream = mass_stream.MassStream
+bright_config = BriPy.bright_config
 
 
 def general_teardown():
@@ -53,7 +56,7 @@ class TestFastReactorConstructors(TestCase):
     def test_FastReactor1G_1(self):
         fr = FastReactor1G()
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -72,10 +75,10 @@ class TestFastReactorConstructors(TestCase):
 
     def test_FastReactor1G_2(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        fr = FastReactor1G(lf)
+        fr = FastReactor1G(libfile=lf)
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -94,10 +97,10 @@ class TestFastReactorConstructors(TestCase):
 
     def test_FastReactor1G_3(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        fr = FastReactor1G(lf, "fr")
+        fr = FastReactor1G(libfile=lf, name="fr")
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, 'fr')
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -117,9 +120,9 @@ class TestFastReactorConstructors(TestCase):
     def test_FastReactor1G_4(self):
         rp = BriPy.FRDefaults()
         rp.BUt = 140.0
-        fr = FastReactor1G(rp)
+        fr = FastReactor1G(reactor_parameters=rp)
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -139,9 +142,9 @@ class TestFastReactorConstructors(TestCase):
     def test_FastReactor1G_5(self):
         rp = BriPy.FRDefaults()
         rp.BUt = 140.0
-        fr = FastReactor1G(rp, 'fr')
+        fr = FastReactor1G(reactor_parameters=rp, name='fr')
         assert_equal(fr.name, 'fr')
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -162,10 +165,10 @@ class TestFastReactorConstructors(TestCase):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
         rp = BriPy.FRDefaults()
         rp.BUt = 140.0
-        fr = FastReactor1G(lf, rp)
+        fr = FastReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, '')
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -186,10 +189,10 @@ class TestFastReactorConstructors(TestCase):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
         rp = BriPy.FRDefaults()
         rp.BUt = 140.0
-        fr = FastReactor1G(lf, rp, 'fr')
+        fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
         assert_equal(fr.libfile, lf)
         assert_equal(fr.name, 'fr')
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
         assert_equal(fr.B, 3)
         assert_equal(fr.phi, 2.0*(10.0**15))
         assert_equal(fr.FuelChemicalForm["IHM"], 1.0)
@@ -216,9 +219,9 @@ class TestFastReactor1GAttributes(TestCase):
 
     def test_params2track(self):
         fr = FastReactor1G()
-        assert_equal(fr.params2track, ["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"])
-        fr.params2track = ["Mass"]
-        assert_equal(fr.params2track, ["Mass"])
+        assert_equal(fr.params2track, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
+        fr.params2track = set(["Mass"])
+        assert_equal(fr.params2track, set(["Mass"]))
 
 class TestFastReactor1GMethods(TestCase):
     """Tests that the fuel cycle component methods work."""
@@ -232,7 +235,7 @@ class TestFastReactor1GMethods(TestCase):
         BriPy.load_isos2track_hdf5(lf)
         rp = BriPy.FRDefaults()
         rp.BUt = 140.0
-        fr = FastReactor1G(lf, rp, 'fr')
+        fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
         fr.doCalc(MassStream({922350: 0.30, 922380: 0.70}))
         fr.setParams()
         assert_equal(fr.ParamsIn["BUd"],  0.0)

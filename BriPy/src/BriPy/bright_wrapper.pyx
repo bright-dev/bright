@@ -2519,6 +2519,7 @@ cdef class Reactor1G(FCComp):
 
 
 
+
 ##############################
 ### Light Water Reactor 1G ###
 ##############################
@@ -3583,3 +3584,1079 @@ cdef class LightWaterReactor1G(Reactor1G):
         are set to zeta_F_.
         """
         (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcZetaCylindrical()
+
+
+
+
+
+#######################
+### Fast Reactor 1G ###
+#######################
+
+
+def FRDefaults():
+    cdef cpp_bright.ReactorParameters cpp_frd = cpp_bright.fillFRDefaults()
+    cdef ReactorParameters frd = ReactorParameters()
+    frd.rp_pointer[0] = cpp_frd
+    return frd
+
+
+cdef class FastReactor1G(Reactor1G):
+    """A One-Group Fast Reactor Fuel Cycle Component.  This is a daughter class of Reactor1G and 
+    a granddaughter of FCComp.
+
+    Keyword Args:
+        * libfile (string): The path the the FR HDF5 data library.  This value is set to 
+          Reactor1G.libfile and used by Reactor1G.loadLib.
+        * reactor_parameters (ReactorParameters): The physical reactor parameter data to initialize this
+          LWR instance with.  If this argument is not provided, default values are taken.
+        * name (string): The name of this FR instance.
+    """
+
+    cdef cpp_bright.FastReactor1G * fr1g_pointer
+
+    def __cinit__(self, libfile=None, reactor_parameters=None, char * name=""):
+        cdef ReactorParameters rp
+        cdef std.string cpp_name = std.string(name)
+
+        if (libfile is None) and (reactor_parameters is None):
+            self.fr1g_pointer = new cpp_bright.FastReactor1G()
+            self.fr1g_pointer.name = cpp_name
+
+        elif isinstance(libfile, basestring) and (reactor_parameters is None):
+            self.fr1g_pointer = new cpp_bright.FastReactor1G(std.string(libfile), cpp_name)
+
+        elif (libfile is None) and isinstance(reactor_parameters, ReactorParameters):
+            rp = reactor_parameters
+            self.fr1g_pointer = new cpp_bright.FastReactor1G(<cpp_bright.ReactorParameters> rp.rp_pointer[0], cpp_name)
+
+        elif isinstance(libfile, basestring) and isinstance(reactor_parameters, ReactorParameters):
+            rp = reactor_parameters
+            self.fr1g_pointer = new cpp_bright.FastReactor1G(std.string(libfile), <cpp_bright.ReactorParameters> rp.rp_pointer[0], cpp_name)
+
+        else:
+            if libfile is not None:
+                raise TypeError("The libfile keyword must be a string or None.  Got " + str(type(libfile)))
+
+            if reactor_parameters is not None:
+                raise TypeError("The reactor_parameters keyword must be an instance of the ReactorParameters class or None.  Got " + str(type(reactor_parameters)))
+
+    def __dealloc__(self):
+        del self.fr1g_pointer
+
+
+    #
+    # Class Attributes
+    #
+
+    # Fast reactor attributes
+
+    # Reactor1G attributes
+
+    property B:
+        def __get__(self):
+            return self.fr1g_pointer.B
+
+        def __set__(self, int value):
+            self.fr1g_pointer.B = value
+
+
+    property phi:
+        def __get__(self):
+            return self.fr1g_pointer.phi
+
+        def __set__(self, double value):
+            self.fr1g_pointer.phi = value
+
+
+    property FuelChemicalForm:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.FuelChemicalForm)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.FuelChemicalForm = conv.dict_to_map_str_dbl(value)
+
+
+    property CoolantChemicalForm:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.CoolantChemicalForm)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.CoolantChemicalForm = conv.dict_to_map_str_dbl(value)
+
+
+    property rhoF:
+        def __get__(self):
+            return self.fr1g_pointer.rhoF
+
+        def __set__(self, double value):
+            self.fr1g_pointer.rhoF = value
+
+
+    property rhoC:
+        def __get__(self):
+            return self.fr1g_pointer.rhoC
+
+        def __set__(self, double value):
+            self.fr1g_pointer.rhoC = value
+
+
+    property P_NL:
+        def __get__(self):
+            return self.fr1g_pointer.P_NL
+
+        def __set__(self, double value):
+            self.fr1g_pointer.P_NL = value
+
+
+    property TargetBU:
+        def __get__(self):
+            return self.fr1g_pointer.TargetBU
+
+        def __set__(self, double value):
+            self.fr1g_pointer.TargetBU = value
+
+
+    property useZeta:
+        def __get__(self):
+            return self.fr1g_pointer.useZeta
+
+        def __set__(self, bint value):
+            self.fr1g_pointer.useZeta = value
+
+
+    property Lattice:
+        def __get__(self):
+            cdef std.string value = self.fr1g_pointer.Lattice
+            return value.c_str()
+
+        def __set__(self, char * value):
+            self.fr1g_pointer.Lattice = std.string(value)
+
+
+    property H_XS_Rescale:
+        def __get__(self):
+            return self.fr1g_pointer.H_XS_Rescale
+
+        def __set__(self, bint value):
+            self.fr1g_pointer.H_XS_Rescale = value
+
+
+
+
+
+    property r:
+        def __get__(self):
+            return self.fr1g_pointer.r
+
+        def __set__(self, double value):
+            self.fr1g_pointer.r = value
+
+
+    property l:
+        def __get__(self):
+            return self.fr1g_pointer.l
+
+        def __set__(self, double value):
+            self.fr1g_pointer.l = value
+
+
+    property S_O:
+        def __get__(self):
+            return self.fr1g_pointer.S_O
+
+        def __set__(self, double value):
+            self.fr1g_pointer.S_O = value
+
+
+    property S_T:
+        def __get__(self):
+            return self.fr1g_pointer.S_T
+
+        def __set__(self, double value):
+            self.fr1g_pointer.S_T = value
+
+
+    property VF:
+        def __get__(self):
+            return self.fr1g_pointer.VF
+
+        def __set__(self, double value):
+            self.fr1g_pointer.VF = value
+
+
+    property VC:
+        def __get__(self):
+            return self.fr1g_pointer.VC
+
+        def __set__(self, double value):
+            self.fr1g_pointer.VC = value
+
+
+
+
+
+    property libfile:
+        def __get__(self):
+            cdef std.string value = self.fr1g_pointer.libfile
+            return value.c_str()
+
+        def __set__(self, char * value):
+            self.fr1g_pointer.libfile = std.string(value)
+
+
+    property F:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.F)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.F = conv.array_to_vector_1d_dbl(value)
+
+
+    property BUi_F_:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.BUi_F_)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.BUi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+
+
+    property pi_F_:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.pi_F_)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.pi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+
+
+    property di_F_:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.di_F_)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.di_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+
+
+    property Tij_F_:
+        def __get__(self):
+            return conv.map_to_dict_int_int_array_to_vector_1d_dbl(self.fr1g_pointer.Tij_F_)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.Tij_F_ = conv.dict_to_map_int_int_vector_to_array_1d_dbl(value)
+
+
+
+
+
+    property A_IHM:
+        def __get__(self):
+            return self.fr1g_pointer.A_IHM
+
+        def __set__(self, double value):
+            self.fr1g_pointer.A_IHM = value
+
+
+    property MWF:
+        def __get__(self):
+            return self.fr1g_pointer.MWF
+
+        def __set__(self, double value):
+            self.fr1g_pointer.MWF = value
+
+
+    property MWC:
+        def __get__(self):
+            return self.fr1g_pointer.MWC
+
+        def __set__(self, double value):
+            self.fr1g_pointer.MWC = value
+
+    
+    property niF:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.fr1g_pointer.niF)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.niF = conv.dict_to_map_int_dbl(value)
+
+    
+    property niC:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.fr1g_pointer.niC)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.niC = conv.dict_to_map_int_dbl(value)
+
+    
+    property miF:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.fr1g_pointer.miF)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.miF = conv.dict_to_map_int_dbl(value)
+
+    
+    property miC:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.fr1g_pointer.miC)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.miC = conv.dict_to_map_int_dbl(value)
+
+    
+    property NiF:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.fr1g_pointer.NiF)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.NiF = conv.dict_to_map_int_dbl(value)
+
+    
+    property NiC:
+        def __get__(self):
+            return conv.map_to_dict_int_dbl(self.fr1g_pointer.NiC)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.NiC = conv.dict_to_map_int_dbl(value)
+
+
+
+
+
+    property dF_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.dF_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.dF_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property dC_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.dC_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.dC_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property BU_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.BU_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.BU_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property P_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.P_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.P_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property D_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.D_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.D_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property k_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.k_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.k_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property Mj_F_:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.Mj_F_)
+
+        def __set__(self, dict value):
+            self.fr1g_pointer.Mj_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+
+
+    property zeta_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.zeta_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.zeta_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+
+
+
+    property fd:
+        def __get__(self):
+            return self.fr1g_pointer.fd
+
+        def __set__(self, int value):
+            self.fr1g_pointer.fd = value
+
+
+    property Fd:
+        def __get__(self):
+            return self.fr1g_pointer.Fd
+
+        def __set__(self, double value):
+            self.fr1g_pointer.Fd = value
+
+
+    property BUd:
+        def __get__(self):
+            return self.fr1g_pointer.BUd
+
+        def __set__(self, double value):
+            self.fr1g_pointer.BUd = value
+
+
+    property k:
+        def __get__(self):
+            return self.fr1g_pointer.k
+
+        def __set__(self, double value):
+            self.fr1g_pointer.k = value
+
+
+
+
+
+    property InU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.InU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.InU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property InTRU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.InTRU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.InTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property InLAN:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.InLAN
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.InLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property InACT:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.InACT
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.InACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.OutU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.OutU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutTRU:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.OutTRU
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.OutTRU = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutLAN:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.OutLAN
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.OutLAN = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property OutACT:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.OutACT
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.OutACT = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+
+
+    property deltaR:
+        def __get__(self):
+            return self.fr1g_pointer.deltaR
+
+        def __set__(self, double value):
+            self.fr1g_pointer.deltaR = value
+
+
+    property TruCR:
+        def __get__(self):
+            return self.fr1g_pointer.TruCR
+
+        def __set__(self, double value):
+            self.fr1g_pointer.TruCR = value
+
+
+
+
+
+    property SigmaFa_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.SigmaFa_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.SigmaFa_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property SigmaFtr_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.SigmaFtr_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.SigmaFtr_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property kappaF_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.kappaF_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.kappaF_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+
+
+
+    property SigmaCa_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.SigmaCa_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.SigmaCa_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property SigmaCtr_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.SigmaCtr_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.SigmaCtr_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property kappaC_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.kappaC_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.kappaC_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+
+
+
+    property LatticeE_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.LatticeE_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.LatticeE_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+    property LatticeF_F_:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.fr1g_pointer.LatticeF_F_)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.fr1g_pointer.LatticeF_F_ = conv.array_to_vector_1d_dbl(value)
+
+
+
+    # FCComps inherited attributes
+
+    property name:
+        def __get__(self):
+            cdef std.string n = self.fr1g_pointer.name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.fr1g_pointer.name = std.string(n)
+
+
+    property natural_name:
+        def __get__(self):
+            cdef std.string n = self.fr1g_pointer.natural_name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.fr1g_pointer.natural_name = std.string(n)
+
+
+    property IsosIn:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.IsosIn
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property IsosOut:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.fr1g_pointer.IsosOut
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.fr1g_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property ParamsIn:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.ParamsIn)
+
+        def __set__(self, dict pi):
+            self.fr1g_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+
+
+    property ParamsOut:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.ParamsOut)
+
+        def __set__(self, dict po):
+            self.fr1g_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+
+
+    property PassNum:
+        def __get__(self):
+            return self.fr1g_pointer.PassNum
+
+        def __set__(self, int pn):
+            self.fr1g_pointer.PassNum = pn
+
+
+    property params2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_str(self.fr1g_pointer.params2track)
+
+        def __set__(self, set p2t):
+            self.fr1g_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+
+
+
+    #
+    # Class Methods
+    # 
+
+    # FastReactor1G Methods
+
+    def setParams(self):
+        """Along with its own parameter set to track, the FR model implements its own function to set these
+        parameters.  This function is equivalent to the following::
+
+            self.ParamsIn["BUd"]  = 0.0
+            self.ParamsOut["BUd"] = self.BUd
+
+            self.ParamsIn["TRUCR"]  = 0.0
+            self.ParamsOut["TRUCR"] = self.calcTruCR()
+
+            self.ParamsIn["P_NL"]  = 0.0
+            self.ParamsOut["P_NL"] = self.P_NL
+
+            self.ParamsIn["U"]  = self.InU.mass
+            self.ParamsOut["U"] = self.OutU.mass
+
+            self.ParamsIn["TRU"]  = self.InTRU.mass
+            self.ParamsOut["TRU"] = self.OutTRU.mass
+
+            self.ParamsIn["ACT"]  = self.InACT.mass
+            self.ParamsOut["ACT"] = self.OutACT.mass
+
+            self.ParamsIn["LAN"]  = self.InLAN.mass
+            self.ParamsOut["LAN"] = self.OutLAN.mass
+
+            self.ParamsIn["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
+            self.ParamsOut["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
+
+        """
+        (<cpp_bright.FCComp *> self.fr1g_pointer).setParams()
+
+
+    # Reactor1G Methods
+
+    def initialize(self, ReactorParameters reactor_parameters):
+        """The initialize() method for reactors copies all of the reactor specific parameters to this instance.
+        Additionally, it calculates and sets the volumes VF and VC.
+
+        Args:
+            * reactor_parameters (ReactorParameters): A special data structure that contains information
+              on how to setup and run the reactor.
+        """
+        cdef ReactorParameters rp = reactor_parameters
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).initialize(<cpp_bright.ReactorParameters> rp.rp_pointer[0])
+
+
+    def loadLib(self, char * libfile="reactor.h5"):
+        """This method finds the HDF5 library for this reactor and extracts the necessary information from it.
+        This method is typically called by the constructor of the child reactor type object.  It must be 
+        called before attempting to do any real computation.
+
+        Args: 
+            * libfile (str): Path to the reactor library.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).loadLib(std.string(libfile))
+
+
+    def foldMassWeights(self):
+        """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
+        In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
+        as the values of IsosIn.  The raw data must have previously been read in from loadLib().  
+
+        .. warning::
+
+            Anytime any reactor parameter whatsoever (IsosIn, P_NL, *etc*) is altered in any way, 
+            the foldMassWeights() function must be called to reset all of the resultant data.
+            If you are unsure, please call this function anyway to be safe.  There is little 
+            harm in calling it twice by accident.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).foldMassWeights()
+
+
+
+
+
+    def mkMj_F_(self):
+        """This function calculates and sets the Mj_F_ attribute from IsosIn and the 
+        raw reactor data Tij_F_.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).mkMj_F_()
+
+
+    def mkMj_Fd_(self):
+        """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
+        The resultant isotopic dictionary is then converted into the IsosOut mass stream
+        for this pass through the reactor.  Thus if ever you need to calculate IsosOut
+        without going through doCalc(), use this function.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).mkMj_Fd_()
+
+
+
+
+
+    def calcOutIso(self):
+        """This is a convenience function that wraps the transmutation matrix methods.  
+        It is equivalent to::
+
+            #Wrapper to calculate discharge isotopics.
+            mkMj_F_()
+            mkMj_Fd_()
+
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcOutIso()
+
+    def calcSubStreams(self):
+        """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
+        attributes:
+
+            * InU
+            * InTRU
+            * InLAN
+            * InACT
+            * OutU
+            * OutTRU
+            * OutLAN
+            * OutACT
+
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcSubStreams()
+
+
+    def calcTruCR(self):
+        """This calculates and sets the transuranic conversion ratio TruCR through the equation:
+
+        .. math:: \mbox{TruCR} = \frac{\mbox{InTRU.mass} - \mbox{OutTRU.mass}}{\frac{\mbox{BUd}}{935.0}}
+
+        Returns:
+            * TruCR (float): The value of the transuranic conversion ratio just calculated.
+        """
+        return (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcTruCR()
+
+
+
+
+
+    def calc_deltaR(self, input=None):
+        """Calculates and sets the deltaR value of the reactor.  
+        This is equal to the production rate minus the destruction rate at the target burnup::
+
+            deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+
+        Args:
+            * input (dict or MassStream): If input is present, it set as the component's 
+              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as IsosIn.
+
+        Returns:
+            * deltaR (float): deltaR.
+        """
+        cdef mass_stream.MassStream in_ms 
+        cdef double deltaR 
+
+        if input is None:
+            deltaR = (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_deltaR()
+        elif isinstance(input, dict):
+            deltaR = (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_deltaR(conv.dict_to_map_int_dbl(input))
+        elif isinstance(input, mass_stream.MassStream):
+            in_ms = input
+            deltaR = (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_deltaR(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+
+        return deltaR
+
+
+
+
+
+    def FluenceAtBU(self, double burnup):
+        """This function takes a burnup value  and returns a special fluence point object.  
+        The fluence point is an amalgamation of data where the at which the burnup occurs.
+        This object instance FP contains three pieces of information::
+    
+            FP.f    #Index immediately lower than where BU achieved (int)
+            FP.F    #Fluence value itself (float)
+            FP.m    #Slope dBU/dF between points f and f+1 (double)
+
+        Args:
+            * burnup (float): Burnup [MWd/kgIHM] at which to calculate the corresponding fluence.
+
+        Returns:
+            * fp (FluencePoint): A class containing fluence information.
+        """
+        cdef FluencePoint fp = FluencePoint()
+        fp.fp_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).FluenceAtBU(burnup)
+        return fp
+
+
+    def batchAve(self, double BUd, char * PDk_flag="K"):
+        """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
+        This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
+
+        Args:
+            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+
+        Keyword Args:
+            * PDk_flag (string): Flag that determines whether the neutron production rate "P" [n/s], 
+              the neutron destruction rate "D" [n/s], or the multiplication factor "K" is reported in the output.
+
+        Returns:
+            * PDk (float): the batch averaged neutron production rate,
+        """
+        cdef double PDk = (<cpp_bright.Reactor1G *> self.fr1g_pointer).batchAve(BUd, std.string(PDk_flag))
+        return PDk
+
+
+    def batchAveK(self, double BUd):
+        """Convenience function that calls batchAve(BUd, "K").
+
+        Args:
+            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+
+        Returns:
+            * k (float): the batch averaged multiplication factor.
+        """
+        cdef double PDk = (<cpp_bright.Reactor1G *> self.fr1g_pointer).batchAveK(BUd)
+        return PDk
+
+
+    def BUd_BisectionMethod(self):
+        """Calculates the maximum discharge burnup via the Bisection Method for a given IsosIn
+        in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
+        that is closest to 1.0.
+
+        Other root finding methods for determining maximum discharge burnup are certainly possible.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).BUd_BisectionMethod()
+
+
+    def Run_PNL(self, double pnl):
+        """Performs a reactor run for a specific non-leakage probability value.
+        This requires that IsosIn be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+
+        This function amounts to the following code::
+
+            self.P_NL = pnl
+            self.foldMassWeights()
+            self.BUd_BisectionMethod()
+
+        Args:
+            * pnl (float): The new non-leakage probability for the reactor.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).Run_PNL(pnl)
+    
+
+    def Calibrate_PNL_2_BUd(self):
+        """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
+        and the target discharge burnup are.  This function handles that situation by
+        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup TargetBU.
+        Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
+        benchmarking calculations.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).Calibrate_PNL_2_BUd()
+
+
+
+
+    def doCalc(self, input=None):
+        """Since many other methods provide the computational heavy-lifting of reactor calculations, 
+        the doCalc() method is relatively simple::
+
+            self.IsosIn = input
+            self.foldMassWeights()
+            self.BUd_BisectionMethod()
+            self.calcOutIso()
+            return self.IsosOut
+
+        As you can see, all this function does is set burn an input stream to its maximum 
+        discharge burnup and then reports on the output isotopics.
+
+        Args:
+            * input (dict or MassStream): If input is present, it set as the component's 
+              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as IsosIn.
+
+        Returns:
+            * output (MassStream): IsosOut.
+        """
+        cdef mass_stream.MassStream in_ms 
+        cdef mass_stream.MassStream output = mass_stream.MassStream()
+
+        if input is None:
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.fr1g_pointer).doCalc()
+        elif isinstance(input, dict):
+            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).doCalc(conv.dict_to_map_int_dbl(input))
+        elif isinstance(input, mass_stream.MassStream):
+            in_ms = input
+            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+
+        return output
+
+
+
+
+
+
+    def LatticeEPlanar(self, double a, double b):
+        """Calculates the lattice function E(F) for planar geometry.  Sets value as LatticeE_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeEPlanar(a, b)
+
+
+    def LatticeFPlanar(self, double a, double b):
+        """Calculates the lattice function F(F) for planar geometry.  Sets value as LatticeF_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeFPlanar(a, b)
+
+
+    def LatticeESpherical(self, double a, double b):
+        """Calculates the lattice function E(F) for spherical geometry.  Sets value as LatticeE_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeESpherical(a, b)
+
+
+    def LatticeFSpherical(self, double a, double b):
+        """Calculates the lattice function F(F) for spherical geometry.  Sets value as LatticeF_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeFSpherical(a, b)
+
+
+    def LatticeECylindrical(self, double a, double b):
+        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as LatticeE_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeECylindrical(a, b)
+
+
+    def LatticeFCylindrical(self, double a, double b):
+        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as LatticeF_F_
+
+        Args:
+            * a (float): Fuel region radius equivalent [cm].
+            * b (float): Unit fuel cell pitch length equivalent [cm].
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeFCylindrical(a, b)
+
+
+
+
+
+    def calcZeta(self):
+        """This calculates the thermal disadvantage factor for the geometry specified by Lattice.  The results
+        are set to zeta_F_.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZeta()
+
+
+    def calcZetaPlanar(self):
+        """This calculates the thermal disadvantage factor for a planar geometry.  The results
+        are set to zeta_F_.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZetaPlanar()
+
+
+    def calcZetaSpherical(self):
+        """This calculates the thermal disadvantage factor for a spherical geometry.  The results
+        are set to zeta_F_.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZetaSpherical()
+
+
+    def calcZetaCylindrical(self):
+        """This calculates the thermal disadvantage factor for a clyindrical geometry.  The results
+        are set to zeta_F_.
+        """
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZetaCylindrical()
