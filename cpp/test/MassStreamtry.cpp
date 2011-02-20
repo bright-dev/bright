@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void Print( string s)
+void print( string s)
 {
 	cout << s << "\n";
 }
@@ -23,106 +23,106 @@ int main()
 	LEU[922350] = 0.25;
 	LEU[922380] = 4.75;
 	MassStream msLEU (LEU, -1, "LEU From CompDict");
-	msLEU.Print();
-	Print("");
+	msLEU.print_ms();
+	print("");
 
 	MassStream msDU ("MassStreamtry01.txt", -1, "DU from File (with char*)");
-	msDU.Print();
-	Print("");
+	msDU.print_ms();
+	print("");
 
 	string msf = "MassStreamtry02.txt"; 
 	MassStream msSNF (msf, -1, "LWR-SNF from File (with string)");
-	msSNF.Print();
-	Print("");
+	msSNF.print_ms();
+	print("");
 
-	Print("Checking substrem from int set:");
+	print("Checking substrem from int set:");
 	int intnuc [] = {922380, 94, 2, 57};
 	set<int> intset (intnuc, intnuc+4);
-	MassStream msIntSub = msSNF.getSubStream(intset, "Integer SubSet");
-	msIntSub.Print();
-	Print("");
+	MassStream msIntSub = msSNF.get_sub_stream(intset, "Integer SubSet");
+	msIntSub.print_ms();
+	print("");
 
-	Print("Checking substrem from string set:");
+	print("Checking substrem from string set:");
 	string strnuc [] = {"922350", "94242", "CS137", "57", "CF", "TQ"};
 	set<string> strset (strnuc, strnuc+6);
-	MassStream msStrSub = msSNF.getSubStream(strset, "String SubSet");
-	msStrSub.Print();
-	Print("");
+	MassStream msStrSub = msSNF.get_sub_stream(strset, "String SubSet");
+	msStrSub.print_ms();
+	print("");
 
-	Print("Checking Uranium sub-stream:");
-	MassStream msU = msSNF.getU("Uranium Sub-Stream");
-	msU.Print();
-	Print("");
+	print("Checking Uranium sub-stream:");
+	MassStream msU = msSNF.get_u("Uranium Sub-Stream");
+	msU.print_ms();
+	print("");
 
-	Print("Checking Plutonium sub-stream:");
-	MassStream msPU = msSNF.getPU("Plutonium Sub-Stream");
-	msPU.Print();
-	Print("");
+	print("Checking Plutonium sub-stream:");
+	MassStream msPU = msSNF.get_pu("Plutonium Sub-Stream");
+	msPU.print_ms();
+	print("");
 
-	Print("Checking Lanthanide sub-stream:");
-	MassStream msLAN = msSNF.getLAN("Lanthanide Sub-Stream");
-	msLAN.Print();
-	Print("");
+	print("Checking Lanthanide sub-stream:");
+	MassStream msLAN = msSNF.get_lan("Lanthanide Sub-Stream");
+	msLAN.print_ms();
+	print("");
 
-	Print("Checking Actinide sub-stream:");
-	MassStream msACT = msSNF.getACT("Actinide Sub-Stream");
-	msACT.Print();
-	Print("");
+	print("Checking Actinide sub-stream:");
+	MassStream msACT = msSNF.get_act("Actinide Sub-Stream");
+	msACT.print_ms();
+	print("");
 
-	Print("Checking Transuranic sub-stream:");
-	MassStream msTRU = msSNF.getTRU("Transuranic Sub-Stream");
-	msTRU.Print();
-	Print("");
+	print("Checking Transuranic sub-stream:");
+	MassStream msTRU = msSNF.get_tru("Transuranic Sub-Stream");
+	msTRU.print_ms();
+	print("");
 
-	Print("Checking Minor Actinides sub-stream:");
-	MassStream msMA = msSNF.getMA("Minor Actinide Sub-Stream");
-	msMA.Print();
-	Print("");
+	print("Checking Minor Actinides sub-stream:");
+	MassStream msMA = msSNF.get_ma("Minor Actinide Sub-Stream");
+	msMA.print_ms();
+	print("");
 
-	Print("Checking Fission Product sub-stream:");
-	MassStream msFP = msSNF.getFP("Fission Product Sub-Stream");
-	msFP.Print();
-	Print("");
+	print("Checking Fission Product sub-stream:");
+	MassStream msFP = msSNF.get_fp("Fission Product Sub-Stream");
+	msFP.print_ms();
+	print("");
 
-	Print("*************************************************");
-	Print("*** Now let's try overloading some operators! ***");
-	Print("*************************************************");
-	Print("");
+	print("*************************************************");
+	print("*** Now let's try overloading some operators! ***");
+	print("*************************************************");
+	print("");
 
-	Print("Left double Addition:");
+	print("Left double Addition:");
 	MassStream msLplus  = msLEU + 2.0;
-	msLplus.Print(); 
-	Print("");
+	msLplus.print_ms(); 
+	print("");
 	
-	Print("Right double Addition:");
+	print("Right double Addition:");
 	MassStream msRplus  = 4 + msLEU;
-	msRplus.Print(); 
-	Print("");
+	msRplus.print_ms(); 
+	print("");
 
-	Print("Right MassStream Addition:");
+	print("Right MassStream Addition:");
 	MassStream msRMS  = msSNF + msLEU;
-	msRMS.Print(); 
-	Print("");
+	msRMS.print_ms(); 
+	print("");
 
-	Print("Left MassStream Addition:");
+	print("Left MassStream Addition:");
 	MassStream msLMS  = msLEU + msSNF;
-	msLMS.Print(); 
-	Print("");
+	msLMS.print_ms(); 
+	print("");
 
-	Print("Left double Multiplication:");
+	print("Left double Multiplication:");
 	MassStream msLmult  = msLEU * 2.0;
-	msLmult.Print(); 
-	Print("");
+	msLmult.print_ms(); 
+	print("");
 
-	Print("Right double Multiplication:");
+	print("Right double Multiplication:");
 	MassStream msRmult  = 4 * msLEU;
-	msRmult.Print(); 
-	Print("");
+	msRmult.print_ms(); 
+	print("");
 
-	Print("Left double Division:");
+	print("Left double Division:");
 	MassStream msLdiv  = msLEU / 2.0;
-	msLdiv.Print(); 
-	Print("");
+	msLdiv.print_ms(); 
+	print("");
 
 	return 0;
 }

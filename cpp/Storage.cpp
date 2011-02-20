@@ -65,7 +65,7 @@ void Storage::initialize ()
     }	
 }
 
-void Storage::PrintChain (IsoChain ic)
+void Storage::printChain (IsoChain ic)
 {
     if (ic.empty())
         return;
@@ -170,7 +170,7 @@ MassStream Storage::doCalc()
 
     //Initialize the components.
     CompDict cdin, cdout;
-    cdin = IsosIn.multByMass();
+    cdin = IsosIn.mult_by_mass();
 
     //Adds decay chains to isochains set that aren't already there.
     for (CompIter ci = cdin.begin(); ci != cdin.end(); ci++)

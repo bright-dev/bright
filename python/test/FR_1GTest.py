@@ -30,12 +30,12 @@ def printReactorParameters(rp):
     print(rp.pnl)
     print(rp.BUt)
     print(rp.useDisadvantage)
-    print()
+    print_ms()
     print(rp.Radius)
     print(rp.Length)
     print(rp.open_slots)
     print(rp.total_slots)
-    print()
+    print_ms()
     return
 
 def printReactorVals(r):
@@ -48,14 +48,14 @@ def printReactorVals(r):
     print("P_NL", r.P_NL)
     print("TargetBU", r.TargetBU)
     print("useZeta",  r.useZeta)
-    print()
+    print_ms()
     print("r", r.r)
     print("l", r.l)
     print("S_O", r.S_O)
     print("S_T", r.S_T)
     print("VF",  r.VF)
     print("VC",  r.VC)
-    print()
+    print_ms()
     return
 
 isos2track([922350, 942390, 10010, 80160])
@@ -81,10 +81,10 @@ print("")
 
 
 print(r2.F)
-print()
+print_ms()
 r2.loadLib("LWR.h5")
 print(r2.F)
-print()
+print_ms()
 
 NewParams = FRDefaults()
 NewParams.batches = 6
@@ -97,12 +97,12 @@ printReactorParameters(NewParams)
 r3 = FastReactor1G(NewParams, "Reactor3")
 printFCComp(r3)
 printReactorVals(r3)
-print()
+print_ms()
 
 r4 = FastReactor1G("LWR.h5", NewParams, "Reactor4")
 printFCComp(r4)
 printReactorVals(r4)
-print()
+print_ms()
 
 if os.name == "posix":
         subprocess.call("rm -r *Isos.txt *Params.txt", shell=True)

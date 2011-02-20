@@ -1035,7 +1035,7 @@ cdef class Reprocess(FCComp):
         """This method performs the relatively simply task of multiplying the current input stream by 
         the SE to form a new output stream::
 
-            incomp  = self.IsosIn.multByMass()
+            incomp  = self.IsosIn.mult_by_mass()
             outcomp = {}
             for iso in incomp.keys():
                 outcomp[iso] = incomp[iso] * sepeff[iso]

@@ -13,29 +13,29 @@
 
 using namespace std;
 
-void Print( string s)
+void print( string s)
 {
 	cout << s << "\n";
 }
 
 int main()
 {
-	Print("Test Initialize Empty Reprocessing Facility:");
+	print("Test Initialize Empty Reprocessing Facility:");
 	Storage sempty;
-	Print("\tName\t\t\t" + sempty.name);
-	Print("\tPass Number\t\t" + to_str(sempty.PassNum));
-	Print("\tFigure Directory\t" + sempty.figdir);
-	Print("");
+	print("\tName\t\t\t" + sempty.name);
+	print("\tPass Number\t\t" + to_str(sempty.PassNum));
+	print("\tFigure Directory\t" + sempty.figdir);
+	print("");
 
 	int itrack_arr [] = {882270, 862270, 922350, 922360, 922380, 942390, 952421, 822070};
 	set<int> itrack (itrack_arr, itrack_arr+8); 	
 
-	Print("Test Initialize Reprocessing Facility:");
+	print("Test Initialize Reprocessing Facility:");
 	Storage s (itrack, "Storage");
-	Print("\tName\t\t\t" + s.name);
-	Print("\tPass Number\t\t" + to_str(s.PassNum));
-	Print("\tFigure Directory\t" + s.figdir);
-	Print("");
+	print("\tName\t\t\t" + s.name);
+	print("\tPass Number\t\t" + to_str(s.PassNum));
+	print("\tFigure Directory\t" + s.figdir);
+	print("");
 
 	CompDict samplemass;
 	samplemass[922350] = 10.0;
@@ -46,41 +46,41 @@ int main()
         samplemass[942390] = 20.0;
         samplemass[952421] = 5.0;
 
-	Print("Try Decaying Implicit Mass for 1000 days.");
+	print("Try Decaying Implicit Mass for 1000 days.");
 	s.decay_time = 1000.0 * 24.0 * 3600.0;
 	s.IsosIn = MassStream (samplemass);
-	s.doCalc().Print();
-	Print("");
+	s.doCalc().print_ms();
+	print("");
 
-	Print("Try Decaying CompDict Mass for 2000 days.");
+	print("Try Decaying CompDict Mass for 2000 days.");
 	s.decay_time = 2000.0 * 24.0 * 3600.0;
-	s.doCalc(samplemass).Print();
-	Print("");
+	s.doCalc(samplemass).print_ms();
+	print("");
 
-	Print("Try Decaying Mass Stream Mass for 3000 days.");
+	print("Try Decaying Mass Stream Mass for 3000 days.");
 	s.decay_time = 3000.0 * 24.0 * 3600.0;
 	MassStream ms (samplemass);
-	s.doCalc(ms).Print();
-	Print("");
+	s.doCalc(ms).print_ms();
+	print("");
 
 	double t;
-	Print("Try Decaying Implicit Mass for t = 4000 days.");
+	print("Try Decaying Implicit Mass for t = 4000 days.");
 	t = 4000.0 * 24.0 * 3600.0;
 	s.IsosIn = MassStream (samplemass);
-	s.doCalc(t).Print();
-	Print("");
+	s.doCalc(t).print_ms();
+	print("");
 		
-	Print("Try Decaying CompDict Mass for t = 5000 days.");
+	print("Try Decaying CompDict Mass for t = 5000 days.");
 	t = 5000.0 * 24.0 * 3600.0;
-	s.doCalc(samplemass, t).Print();
-	Print("");
+	s.doCalc(samplemass, t).print_ms();
+	print("");
 		
-	Print("Try Decaying CompDict Mass for t = 6000 days.");
+	print("Try Decaying CompDict Mass for t = 6000 days.");
 	t = 6000.0 * 24.0 * 3600.0;
-	s.doCalc(ms, t).Print();
-	Print("");
+	s.doCalc(ms, t).print_ms();
+	print("");
 
-	Print("Try Decaying Mass From a File for t = 7000 days.");
+	print("Try Decaying Mass From a File for t = 7000 days.");
 	t = 7000.0 * 24.0 * 3600.0;
 	MassStream ms2 ("MassStreamtry02.txt");
 	set<int> itrack2;
@@ -89,7 +89,7 @@ int main()
 		itrack2.insert(ci->first);
 	}
 	Storage s2 (itrack2, "Storage");
-	s2.doCalc(ms2, t).Print();
+	s2.doCalc(ms2, t).print_ms();
 
 
 	return 0;

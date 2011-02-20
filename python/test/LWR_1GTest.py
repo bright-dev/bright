@@ -30,12 +30,12 @@ def printReactorParameters(rp):
     print(rp.pnl)
     print(rp.BUt)
     print(rp.useDisadvantage)
-    print()
+    print_ms()
     print(rp.Radius)
     print(rp.Length)
     print(rp.open_slots)
     print(rp.total_slots)
-    print()
+    print_ms()
     return
 
 def printReactorVals(r):
@@ -48,14 +48,14 @@ def printReactorVals(r):
     print("P_NL", r.P_NL)
     print("TargetBU", r.TargetBU)
     print("useZeta",  r.useZeta)
-    print()
+    print_ms()
     print("r", r.r)
     print("l", r.l)
     print("S_O", r.S_O)
     print("S_T", r.S_T)
     print("VF",  r.VF)
     print("VC",  r.VC)
-    print()
+    print_ms()
     return
 
 ms = MassStream("MassStreamtry02.txt")
@@ -82,10 +82,10 @@ print("")
 
 
 print(r2.F)
-print()
+print_ms()
 r2.loadLib("FR.h5")
 print(r2.F)
-print()
+print_ms()
 
 NewParams = LWRDefaults()
 #NewParams.batches = 6
@@ -100,7 +100,7 @@ printReactorParameters(NewParams)
 r3 = LightWaterReactor1G(NewParams, "Reactor3")
 printFCComp(r3)
 printReactorVals(r3)
-print()
+print_ms()
 
 ms = MassStream("MassStreamtry03.txt")
 isos2track([ 922350, 922380, 942390, 10010, 80160, 50100, 50110])
@@ -108,26 +108,26 @@ isos2track([ 922350, 922380, 942390, 10010, 80160, 50100, 50110])
 r4 = LightWaterReactor1G("LWR.h5", NewParams, "Reactor4")
 printFCComp(r4)
 printReactorVals(r4)
-print()
+print_ms()
 
 r4.IsosIn = ms
 r4.foldMassWeights()
 print(r4.MWF)
 print(r4.MWC)
 
-print()
+print_ms()
 print("SigmaFa = ", r4.SigmaFa_F_)
-print()
+print_ms()
 print("SigmaCa = ", r4.SigmaCa_F_)
-print()
+print_ms()
 print("kappaF = ", r4.kappaF_F_)
-print()
+print_ms()
 print("kappaC = ", r4.kappaC_F_)
-print()
+print_ms()
 print("LatticeF = ", r4.LatticeF_F_)
-print()
+print_ms()
 print("LatticeE = ", r4.LatticeE_F_)
-print()
+print_ms()
 print("zeta = ", r4.zeta_F_)
 
 if os.name == "posix":

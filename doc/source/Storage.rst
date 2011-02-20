@@ -67,7 +67,7 @@ The following is a listing of the additional attributes specific to this class a
 Storage Methods
 ===============
 
-.. method:: Storage.PrintChain(isochain)
+.. method:: Storage.printChain(isochain)
 
     This is a protected C method that prints the contents of an isotopic chain as a list.  It 
     is primarily used for debugging.

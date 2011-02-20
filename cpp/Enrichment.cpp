@@ -224,7 +224,7 @@ void Enrichment::FindNM()
 			rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
         };
 
-        // Print Summary
+        // print Summary
         if (3 < FCComps::verbosity)
         {
             std::cout << "            N = " << N << "\tlhsP = " << lhsP << "\trhsP = " << rhsP << "\n";
@@ -639,7 +639,7 @@ void Enrichment::MstarOptimize()
         currLoverF = tempLoverF;
     };
 
-    //Print points
+    //print points
     if (0 < FCComps::verbosity)
     {
         std::cout << "Last Point: M* = " << lastMstar << "\tL/F = " << lastLoverF << "\n";
@@ -661,7 +661,7 @@ void Enrichment::MstarOptimize()
 		LoverF();
         currLoverF = TotalPerFeed;
 
-        //Print Point
+        //print Point
         if (0 < FCComps::verbosity)
         {
             std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
@@ -683,7 +683,7 @@ void Enrichment::MstarOptimize()
                 currMstar  = tempMstar;
                 currLoverF = tempLoverF;
 
-                //Print Point
+                //print Point
                 if (0 < FCComps::verbosity)
                 {
                     std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
@@ -707,7 +707,7 @@ void Enrichment::MstarOptimize()
                     currMstar  = tempMstar;
                     currLoverF = tempLoverF;
 
-                    //Print Point
+                    //print Point
                     if (0 < FCComps::verbosity)
                     {
                         std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";

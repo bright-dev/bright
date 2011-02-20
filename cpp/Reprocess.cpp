@@ -84,7 +84,7 @@ void Reprocess::setParams ()
 MassStream Reprocess::doCalc ()
 {
     //Does the Reprocessing
-    CompDict incomp  = IsosIn.multByMass();
+    CompDict incomp  = IsosIn.mult_by_mass();
     CompDict outcomp;
     for (CompIter i = incomp.begin(); i != incomp.end(); i++)
     {

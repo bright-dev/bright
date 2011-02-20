@@ -75,7 +75,7 @@ void FuelFabrication::calc_deltaRs()
     for (MassStreams::iterator mss = mass_streams.begin(); mss != mass_streams.end(); mss++)
     {
         MassStream ms = (*(*mss).second);
-        ms.Normalize();
+        ms.normalize();
 
         double dR = reactor.calc_deltaR(ms);
 
@@ -95,7 +95,7 @@ MassStream FuelFabrication::calc_core_input()
         core_input = core_input + ( (*mass_streams[(*mws).first]) * (*mws).second );
     };    
 
-    core_input.Normalize();
+    core_input.normalize();
     core_input.name = "CoreInput";
     return core_input;
 };
@@ -128,12 +128,12 @@ void FuelFabrication::calc_mass_ratios()
 
     // deltaR for key a
     MassStream ms_a = *mass_streams[key_a];
-    ms_a.Normalize();
+    ms_a.normalize();
     double dR_a = reactor.calc_deltaR( ms_a );
 
     // deltaR for key b
     MassStream ms_b = *mass_streams[key_b];
-    ms_b.Normalize();
+    ms_b.normalize();
     double dR_b = reactor.calc_deltaR( ms_b );
 
     //First Guess for key mass stream masses; each get half of the remaining mass space.

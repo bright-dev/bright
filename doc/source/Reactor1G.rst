@@ -366,35 +366,35 @@ The easiest way to set these attributes is through the :meth:`Reactor1G.calcSubS
 
 .. attribute:: Reactor1G.InU
 
-    The input uranium mass stream, ``Reactor1G.IsosIn.getU()``.
+    The input uranium mass stream, ``Reactor1G.IsosIn.get_u()``.
 
 .. attribute:: Reactor1G.InTRU
 
-    The input transuranic mass stream, ``Reactor1G.IsosIn.getTRU()``.
+    The input transuranic mass stream, ``Reactor1G.IsosIn.get_tru()``.
 
 .. attribute:: Reactor1G.InLAN
 
-    The input lanthanide mass stream, ``Reactor1G.IsosIn.getLAN()``.
+    The input lanthanide mass stream, ``Reactor1G.IsosIn.get_lan()``.
 
 .. attribute:: Reactor1G.InACT
 
-    The input actinide mass stream, ``Reactor1G.IsosIn.getACT()``.
+    The input actinide mass stream, ``Reactor1G.IsosIn.get_act()``.
 
 .. attribute:: Reactor1G.OutU
 
-    The output uranium mass stream, ``Reactor1G.IsosOut.getU()``.
+    The output uranium mass stream, ``Reactor1G.IsosOut.get_u()``.
 
 .. attribute:: Reactor1G.OutTRU
 
-    The output transuranic mass stream, ``Reactor1G.IsosOut.getTRU()``.
+    The output transuranic mass stream, ``Reactor1G.IsosOut.get_tru()``.
 
 .. attribute:: Reactor1G.OutLAN
 
-    The output lanthanide mass stream, ``Reactor1G.IsosOut.getLAN()``.
+    The output lanthanide mass stream, ``Reactor1G.IsosOut.get_lan()``.
 
 .. attribute:: Reactor1G.OutACT
 
-    The output actinide mass stream, ``Reactor1G.IsosOut.getACT()``.
+    The output actinide mass stream, ``Reactor1G.IsosOut.get_act()``.
 
 
 ----------------

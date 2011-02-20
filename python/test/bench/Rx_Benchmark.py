@@ -7,7 +7,7 @@ from optparse import OptionParser
 
 parser = OptionParser()
 parser.add_option("-c", "--case", dest="case", help="Benchmark case to run.")
-parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="Prints extra information.")
+parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="prints extra information.")
 options, args = parser.parse_args()
 
 if options.case == "LWR_NEA":

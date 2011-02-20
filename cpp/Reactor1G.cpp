@@ -542,13 +542,13 @@ void Reactor1G::calcSubStreams()
     //Sets possibly relevant reactor input and output substreams.
 
     //Uranium
-    InU  = IsosIn.getU();
-    OutU = IsosOut.getU();
+    InU  = IsosIn.get_u();
+    OutU = IsosOut.get_u();
 
     //TRU
     try 
     {
-        InTRU = IsosIn.getTRU();
+        InTRU = IsosIn.get_tru();
     }
     catch (...)
     {
@@ -557,12 +557,12 @@ void Reactor1G::calcSubStreams()
         InTRU = MassStream(cd, 1.0);
         InTRU.mass = 0.0;
     };
-    OutTRU = IsosOut.getTRU();
+    OutTRU = IsosOut.get_tru();
 
     //Lanthanides
     try
     {
-        InLAN = IsosIn.getLAN();
+        InLAN = IsosIn.get_lan();
     }
     catch (...)
     {
@@ -571,11 +571,11 @@ void Reactor1G::calcSubStreams()
         InLAN  = MassStream(cd, 1.0);
         InLAN.mass = 0.0;
     };
-    OutLAN = IsosOut.getLAN();
+    OutLAN = IsosOut.get_lan();
 
     //Actinides
-    InACT  = IsosIn.getACT();
-    OutACT = IsosOut.getACT();
+    InACT  = IsosIn.get_act();
+    OutACT = IsosOut.get_act();
 };
 
 
@@ -841,7 +841,7 @@ void Reactor1G::BUd_BisectionMethod()
         throw BisectionMethodNotPerformed ("Burnup");
     };
 
-    //Print results, if desired.
+    //print results, if desired.
     if (0 < FCComps::verbosity)
     {
         std::cout << "Final Result of Burnup Bisection Method Calculation:\n";

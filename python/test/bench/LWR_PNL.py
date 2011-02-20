@@ -15,7 +15,7 @@ def main():
     parser = OptionParser()
     parser.add_option("-c", "--case", dest="case", help="Benchmark case to run.")
     parser.add_option("-p", "--calibrate", action="store_true", dest="calibrate", default=False, help="Calibrate non-leakage probability.")
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="Prints extra information.")
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="prints extra information.")
     options, args = parser.parse_args()
 
     if options.case == "LWR_NEA":
@@ -85,7 +85,7 @@ def main():
         #Calculate delta R for the Guess
         LWR_CoreInput = U238 + U235 + U234 + U236
         LWR_CoreInput.name = "LWR_CoreInput"
-        LWR_CoreInput.Normalize()
+        LWR_CoreInput.normalize()
         LWR_delR_Guess = LWR_delR_BU_(LWR_CoreInput)
 
         k = LWR.batchAveK(lwr_params.BUt)
@@ -119,7 +119,7 @@ def main():
     if options.calibrate:
         LWR_CoreInput = U238 + U235 + U234 + U236
         LWR_CoreInput.name = "LWR_CoreInput"
-        LWR_CoreInput.Normalize()
+        LWR_CoreInput.normalize()
 
         LWR.IsosIn = LWR_CoreInput
 

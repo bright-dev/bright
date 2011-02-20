@@ -370,7 +370,7 @@ void FCComp::writeIsoPass ()
     isobuf.precision(6);
     isobuf << std::scientific << std::uppercase;
 
-    //Normalize IsosOut per kgIsosIn
+    //normalize IsosOut per kgIsosIn
     double outmassfrac = IsosOut.mass / IsosIn.mass;
 
     while (!isofilein.eof() )

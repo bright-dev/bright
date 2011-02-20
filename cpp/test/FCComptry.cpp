@@ -13,67 +13,67 @@
 
 using namespace std;
 
-void Print( string s)
+void print( string s)
 {
 	cout << s << "\n";
 }
 
-void PrintStringSet(set<string> ss)
+void printStringSet(set<string> ss)
 {
 	for (set<string>::iterator i = ss.begin(); i != ss.end(); i++)
 	{
-		Print("\t" + *i);
+		print("\t" + *i);
 	}
 }
 
 int main()
 {
-	Print("Testing Empty Fuel Cycle Component:");
+	print("Testing Empty Fuel Cycle Component:");
 	FCComp emptyFCC;
-	Print("\tEmpty Name: " + emptyFCC.name);
-	Print("\tEmpty Figure Directory: " + emptyFCC.figdir);
-	Print("\tEmpty Pass Number: " + to_str(emptyFCC.PassNum) );
-	Print("");
+	print("\tEmpty Name: " + emptyFCC.name);
+	print("\tEmpty Figure Directory: " + emptyFCC.figdir);
+	print("\tEmpty Pass Number: " + to_str(emptyFCC.PassNum) );
+	print("");
 
-	Print("Testing Isotope Initialized Fuel Cycle Component:");
+	print("Testing Isotope Initialized Fuel Cycle Component:");
 	set<int> isoset ((int []) {922350}, (int []) {922350}+1);
 	FCComp isoFCC(isoset, "FCC_Iso");
-	Print("\tIso Name: " + isoFCC.name);
-	Print("\tIso Figure Directory: " + isoFCC.figdir);
-	Print("\tIso Pass Number: " + to_str(isoFCC.PassNum) );
-	Print("");
+	print("\tIso Name: " + isoFCC.name);
+	print("\tIso Figure Directory: " + isoFCC.figdir);
+	print("\tIso Pass Number: " + to_str(isoFCC.PassNum) );
+	print("");
 
-	Print("Testing Isotope & Paramter Initialized Fuel Cycle Component:");
+	print("Testing Isotope & Paramter Initialized Fuel Cycle Component:");
 	string parr [] = {"mass"};
 	set<string> parset (parr, parr+length_array(parr));
 	FCComp ipFCC(isoset, parset, "FCC_IsoPar");
-	Print("\tIsotope & Paramter Name: " + ipFCC.name);
-	Print("\tIsotope & Paramter Figure Directory: " + ipFCC.figdir);
-	Print("\tIsotope & Paramter Pass Number: " + to_str(ipFCC.PassNum) );
-	Print("");
+	print("\tIsotope & Paramter Name: " + ipFCC.name);
+	print("\tIsotope & Paramter Figure Directory: " + ipFCC.figdir);
+	print("\tIsotope & Paramter Pass Number: " + to_str(ipFCC.PassNum) );
+	print("");
 
-	Print("Testing Figure Adding:");
+	print("Testing Figure Adding:");
 	ipFCC.addToFigsList(ipFCC.figdir + "922350.png", "iso");
 	ipFCC.addToFigsList(ipFCC.figdir + "mass.png", "param");
 	ipFCC.addToFigsList(ipFCC.figdir + "other.png", "other");
-	Print("\t\t\tDone!");
-	Print("");
+	print("\t\t\tDone!");
+	print("");
 
-	Print("Testing setParams:");
+	print("Testing setParams:");
 	ipFCC.setParams();
-	Print("\tTesting Input Params:");
+	print("\tTesting Input Params:");
 	for (ParamDictIter p = ipFCC.ParamsIn.begin(); p !=  ipFCC.ParamsIn.end(); p++)
 	{
-		Print("\t\t" + p->first + "\t" + to_str(p->second));
+		print("\t\t" + p->first + "\t" + to_str(p->second));
 	}
-	Print("\tTesting Output Params:");
+	print("\tTesting Output Params:");
 	for (ParamDictIter p = ipFCC.ParamsOut.begin(); p !=  ipFCC.ParamsOut.end(); p++)
 	{
-		Print("\t\t" + p->first + "\t" + to_str(p->second));
+		print("\t\t" + p->first + "\t" + to_str(p->second));
 	}
-	Print("");
+	print("");
 
-	Print("Testing File Pass Writing:");
+	print("Testing File Pass Writing:");
 	//First Pass
 	ipFCC.writeIsoPass();
 	ipFCC.writeParamPass();
@@ -93,7 +93,7 @@ int main()
 
 	//Also make sure writeout() bypasses the Params when params2track is empty
 	isoFCC.writeout();
-	Print("\t\t\tDone!");
+	print("\t\t\tDone!");
 
 	return 0;
 }

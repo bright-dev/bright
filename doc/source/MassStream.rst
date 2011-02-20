@@ -159,17 +159,17 @@ Continuing with the natural uranium example::
 MassStream Methods
 ------------------
 
-.. method:: MassStream.Normalize()
+.. method:: MassStream.normalize()
 
     This convenience function normalizes the mass stream by setting its mass = 1.0.
 
-.. method:: MassStream.Print()
+.. method:: MassStream.print_ms()
 
-    This prints a string representation of the MassStream to stdout.  Print is 
+    This prints a string representation of the MassStream to stdout.  print is 
     particularly useful in C++.  In Python, this method simply duplicates 
     the functionality you would get from the built-in ``str()`` function.
 
-.. method:: MassStream.multByMass()
+.. method:: MassStream.mult_by_mass()
 
     This function multiplies :attr:`comp` by :attr:`mass` and returns the resultant isotopic vector.
 
@@ -189,7 +189,7 @@ MassStream Methods
 
 Once again, we'll use the natural uranium stream from before as an example::
 
-    >>> nu.Normalize()
+    >>> nu.normalize()
     >>> print( str(nu) )
     Mass Stream: NU
             Mass: 1
@@ -199,7 +199,7 @@ Once again, we'll use the natural uranium stream from before as an example::
             U238    0.992745
 
     >>> nu.mass = nu.mass * 30.0
-    >>> nu.Print()
+    >>> nu.print_ms()
     Mass Stream: NU
             Mass: 30
             ---------
@@ -207,7 +207,7 @@ Once again, we'll use the natural uranium stream from before as an example::
             U235    0.0072
             U238    0.992745
 
-    >>> unnorm_nu = nu.multByMass()
+    >>> unnorm_nu = nu.mult_by_mass()
     >>> print("Unnormalized = ", unnorm_nu )
     Unnormalized = {922340: 0.00165, 922350: 0.216, 922380: 29.782350000000001}
 
@@ -221,7 +221,7 @@ Once again, we'll use the natural uranium stream from before as an example::
 SubStream Methods
 -----------------
 
-.. method:: MassStream.getSubStreamInt(iso_list [, name])
+.. method:: MassStream.get_sub_streamInt(iso_list [, name])
 
     Grabs a subset of the mass streams and returns a new stream comprised of only
     the specified nuclides.  The elements or isotopes included in the new substream
@@ -243,7 +243,7 @@ SubStream Methods
           of the original mass stream.
 
 
-.. method:: MassStream.getSubStreamStr(iso_list [, name])
+.. method:: MassStream.get_sub_streamStr(iso_list [, name])
 
     Grabs a subset of the mass streams and returns a new stream comprised of only
     the specified nuclides.  The elements or isotopes included in the substream
@@ -266,7 +266,7 @@ SubStream Methods
 
 For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium stream::
 
-    nu.getSubStreamStr(["U234", "PU239"], "U-234")
+    nu.get_sub_streamStr(["U234", "PU239"], "U-234")
 
     #Note that no Pu is present, so we are left with only U-234
     #Mass Stream: U-234
@@ -276,7 +276,7 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
 
 
 
-.. method:: MassStream.getU([name])
+.. method:: MassStream.get_u([name])
 
     Convenience method that gets the Uranium portion of a mass stream.
 
@@ -288,7 +288,7 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
           has Uranium members.  
 
 
-.. method:: MassStream.getPU([name])
+.. method:: MassStream.get_pu([name])
 
     Convenience method that gets the Plutonium portion of a mass stream.
 
@@ -300,7 +300,7 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
           has Plutonium members.  
 
 
-.. method:: MassStream.getLAN([name])
+.. method:: MassStream.get_lan([name])
 
     Convenience method that gets the Lanthanide portion of a mass stream.
 
@@ -312,7 +312,7 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
           has Lanthanide members.  
 
 
-.. method:: MassStream.getACT([name])
+.. method:: MassStream.get_act([name])
 
     Convenience method that gets the Actinide portion of a mass stream.
 
@@ -324,7 +324,7 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
           has Actinide members.  
 
 
-.. method:: MassStream.getTRU([name])
+.. method:: MassStream.get_tru([name])
 
     Convenience method that gets the Transuranic portion of a mass stream.
 
@@ -336,7 +336,7 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
           has Transuranic members.  
 
 
-.. method:: MassStream.getMA([name])
+.. method:: MassStream.get_ma([name])
 
     Convenience method that gets the Minor Actinide portion of a mass stream.
 
@@ -348,7 +348,7 @@ For example, if we just wanted to grab U-234 and Pu-239 from the natural uranium
           has Minor Actinide members.  
 
 
-.. method:: MassStream.getFP([name])
+.. method:: MassStream.get_fp([name])
 
     Convenience method that gets the Fission Product portion of a mass stream.
 
