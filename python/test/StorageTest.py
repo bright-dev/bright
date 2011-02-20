@@ -11,8 +11,8 @@ import bright
 def printFCComp(fc):
     print("Name: " + fc.name)
     print("Params2Track: " + str(fc.params2track))
-    print("IsosIn: " + str(fc.IsosIn))
-    print("IsosOut: " + str(fc.IsosOut))
+    print("ms_feed: " + str(fc.ms_feed))
+    print("ms_prod: " + str(fc.ms_prod))
     print("ParamsIn: " + str(fc.ParamsIn))
     print("ParamsOut: " + str(fc.ParamsOut))
     print("Pass Number: " + str(fc.PassNum))
@@ -42,33 +42,33 @@ st1.decay_time = 3600 * 24 * 10
 print("ST1 Decay Time: " + str(st1.decay_time))
 print("")
 
-st1.IsosIn = ms
+st1.ms_feed = ms
 print("Empty Decay")
 st1.doCalc()
-print(str( st1.IsosOut ))
+print(str( st1.ms_prod ))
 
 st1.doCalc(cd)
 print("CompDict Decay")
-print(str( st1.IsosOut ) )
+print(str( st1.ms_prod ) )
 
 st1.decay_time =  st1.decay_time * 10000
 st1.doCalc(ms)
 print("MassStream Decay")
-print(str( st1.IsosOut ) )
+print(str( st1.ms_prod ) )
 
-st2.IsosIn = ms 
+st2.ms_feed = ms 
 t = 3600 * 24 * 10000000
 st2.doCalc(t)
 print("Double Decay")
-print(str( st2.IsosOut ) )
+print(str( st2.ms_prod ) )
 
 st2.doCalc(cd, t)
 print("CompDict, Double Decay")
-print(str( st2.IsosOut ) )
+print(str( st2.ms_prod ) )
 
 st2.doCalc(ms, t*10000)
 print("MassStream, Double Decay")
-print(str( st2.IsosOut ) )
+print(str( st2.ms_prod ) )
 
 
 if os.name == "posix":

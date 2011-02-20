@@ -59,33 +59,33 @@ class TestFCCompAttributes(TestCase):
             elif f in [".h5", "fcc.h5", "fuel_cycle.h5"]:
                 os.remove(f)
 
-    def test_IsosIn_Empty(self):
+    def test_ms_feed_Empty(self):
         fcc = FCComp()
-        assert_equal(fcc.IsosIn.comp, {})
-        assert_equal(fcc.IsosIn.mass, -1.0)
-        assert_equal(fcc.IsosIn.name, '')
+        assert_equal(fcc.ms_feed.comp, {})
+        assert_equal(fcc.ms_feed.mass, -1.0)
+        assert_equal(fcc.ms_feed.name, '')
 
-    def test_IsosIn_Filled(self):
+    def test_ms_feed_Filled(self):
         fcc = FCComp()
         ms = MassStream({922350: 1.0}, -1, "ms")
-        fcc.IsosIn = ms
-        assert_equal(fcc.IsosIn.comp, {922350: 1.0})
-        assert_equal(fcc.IsosIn.mass, 1.0)
-        assert_equal(fcc.IsosIn.name, 'ms')
+        fcc.ms_feed = ms
+        assert_equal(fcc.ms_feed.comp, {922350: 1.0})
+        assert_equal(fcc.ms_feed.mass, 1.0)
+        assert_equal(fcc.ms_feed.name, 'ms')
 
-    def test_IsosOut_Empty(self):
+    def test_ms_prod_Empty(self):
         fcc = FCComp()
-        assert_equal(fcc.IsosOut.comp, {})
-        assert_equal(fcc.IsosOut.mass, -1.0)
-        assert_equal(fcc.IsosOut.name, '')
+        assert_equal(fcc.ms_prod.comp, {})
+        assert_equal(fcc.ms_prod.mass, -1.0)
+        assert_equal(fcc.ms_prod.name, '')
 
-    def test_IsosOut_Filled(self):
+    def test_ms_prod_Filled(self):
         fcc = FCComp()
         ms = MassStream({922350: 1.0}, -1, "ms")
-        fcc.IsosOut = ms
-        assert_equal(fcc.IsosOut.comp, {922350: 1.0})
-        assert_equal(fcc.IsosOut.mass, 1.0)
-        assert_equal(fcc.IsosOut.name, 'ms')
+        fcc.ms_prod = ms
+        assert_equal(fcc.ms_prod.comp, {922350: 1.0})
+        assert_equal(fcc.ms_prod.mass, 1.0)
+        assert_equal(fcc.ms_prod.name, 'ms')
 
     def test_ParamsIn_Empty(self):
         fcc = FCComp()
@@ -162,8 +162,8 @@ class TestFCCompMethods(TestCase):
     def test_writeIsoPass(self):
         bright_config.track_isos = set([922350])
         fcc = FCComp()
-        fcc.IsosIn  = MassStream({922350: 1.0})
-        fcc.IsosOut = MassStream({922350: 0.5})
+        fcc.ms_feed  = MassStream({922350: 1.0})
+        fcc.ms_prod = MassStream({922350: 0.5})
         fcc.writeIsoPass()
 
     def test_writeParamPass(self):
@@ -174,8 +174,8 @@ class TestFCCompMethods(TestCase):
     def test_writeText(self):
         bright_config.track_isos = set([922350])
         fcc = FCComp(set(["Mass"]))
-        fcc.IsosIn  = MassStream({922350: 1.0})
-        fcc.IsosOut = MassStream({922350: 0.5})
+        fcc.ms_feed  = MassStream({922350: 1.0})
+        fcc.ms_prod = MassStream({922350: 0.5})
         fcc.setParams()
         fcc.writeText()
 
@@ -183,8 +183,8 @@ class TestFCCompMethods(TestCase):
         bright_config.track_isos = set([922350])
         bright_config.write_hdf5 = True
         fcc = FCComp(set(), 'fcc')
-        fcc.IsosIn  = MassStream({922350: 1.0})
-        fcc.IsosOut = MassStream({922350: 0.5})
+        fcc.ms_feed  = MassStream({922350: 1.0})
+        fcc.ms_prod = MassStream({922350: 0.5})
         fcc.PassNum = 1
         fcc.writeHDF5()
 
@@ -192,8 +192,8 @@ class TestFCCompMethods(TestCase):
         bright_config.track_isos = set([922350])
         bright_config.write_hdf5 = True
         fcc = FCComp(set(["Mass"]), 'fcc')
-        fcc.IsosIn  = MassStream({922350: 1.0})
-        fcc.IsosOut = MassStream({922350: 0.5})
+        fcc.ms_feed  = MassStream({922350: 1.0})
+        fcc.ms_prod = MassStream({922350: 0.5})
         fcc.setParams()
         fcc.PassNum = 1
         fcc.writeHDF5()
@@ -202,8 +202,8 @@ class TestFCCompMethods(TestCase):
         """Text only."""
         bright_config.track_isos = set([922350])
         fcc = FCComp(set(["Mass"]))
-        fcc.IsosIn  = MassStream({922350: 1.0})
-        fcc.IsosOut = MassStream({922350: 0.5})
+        fcc.ms_feed  = MassStream({922350: 1.0})
+        fcc.ms_prod = MassStream({922350: 0.5})
         fcc.writeout()
     
     def test_writeout_2(self):
@@ -212,8 +212,8 @@ class TestFCCompMethods(TestCase):
         bright_config.write_hdf5 = True
         bright_config.write_text = False
         fcc = FCComp(set(["Mass"]), 'fcc')
-        fcc.IsosIn  = MassStream({922350: 1.0})
-        fcc.IsosOut = MassStream({922350: 0.5})
+        fcc.ms_feed  = MassStream({922350: 1.0})
+        fcc.ms_prod = MassStream({922350: 0.5})
         fcc.writeout()
 
     def test_writeout_3(self):
@@ -222,8 +222,8 @@ class TestFCCompMethods(TestCase):
         bright_config.write_hdf5 = True
         bright_config.write_text = True
         fcc = FCComp(set(["Mass"]), 'fcc')
-        fcc.IsosIn  = MassStream({922350: 1.0})
-        fcc.IsosOut = MassStream({922350: 0.5})
+        fcc.ms_feed  = MassStream({922350: 1.0})
+        fcc.ms_prod = MassStream({922350: 0.5})
         fcc.writeout()
 
 

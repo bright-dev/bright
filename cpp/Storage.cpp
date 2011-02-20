@@ -157,8 +157,8 @@ Storage::~Storage ()
 
 void Storage::setParams()
 {
-    ParamsIn["Mass"]  = IsosIn.mass;
-    ParamsOut["Mass"] = IsosOut.mass;
+    ParamsIn["Mass"]  = ms_feed.mass;
+    ParamsOut["Mass"] = ms_prod.mass;
 }
 
 MassStream Storage::doCalc()
@@ -170,7 +170,7 @@ MassStream Storage::doCalc()
 
     //Initialize the components.
     CompDict cdin, cdout;
-    cdin = IsosIn.mult_by_mass();
+    cdin = ms_feed.mult_by_mass();
 
     //Adds decay chains to isochains set that aren't already there.
     for (CompIter ci = cdin.begin(); ci != cdin.end(); ci++)
@@ -196,19 +196,19 @@ MassStream Storage::doCalc()
                 cdout[daughter] = bateman(daughter, cdin[mom], *icsi);
         }
     }
-    IsosOut = MassStream (cdout);
-    return IsosOut;
+    ms_prod = MassStream (cdout);
+    return ms_prod;
 }
 
 MassStream Storage::doCalc(CompDict cd)
 {
-    IsosIn = MassStream (cd);
+    ms_feed = MassStream (cd);
     return doCalc();
 }
 
 MassStream Storage::doCalc(MassStream ms)
 {
-    IsosIn = ms;
+    ms_feed = ms;
     return doCalc();
 }
 
@@ -221,13 +221,13 @@ MassStream Storage::doCalc(double t)
 MassStream Storage::doCalc(CompDict cd, double t)
 {
     decay_time = t;
-    IsosIn = MassStream (cd);
+    ms_feed = MassStream (cd);
     return doCalc();
 }
 
 MassStream Storage::doCalc(MassStream ms, double t)
 {
     decay_time = t;
-    IsosIn = ms;
+    ms_feed = ms;
     return doCalc();
 }

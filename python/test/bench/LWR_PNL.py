@@ -71,7 +71,7 @@ def main():
 
     def LWR_delR_BU_(ms):
         "Calculates the delta Reaction Rates at the target burnup."
-        LWR.IsosIn = ms
+        LWR.ms_feed = ms
         LWR.foldMassWeights()
         dR = LWR.batchAve(lwr_params.BUt, "p") - LWR.batchAve(lwr_params.BUt, "d")
         return dR
@@ -121,9 +121,9 @@ def main():
         LWR_CoreInput.name = "LWR_CoreInput"
         LWR_CoreInput.normalize()
 
-        LWR.IsosIn = LWR_CoreInput
+        LWR.ms_feed = LWR_CoreInput
 
-        print(LWR.IsosIn)
+        print(LWR.ms_feed)
 
         LWR.Calibrate_PNL_2_BUd()
 

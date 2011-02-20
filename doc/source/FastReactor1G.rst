@@ -114,7 +114,7 @@ Fast Reactor Benchmark
 ======================
 The following data presents the results of benchmarking this reactor model to three separate cases.  The first is to 
 an NEA case and the other two are to a VISION case.  
-These benchmarks used the isotopic input streams listed in these cases as :attr:`IsosIn <FCComp.IsosIn>` for the 
+These benchmarks used the isotopic input streams listed in these cases as :attr:`ms_feed <FCComp.ms_feed>` for the 
 FR model here.  The non-leakage probability is then calibrated and the output isotopics are compared.
 If you require more information on these benchmarks please email the author.
 

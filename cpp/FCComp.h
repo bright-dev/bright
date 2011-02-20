@@ -64,8 +64,8 @@ public:
     //Public access data
     std::string name;			        //Component name
     std::string natural_name;           //Component natural name
-    MassStream IsosIn;			        //Nuclides flowing into the component.
-    MassStream IsosOut;		        	//Nuclides flowing out of the component.
+    MassStream ms_feed;			        //Nuclides flowing into the component.
+    MassStream ms_prod;		        	//Nuclides flowing out of the component.
     ParamDict ParamsIn;			        //Input paramater values.
     ParamDict ParamsOut;		        //Output parameter values.
     int PassNum;			        	//Cycle Number currently on [int].

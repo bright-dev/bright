@@ -29,22 +29,22 @@ how other fuel cycle objects behave.
 FCComp Attributes
 =================
 
-.. attribute:: FCComp.IsosIn
+.. attribute:: FCComp.ms_feed
 
-    :attr:`IsosIn` is a :doc:`MassStream <MassStream>` object that represents the flow
+    :attr:`ms_feed` is a :doc:`MassStream <MassStream>` object that represents the flow
     of material into this component for this pass.  
 
     This attribute may be accessed and altered directly (public).
 
 
-.. attribute:: FCComp.IsosOut
+.. attribute:: FCComp.ms_prod
 
-    :attr:`IsosOut` is a :doc:`MassStream <MassStream>` object that represents the flow
+    :attr:`ms_prod` is a :doc:`MassStream <MassStream>` object that represents the flow
     of material out of this component for this pass.  
         
     This attribute may be accessed and altered directly (public).
 
-    .. note:: Calling :meth:`FCComp.doCalc` should calculate :attr:`IsosOut` from the :attr:`IsosIn` values.
+    .. note:: Calling :meth:`FCComp.doCalc` should calculate :attr:`ms_prod` from the :attr:`ms_feed` values.
 
 
 .. attribute:: FCComp.ParamsIn
@@ -106,16 +106,16 @@ FCComp Methods
     As each component type has a distinct methodology, the :meth:`doCalc` method  needs 
     to be overridden child classes.
 
-    This method should return :attr:`IsosOut` so that component calculations may be easily 
+    This method should return :attr:`ms_prod` so that component calculations may be easily 
     daisy-chained together.
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
-          :attr:`IsosIn`.  If input is a isotopic dictionary (zzaaam keys, float values), this
-          dictionary is first converted into a MassStream before being set as :attr:`IsosIn`.
+          :attr:`ms_feed`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`ms_feed`.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut`.
+        * `output` (MassStream): :attr:`ms_prod`.
 
 
 .. method:: FCComp.initialize(paramlist[, name])
@@ -145,8 +145,8 @@ FCComp Methods
     has a "Mass" parameter.  Translated into Python, :meth:`setParams` here looks like the following::
 
         def setParams(self):
-            self.ParamsIn["Mass"]  = self.IsosIn.mass
-            self.ParamsOut["Mass"] = self.IsosOut.mass
+            self.ParamsIn["Mass"]  = self.ms_feed.mass
+            self.ParamsOut["Mass"] = self.ms_prod.mass
             return
 
 
@@ -158,15 +158,15 @@ FCComp Methods
 
     This function has one very important subtlety: it does not write out mass streams data.
     Rather, input columns are given as normalized isotopic vectors (:attr:`MassStream.MassStream.comp`).
-    As weight fractions, input columns are in units of ``[kgInIso/kgIsosIn.mass]``.
+    As weight fractions, input columns are in units of ``[kgInIso/kgms_feed.mass]``.
     Moreover, the output columns are given in terms relative to the mass of the input mass, 
-    ``[kgOutIso/kgIsosIn.mass]``.  These are calculated via the following expressions.
+    ``[kgOutIso/kgms_feed.mass]``.  These are calculated via the following expressions.
 
     .. math::
 
-        \mbox{inpcol[iso]} = \mbox{IsosIn.comp[iso]}
+        \mbox{inpcol[iso]} = \mbox{ms_feed.comp[iso]}
 
-        \mbox{outcol[iso]} = \mbox{IsosOut.comp[iso]} \times \frac{\mbox{IsosOut.mass}}{\mbox{IsosIn.mass}}
+        \mbox{outcol[iso]} = \mbox{ms_prod.comp[iso]} \times \frac{\mbox{ms_prod.mass}}{\mbox{ms_feed.mass}}
 
     Because of the units of these two columns, total mass flow data may often only be recovered via the 
     a "Mass" parameter in the "``{FCComp.name}Params.txt``" file.  Here is a sample ``LWRIsos.txt`` file for a

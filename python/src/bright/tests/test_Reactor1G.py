@@ -432,7 +432,7 @@ class TestReactor1GCalculatedWeightAttributes(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
 
     @classmethod
@@ -487,7 +487,7 @@ class TestReactor1GCalculatedDataAttributes(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
 
     @classmethod
@@ -576,7 +576,7 @@ class TestReactor1GDischargeAttributes(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
 
     @classmethod
@@ -609,7 +609,7 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
         cls.r1g.calcSubStreams()
 
@@ -661,7 +661,7 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
 
     @classmethod
@@ -715,7 +715,7 @@ class TestReactor1GInitializationMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
 
     @classmethod
@@ -748,7 +748,7 @@ class TestReactor1GInitializationMethods(TestCase):
     def test_foldMassWeights(self):
         prevkey = self.r1g.miF.keys()
         assert(922380 in self.r1g.miF.keys())
-        self.r1g.IsosIn = MassStream({922350: 0.5})
+        self.r1g.ms_feed = MassStream({922350: 0.5})
         self.r1g.foldMassWeights()
         assert(922380 not in self.r1g.miF.keys())
 
@@ -764,7 +764,7 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
 
     @classmethod
@@ -779,7 +779,7 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
         for j in Mj_F_.keys():
             for f in range(len(self.r1g.F)):
                 tmp_Mj = 0.0
-                for i in self.r1g.IsosIn.comp.keys():
+                for i in self.r1g.ms_feed.comp.keys():
                     tmp_Mj = tmp_Mj + (self.r1g.miF[i] * Tij_F_[i][j][f])
                 if tmp_Mj == 0.0:
                     assert_almost_equal(Mj_F_[j][f], 0.0, 4)
@@ -790,8 +790,8 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
         self.r1g.BUd_BisectionMethod()
         self.r1g.mkMj_F_()
         self.r1g.mkMj_Fd_()
-        assert(0.0 < self.r1g.IsosOut.mass)
-        assert(self.r1g.IsosOut.mass < 1.0)
+        assert(0.0 < self.r1g.ms_prod.mass)
+        assert(self.r1g.ms_prod.mass < 1.0)
 
 
 
@@ -805,7 +805,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.foldMassWeights()
 
     @classmethod
@@ -815,8 +815,8 @@ class TestReactor1GBasicCalculationMethods(TestCase):
     def test_calcOutIso(self):
         self.r1g.BUd_BisectionMethod()
         self.r1g.calcOutIso()
-        assert(0.0 < self.r1g.IsosOut.mass)
-        assert(self.r1g.IsosOut.mass < 1.0)
+        assert(0.0 < self.r1g.ms_prod.mass)
+        assert(self.r1g.ms_prod.mass < 1.0)
 
 
     def test_calcSubStreams(self):
@@ -864,7 +864,7 @@ class TestReactor1GBurnupMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
 
     @classmethod
@@ -897,13 +897,13 @@ class TestReactor1GBurnupMethods(TestCase):
 
     def test_doCalc_1(self):
         self.r1g.doCalc()
-        assert(self.r1g.IsosOut.mass < 1.0)
-        assert(self.r1g.IsosOut.comp[922350] < 0.5) 
+        assert(self.r1g.ms_prod.mass < 1.0)
+        assert(self.r1g.ms_prod.comp[922350] < 0.5) 
 
     def test_doCalc_2(self):
         self.r1g.doCalc(MassStream({942390: 0.05, 922380: 0.95}))
-        assert(self.r1g.IsosOut.mass < 1.0)
-        assert(self.r1g.IsosOut.comp[942390] < 1.0) 
+        assert(self.r1g.ms_prod.mass < 1.0)
+        assert(self.r1g.ms_prod.comp[942390] < 1.0) 
 
 
 
@@ -917,7 +917,7 @@ class TestReactor1GBurnupMethods2(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
 
     @classmethod
@@ -942,7 +942,7 @@ class TestReactor1GBurnupMethods3(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
 
     @classmethod
@@ -968,7 +968,7 @@ class TestReactor1GBurnupMethods4(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
 
     @classmethod
@@ -993,7 +993,7 @@ class TestReactor1GLatticeMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
-        cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
+        cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.r1g.doCalc()
 
     @classmethod

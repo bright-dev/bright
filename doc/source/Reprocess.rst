@@ -4,10 +4,10 @@ Reprocess Class
 The reprocessing object is one of the simplest that Bright offers.  In a technology nonspecific way, it performs
 separations on an input mass stream.  Reprocessing facilities have nominal separation efficiencies (SE) for each element 
 (and possibly nuclide).  These SE are valued on the range [0,1] and represent the fractional portion of an element that 
-is recovered in the reprocessing output (:attr:`IsosOut <bright.FCComp.IsosOut>`).
+is recovered in the reprocessing output (:attr:`ms_prod <bright.FCComp.ms_prod>`).
 
 The SE, if left unspecified, default to full recovery (a value of 1).  Currently, Reprocess does not contain a ``TailsOut`` 
-attribute that corresponds to material not recovered in :attr:`IsosOut <bright.FCComp.IsosOut>` (equivalent to 1 - SE).  
+attribute that corresponds to material not recovered in :attr:`ms_prod <bright.FCComp.ms_prod>` (equivalent to 1 - SE).  
 However, as such an item is becoming evermore useful, its future implementation is likely.
 
 .. currentmodule:: bright
@@ -77,20 +77,20 @@ Reprocess Methods
     This method performs the relatively simply task of multiplying the current input stream by 
     the SE to form a new output stream::
 
-        incomp  = self.IsosIn.mult_by_mass()
+        incomp  = self.ms_feed.mult_by_mass()
         outcomp = {}
         for iso in incomp.keys():
             outcomp[iso] = incomp[iso] * sepeff[iso]
-        self.IsosOut = MassStream(outcomp)
-        return self.IsosOut
+        self.ms_prod = MassStream(outcomp)
+        return self.ms_prod
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
-          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
-          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
+          :attr:`ms_feed <bright.FCComp.ms_feed>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`ms_feed <bright.FCComp.ms_feed>`.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
+        * `output` (MassStream): :attr:`ms_prod <bright.FCComp.ms_prod>`.
 
 
 .. method:: Reprocess.initialize(sepdict)
@@ -109,6 +109,6 @@ Reprocess Methods
     Here the parameters for :class:`Reprocess` are set.  For reprocessing, this amounts to just
     a "Mass" parameter::
 
-        self.ParamsIn["Mass"]  = self.IsosIn.mass
-        self.ParamsOut["Mass"] = self.IsosOut.mass
+        self.ParamsIn["Mass"]  = self.ms_feed.mass
+        self.ParamsOut["Mass"] = self.ms_prod.mass
 

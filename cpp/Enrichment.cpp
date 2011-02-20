@@ -105,14 +105,14 @@ Enrichment::~Enrichment ()
 
 void Enrichment::setParams ()
 {
-    ParamsIn["MassFeed"]  = IsosIn.mass;
+    ParamsIn["MassFeed"]  = ms_feed.mass;
     ParamsOut["MassFeed"] = 0.0;	
 
     ParamsIn["MassProduct"]  = 0.0;
-    ParamsOut["MassProduct"] = IsosOut.mass;	
+    ParamsOut["MassProduct"] = ms_prod.mass;	
 
     ParamsIn["MassTails"]  = 0.0;
-    ParamsOut["MassTails"] = IsosTail.mass;	
+    ParamsOut["MassTails"] = ms_tail.mass;	
 
     ParamsIn["N"]  = N;
     ParamsOut["N"] = N;	
@@ -137,14 +137,14 @@ MassStream Enrichment::doCalc ()
 {
     //Does the Enriching
     MstarOptimize();
-    return IsosOut;
+    return ms_prod;
 }
 
 MassStream Enrichment::doCalc (CompDict incomp)
 {
     //Does the Enriching
-    //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to IsosIn.
-    IsosIn = MassStream (incomp);
+    //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to ms_feed.
+    ms_feed = MassStream (incomp);
     return doCalc();
 }
 
@@ -152,7 +152,7 @@ MassStream Enrichment::doCalc (MassStream instream)
 {
     //Does the Enrichmenting
     //instream = input stream of all nuclides. Standard MassStream object.
-    IsosIn = instream;
+    ms_feed = instream;
     return doCalc();
 }
 
@@ -193,8 +193,8 @@ void Enrichment::FindNM()
     double ooe = 7.0;
     double tolerance = pow(10.0, -ooe);
 
-    double PoF = PoverF(IsosIn.comp[j], xP_j, xW_j);
-    double WoF = WoverF(IsosIn.comp[j], xP_j, xW_j);
+    double PoF = PoverF(ms_feed.comp[j], xP_j, xW_j);
+    double WoF = WoverF(ms_feed.comp[j], xP_j, xW_j);
     double alphastar_j = get_alphastar_i(isoname::nuc_weight(j));
 
     // Save original state of N & M
@@ -204,9 +204,9 @@ void Enrichment::FindNM()
     if (2 < FCComps::verbosity)
         std::cout << "    <---- N = " << N << "\tM = " << M << "\n";     
 
-    double lhsP = PoF * xP_j / IsosIn.comp[j];
+    double lhsP = PoF * xP_j / ms_feed.comp[j];
     double rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
-    double lhsW = WoF * xW_j / IsosIn.comp[j];
+    double lhsW = WoF * xW_j / ms_feed.comp[j];
     double rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
 
     double n = 1.0;
@@ -263,16 +263,16 @@ void Enrichment::FindNM()
 double Enrichment::xP_i(int i)
 {
     double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
-    double numerator = IsosIn.comp[i]*(pow(alphastar_i, M+1.0) - 1.0);
-    double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(IsosIn.comp[j], xP_j, xW_j);
+    double numerator = ms_feed.comp[i]*(pow(alphastar_i, M+1.0) - 1.0);
+    double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(ms_feed.comp[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
 double Enrichment::xW_i(int i)
 {
     double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
-    double numerator = IsosIn.comp[i] * (1.0 - pow(alphastar_i, -N));
-	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(IsosIn.comp[j], xP_j, xW_j);
+    double numerator = ms_feed.comp[i] * (1.0 - pow(alphastar_i, -N));
+	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(ms_feed.comp[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
@@ -290,14 +290,14 @@ void Enrichment::SolveNM()
     CompDict compP;
     CompDict compW;
 
-    for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
+    for (CompIter i = ms_feed.comp.begin(); i != ms_feed.comp.end(); i++)
     {
         compP[i->first] = xP_i(i->first);
         compW[i->first] = xW_i(i->first);
     };
 
-    IsosOut  = MassStream(compP);
-    IsosTail = MassStream(compW);
+    ms_prod  = MassStream(compP);
+    ms_tail = MassStream(compW);
 
     return;
 };
@@ -331,8 +331,8 @@ void Enrichment::Comp2UnitySecant()
     N = lastN;
     M = lastM;
     SolveNM();
-    double lastxP_j = IsosOut.comp[j];
-    double lastxW_j = IsosTail.comp[j];
+    double lastxP_j = ms_prod.comp[j];
+    double lastxW_j = ms_tail.comp[j];
     historyN.push_back(N);
     historyN.push_back(M);
 
@@ -340,8 +340,8 @@ void Enrichment::Comp2UnitySecant()
     N = currN;
     M = currM;
     SolveNM();
-    double currxP_j = IsosOut.comp[j];
-    double currxW_j = IsosTail.comp[j];
+    double currxP_j = ms_prod.comp[j];
+    double currxW_j = ms_tail.comp[j];
     historyN.push_back(N);
     historyN.push_back(M);
 
@@ -429,8 +429,8 @@ void Enrichment::Comp2UnitySecant()
         N = currN;
         M = currM;
         SolveNM();
-        currxP_j = IsosOut.comp[j];
-        currxW_j = IsosTail.comp[j];
+        currxP_j = ms_prod.comp[j];
+        currxW_j = ms_tail.comp[j];
 
         if (1 < FCComps::verbosity)
         {
@@ -458,8 +458,8 @@ void Enrichment::Comp2UnityOther()
     N = N0;
     M = M0;
 	SolveNM();
-    double massP = IsosOut.mass;
-    double massW = IsosTail.mass;
+    double massP = ms_prod.mass;
+    double massW = ms_tail.mass;
 
     while (tolerance < fabs(1.0 - massP) && tolerance < fabs(1.0 - massW) )
     {
@@ -500,8 +500,8 @@ void Enrichment::Comp2UnityOther()
 
         //Calculate new masses
         SolveNM();
-        massP = IsosOut.mass;
-        massW = IsosTail.mass;
+        massP = ms_prod.mass;
+        massW = ms_tail.mass;
     };
 
 	return;
@@ -554,21 +554,21 @@ void Enrichment::LoverF()
 
 	if (compConverged)
     {
-		double PoF = PoverF(IsosIn.comp[j], xP_j, xW_j);
-		double WoF = WoverF(IsosIn.comp[j], xP_j, xW_j);
+		double PoF = PoverF(ms_feed.comp[j], xP_j, xW_j);
+		double WoF = WoverF(ms_feed.comp[j], xP_j, xW_j);
 
 		//Matched Flow Ratios
-		double RF = IsosIn.comp[j]   / IsosIn.comp[k];
-		double RP = IsosOut.comp[j]  / IsosOut.comp[k];
-		double RW = IsosTail.comp[j] / IsosTail.comp[k];
+		double RF = ms_feed.comp[j]   / ms_feed.comp[k];
+		double RP = ms_prod.comp[j]  / ms_prod.comp[k];
+		double RW = ms_tail.comp[j] / ms_tail.comp[k];
 
 		double LtotalOverF = 0.0;
 		double SWUoverF = 0.0;
         double tempNumerator = 0.0; 
 
-		for (CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
+		for (CompIter i = ms_feed.comp.begin(); i != ms_feed.comp.end(); i++)
         {
-			tempNumerator = (PoF*IsosOut.comp[i->first]*log(RP) + WoF*IsosTail.comp[i->first]*log(RW) - IsosIn.comp[i->first]*log(RF));
+			tempNumerator = (PoF*ms_prod.comp[i->first]*log(RP) + WoF*ms_tail.comp[i->first]*log(RW) - ms_feed.comp[i->first]*log(RF));
 			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first));
 			SWUoverF = SWUoverF + tempNumerator;
         };
@@ -587,8 +587,8 @@ void Enrichment::LoverF()
 		SWUperProduct = -1 * SWUoverF / PoF;	//This is the SWU for 1 kg of Product material.
 
         //Assign Isotopic streams the proper masses.
-        IsosOut.mass  = IsosIn.mass * PoF;
-        IsosTail.mass = IsosIn.mass * WoF;
+        ms_prod.mass  = ms_feed.mass * PoF;
+        ms_tail.mass = ms_feed.mass * WoF;
     };
 
     return;

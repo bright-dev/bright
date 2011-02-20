@@ -12,8 +12,8 @@ import bright
 def printFCComp(fc):
     print("Name: " + fc.name)
     print("Params2Track: " + str(fc.params2track))
-    print("IsosIn: " + str(fc.IsosIn))
-    print("IsosOut: " + str(fc.IsosOut))
+    print("ms_feed: " + str(fc.ms_feed))
+    print("ms_prod: " + str(fc.ms_prod))
     print("ParamsIn: " + str(fc.ParamsIn))
     print("ParamsOut: " + str(fc.ParamsOut))
     print("Pass Number: " + str(fc.PassNum))
@@ -70,8 +70,8 @@ print(str(R.sepeff))
 print("")
 
 R.doCalc(ms)
-print(str(R.IsosIn))
-print(str(R.IsosOut))
+print(str(R.ms_feed))
+print(str(R.ms_prod))
 print("")
 
 print(str(R.ParamsIn))

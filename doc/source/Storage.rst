@@ -102,19 +102,19 @@ Storage Methods
 
     As usual, :meth:`doCalc` sets up the Storage component's input stream and calculates the corresponding 
     output :class:`MassStream`.  Here, this amounts to calling :meth:`bateman` for every nuclide in 
-    :attr:`IsosIn <bright.FCComp.IsosIn>`, for each chain that ends with a nuclide in :meth:`BriPy.track_isos`.
+    :attr:`ms_feed <bright.FCComp.ms_feed>`, for each chain that ends with a nuclide in :meth:`BriPy.track_isos`.
 
     This method is public and accessible from Python.
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
-          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
-          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
+          :attr:`ms_feed <bright.FCComp.ms_feed>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`ms_feed <bright.FCComp.ms_feed>`.
         * `time` (float): :attr:`decay_time` is set to the time value here prior to any other calculations.  This
           time has units of seconds.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
+        * `output` (MassStream): :attr:`ms_prod <bright.FCComp.ms_prod>`.
 
 
 .. method:: Storage.initialize()
@@ -128,5 +128,5 @@ Storage Methods
     Here the parameters for :class:`Storage` are set.  For storage, this amounts to just
     a "Mass" parameter::
 
-        self.ParamsIn["Mass"]  = self.IsosIn.mass
-        self.ParamsOut["Mass"] = self.IsosOut.mass
+        self.ParamsIn["Mass"]  = self.ms_feed.mass
+        self.ParamsOut["Mass"] = self.ms_prod.mass

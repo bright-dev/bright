@@ -214,24 +214,24 @@ cdef class FCComp:
             self.fccomp_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.fccomp_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fccomp_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fccomp_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fccomp_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.fccomp_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fccomp_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fccomp_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -276,15 +276,15 @@ cdef class FCComp:
 
         This function has one very important subtlety: it does not write out mass streams data.
         Rather, input columns are given as normalized isotopic vectors.
-        As weight fractions, input columns are in units of [kgInIso/kgIsosIn.mass].
+        As weight fractions, input columns are in units of [kgInIso/kgms_feed.mass].
         Moreover, the output columns are given in terms relative to the mass of the input mass, 
-        [kgOutIso/kgIsosIn.mass].  These are calculated via the following expressions.
+        [kgOutIso/kgms_feed.mass].  These are calculated via the following expressions.
 
         .. math::
 
-            \mbox{inpcol[iso]} = \mbox{IsosIn.comp[iso]}
+            \mbox{inpcol[iso]} = \mbox{ms_feed.comp[iso]}
 
-            \mbox{outcol[iso]} = \mbox{IsosOut.comp[iso]} \times \frac{\mbox{IsosOut.mass}}{\mbox{IsosIn.mass}}
+            \mbox{outcol[iso]} = \mbox{ms_prod.comp[iso]} \times \frac{\mbox{ms_prod.mass}}{\mbox{ms_feed.mass}}
 
         Because of the units of these two columns, total mass flow data may often only be recovered via the 
         a "Mass" parameter in the "{FCComp.name}Params.txt" file.  Here is a sample LWRIsos.txt file for a
@@ -374,8 +374,8 @@ cdef class FCComp:
         has a "Mass" parameter.  Translated into Python, setParams() here looks like the following::
 
             def setParams(self):
-                self.ParamsIn["Mass"]  = self.IsosIn.mass
-                self.ParamsOut["Mass"] = self.IsosOut.mass
+                self.ParamsIn["Mass"]  = self.ms_feed.mass
+                self.ParamsOut["Mass"] = self.ms_prod.mass
                 return
         """
         self.fccomp_pointer.setParams()
@@ -387,16 +387,16 @@ cdef class FCComp:
         As each component type has a distinct methodology, the doCalc() method  needs 
         to be overridden child classes.
 
-        This method should return IsosOut so that component calculations may be easily 
+        This method should return ms_prod so that component calculations may be easily 
         daisy-chained together.
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
-            * output (MassStream): IsosOut.
+            * output (MassStream): ms_prod.
 
         """
         cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
@@ -562,14 +562,14 @@ cdef class Enrichment(FCComp):
             self.e_pointer.Mstar = <double> value
 
 
-    property IsosTail:
+    property ms_tail:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.e_pointer.IsosTail
+            py_ms.ms_pointer[0] = self.e_pointer.ms_tail
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.e_pointer.IsosTail = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.e_pointer.ms_tail = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property j:
@@ -680,24 +680,24 @@ cdef class Enrichment(FCComp):
             self.e_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.e_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.e_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.e_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.e_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.e_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.e_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.e_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.e_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -752,14 +752,14 @@ cdef class Enrichment(FCComp):
     def setParams(self):
         """Here the parameters for Enrichment are set::
 
-            self.ParamsIn["MassFeed"]  = self.IsosIn.mass
+            self.ParamsIn["MassFeed"]  = self.ms_feed.mass
             self.ParamsOut["MassFeed"] = 0.0
 
             self.ParamsIn["MassProduct"]  = 0.0
-            self.ParamsOut["MassProduct"] = self.IsosOut.mass
+            self.ParamsOut["MassProduct"] = self.ms_prod.mass
 
             self.ParamsIn["MassTails"]  = 0.0
-            self.ParamsOut["MassTails"] = self.IsosTail.mass
+            self.ParamsOut["MassTails"] = self.ms_tail.mass
 
             self.ParamsIn["N"]  = self.N
             self.ParamsOut["N"] = self.N
@@ -790,11 +790,11 @@ cdef class Enrichment(FCComp):
 
         Args:
             * input (dict or MassStream or None): If input is present, it is set as the component's 
-            IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this dictionary 
-            is first converted into a MassStream before being set as IsosIn.
+            ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this dictionary 
+            is first converted into a MassStream before being set as ms_feed.
 
         Returns:
-            * output (MassStream): IsosOut.
+            * output (MassStream): ms_prod.
 
         """
         cdef mass_stream.MassStream in_ms 
@@ -948,24 +948,24 @@ cdef class Reprocess(FCComp):
             self.r_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.r_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.r_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -1022,8 +1022,8 @@ cdef class Reprocess(FCComp):
         """Here the parameters for Reprocess are set.  For reprocessing, this amounts to just
         a "Mass" parameter::
 
-            self.ParamsIn["Mass"]  = self.IsosIn.mass
-            self.ParamsOut["Mass"] = self.IsosOut.mass
+            self.ParamsIn["Mass"]  = self.ms_feed.mass
+            self.ParamsOut["Mass"] = self.ms_prod.mass
 
         """
         (<cpp_bright.FCComp *> self.r_pointer).setParams()
@@ -1033,20 +1033,20 @@ cdef class Reprocess(FCComp):
         """This method performs the relatively simply task of multiplying the current input stream by 
         the SE to form a new output stream::
 
-            incomp  = self.IsosIn.mult_by_mass()
+            incomp  = self.ms_feed.mult_by_mass()
             outcomp = {}
             for iso in incomp.keys():
                 outcomp[iso] = incomp[iso] * sepeff[iso]
-            self.IsosOut = MassStream(outcomp)
-            return self.IsosOut
+            self.ms_prod = MassStream(outcomp)
+            return self.ms_prod
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
-            * output (MassStream): IsosOut.
+            * output (MassStream): ms_prod.
         """
         cdef mass_stream.MassStream in_ms 
         cdef mass_stream.MassStream output = mass_stream.MassStream()
@@ -1118,24 +1118,24 @@ cdef class Storage(FCComp):
             self.s_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.s_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.s_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.s_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.s_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.s_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.s_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.s_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.s_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -1178,8 +1178,8 @@ cdef class Storage(FCComp):
         """Here the parameters for Storage are set.  For storage, this amounts to just
         a "Mass" parameter::
 
-            self.ParamsIn["Mass"]  = self.IsosIn.mass
-            self.ParamsOut["Mass"] = self.IsosOut.mass
+            self.ParamsIn["Mass"]  = self.ms_feed.mass
+            self.ParamsOut["Mass"] = self.ms_prod.mass
         """
         (<cpp_bright.FCComp *> self.s_pointer).setParams()
 
@@ -1187,19 +1187,19 @@ cdef class Storage(FCComp):
     def doCalc(self, input=None, decay_time=None):
         """As usual, doCalc sets up the Storage component's input stream and calculates the corresponding 
         output MassStream.  Here, this amounts to calling bateman() for every nuclide in 
-        IsosIn, for each chain that ends with a nuclide in track_isos.
+        ms_feed, for each chain that ends with a nuclide in track_isos.
 
         This method is public and accessible from Python.
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
             * decay_time (float): decay_time is set to the time value here prior to any other calculations.  This
               time has units of seconds.
 
         Returns:
-            * output (MassStream): IsosOut.
+            * output (MassStream): ms_prod.
         """
         cdef mass_stream.MassStream in_ms 
         cdef mass_stream.MassStream output = mass_stream.MassStream()
@@ -1297,7 +1297,7 @@ cdef class ReactorParameters:
         * FuelForm (dict): This is the chemical form of fuel as dictionary.  Keys are 
           strings that represent isotopes (mixed form) while values represent the 
           corresponding mass weights.  The heavy metal concentration by the key "IHM".  
-          This will automatically fill in the nuclides in IsosIn for the "IHM" weight.  
+          This will automatically fill in the nuclides in ms_feed for the "IHM" weight.  
           For example, LWRs typically use a UOX fuel form::
 
             ReactorParameters.FuelForm = {"IHM": 1.0, "O16": 2.0}
@@ -2102,24 +2102,24 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.r1g_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.r1g_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.r1g_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.r1g_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -2184,11 +2184,11 @@ cdef class Reactor1G(FCComp):
     def foldMassWeights(self):
         """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
         In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-        as the values of IsosIn.  The raw data must have previously been read in from loadLib().  
+        as the values of ms_feed.  The raw data must have previously been read in from loadLib().  
 
         .. warning::
 
-            Anytime any reactor parameter whatsoever (IsosIn, P_NL, *etc*) is altered in any way, 
+            Anytime any reactor parameter whatsoever (ms_feed, P_NL, *etc*) is altered in any way, 
             the foldMassWeights() function must be called to reset all of the resultant data.
             If you are unsure, please call this function anyway to be safe.  There is little 
             harm in calling it twice by accident.
@@ -2200,7 +2200,7 @@ cdef class Reactor1G(FCComp):
 
 
     def mkMj_F_(self):
-        """This function calculates and sets the Mj_F_ attribute from IsosIn and the 
+        """This function calculates and sets the Mj_F_ attribute from ms_feed and the 
         raw reactor data Tij_F_.
         """
         self.r1g_pointer.mkMj_F_()
@@ -2208,8 +2208,8 @@ cdef class Reactor1G(FCComp):
 
     def mkMj_Fd_(self):
         """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
-        The resultant isotopic dictionary is then converted into the IsosOut mass stream
-        for this pass through the reactor.  Thus if ever you need to calculate IsosOut
+        The resultant isotopic dictionary is then converted into the ms_prod mass stream
+        for this pass through the reactor.  Thus if ever you need to calculate ms_prod
         without going through doCalc(), use this function.
         """
         self.r1g_pointer.mkMj_Fd_()
@@ -2268,8 +2268,8 @@ cdef class Reactor1G(FCComp):
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
             * deltaR (float): deltaR.
@@ -2343,7 +2343,7 @@ cdef class Reactor1G(FCComp):
 
 
     def BUd_BisectionMethod(self):
-        """Calculates the maximum discharge burnup via the Bisection Method for a given IsosIn
+        """Calculates the maximum discharge burnup via the Bisection Method for a given ms_feed
         in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
         that is closest to 1.0.
 
@@ -2354,7 +2354,7 @@ cdef class Reactor1G(FCComp):
 
     def Run_PNL(self, double pnl):
         """Performs a reactor run for a specific non-leakage probability value.
-        This requires that IsosIn be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+        This requires that ms_feed be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
 
         This function amounts to the following code::
 
@@ -2384,22 +2384,22 @@ cdef class Reactor1G(FCComp):
         """Since many other methods provide the computational heavy-lifting of reactor calculations, 
         the doCalc() method is relatively simple::
 
-            self.IsosIn = input
+            self.ms_feed = input
             self.foldMassWeights()
             self.BUd_BisectionMethod()
             self.calcOutIso()
-            return self.IsosOut
+            return self.ms_prod
 
         As you can see, all this function does is set burn an input stream to its maximum 
         discharge burnup and then reports on the output isotopics.
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
-            * output (MassStream): IsosOut.
+            * output (MassStream): ms_prod.
         """
         cdef mass_stream.MassStream in_ms 
         cdef mass_stream.MassStream output = mass_stream.MassStream()
@@ -3141,24 +3141,24 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.lwr1g_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.lwr1g_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.lwr1g_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.lwr1g_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.lwr1g_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -3253,11 +3253,11 @@ cdef class LightWaterReactor1G(Reactor1G):
     def foldMassWeights(self):
         """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
         In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-        as the values of IsosIn.  The raw data must have previously been read in from loadLib().  
+        as the values of ms_feed.  The raw data must have previously been read in from loadLib().  
 
         .. warning::
 
-            Anytime any reactor parameter whatsoever (IsosIn, P_NL, *etc*) is altered in any way, 
+            Anytime any reactor parameter whatsoever (ms_feed, P_NL, *etc*) is altered in any way, 
             the foldMassWeights() function must be called to reset all of the resultant data.
             If you are unsure, please call this function anyway to be safe.  There is little 
             harm in calling it twice by accident.
@@ -3269,7 +3269,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def mkMj_F_(self):
-        """This function calculates and sets the Mj_F_ attribute from IsosIn and the 
+        """This function calculates and sets the Mj_F_ attribute from ms_feed and the 
         raw reactor data Tij_F_.
         """
         (<cpp_bright.Reactor1G *> self.lwr1g_pointer).mkMj_F_()
@@ -3277,8 +3277,8 @@ cdef class LightWaterReactor1G(Reactor1G):
 
     def mkMj_Fd_(self):
         """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
-        The resultant isotopic dictionary is then converted into the IsosOut mass stream
-        for this pass through the reactor.  Thus if ever you need to calculate IsosOut
+        The resultant isotopic dictionary is then converted into the ms_prod mass stream
+        for this pass through the reactor.  Thus if ever you need to calculate ms_prod
         without going through doCalc(), use this function.
         """
         (<cpp_bright.Reactor1G *> self.lwr1g_pointer).mkMj_Fd_()
@@ -3337,8 +3337,8 @@ cdef class LightWaterReactor1G(Reactor1G):
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
             * deltaR (float): deltaR.
@@ -3412,7 +3412,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
     def BUd_BisectionMethod(self):
-        """Calculates the maximum discharge burnup via the Bisection Method for a given IsosIn
+        """Calculates the maximum discharge burnup via the Bisection Method for a given ms_feed
         in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
         that is closest to 1.0.
 
@@ -3423,7 +3423,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
     def Run_PNL(self, double pnl):
         """Performs a reactor run for a specific non-leakage probability value.
-        This requires that IsosIn be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+        This requires that ms_feed be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
 
         This function amounts to the following code::
 
@@ -3453,22 +3453,22 @@ cdef class LightWaterReactor1G(Reactor1G):
         """Since many other methods provide the computational heavy-lifting of reactor calculations, 
         the doCalc() method is relatively simple::
 
-            self.IsosIn = input
+            self.ms_feed = input
             self.foldMassWeights()
             self.BUd_BisectionMethod()
             self.calcOutIso()
-            return self.IsosOut
+            return self.ms_prod
 
         As you can see, all this function does is set burn an input stream to its maximum 
         discharge burnup and then reports on the output isotopics.
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
-            * output (MassStream): IsosOut.
+            * output (MassStream): ms_prod.
         """
         cdef mass_stream.MassStream in_ms 
         cdef mass_stream.MassStream output = mass_stream.MassStream()
@@ -4210,24 +4210,24 @@ cdef class FastReactor1G(Reactor1G):
             self.fr1g_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.fr1g_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.fr1g_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.fr1g_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.fr1g_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -4329,11 +4329,11 @@ cdef class FastReactor1G(Reactor1G):
     def foldMassWeights(self):
         """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
         In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-        as the values of IsosIn.  The raw data must have previously been read in from loadLib().  
+        as the values of ms_feed.  The raw data must have previously been read in from loadLib().  
 
         .. warning::
 
-            Anytime any reactor parameter whatsoever (IsosIn, P_NL, *etc*) is altered in any way, 
+            Anytime any reactor parameter whatsoever (ms_feed, P_NL, *etc*) is altered in any way, 
             the foldMassWeights() function must be called to reset all of the resultant data.
             If you are unsure, please call this function anyway to be safe.  There is little 
             harm in calling it twice by accident.
@@ -4345,7 +4345,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def mkMj_F_(self):
-        """This function calculates and sets the Mj_F_ attribute from IsosIn and the 
+        """This function calculates and sets the Mj_F_ attribute from ms_feed and the 
         raw reactor data Tij_F_.
         """
         (<cpp_bright.Reactor1G *> self.fr1g_pointer).mkMj_F_()
@@ -4353,8 +4353,8 @@ cdef class FastReactor1G(Reactor1G):
 
     def mkMj_Fd_(self):
         """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
-        The resultant isotopic dictionary is then converted into the IsosOut mass stream
-        for this pass through the reactor.  Thus if ever you need to calculate IsosOut
+        The resultant isotopic dictionary is then converted into the ms_prod mass stream
+        for this pass through the reactor.  Thus if ever you need to calculate ms_prod
         without going through doCalc(), use this function.
         """
         (<cpp_bright.Reactor1G *> self.fr1g_pointer).mkMj_Fd_()
@@ -4413,8 +4413,8 @@ cdef class FastReactor1G(Reactor1G):
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
             * deltaR (float): deltaR.
@@ -4488,7 +4488,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
     def BUd_BisectionMethod(self):
-        """Calculates the maximum discharge burnup via the Bisection Method for a given IsosIn
+        """Calculates the maximum discharge burnup via the Bisection Method for a given ms_feed
         in this reactor.  This iterates over values of BUd to find a batch averaged multiplication factor 
         that is closest to 1.0.
 
@@ -4499,7 +4499,7 @@ cdef class FastReactor1G(Reactor1G):
 
     def Run_PNL(self, double pnl):
         """Performs a reactor run for a specific non-leakage probability value.
-        This requires that IsosIn be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
+        This requires that ms_feed be (meaningfully) set and is for use with Calibrate_PNL_2_BUd().
 
         This function amounts to the following code::
 
@@ -4529,22 +4529,22 @@ cdef class FastReactor1G(Reactor1G):
         """Since many other methods provide the computational heavy-lifting of reactor calculations, 
         the doCalc() method is relatively simple::
 
-            self.IsosIn = input
+            self.ms_feed = input
             self.foldMassWeights()
             self.BUd_BisectionMethod()
             self.calcOutIso()
-            return self.IsosOut
+            return self.ms_prod
 
         As you can see, all this function does is set burn an input stream to its maximum 
         discharge burnup and then reports on the output isotopics.
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
-              IsosIn.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as IsosIn.
+              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
+              dictionary is first converted into a MassStream before being set as ms_feed.
 
         Returns:
-            * output (MassStream): IsosOut.
+            * output (MassStream): ms_prod.
         """
         cdef mass_stream.MassStream in_ms 
         cdef mass_stream.MassStream output = mass_stream.MassStream()
@@ -4811,24 +4811,24 @@ cdef class FuelFabrication(FCComp):
             self.ff_pointer.natural_name = std.string(n)
 
 
-    property IsosIn:
+    property ms_feed:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.ff_pointer.IsosIn
+            py_ms.ms_pointer[0] = self.ff_pointer.ms_feed
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.ff_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.ff_pointer.ms_feed = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
-    property IsosOut:
+    property ms_prod:
         def __get__(self):
             cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-            py_ms.ms_pointer[0] = self.ff_pointer.IsosOut
+            py_ms.ms_pointer[0] = self.ff_pointer.ms_prod
             return py_ms
 
         def __set__(self, mass_stream.MassStream ms):
-            self.ff_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+            self.ff_pointer.ms_prod = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
 
 
     property ParamsIn:
@@ -4911,11 +4911,11 @@ cdef class FuelFabrication(FCComp):
 
 
     def calc_core_input(self):
-        """Computes the core input mass stream that becomes IsosOut based on mass_streams and 
+        """Computes the core input mass stream that becomes ms_prod based on mass_streams and 
         mass_weights_out.
 
         Returns:
-            * core_input (MassStream): IsosOut.
+            * core_input (MassStream): ms_prod.
         """
         cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
         py_ms.ms_pointer[0] = self.ff_pointer.calc_core_input()
@@ -4945,7 +4945,7 @@ cdef class FuelFabrication(FCComp):
             * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
 
         Returns:
-            * core_input (MassStream): IsosOut.
+            * core_input (MassStream): ms_prod.
         """
         cdef Reactor1G r1g 
         cdef mass_stream.MassStream core_input = mass_stream.MassStream()

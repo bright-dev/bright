@@ -68,10 +68,10 @@ public:
     double alpha_0;         //specify on init.
     double Mstar_0;         //specify on init.
     double Mstar;           //Current Mstar
-    MassStream IsosTail;    //Waste Stream
+    MassStream ms_tail;    //Waste Stream
 
     //key isotopic info
-    int j;          //The jth isotope is the key, in zzaaam form, must be in IsosIn.
+    int j;          //The jth isotope is the key, in zzaaam form, must be in ms_feed.
     int k;          //The kth isotope is the other key to separate j away from.
     double xP_j;    //Product enrichment of jth isotope
     double xW_j;    //Waste/Tails enrichment of the jth isotope

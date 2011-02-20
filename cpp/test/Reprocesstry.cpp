@@ -73,12 +73,12 @@ int main()
 	print("\t\t\tDone!");
 
 	print("Test doCalc(MassStream):");
-	rssed.doCalc(rssed.IsosOut).print_ms();
+	rssed.doCalc(rssed.ms_prod).print_ms();
 	rssed.writeout();
 	print("\t\t\tDone!");
 
 	print("Test doCalc():");
-	rssed.IsosIn = rssed.IsosOut;
+	rssed.ms_feed = rssed.ms_prod;
 	rssed.doCalc().print_ms();
 	rssed.writeout();
 	print("\t\t\tDone!");

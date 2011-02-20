@@ -86,8 +86,8 @@ class Reactor1G : public FCComp
  */
 protected:
     //Protected data
-    IsoSet I;						//Set of isotopes that may be in IsosIn.
-    IsoSet J;						//Set of isotopes that may be in IsosOut.
+    IsoSet I;						//Set of isotopes that may be in ms_feed.
+    IsoSet J;						//Set of isotopes that may be in ms_prod.
 
     //Thermal XS data is read in from static KAERI Data
     //Only read in if the disadvantage factor will be used.

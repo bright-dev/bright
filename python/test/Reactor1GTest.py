@@ -13,8 +13,8 @@ from bright import *
 def printFCComp(fc):
     print("Name: " + fc.name)
     print("Params2Track: " + str(fc.params2track))
-    print("IsosIn: " + str(fc.IsosIn))
-    print("IsosOut: " + str(fc.IsosOut))
+    print("ms_feed: " + str(fc.ms_feed))
+    print("ms_prod: " + str(fc.ms_prod))
     print("ParamsIn: " + str(fc.ParamsIn))
     print("ParamsOut: " + str(fc.ParamsOut))
     print("Pass Number: " + str(fc.PassNum))
@@ -87,9 +87,9 @@ r2.foldMassWeights()
 #print(r2.Mj_F_)
 #r2.mkMj_Fd_()
 
-#print(r2.IsosOut)
+#print(r2.ms_prod)
 r2.calcOutIso()
-#print(r2.IsosOut)
+#print(r2.ms_prod)
 
 r2.calcSubStreams()
 #print(r2.InU)

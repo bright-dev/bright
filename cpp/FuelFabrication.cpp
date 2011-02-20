@@ -220,8 +220,8 @@ void FuelFabrication::calc_mass_ratios()
 MassStream FuelFabrication::doCalc()
 {
     calc_mass_ratios();
-    IsosOut = calc_core_input();
-    return IsosOut;
+    ms_prod = calc_core_input();
+    return ms_prod;
 };
 
 

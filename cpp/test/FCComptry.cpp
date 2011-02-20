@@ -79,10 +79,10 @@ int main()
 	ipFCC.writeParamPass();
 
 	//Second Pass	
-	ipFCC.IsosIn.mass = 1.0;
-	ipFCC.IsosIn.comp[922350]  = 0.05;
-	ipFCC.IsosOut.mass = 1.0;
-	ipFCC.IsosOut.comp[922350] = 0.008;
+	ipFCC.ms_feed.mass = 1.0;
+	ipFCC.ms_feed.comp[922350]  = 0.05;
+	ipFCC.ms_prod.mass = 1.0;
+	ipFCC.ms_prod.comp[922350] = 0.008;
 	ipFCC.writeIsoPass();
 	ipFCC.ParamsIn["mass"]  = 10.0;
 	ipFCC.ParamsOut["mass"] = 5.0;

@@ -48,7 +48,7 @@ int main()
 
 	print("Try Decaying Implicit Mass for 1000 days.");
 	s.decay_time = 1000.0 * 24.0 * 3600.0;
-	s.IsosIn = MassStream (samplemass);
+	s.ms_feed = MassStream (samplemass);
 	s.doCalc().print_ms();
 	print("");
 
@@ -66,7 +66,7 @@ int main()
 	double t;
 	print("Try Decaying Implicit Mass for t = 4000 days.");
 	t = 4000.0 * 24.0 * 3600.0;
-	s.IsosIn = MassStream (samplemass);
+	s.ms_feed = MassStream (samplemass);
 	s.doCalc(t).print_ms();
 	print("");
 		

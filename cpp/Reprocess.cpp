@@ -77,41 +77,41 @@ Reprocess::~Reprocess ()
 
 void Reprocess::setParams ()
 {
-    ParamsIn["Mass"]  = IsosIn.mass;
-    ParamsOut["Mass"] = IsosOut.mass;	
+    ParamsIn["Mass"]  = ms_feed.mass;
+    ParamsOut["Mass"] = ms_prod.mass;	
 }
 
 MassStream Reprocess::doCalc ()
 {
     //Does the Reprocessing
-    CompDict incomp  = IsosIn.mult_by_mass();
+    CompDict incomp  = ms_feed.mult_by_mass();
     CompDict outcomp;
     for (CompIter i = incomp.begin(); i != incomp.end(); i++)
     {
         outcomp[i->first] = (i->second) * sepeff[i->first];
     }
-    IsosOut = MassStream (outcomp);
-    return IsosOut;
+    ms_prod = MassStream (outcomp);
+    return ms_prod;
 }
 
 MassStream Reprocess::doCalc (CompDict incomp)
 {
     //Does the Reprocessing
-    //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to IsosIn.
-    IsosIn = MassStream (incomp);
+    //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to ms_feed.
+    ms_feed = MassStream (incomp);
     CompDict outcomp;
     for (CompIter i = incomp.begin(); i != incomp.end(); i++)
     {
         outcomp[i->first] = (i->second) * sepeff[i->first];
     }
-    IsosOut = MassStream (outcomp);
-    return IsosOut;
+    ms_prod = MassStream (outcomp);
+    return ms_prod;
 }
 
 MassStream Reprocess::doCalc (MassStream instream)
 {
     //Does the Reprocessing
     //instream = input stream of all nuclides. Standard MassStream object.
-    IsosIn = instream;
+    ms_feed = instream;
     return doCalc();
 }

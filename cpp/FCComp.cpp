@@ -234,50 +234,50 @@ void FCComp::initialize_HDF5 ()
     //Initialize the IsoStreams 
     if (!FCComps::track_isos.empty())
     {
-        // Open/Create IsosIn group
-        H5::Group gIsosIn;
+        // Open/Create ms_feed group
+        H5::Group gms_feed;
         try
-          { gIsosIn = dbFile.openGroup(comp_path + "/IsosIn"); }
+          { gms_feed = dbFile.openGroup(comp_path + "/ms_feed"); }
         catch (H5::Exception fgerror)
-          { gIsosIn = dbFile.createGroup(comp_path + "/IsosIn"); }
+          { gms_feed = dbFile.createGroup(comp_path + "/ms_feed"); }
 
-        // Open/Create IsosOut group
-        H5::Group gIsosOut;
+        // Open/Create ms_prod group
+        H5::Group gms_prod;
         try
-            { gIsosOut = dbFile.openGroup(comp_path + "/IsosOut"); }
+            { gms_prod = dbFile.openGroup(comp_path + "/ms_prod"); }
         catch (H5::Exception fgerror)
-            { gIsosOut = dbFile.createGroup(comp_path + "/IsosOut"); }
+            { gms_prod = dbFile.createGroup(comp_path + "/ms_prod"); }
 
-        // Open/Create /IsosIn/Mass Dataset
-        H5::DataSet dsIsosInMass;
+        // Open/Create /ms_feed/Mass Dataset
+        H5::DataSet dsms_feedMass;
         try 
-            { dsIsosInMass = dbFile.openDataSet(comp_path + "/IsosIn/Mass"); }
+            { dsms_feedMass = dbFile.openDataSet(comp_path + "/ms_feed/Mass"); }
         catch (H5::Exception fgerror)
-            { dsIsosInMass = dbFile.createDataSet(comp_path + "/IsosIn/Mass",  H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+            { dsms_feedMass = dbFile.createDataSet(comp_path + "/ms_feed/Mass",  H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
 
-        // Open/Create /IsosOut/Mass Dataset
-        H5::DataSet dsIsosOutMass;
+        // Open/Create /ms_prod/Mass Dataset
+        H5::DataSet dsms_prodMass;
         try
-            { dsIsosOutMass = dbFile.openDataSet(comp_path + "/IsosOut/Mass"); }
+            { dsms_prodMass = dbFile.openDataSet(comp_path + "/ms_prod/Mass"); }
         catch (H5::Exception fgerror)
-            { dsIsosOutMass = dbFile.createDataSet(comp_path + "/IsosOut/Mass", H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+            { dsms_prodMass = dbFile.createDataSet(comp_path + "/ms_prod/Mass", H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
 
         // Open/Create /Isos[In|Out]/iso Datasets
-        H5::DataSet dsIsosInIso;
-        H5::DataSet dsIsosOutIso;
+        H5::DataSet dsms_feedIso;
+        H5::DataSet dsms_prodIso;
         for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
         {
             std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
 
             try
-                { dsIsosInIso = dbFile.openDataSet(comp_path + "/IsosIn/" + isoLL); }
+                { dsms_feedIso = dbFile.openDataSet(comp_path + "/ms_feed/" + isoLL); }
             catch (H5::Exception fgerror)
-                { dsIsosInIso = dbFile.createDataSet(comp_path + "/IsosIn/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+                { dsms_feedIso = dbFile.createDataSet(comp_path + "/ms_feed/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
 
             try
-                { dsIsosOutIso = dbFile.openDataSet(comp_path + "/IsosOut/" + isoLL); }
+                { dsms_prodIso = dbFile.openDataSet(comp_path + "/ms_prod/" + isoLL); }
             catch (H5::Exception fgerror)
-                { dsIsosOutIso = dbFile.createDataSet(comp_path + "/IsosOut/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
+                { dsms_prodIso = dbFile.createDataSet(comp_path + "/ms_prod/" + isoLL, H5::PredType::NATIVE_DOUBLE, ext_1D_space, double_params); }
         }
     }
 
@@ -370,8 +370,8 @@ void FCComp::writeIsoPass ()
     isobuf.precision(6);
     isobuf << std::scientific << std::uppercase;
 
-    //normalize IsosOut per kgIsosIn
-    double outmassfrac = IsosOut.mass / IsosIn.mass;
+    //normalize ms_prod per kgms_feed
+    double outmassfrac = ms_prod.mass / ms_feed.mass;
 
     while (!isofilein.eof() )
     {
@@ -387,14 +387,14 @@ void FCComp::writeIsoPass ()
             try
             {
                 int isoInLine = isoname::LLAAAM_2_zzaaam(isoflag);
-                if (0 < IsosIn.comp.count(isoInLine) )
-                    isobuf << "\t" << IsosIn.comp[isoInLine];
+                if (0 < ms_feed.comp.count(isoInLine) )
+                    isobuf << "\t" << ms_feed.comp[isoInLine];
             
                 else 
                     isobuf << "\t" << 0.0;
     
-                if (0 < IsosOut.comp.count(isoInLine) )
-                    isobuf << "\t" << IsosOut.comp[isoInLine] * outmassfrac;
+                if (0 < ms_prod.comp.count(isoInLine) )
+                    isobuf << "\t" << ms_prod.comp[isoInLine] * outmassfrac;
                 else 
                     isobuf << "\t" << 0.0;
             }
@@ -480,14 +480,14 @@ void FCComp::writeHDF5 ()
     //Write the isotopic component input and output streams
     if (!FCComps::track_isos.empty())
     {
-        appendHDF5array(&dbFile, comp_path + "/IsosIn/Mass",  &(IsosIn.mass),  &RANK, dims, offset, ext_size);
-        appendHDF5array(&dbFile, comp_path + "/IsosOut/Mass", &(IsosOut.mass), &RANK, dims, offset, ext_size);
+        appendHDF5array(&dbFile, comp_path + "/ms_feed/Mass",  &(ms_feed.mass),  &RANK, dims, offset, ext_size);
+        appendHDF5array(&dbFile, comp_path + "/ms_prod/Mass", &(ms_prod.mass), &RANK, dims, offset, ext_size);
 
         for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
         {
             std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
-            appendHDF5array(&dbFile, comp_path + "/IsosIn/"  + isoLL, &(IsosIn.comp[*iso]),  &RANK, dims, offset, ext_size);
-            appendHDF5array(&dbFile, comp_path + "/IsosOut/" + isoLL, &(IsosOut.comp[*iso]), &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/ms_feed/"  + isoLL, &(ms_feed.comp[*iso]),  &RANK, dims, offset, ext_size);
+            appendHDF5array(&dbFile, comp_path + "/ms_prod/" + isoLL, &(ms_prod.comp[*iso]), &RANK, dims, offset, ext_size);
         }
     }    
 

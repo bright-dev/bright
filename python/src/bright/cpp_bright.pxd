@@ -36,8 +36,8 @@ cdef extern from "../FCComp.h":
         std.string name 
         std.string natural_name
 
-        cpp_mass_stream.MassStream IsosIn
-        cpp_mass_stream.MassStream IsosOut
+        cpp_mass_stream.MassStream ms_feed
+        cpp_mass_stream.MassStream ms_prod
 
         map[std.string, double] ParamsIn
         map[std.string, double] ParamsOut
@@ -86,7 +86,7 @@ cdef extern from "../Enrichment.h":
         double alpha_0
         double Mstar_0
         double Mstar
-        cpp_mass_stream.MassStream IsosTail
+        cpp_mass_stream.MassStream ms_tail
 
         int j
         int k

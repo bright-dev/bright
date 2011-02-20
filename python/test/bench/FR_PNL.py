@@ -62,7 +62,7 @@ def main():
         FR.P_NL = temp_pnl
 
         #Calculate output
-        FR.IsosIn = InStream
+        FR.ms_feed = InStream
         FR.foldMassWeights()
         FR.BUd_BisectionMethod()
 

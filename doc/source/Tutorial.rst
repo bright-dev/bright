@@ -99,12 +99,12 @@ The Light Water Reactor is instantiated with the following line of code::
 
 The MassStream that is produced by the Enrichment component can now be feed to the Light Water Reactor::
 
-    lwr.doCalc(enr.IsosOut)
+    lwr.doCalc(enr.ms_prod)
 
-It is important to know that IsosOut is calculated after doCalc is called. Finally, we feed instantiate a Storage component and feed the output MassStream of the Light Water Reactor to it::
+It is important to know that ms_prod is calculated after doCalc is called. Finally, we feed instantiate a Storage component and feed the output MassStream of the Light Water Reactor to it::
 
     st = bright.Storage("Storage")
-    st.doCalc(lwr.IsosOut)
+    st.doCalc(lwr.ms_prod)
 
 Lastly, every fuel cycle component contains a ``writeout()`` method that is used for outputting 
 data to the hard disk in either text or HDF5 format. 
@@ -136,11 +136,11 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     lwrd.BUt = 35.0
     lwrd.batches = 3
     lwr = bright.LightWaterReactor1G(lwr_data, lwrd, "LWR")
-    lwr.doCalc(enr.IsosOut)
+    lwr.doCalc(enr.ms_prod)
     lwr.writeout()
 
     # Storage Calculation
     st = bright.Storage("Storage")
     st.decay_time = 5.0 * 365.25 * 24.0 * 3600.0
-    st.doCalc(lwr.IsosOut)
+    st.doCalc(lwr.ms_prod)
     st.writeout()

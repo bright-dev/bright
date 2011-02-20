@@ -83,7 +83,7 @@ attributes specific to this class.
 
 .. attribute:: FuelFabrication.reactor
 
-    An instance of a :class:`Reactor1G` class that the :attr:`IsosOut <FCComp.IsosOut>` is valid as a fuel for.
+    An instance of a :class:`Reactor1G` class that the :attr:`ms_prod <FCComp.ms_prod>` is valid as a fuel for.
 
 .. attribute:: FuelFabrication.params2track
 
@@ -110,7 +110,7 @@ FuelFabrication Commom Methods
         * `reactor` (:class:`Reactor1G`): An instance of a Reactor1G class to fabricate fuel for.
 
     Returns:
-        * `core_input` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
+        * `core_input` (MassStream): :attr:`ms_prod <bright.FCComp.ms_prod>`.
 
 
 .. method:: FuelFabrication.initialize(mass_streams, mass_weights_in, reactor)
@@ -152,11 +152,11 @@ FuelFabrication Calculation Methods
 
 .. method:: FuelFabrication.calc_core_input()
 
-    Computes the core input mass stream that becomes IsosOut based on :attr:`mass_streams` and 
+    Computes the core input mass stream that becomes ms_prod based on :attr:`mass_streams` and 
     :attr:`mass_weights_out`.
 
     Returns:
-        * `core_input` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
+        * `core_input` (MassStream): :attr:`ms_prod <bright.FCComp.ms_prod>`.
 
 .. method:: FuelFabrication.calc_mass_ratios()
 

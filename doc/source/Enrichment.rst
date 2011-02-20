@@ -73,7 +73,7 @@ attributes specific to this class.
 .. attribute:: Enrichment.xP_j
 
     This is the target enrichment of the :attr:`j`th isotope in the 
-    product stream :attr:`IsosOut <bright.FCComp.IsosOut>`.  The
+    product stream :attr:`ms_prod <bright.FCComp.ms_prod>`.  The
     :math:`x^P_j` value is set by the user at initialization or
     run-time.  For typical uranium vectors, this value is about 
     U-235 = 0.05.
@@ -81,7 +81,7 @@ attributes specific to this class.
 .. attribute:: Enrichment.xW_j
 
     This is the target enrichment of the :attr:`j`th isotope in the 
-    waste stream :attr:`IsosTail`.  The :math:`x^W_j` value is set 
+    waste stream :attr:`ms_tail`.  The :math:`x^W_j` value is set 
     by the user at initialization or runtime.  For typical uranium vectors, 
     this value is about U-235 = 0.0025.
 
@@ -127,14 +127,14 @@ attributes specific to this class.
     This value is the number of separative work units (SWU) required
     to produce 1 [kg] of product in the specified cascade.   
 
-.. attribute:: Enrichment.IsosTail
+.. attribute:: Enrichment.ms_tail
 
-    In addition to the :attr:`IsosIn <bright.FCComp.IsosIn>` and 
-    :attr:`IsosOut <bright.FCComp.IsosOut>` mass streams, :class:`Enrichment`
+    In addition to the :attr:`ms_feed <bright.FCComp.ms_feed>` and 
+    :attr:`ms_prod <bright.FCComp.ms_prod>` mass streams, :class:`Enrichment`
     also has a tails or waste stream that is represented by this attribute.
-    The mass of this stream and the :attr:`IsosOut <bright.FCComp.IsosOut>`
+    The mass of this stream and the :attr:`ms_prod <bright.FCComp.ms_prod>`
     product stream should always add up to the mass of the 
-    :attr:`IsosIn <bright.FCComp.IsosIn>` feed stream.
+    :attr:`ms_feed <bright.FCComp.ms_feed>` feed stream.
 
 .. attribute:: Enrichment.params2track
 
@@ -156,12 +156,12 @@ Enrichment Methods
 
     Args:
         * `input` (dict or MassStream): If input is present, it is set as the component's 
-          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary 
+          :attr:`ms_feed <bright.FCComp.ms_feed>`.  If input is a isotopic dictionary 
           (zzaaam keys, float values), this dictionary is first converted into a MassStream 
-          before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
+          before being set as :attr:`ms_feed <bright.FCComp.ms_feed>`.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
+        * `output` (MassStream): :attr:`ms_prod <bright.FCComp.ms_prod>`.
 
 
 .. method:: Enrichment.initialize(enrich_params)
@@ -178,14 +178,14 @@ Enrichment Methods
 
     Here the parameters for :class:`Enrichment` are set::
 
-        self.ParamsIn["MassFeed"]  = self.IsosIn.mass
+        self.ParamsIn["MassFeed"]  = self.ms_feed.mass
         self.ParamsOut["MassFeed"] = 0.0
 
         self.ParamsIn["MassProduct"]  = 0.0
-        self.ParamsOut["MassProduct"] = self.IsosOut.mass
+        self.ParamsOut["MassProduct"] = self.ms_prod.mass
 
         self.ParamsIn["MassTails"]  = 0.0
-        self.ParamsOut["MassTails"] = self.IsosTail.mass
+        self.ParamsOut["MassTails"] = self.ms_tail.mass
 
         self.ParamsIn["N"]  = self.N
         self.ParamsOut["N"] = self.N
@@ -256,7 +256,7 @@ for uranium enrichment.
 .. attribute:: EnrichmentParameters.xP_j
 
     This is the target enrichment of the :attr:`j`th isotope in the 
-    product stream :attr:`IsosOut <bright.FCComp.IsosOut>`.  The
+    product stream :attr:`ms_prod <bright.FCComp.ms_prod>`.  The
     :math:`x^P_j` value is set by the user at initialization or
     run-time.  For typical uranium vectors, this value is about 
     U-235 = 0.05.
@@ -264,7 +264,7 @@ for uranium enrichment.
 .. attribute:: EnrichmentParameters.xW_j
 
     This is the target enrichment of the :attr:`j`th isotope in the 
-    waste stream :attr:`IsosTail`.  The :math:`x^W_j` value is set 
+    waste stream :attr:`ms_tail`.  The :math:`x^W_j` value is set 
     by the user at initialization or runtime.  For typical uranium vectors, 
     this value is about U-235 = 0.0025.
 

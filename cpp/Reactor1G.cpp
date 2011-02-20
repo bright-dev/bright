@@ -305,7 +305,7 @@ void Reactor1G::foldMassWeights()
 
     //First Things First, Let's calculate the atomic weight of the IHM
     double inverseA_IHM = 0.0;
-    for (CompIter iso = IsosIn.comp.begin(); iso != IsosIn.comp.end(); iso++)
+    for (CompIter iso = ms_feed.comp.begin(); iso != ms_feed.comp.end(); iso++)
     {
         //Ensure that the isotope is officially allowed.
         if (0 == I.count(iso->first))
@@ -323,13 +323,13 @@ void Reactor1G::foldMassWeights()
     {
         if ( (key->first) == "IHM")
         {
-            for (CompIter iso = IsosIn.comp.begin(); iso != IsosIn.comp.end(); iso++)
+            for (CompIter iso = ms_feed.comp.begin(); iso != ms_feed.comp.end(); iso++)
             {
                 //Ensure that the isotope is officially allowed.
                 if (0 == I.count(iso->first))
                     continue;
 
-                niF[iso->first] = FuelChemicalForm[key->first] * IsosIn.comp[iso->first];
+                niF[iso->first] = FuelChemicalForm[key->first] * ms_feed.comp[iso->first];
             };
         }
         else
@@ -493,7 +493,7 @@ void Reactor1G::mkMj_F_()
     for (IsoIter j = J.begin(); j != J.end(); j++ )
     {
         Mj_F_[*j].assign( F.size(), 0.0 );
-        for(CompIter i = IsosIn.comp.begin(); i != IsosIn.comp.end(); i++)
+        for(CompIter i = ms_feed.comp.begin(); i != ms_feed.comp.end(); i++)
         {
             if (0 < I.count(i->first))
             {
@@ -509,7 +509,7 @@ void Reactor1G::mkMj_F_()
 void Reactor1G::mkMj_Fd_()
 {
     /** Calculates the output isotopics of Mj(Fd).
-     *  NOTE: Mj(Fd) is effectively the same variable as IsosOut before normalization!
+     *  NOTE: Mj(Fd) is effectively the same variable as ms_prod before normalization!
      */
 
     CompDict tempOut;
@@ -527,7 +527,7 @@ void Reactor1G::mkMj_Fd_()
             tempOut[*j] = bright::SolveLine(Fd, F[fd+1], Mj_F_[*j][fd+1], F[fd], Mj_F_[*j][fd]);
     };
 
-    IsosOut = MassStream(tempOut);	
+    ms_prod = MassStream(tempOut);	
 };
 
 void Reactor1G::calcOutIso()
@@ -542,13 +542,13 @@ void Reactor1G::calcSubStreams()
     //Sets possibly relevant reactor input and output substreams.
 
     //Uranium
-    InU  = IsosIn.get_u();
-    OutU = IsosOut.get_u();
+    InU  = ms_feed.get_u();
+    OutU = ms_prod.get_u();
 
     //TRU
     try 
     {
-        InTRU = IsosIn.get_tru();
+        InTRU = ms_feed.get_tru();
     }
     catch (...)
     {
@@ -557,12 +557,12 @@ void Reactor1G::calcSubStreams()
         InTRU = MassStream(cd, 1.0);
         InTRU.mass = 0.0;
     };
-    OutTRU = IsosOut.get_tru();
+    OutTRU = ms_prod.get_tru();
 
     //Lanthanides
     try
     {
-        InLAN = IsosIn.get_lan();
+        InLAN = ms_feed.get_lan();
     }
     catch (...)
     {
@@ -571,17 +571,17 @@ void Reactor1G::calcSubStreams()
         InLAN  = MassStream(cd, 1.0);
         InLAN.mass = 0.0;
     };
-    OutLAN = IsosOut.get_lan();
+    OutLAN = ms_prod.get_lan();
 
     //Actinides
-    InACT  = IsosIn.get_act();
-    OutACT = IsosOut.get_act();
+    InACT  = ms_feed.get_act();
+    OutACT = ms_prod.get_act();
 };
 
 
 double Reactor1G::calc_deltaR()
 {
-    //Calculates the deltaR of the reactor with the current IsosIn
+    //Calculates the deltaR of the reactor with the current ms_feed
     foldMassWeights();
     deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D");
     return deltaR;
@@ -589,15 +589,15 @@ double Reactor1G::calc_deltaR()
 
 double Reactor1G::calc_deltaR(CompDict cd)
 {
-    //Calculates the deltaR of the reactor with the current IsosIn
-    IsosIn = MassStream (cd);
+    //Calculates the deltaR of the reactor with the current ms_feed
+    ms_feed = MassStream (cd);
     return calc_deltaR();
 };
 
 double Reactor1G::calc_deltaR(MassStream ms)
 {
-    //Calculates the deltaR of the reactor with the current IsosIn
-    IsosIn = ms;
+    //Calculates the deltaR of the reactor with the current ms_feed
+    ms_feed = ms;
     return calc_deltaR();
 };
 
@@ -902,7 +902,7 @@ void Reactor1G::BUd_BisectionMethod()
 void Reactor1G::Run_PNL(double temp_pnl)
 {
     /** Does a reactor run for a specific P_NL.
-     *  Requires that IsosIn be (meaningfully) set.
+     *  Requires that ms_feed be (meaningfully) set.
      *  For use with Calibrate_PNL_2_BUd
      */
 
@@ -1029,13 +1029,13 @@ MassStream Reactor1G::doCalc ()
 
     calcOutIso();
 
-    return IsosOut;
+    return ms_prod;
 };
 
 MassStream Reactor1G::doCalc (CompDict incomp)
 {
     //Finds BUd and output isotopics.
-    IsosIn = MassStream (incomp);
+    ms_feed = MassStream (incomp);
 
     return doCalc();
 };
@@ -1043,7 +1043,7 @@ MassStream Reactor1G::doCalc (CompDict incomp)
 MassStream Reactor1G::doCalc (MassStream instream)
 {
     //Finds BUd and output isotopics.
-    IsosIn = instream;
+    ms_feed = instream;
 
     return doCalc();
 };
