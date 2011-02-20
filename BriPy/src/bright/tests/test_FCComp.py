@@ -11,11 +11,11 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 from mass_stream import MassStream
 
-FCComp = BriPy.FCComp
-bright_config = BriPy.bright_config
+FCComp = bright.FCComp
+bright_config = bright.bright_config
 
 class TestFCCompConstructors(TestCase):
     """Tests that the fuel cycle component constructors work."""

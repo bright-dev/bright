@@ -11,12 +11,12 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 import mass_stream
 
-Storage = BriPy.Storage
+Storage = bright.Storage
 MassStream = mass_stream.MassStream
-bright_config = BriPy.bright_config
+bright_config = bright.bright_config
 
 class TestStorageConstructors(TestCase):
     """Tests that the storage component constructors work."""

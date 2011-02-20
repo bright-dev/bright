@@ -11,11 +11,11 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 import mass_stream
 
-bright_config = BriPy.bright_config
-Reprocess = BriPy.Reprocess
+bright_config = bright.bright_config
+Reprocess = bright.Reprocess
 MassStream = mass_stream.MassStream
 
 class TestReprocessConstructors(TestCase):

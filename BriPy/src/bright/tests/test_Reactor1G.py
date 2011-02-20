@@ -13,16 +13,16 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 import mass_stream
 
-bright_config = BriPy.bright_config
+bright_config = bright.bright_config
 MassStream = mass_stream.MassStream
-FluencePoint = BriPy.FluencePoint
-ReactorParameters = BriPy.ReactorParameters
-Reactor1G = BriPy.Reactor1G
+FluencePoint = bright.FluencePoint
+ReactorParameters = bright.ReactorParameters
+Reactor1G = bright.Reactor1G
 
-default_rp = BriPy.ReactorParameters()
+default_rp = bright.ReactorParameters()
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
 default_rp.FuelForm = {"IHM": 1.0, "O16": 2.0}
@@ -358,7 +358,7 @@ class TestReactor1GBasicDataAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G()
         cls.r1g.loadLib(libfile)
 
@@ -429,7 +429,7 @@ class TestReactor1GCalculatedWeightAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -484,7 +484,7 @@ class TestReactor1GCalculatedDataAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -573,7 +573,7 @@ class TestReactor1GDischargeAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -606,7 +606,7 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -658,7 +658,7 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -712,7 +712,7 @@ class TestReactor1GInitializationMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -761,7 +761,7 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -802,7 +802,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -861,7 +861,7 @@ class TestReactor1GBurnupMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -914,7 +914,7 @@ class TestReactor1GBurnupMethods2(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -939,7 +939,7 @@ class TestReactor1GBurnupMethods3(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -965,7 +965,7 @@ class TestReactor1GBurnupMethods4(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})
@@ -990,7 +990,7 @@ class TestReactor1GLatticeMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.IsosIn = MassStream({922350: 0.5, 922380: 0.5})

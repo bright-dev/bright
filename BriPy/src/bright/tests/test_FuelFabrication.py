@@ -11,18 +11,18 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 import mass_stream
 import isoname
 
-Reactor1G = BriPy.Reactor1G
-FluencePoint = BriPy.FluencePoint
-ReactorParameters = BriPy.ReactorParameters
+Reactor1G = bright.Reactor1G
+FluencePoint = bright.FluencePoint
+ReactorParameters = bright.ReactorParameters
 MassStream = mass_stream.MassStream
-FuelFabrication = BriPy.FuelFabrication
-bright_config = BriPy.bright_config
+FuelFabrication = bright.FuelFabrication
+bright_config = bright.bright_config
 
-default_rp = BriPy.ReactorParameters()
+default_rp = bright.ReactorParameters()
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
 default_rp.FuelForm = {"IHM": 1.0, "O16": 2.0}
@@ -182,7 +182,7 @@ class TestFuelFabricationAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
 
         r1g = Reactor1G(reactor_parameters=default_rp)
         r1g.loadLib(libfile)
@@ -236,7 +236,7 @@ class TestFuelFabricationMethodss(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        BriPy.load_isos2track_hdf5(libfile)
+        bright.load_isos2track_hdf5(libfile)
 
         r1g = Reactor1G(reactor_parameters=default_rp)
         r1g.loadLib(libfile)

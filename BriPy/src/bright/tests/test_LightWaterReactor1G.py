@@ -11,13 +11,13 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 import mass_stream
 
 
-LightWaterReactor1G = BriPy.LightWaterReactor1G
+LightWaterReactor1G = bright.LightWaterReactor1G
 MassStream = mass_stream.MassStream
-bright_config = BriPy.bright_config
+bright_config = bright.bright_config
 
 def general_teardown():
     for f in os.listdir('.'):
@@ -36,7 +36,7 @@ class TestLightWaterReactorConstructors(TestCase):
         general_teardown()
 
     def test_LWRDefaults(self):
-        lwrd = BriPy.LWRDefaults()
+        lwrd = bright.LWRDefaults()
         assert_equal(lwrd.batches, 3)
         assert_equal(lwrd.flux, 4.0*(10.0**14))
         assert_equal(lwrd.FuelForm["IHM"], 1.0)
@@ -134,7 +134,7 @@ class TestLightWaterReactorConstructors(TestCase):
         assert_equal(lwr.S_T, 289.0)
 
     def test_LightWaterReactor1G_4(self):
-        rp = BriPy.LWRDefaults()
+        rp = bright.LWRDefaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(reactor_parameters=rp)
         assert_equal(lwr.name, '')
@@ -160,7 +160,7 @@ class TestLightWaterReactorConstructors(TestCase):
         assert_equal(lwr.S_T, 289.0)
 
     def test_LightWaterReactor1G_5(self):
-        rp = BriPy.LWRDefaults()
+        rp = bright.LWRDefaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(reactor_parameters=rp, name='lwr')
         assert_equal(lwr.name, 'lwr')
@@ -187,7 +187,7 @@ class TestLightWaterReactorConstructors(TestCase):
 
     def test_LightWaterReactor1G_6(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        rp = BriPy.LWRDefaults()
+        rp = bright.LWRDefaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(lwr.libfile, lf)
@@ -215,7 +215,7 @@ class TestLightWaterReactorConstructors(TestCase):
 
     def test_LightWaterReactor1G_7(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        rp = BriPy.LWRDefaults()
+        rp = bright.LWRDefaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
         assert_equal(lwr.libfile, lf)
@@ -264,8 +264,8 @@ class TestLightWaterReactor1GMethods(TestCase):
 
     def test_setParams(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        BriPy.load_isos2track_hdf5(lf)
-        rp = BriPy.LWRDefaults()
+        bright.load_isos2track_hdf5(lf)
+        rp = bright.LWRDefaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
         lwr.doCalc(MassStream({922350: 0.05, 922380:0.95}))

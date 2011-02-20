@@ -10,7 +10,7 @@ import os
 import warnings
 import tables as tb
 import numpy as np
-import BriPy
+import bright
 
 
 class TestBright(TestCase):
@@ -20,43 +20,43 @@ class TestBright(TestCase):
         current = os.getenv("BRIGHT_DATA")
         os.environ["BRIGHT_DATA"] = "/foo/bar"
         new = os.getenv("BRIGHT_DATA")
-        BriPy.BrightStart()
+        bright.BrightStart()
         assert_equal(new, "/foo/bar")
         os.environ["BRIGHT_DATA"] = current
 
     def test_isos2track(self):
-        old_isolist = BriPy.isos2track()
-        new_isolist = BriPy.mixed_2_zzaaam_List([92235, "H1"])
-        BriPy.isos2track(new_isolist)
-        assert_equal(BriPy.isos2track(), [10010, 922350])
-        BriPy.isos2track(old_isolist)
+        old_isolist = bright.isos2track()
+        new_isolist = bright.mixed_2_zzaaam_List([92235, "H1"])
+        bright.isos2track(new_isolist)
+        assert_equal(bright.isos2track(), [10010, 922350])
+        bright.isos2track(old_isolist)
 
     def test_verbosity(self):
-        old_verbosity = BriPy.verbosity()
-        BriPy.verbosity(100)
-        assert_equal(BriPy.verbosity(), 100)
-        BriPy.verbosity(old_verbosity)
+        old_verbosity = bright.verbosity()
+        bright.verbosity(100)
+        assert_equal(bright.verbosity(), 100)
+        bright.verbosity(old_verbosity)
 
     def test_write_hdf5(self):
-        old_write = BriPy.write_hdf5()
-        BriPy.write_hdf5(False)
-        assert_false(BriPy.write_hdf5())
-        BriPy.write_hdf5(1)
-        assert_true(BriPy.write_hdf5())
-        BriPy.write_hdf5(old_write)
+        old_write = bright.write_hdf5()
+        bright.write_hdf5(False)
+        assert_false(bright.write_hdf5())
+        bright.write_hdf5(1)
+        assert_true(bright.write_hdf5())
+        bright.write_hdf5(old_write)
 
     def test_write_text(self):
-        old_write = BriPy.write_text()
-        BriPy.write_text(False)
-        assert_false(BriPy.write_text())
-        BriPy.write_text(1)
-        assert_true(BriPy.write_text())
-        BriPy.write_text(old_write)
+        old_write = bright.write_text()
+        bright.write_text(False)
+        assert_false(bright.write_text())
+        bright.write_text(1)
+        assert_true(bright.write_text())
+        bright.write_text(old_write)
         
     def test_output_filename(self):
-        assert_equal( BriPy.output_filename(), 'fuel_cycle.h5')
-        BriPy.output_filename('new_name.h5')
-        assert_equal( BriPy.output_filename(), 'new_name.h5')
+        assert_equal( bright.output_filename(), 'fuel_cycle.h5')
+        bright.output_filename('new_name.h5')
+        assert_equal( bright.output_filename(), 'new_name.h5')
         
 
 class TestLoadFromHDF5(TestCase):
@@ -74,32 +74,32 @@ class TestLoadFromHDF5(TestCase):
         os.remove('isos.h5')
 
     def test_load_isos2track_hdf5_1(self):
-        old_isos = BriPy.isos2track()
-        BriPy.isos2track([80160])
-        BriPy.load_isos2track_hdf5('isos.h5')
-        assert_equal(BriPy.isos2track(), [10010, 80160, 922350, 922380])
-        BriPy.isos2track(old_isos)
+        old_isos = bright.isos2track()
+        bright.isos2track([80160])
+        bright.load_isos2track_hdf5('isos.h5')
+        assert_equal(bright.isos2track(), [10010, 80160, 922350, 922380])
+        bright.isos2track(old_isos)
 
     def test_load_isos2track_hdf5_2(self):
-        old_isos = BriPy.isos2track()
-        BriPy.isos2track([80160])
-        BriPy.load_isos2track_hdf5('isos.h5', '/NotIsos')
-        assert_equal(BriPy.isos2track(), [10010, 80160, 922350, 922380])
-        BriPy.isos2track(old_isos)
+        old_isos = bright.isos2track()
+        bright.isos2track([80160])
+        bright.load_isos2track_hdf5('isos.h5', '/NotIsos')
+        assert_equal(bright.isos2track(), [10010, 80160, 922350, 922380])
+        bright.isos2track(old_isos)
 
     def test_load_isos2track_hdf5_3(self):
-        old_isos = BriPy.isos2track()
-        BriPy.isos2track([80160])
-        BriPy.load_isos2track_hdf5('isos.h5', '', True)
-        assert_equal(BriPy.isos2track(), [10010, 922350, 922380])
-        BriPy.isos2track(old_isos)
+        old_isos = bright.isos2track()
+        bright.isos2track([80160])
+        bright.load_isos2track_hdf5('isos.h5', '', True)
+        assert_equal(bright.isos2track(), [10010, 922350, 922380])
+        bright.isos2track(old_isos)
 
     def test_load_isos2track_hdf5_4(self):
-        old_isos = BriPy.isos2track()
-        BriPy.isos2track([80160])
-        BriPy.load_isos2track_hdf5('isos.h5', '/NotIsos', True)
-        assert_equal(BriPy.isos2track(), [10010, 922350, 922380])
-        BriPy.isos2track(old_isos)
+        old_isos = bright.isos2track()
+        bright.isos2track([80160])
+        bright.load_isos2track_hdf5('isos.h5', '/NotIsos', True)
+        assert_equal(bright.isos2track(), [10010, 922350, 922380])
+        bright.isos2track(old_isos)
 
 class TestLoadFromText(TestCase):
     """Tests isos2track can be loaded from a text file."""
@@ -114,18 +114,18 @@ class TestLoadFromText(TestCase):
         os.remove('isos.txt')
 
     def test_load_isos2track_text_1(self):
-        old_isos = BriPy.isos2track()
-        BriPy.isos2track([80160])
-        BriPy.load_isos2track_text('isos.txt')
-        assert_equal(BriPy.isos2track(), [10010, 80160, 922350, 922380])
-        BriPy.isos2track(old_isos)
+        old_isos = bright.isos2track()
+        bright.isos2track([80160])
+        bright.load_isos2track_text('isos.txt')
+        assert_equal(bright.isos2track(), [10010, 80160, 922350, 922380])
+        bright.isos2track(old_isos)
 
     def test_load_isos2track_text_2(self):
-        old_isos = BriPy.isos2track()
-        BriPy.isos2track([80160])
-        BriPy.load_isos2track_text('isos.txt', True)
-        assert_equal(BriPy.isos2track(), [10010, 922350, 922380])
-        BriPy.isos2track(old_isos)
+        old_isos = bright.isos2track()
+        bright.isos2track([80160])
+        bright.load_isos2track_text('isos.txt', True)
+        assert_equal(bright.isos2track(), [10010, 922350, 922380])
+        bright.isos2track(old_isos)
 
 if __name__ == "__main__":
     nose.main()

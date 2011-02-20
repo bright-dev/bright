@@ -11,13 +11,13 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 import mass_stream
 
-Enrichment = BriPy.Enrichment
+Enrichment = bright.Enrichment
 MassStream = mass_stream.MassStream
-EnrichmentParameters = BriPy.EnrichmentParameters
-bright_config = BriPy.bright_config
+EnrichmentParameters = bright.EnrichmentParameters
+bright_config = bright.bright_config
 
 def general_teardown():
     for f in os.listdir('.'):
@@ -83,7 +83,7 @@ class TestEnrichmentParameters(TestCase):
         assert_equal(ep.xW_j, 0.0025)
 
     def test_UraniumEnrichmentDefualts(self):
-        ep = BriPy.UraniumEnrichmentDefaults()
+        ep = bright.UraniumEnrichmentDefaults()
         assert_equal(ep.alpha_0, 1.05)
         assert_equal(ep.Mstar_0, 236.5)
         assert_equal(ep.j, 922350)
@@ -114,7 +114,7 @@ class TestEnrichmentConstructors(TestCase):
             "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
 
     def test_Enrichment_3(self):
-        ep = BriPy.UraniumEnrichmentDefaults()
+        ep = bright.UraniumEnrichmentDefaults()
         ep.xP_j = 0.1
         e = Enrichment(enrich_params=ep)
         assert_equal(e.name, '')
@@ -130,7 +130,7 @@ class TestEnrichmentConstructors(TestCase):
         assert_equal(e.xW_j, 0.0025)
 
     def test_Enrichment_4(self):
-        ep = BriPy.UraniumEnrichmentDefaults()
+        ep = bright.UraniumEnrichmentDefaults()
         ep.j = 922360
         e = Enrichment(enrich_params=ep, name='e')
         assert_equal(e.name, 'e')
@@ -349,7 +349,7 @@ class TestEnrichmentBenchmarks(TestCase):
         bright_config.verbosity = 0
 
     def test_SampleFeed(self):
-        ep = BriPy.UraniumEnrichmentDefaults()
+        ep = bright.UraniumEnrichmentDefaults()
         ep.xP_j = 0.06
         e = Enrichment(enrich_params=ep, name='e')
         ms = MassStream({
@@ -378,7 +378,7 @@ class TestEnrichmentBenchmarks(TestCase):
         assert_almost_equal(e.SWUperProduct / 8.0009178634384011,  1.0, 5)
 
     def test_NU(self):
-        ep = BriPy.UraniumEnrichmentDefaults()
+        ep = bright.UraniumEnrichmentDefaults()
         ep.xP_j = 0.05
         e = Enrichment(enrich_params=ep, name='e')
         ms = MassStream({
@@ -405,7 +405,7 @@ class TestEnrichmentBenchmarks(TestCase):
         assert_almost_equal(e.SWUperProduct / 7.6936220127616908,  1.0, 5)
 
     def test_VISION(self):
-        ep = BriPy.UraniumEnrichmentDefaults()
+        ep = bright.UraniumEnrichmentDefaults()
         ep.xP_j = 0.055
         e = Enrichment(enrich_params=ep, name='e')
         ms = MassStream({

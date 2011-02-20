@@ -11,12 +11,12 @@ import warnings
 import tables as tb
 import numpy as np
 
-import BriPy
+import bright
 import mass_stream
 
-FastReactor1G = BriPy.FastReactor1G
+FastReactor1G = bright.FastReactor1G
 MassStream = mass_stream.MassStream
-bright_config = BriPy.bright_config
+bright_config = bright.bright_config
 
 
 def general_teardown():
@@ -36,7 +36,7 @@ class TestFastReactorConstructors(TestCase):
         general_teardown()
 
     def test_FRDefaults(self):
-        frd = BriPy.FRDefaults()
+        frd = bright.FRDefaults()
         assert_equal(frd.batches, 3)
         assert_equal(frd.flux, 2.0*(10.0**15))
         assert_equal(frd.FuelForm["IHM"], 1.0)
@@ -118,7 +118,7 @@ class TestFastReactorConstructors(TestCase):
         assert_equal(fr.S_T, 163.0)
 
     def test_FastReactor1G_4(self):
-        rp = BriPy.FRDefaults()
+        rp = bright.FRDefaults()
         rp.BUt = 140.0
         fr = FastReactor1G(reactor_parameters=rp)
         assert_equal(fr.name, '')
@@ -140,7 +140,7 @@ class TestFastReactorConstructors(TestCase):
         assert_equal(fr.S_T, 163.0)
 
     def test_FastReactor1G_5(self):
-        rp = BriPy.FRDefaults()
+        rp = bright.FRDefaults()
         rp.BUt = 140.0
         fr = FastReactor1G(reactor_parameters=rp, name='fr')
         assert_equal(fr.name, 'fr')
@@ -163,7 +163,7 @@ class TestFastReactorConstructors(TestCase):
 
     def test_FastReactor1G_6(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        rp = BriPy.FRDefaults()
+        rp = bright.FRDefaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(fr.libfile, lf)
@@ -187,7 +187,7 @@ class TestFastReactorConstructors(TestCase):
 
     def test_FastReactor1G_7(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        rp = BriPy.FRDefaults()
+        rp = bright.FRDefaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
         assert_equal(fr.libfile, lf)
@@ -232,8 +232,8 @@ class TestFastReactor1GMethods(TestCase):
 
     def test_setParams(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        BriPy.load_isos2track_hdf5(lf)
-        rp = BriPy.FRDefaults()
+        bright.load_isos2track_hdf5(lf)
+        rp = bright.FRDefaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
         fr.doCalc(MassStream({922350: 0.30, 922380: 0.70}))
