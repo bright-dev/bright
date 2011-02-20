@@ -320,3 +320,18 @@ cdef extern from "../Reactor1G.h":
         void calcZetaPlanar()
         void calcZetaSpherical()
         void calcZetaCylindrical()
+
+
+
+
+cdef extern from "../LightWaterReactor1G.h":
+
+    ReactorParameters fillLWRDefaults()
+
+    cdef cppclass LightWaterReactor1G(Reactor1G):
+        LightWaterReactor1G()
+        LightWaterReactor1G(std.string, std.string)
+        LightWaterReactor1G(ReactorParameters, std.string)
+        LightWaterReactor1G(std.string, ReactorParameters, std.string)
+
+        void setParams()

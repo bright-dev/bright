@@ -12,9 +12,12 @@ import tables as tb
 import numpy as np
 
 import BriPy
-LightWaterReactor1G = BriPy.LightWaterReactor1G
-MassStream = BriPy.MassStream
+import mass_stream
 
+
+LightWaterReactor1G = BriPy.LightWaterReactor1G
+MassStream = mass_stream.MassStream
+bright_config = BriPy.bright_config
 
 def general_teardown():
     for f in os.listdir('.'):
@@ -57,7 +60,7 @@ class TestLightWaterReactorConstructors(TestCase):
     def test_LightWaterReactor1G_1(self):
         lwr = LightWaterReactor1G()
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -80,10 +83,10 @@ class TestLightWaterReactorConstructors(TestCase):
 
     def test_LightWaterReactor1G_2(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        lwr = LightWaterReactor1G(lf)
+        lwr = LightWaterReactor1G(libfile=lf)
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -106,10 +109,10 @@ class TestLightWaterReactorConstructors(TestCase):
 
     def test_LightWaterReactor1G_3(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-        lwr = LightWaterReactor1G(lf, "lwr")
+        lwr = LightWaterReactor1G(libfile=lf, name="lwr")
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, 'lwr')
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -133,9 +136,9 @@ class TestLightWaterReactorConstructors(TestCase):
     def test_LightWaterReactor1G_4(self):
         rp = BriPy.LWRDefaults()
         rp.BUt = 50.0
-        lwr = LightWaterReactor1G(rp)
+        lwr = LightWaterReactor1G(reactor_parameters=rp)
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -159,9 +162,9 @@ class TestLightWaterReactorConstructors(TestCase):
     def test_LightWaterReactor1G_5(self):
         rp = BriPy.LWRDefaults()
         rp.BUt = 50.0
-        lwr = LightWaterReactor1G(rp, 'lwr')
+        lwr = LightWaterReactor1G(reactor_parameters=rp, name='lwr')
         assert_equal(lwr.name, 'lwr')
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -186,10 +189,10 @@ class TestLightWaterReactorConstructors(TestCase):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
         rp = BriPy.LWRDefaults()
         rp.BUt = 50.0
-        lwr = LightWaterReactor1G(lf, rp)
+        lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp)
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, '')
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -214,10 +217,10 @@ class TestLightWaterReactorConstructors(TestCase):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
         rp = BriPy.LWRDefaults()
         rp.BUt = 50.0
-        lwr = LightWaterReactor1G(lf, rp, 'lwr')
+        lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
         assert_equal(lwr.libfile, lf)
         assert_equal(lwr.name, 'lwr')
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
         assert_equal(lwr.B, 3)
         assert_equal(lwr.phi, 4.0*(10.0**14))
         assert_equal(lwr.FuelChemicalForm["IHM"], 1.0)
@@ -248,9 +251,9 @@ class TestLightWaterReactor1GAttributes(TestCase):
 
     def test_params2track(self):
         lwr = LightWaterReactor1G()
-        assert_equal(lwr.params2track, ["ACT", "BUd", "FP", "LAN", "TRU", "U"])
-        lwr.params2track = ["Mass"]
-        assert_equal(lwr.params2track, ["Mass"])
+        assert_equal(lwr.params2track, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
+        lwr.params2track = set(["Mass"])
+        assert_equal(lwr.params2track, set(["Mass"]))
 
 class TestLightWaterReactor1GMethods(TestCase):
     """Tests that the fuel cycle component methods work."""
@@ -264,7 +267,7 @@ class TestLightWaterReactor1GMethods(TestCase):
         BriPy.load_isos2track_hdf5(lf)
         rp = BriPy.LWRDefaults()
         rp.BUt = 50.0
-        lwr = LightWaterReactor1G(lf, rp, 'lwr')
+        lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
         lwr.doCalc(MassStream({922350: 0.05, 922380:0.95}))
         lwr.setParams()
         assert_equal(lwr.ParamsIn["BUd"],  0.0)
