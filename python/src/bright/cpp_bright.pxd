@@ -10,7 +10,7 @@ cimport mass_stream
 cdef extern from "../bright.h" namespace "bright":
     std.string BRIGHT_DATA
 
-    void BrightStart()
+    void bright_start()
 
 
 cdef extern from "../FCComp.h" namespace "FCComps":

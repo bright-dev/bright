@@ -30,7 +30,7 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
 ====================================
 .. currentmodule:: bright
 
-.. function:: BrightStart()
+.. function:: bright_start()
 
     This function primarily serves to grab the environmental variable `BRIGHT_DATA` and set its value 
     within the extension module.  In Python, though not in C, `BRIGHT_DATA` is set automatically 
@@ -43,11 +43,11 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
         import bright
 
         os.putenv('BRIGHT_DATA', 'some/other/dir/')
-        bright.BrightStart()
+        bright.bright_start()
 
         #Continue with the fuel cycle code...
 
-    The need for a `BrightStart()`-like function is that it ensures (in a language independent way) that Bright
+    The need for a `bright_start()`-like function is that it ensures (in a language independent way) that Bright
     can find its common data libraries that hold information on common cross-section data, half-lives, *etc*.
 
 

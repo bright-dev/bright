@@ -19,11 +19,11 @@ bright_config = bright.bright_config
 class TestBright(TestCase):
     """Tests that the Bright general functions work."""
 
-    def test_BrightStart(self):
+    def test_bright_start(self):
         current = os.getenv("BRIGHT_DATA")
         os.environ["BRIGHT_DATA"] = "/foo/bar"
         new = os.getenv("BRIGHT_DATA")
-        bright.BrightStart()
+        bright.bright_start()
         assert_equal(new, "/foo/bar")
         os.environ["BRIGHT_DATA"] = current
 

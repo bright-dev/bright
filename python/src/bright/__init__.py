@@ -27,4 +27,4 @@ else:
         if BreakOut:
             break
 
-BrightStart()
+bright_start()

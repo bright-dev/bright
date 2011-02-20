@@ -34,21 +34,19 @@ import bright_data
 ### bright Configuration namespace ###
 ######################################
 
-# Specifiy the BRIGHT_DATA directory
-cpdef PyBrightStart():
+# Expose the C-code start up routine
+def bright_start():
+    # Specifiy the BRIGHT_DATA directory
     if "BRIGHT_DATA" not in os.environ:
         bd = os.path.split(bright_data.__file__)
         os.environ['BRIGHT_DATA'] = os.path.join(*(bd[0], ''))
 
-
-# Expose the C-code start up routine
-def BrightStart():
-    cpp_bright.BrightStart()
+    # Call the C-version of bright_start
+    cpp_bright.bright_start()
 
 
 # Run the appropriate start-up routines
-PyBrightStart()
-BrightStart()
+bright_start()
 
 
 #######################################
