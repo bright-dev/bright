@@ -210,13 +210,13 @@ class TestReactor1GConstructors(TestCase):
         assert_equal(r1g.track_params, set())
         assert_equal(r1g.B, 0)
         assert_equal(r1g.phi, 0.0)
-        assert_equal(r1g.FuelChemicalForm, {})
-        assert_equal(r1g.CoolantChemicalForm, {})
+        assert_equal(r1g.fuel_chemical_form, {})
+        assert_equal(r1g.coolant_chemical_form, {})
         assert_equal(r1g.rhoF, 0.0)
         assert_equal(r1g.rhoC, 0.0)
         assert_equal(r1g.P_NL, 0.0)
-        assert_equal(r1g.TargetBU, 0.0)
-        assert_false(r1g.useZeta)
+        assert_equal(r1g.target_BU, 0.0)
+        assert_false(r1g.use_zeta)
         assert_equal(r1g.Lattice, '')
         assert_false(r1g.H_XS_Rescale)
         assert_equal(r1g.r, 0.0)
@@ -231,13 +231,13 @@ class TestReactor1GConstructors(TestCase):
         assert_equal(r1g.track_params, set(["Mass"]))
         assert_equal(r1g.B, 0)
         assert_almost_equal(r1g.phi, 0.0)
-        assert_equal(r1g.FuelChemicalForm, {})
-        assert_equal(r1g.CoolantChemicalForm, {})
+        assert_equal(r1g.fuel_chemical_form, {})
+        assert_equal(r1g.coolant_chemical_form, {})
         assert_almost_equal(r1g.rhoF, 0.0)
         assert_almost_equal(r1g.rhoC, 0.0)
         assert_almost_equal(r1g.P_NL, 0.0)
-        assert_almost_equal(r1g.TargetBU, 0.0)
-        assert_false(r1g.useZeta)
+        assert_almost_equal(r1g.target_BU, 0.0)
+        assert_false(r1g.use_zeta)
         assert_equal(r1g.Lattice, '')
         assert_false(r1g.H_XS_Rescale)
         assert_almost_equal(r1g.r, 0.0)
@@ -264,17 +264,17 @@ class TestReactor1GParameterAttributes(TestCase):
         r1g.phi = 2*(10**14)
         assert_equal(r1g.phi, 2*(10**14))
 
-    def test_FuelChemicalForm(self):
+    def test_fuel_chemical_form(self):
         r1g = Reactor1G()
-        r1g.FuelChemicalForm = {"IHM": 1.0, "O16": 2.0}
-        assert_equal(r1g.FuelChemicalForm, {"IHM": 1.0, "O16": 2.0})
+        r1g.fuel_chemical_form = {"IHM": 1.0, "O16": 2.0}
+        assert_equal(r1g.fuel_chemical_form, {"IHM": 1.0, "O16": 2.0})
 
-    def test_CoolantChemicalForm(self):
+    def test_coolant_chemical_form(self):
         r1g = Reactor1G()
-        r1g.CoolantChemicalForm = {"H1": 2.0, "O16": 1.0,
+        r1g.coolant_chemical_form = {"H1": 2.0, "O16": 1.0,
             "B10": 0.199 * 550 * 10.0**-6, 
             "B11": 0.801 * 550 * 10.0**-6}
-        assert_equal(r1g.CoolantChemicalForm, {"H1": 2.0, "O16": 1.0,
+        assert_equal(r1g.coolant_chemical_form, {"H1": 2.0, "O16": 1.0,
             "B10": 0.199 * 550 * 10.0**-6,
             "B11": 0.801 * 550 * 10.0**-6})
 
@@ -293,15 +293,15 @@ class TestReactor1GParameterAttributes(TestCase):
         r1g.P_NL = 0.98
         assert_equal(r1g.P_NL, 0.98)
 
-    def test_TargetBU(self):
+    def test_target_BU(self):
         r1g = Reactor1G()
-        r1g.TargetBU = 50.0
-        assert_equal(r1g.TargetBU, 50.0)
+        r1g.target_BU = 50.0
+        assert_equal(r1g.target_BU, 50.0)
 
-    def test_useZeta(self):
+    def test_use_zeta(self):
         r1g = Reactor1G()
-        r1g.useZeta = True
-        assert_true(r1g.useZeta)
+        r1g.use_zeta = True
+        assert_true(r1g.use_zeta)
 
     def test_Lattice(self):
         r1g = Reactor1G()
@@ -533,7 +533,7 @@ class TestReactor1GCalculatedDataAttributes(TestCase):
                     tmp_dC = tmp_dC + (self.r1g.miC[i] * di_F_[i][f] * (1.36927-(0.01119*self.r1g.BU_F_[f])) )
                 else:
                     tmp_dC = tmp_dC + (self.r1g.miC[i] * di_F_[i][f])
-            if self.r1g.useZeta:
+            if self.r1g.use_zeta:
                 tmp_dC = tmp_dC * zeta_F_[f]
             assert_almost_equal(dC_F_[f] / tmp_dC, 1.0, 4)
 
@@ -648,7 +648,7 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
 
     def test_deltaR(self):
         self.r1g.calc_deltaR()
-        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
 
@@ -727,13 +727,13 @@ class TestReactor1GInitializationMethods(TestCase):
         self.r1g.initialize(rp)
         assert_equal(self.r1g.B, 0)
         assert_equal(self.r1g.phi, 0.0)
-        assert_equal(self.r1g.FuelChemicalForm, {})
-        assert_equal(self.r1g.CoolantChemicalForm, {})
+        assert_equal(self.r1g.fuel_chemical_form, {})
+        assert_equal(self.r1g.coolant_chemical_form, {})
         assert_equal(self.r1g.rhoF, 0.0)
         assert_equal(self.r1g.rhoC, 0.0)
         assert_equal(self.r1g.P_NL, 0.0)
-        assert_equal(self.r1g.TargetBU, 0.0)
-        assert_false(self.r1g.useZeta)
+        assert_equal(self.r1g.target_BU, 0.0)
+        assert_false(self.r1g.use_zeta)
         assert_equal(self.r1g.Lattice, '')
         assert_false(self.r1g.H_XS_Rescale)
         assert_equal(self.r1g.r, 0.0)
@@ -838,18 +838,18 @@ class TestReactor1GBasicCalculationMethods(TestCase):
 
     def test_deltaR1(self):
         self.r1g.calc_deltaR()
-        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
     def test_deltaR2(self):
         self.r1g.calc_deltaR({922350: 0.5, 922380: 0.5, 80160: 0.125})
-        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
     def test_deltaR3(self):
         ms = MassStream({922350: 0.5, 922380: 0.5, 80160: 0.125})
         self.r1g.calc_deltaR(ms)
-        tmp_deltaR = self.r1g.batchAve(self.r1g.TargetBU, "p") - self.r1g.batchAve(self.r1g.TargetBU, "d")
+        tmp_deltaR = self.r1g.batchAve(self.r1g.target_BU, "p") - self.r1g.batchAve(self.r1g.target_BU, "d")
         assert_almost_equal(self.r1g.deltaR / tmp_deltaR, 1.0)
 
 
@@ -978,7 +978,7 @@ class TestReactor1GBurnupMethods4(TestCase):
     def test_Calibrate_PNL_2_BUd(self):
         self.r1g.Calibrate_PNL_2_BUd()
         assert_not_equal(self.r1g.P_NL, 0.98)
-        assert_almost_equal(self.r1g.BUd / self.r1g.TargetBU, 1.0, 5)
+        assert_almost_equal(self.r1g.BUd / self.r1g.target_BU, 1.0, 5)
         
 
 

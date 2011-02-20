@@ -63,7 +63,7 @@ protected:
     void addchains (IsoChain);				//Get the decay chain for a mother isotope
     void addchains (int);						//Get the decay chain for a mother isotope
 
-    void printChain (IsoChain);
+    void print_chain (IsoChain);
 
 public:
     //Storage Constructors	

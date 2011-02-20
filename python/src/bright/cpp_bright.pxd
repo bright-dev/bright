@@ -215,13 +215,13 @@ cdef extern from "../Reactor1G.h":
         # Attributes
         int B
         double phi
-        map[std.string, double] FuelChemicalForm
-        map[std.string, double] CoolantChemicalForm
+        map[std.string, double] fuel_chemical_form
+        map[std.string, double] coolant_chemical_form
         double rhoF
         double rhoC
         double P_NL
-        double TargetBU
-        bint useZeta
+        double target_BU
+        bint use_zeta
         std.string Lattice
         bint H_XS_Rescale
 

@@ -106,13 +106,13 @@ public:
     //Public data
     int B; 								//Total number of fuel loading batches
     double phi;							//Flux used for Fluence
-    std::map<std::string, double> FuelChemicalForm;			//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
-    std::map<std::string, double> CoolantChemicalForm;		//Same a fuel chemical form but for coolant.  Should not have "IHM"
+    std::map<std::string, double> fuel_chemical_form;			//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+    std::map<std::string, double> coolant_chemical_form;		//Same a fuel chemical form but for coolant.  Should not have "IHM"
     double rhoF;							//Fuel Density
     double rhoC; 							//Coolant Density
     double P_NL; 							//Non-Leakage Probability
-    double TargetBU; 						//Target Discharge Burnup, only used for graphing inside of this component
-    bool useZeta; 							//Boolean value on whether or not the disadvantage factor should be used
+    double target_BU; 						//Target Discharge Burnup, only used for graphing inside of this component
+    bool use_zeta; 							//Boolean value on whether or not the disadvantage factor should be used
     std::string Lattice;						//Lattice Type (Planar || Spherical || Cylindrical)
     bool H_XS_Rescale;						//Rescale the Hydrogen-1 XS?
 
@@ -163,7 +163,7 @@ public:
     MassStream OutLAN; 						//Output Lanthinide MassStream
     MassStream OutACT; 						//Output Actinide MassStream
 
-    double deltaR;                          // The production rate subtracted by the destruction rate at TargetBU
+    double deltaR;                          // The production rate subtracted by the destruction rate at target_BU
     double TruCR;							//Transuranic Conversion Ratio
 
     Data_F_ SigmaFa_F_;						//Fuel Macro Absorption XS, Sigma^F_a(F)

@@ -163,7 +163,7 @@ void FuelFabrication::calc_mass_ratios()
     mass_weights_out[key_b] = 0.0;
     core_input = calc_core_input();
     dR_guess = reactor.calc_deltaR( core_input );
-    k_a = reactor.batchAveK( reactor.TargetBU );
+    k_a = reactor.batchAveK( reactor.target_BU );
     sign_a = (1.0 - k_a) / fabs(1.0 - k_a);
 
     // Find bound for All Mass Stream B
@@ -171,7 +171,7 @@ void FuelFabrication::calc_mass_ratios()
     mass_weights_out[key_b] = top_up_mass_space;
     core_input = calc_core_input();
     dR_guess = reactor.calc_deltaR( core_input );
-    k_b = reactor.batchAveK( reactor.TargetBU );
+    k_b = reactor.batchAveK( reactor.target_BU );
     sign_b = (1.0 - k_b) / fabs(1.0 - k_b);
 
     // Ensure calculation is possible
@@ -190,7 +190,7 @@ void FuelFabrication::calc_mass_ratios()
     double k;
     double dMass;
     
-    k = reactor.batchAveK( reactor.TargetBU );
+    k = reactor.batchAveK( reactor.target_BU );
     n = 0;
     if (0 < FCComps::verbosity)
         std::cout << n << ") " << k << " "; 
@@ -205,7 +205,7 @@ void FuelFabrication::calc_mass_ratios()
         //Recalculate core parameters for new masses guess
         core_input = calc_core_input();
         dR_guess = reactor.calc_deltaR( core_input );
-        k = reactor.batchAveK( reactor.TargetBU );
+        k = reactor.batchAveK( reactor.target_BU );
         n = n+1;
         if (0 < FCComps::verbosity)
             std::cout << k << " ";

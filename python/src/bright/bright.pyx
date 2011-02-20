@@ -1554,20 +1554,20 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.phi = value
 
 
-    property FuelChemicalForm:
+    property fuel_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.r1g_pointer.FuelChemicalForm)
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.fuel_chemical_form)
 
         def __set__(self, dict value):
-            self.r1g_pointer.FuelChemicalForm = conv.dict_to_map_str_dbl(value)
+            self.r1g_pointer.fuel_chemical_form = conv.dict_to_map_str_dbl(value)
 
 
-    property CoolantChemicalForm:
+    property coolant_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.r1g_pointer.CoolantChemicalForm)
+            return conv.map_to_dict_str_dbl(self.r1g_pointer.coolant_chemical_form)
 
         def __set__(self, dict value):
-            self.r1g_pointer.CoolantChemicalForm = conv.dict_to_map_str_dbl(value)
+            self.r1g_pointer.coolant_chemical_form = conv.dict_to_map_str_dbl(value)
 
 
     property rhoF:
@@ -1594,20 +1594,20 @@ cdef class Reactor1G(FCComp):
             self.r1g_pointer.P_NL = value
 
 
-    property TargetBU:
+    property target_BU:
         def __get__(self):
-            return self.r1g_pointer.TargetBU
+            return self.r1g_pointer.target_BU
 
         def __set__(self, double value):
-            self.r1g_pointer.TargetBU = value
+            self.r1g_pointer.target_BU = value
 
 
-    property useZeta:
+    property use_zeta:
         def __get__(self):
-            return self.r1g_pointer.useZeta
+            return self.r1g_pointer.use_zeta
 
         def __set__(self, bint value):
-            self.r1g_pointer.useZeta = value
+            self.r1g_pointer.use_zeta = value
 
 
     property Lattice:
@@ -2264,7 +2264,7 @@ cdef class Reactor1G(FCComp):
         """Calculates and sets the deltaR value of the reactor.  
         This is equal to the production rate minus the destruction rate at the target burnup::
 
-            deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+            deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
@@ -2371,7 +2371,7 @@ cdef class Reactor1G(FCComp):
     def Calibrate_PNL_2_BUd(self):
         """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
         and the target discharge burnup are.  This function handles that situation by
-        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup TargetBU.
+        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup target_BU.
         Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
         benchmarking calculations.
         """
@@ -2593,20 +2593,20 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.lwr1g_pointer.phi = value
 
 
-    property FuelChemicalForm:
+    property fuel_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.FuelChemicalForm)
+            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.fuel_chemical_form)
 
         def __set__(self, dict value):
-            self.lwr1g_pointer.FuelChemicalForm = conv.dict_to_map_str_dbl(value)
+            self.lwr1g_pointer.fuel_chemical_form = conv.dict_to_map_str_dbl(value)
 
 
-    property CoolantChemicalForm:
+    property coolant_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.CoolantChemicalForm)
+            return conv.map_to_dict_str_dbl(self.lwr1g_pointer.coolant_chemical_form)
 
         def __set__(self, dict value):
-            self.lwr1g_pointer.CoolantChemicalForm = conv.dict_to_map_str_dbl(value)
+            self.lwr1g_pointer.coolant_chemical_form = conv.dict_to_map_str_dbl(value)
 
 
     property rhoF:
@@ -2633,20 +2633,20 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.lwr1g_pointer.P_NL = value
 
 
-    property TargetBU:
+    property target_BU:
         def __get__(self):
-            return self.lwr1g_pointer.TargetBU
+            return self.lwr1g_pointer.target_BU
 
         def __set__(self, double value):
-            self.lwr1g_pointer.TargetBU = value
+            self.lwr1g_pointer.target_BU = value
 
 
-    property useZeta:
+    property use_zeta:
         def __get__(self):
-            return self.lwr1g_pointer.useZeta
+            return self.lwr1g_pointer.use_zeta
 
         def __set__(self, bint value):
-            self.lwr1g_pointer.useZeta = value
+            self.lwr1g_pointer.use_zeta = value
 
 
     property Lattice:
@@ -3333,7 +3333,7 @@ cdef class LightWaterReactor1G(Reactor1G):
         """Calculates and sets the deltaR value of the reactor.  
         This is equal to the production rate minus the destruction rate at the target burnup::
 
-            deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+            deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
@@ -3440,7 +3440,7 @@ cdef class LightWaterReactor1G(Reactor1G):
     def Calibrate_PNL_2_BUd(self):
         """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
         and the target discharge burnup are.  This function handles that situation by
-        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup TargetBU.
+        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup target_BU.
         Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
         benchmarking calculations.
         """
@@ -3662,20 +3662,20 @@ cdef class FastReactor1G(Reactor1G):
             self.fr1g_pointer.phi = value
 
 
-    property FuelChemicalForm:
+    property fuel_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fr1g_pointer.FuelChemicalForm)
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.fuel_chemical_form)
 
         def __set__(self, dict value):
-            self.fr1g_pointer.FuelChemicalForm = conv.dict_to_map_str_dbl(value)
+            self.fr1g_pointer.fuel_chemical_form = conv.dict_to_map_str_dbl(value)
 
 
-    property CoolantChemicalForm:
+    property coolant_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fr1g_pointer.CoolantChemicalForm)
+            return conv.map_to_dict_str_dbl(self.fr1g_pointer.coolant_chemical_form)
 
         def __set__(self, dict value):
-            self.fr1g_pointer.CoolantChemicalForm = conv.dict_to_map_str_dbl(value)
+            self.fr1g_pointer.coolant_chemical_form = conv.dict_to_map_str_dbl(value)
 
 
     property rhoF:
@@ -3702,20 +3702,20 @@ cdef class FastReactor1G(Reactor1G):
             self.fr1g_pointer.P_NL = value
 
 
-    property TargetBU:
+    property target_BU:
         def __get__(self):
-            return self.fr1g_pointer.TargetBU
+            return self.fr1g_pointer.target_BU
 
         def __set__(self, double value):
-            self.fr1g_pointer.TargetBU = value
+            self.fr1g_pointer.target_BU = value
 
 
-    property useZeta:
+    property use_zeta:
         def __get__(self):
-            return self.fr1g_pointer.useZeta
+            return self.fr1g_pointer.use_zeta
 
         def __set__(self, bint value):
-            self.fr1g_pointer.useZeta = value
+            self.fr1g_pointer.use_zeta = value
 
 
     property Lattice:
@@ -4409,7 +4409,7 @@ cdef class FastReactor1G(Reactor1G):
         """Calculates and sets the deltaR value of the reactor.  
         This is equal to the production rate minus the destruction rate at the target burnup::
 
-            deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+            deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
 
         Args:
             * input (dict or MassStream): If input is present, it set as the component's 
@@ -4516,7 +4516,7 @@ cdef class FastReactor1G(Reactor1G):
     def Calibrate_PNL_2_BUd(self):
         """Often times the non-leakage probability of a reactor is not known, though the input isotopics 
         and the target discharge burnup are.  This function handles that situation by
-        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup TargetBU.
+        calibrating the non-leakage probability of this reactor P_NL to hit its target burnup target_BU.
         Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
         benchmarking calculations.
         """

@@ -65,7 +65,7 @@ void Storage::initialize ()
     }	
 }
 
-void Storage::printChain (IsoChain ic)
+void Storage::print_chain (IsoChain ic)
 {
     if (ic.empty())
         return;

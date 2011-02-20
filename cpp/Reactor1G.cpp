@@ -85,13 +85,13 @@ void Reactor1G::initialize(ReactorParameters rp)
 
     B = rp.batches;				//Total number of fuel loading batches
     phi = rp.flux;				//Flux used for Fluence
-    FuelChemicalForm = rp.FuelForm;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
-    CoolantChemicalForm = rp.CoolantForm;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
+    fuel_chemical_form = rp.FuelForm;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+    coolant_chemical_form = rp.CoolantForm;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
     rhoF = rp.FuelDensity;			//Fuel Density
     rhoC = rp.CoolantDensity;		//Coolant Density
     P_NL = rp.pnl;				//Non-Leakage Probability
-    TargetBU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
-    useZeta = rp.useDisadvantage;		//Boolean value on whether or not the disadvantage factor should be used
+    target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
+    use_zeta = rp.useDisadvantage;		//Boolean value on whether or not the disadvantage factor should be used
     Lattice = rp.LatticeType;		//Lattice Type (Planar || Spherical || Cylindrical)
     H_XS_Rescale = rp.HydrogenRescale;	//Rescale the Hydrogen-1 XS?
 
@@ -214,7 +214,7 @@ void Reactor1G::loadLib(std::string libfile)
 
     //Now get microscopic XS data from KAERI...
     //...But only if the disadvantage factor is used.
-    if (!useZeta)
+    if (!use_zeta)
         return;
 
     //HDF5 types
@@ -319,7 +319,7 @@ void Reactor1G::foldMassWeights()
     niF.clear();
     niC.clear();
     //now for the ni in the Fuel
-    for (std::map<std::string, double>::iterator key = FuelChemicalForm.begin(); key != FuelChemicalForm.end(); key++)
+    for (std::map<std::string, double>::iterator key = fuel_chemical_form.begin(); key != fuel_chemical_form.end(); key++)
     {
         if ( (key->first) == "IHM")
         {
@@ -329,20 +329,20 @@ void Reactor1G::foldMassWeights()
                 if (0 == I.count(iso->first))
                     continue;
 
-                niF[iso->first] = FuelChemicalForm[key->first] * ms_feed.comp[iso->first];
+                niF[iso->first] = fuel_chemical_form[key->first] * ms_feed.comp[iso->first];
             };
         }
         else
         {
             int key_zz = isoname::mixed_2_zzaaam(key->first);
-            niF[key_zz] = FuelChemicalForm[key->first];
+            niF[key_zz] = fuel_chemical_form[key->first];
         }
     };
-    //Note that the ni in the coolant is just CoolantChemicalForm
-    for (std::map<std::string, double>::iterator key = CoolantChemicalForm.begin(); key != CoolantChemicalForm.end(); key++)
+    //Note that the ni in the coolant is just coolant_chemical_form
+    for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
     {
         int key_zz = isoname::mixed_2_zzaaam(key->first);
-        niC[key_zz] = CoolantChemicalForm[key->first];		
+        niC[key_zz] = coolant_chemical_form[key->first];		
     };
 
     //Fuel mass weight
@@ -361,21 +361,21 @@ void Reactor1G::foldMassWeights()
 
     //Coolant mass weight Calculation...requires MWF
     MWF = 0.0; 	//Fuel Molecular Weight
-    for (std::map<std::string, double>::iterator key = FuelChemicalForm.begin(); key != FuelChemicalForm.end(); key++)
+    for (std::map<std::string, double>::iterator key = fuel_chemical_form.begin(); key != fuel_chemical_form.end(); key++)
     {
         if ( (key->first) == "IHM")
-            MWF = MWF + (FuelChemicalForm[key->first] * A_IHM);
+            MWF = MWF + (fuel_chemical_form[key->first] * A_IHM);
         else
         {
             int key_zz = isoname::mixed_2_zzaaam(key->first);
-            MWF = MWF + (FuelChemicalForm[key->first] * isoname::nuc_weight(key_zz));
+            MWF = MWF + (fuel_chemical_form[key->first] * isoname::nuc_weight(key_zz));
         }
     };
     MWC = 0.0;	//Coolant Molecular Weight
-    for (std::map<std::string, double>::iterator key = CoolantChemicalForm.begin(); key != CoolantChemicalForm.end(); key++)
+    for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
     {
         int key_zz = isoname::mixed_2_zzaaam(key->first);
-        MWC = MWC + (CoolantChemicalForm[key->first] * isoname::nuc_weight(key_zz));
+        MWC = MWC + (coolant_chemical_form[key->first] * isoname::nuc_weight(key_zz));
     };
     miC.clear();
     double rel_Vol_coef = (rhoC * MWF * VC) / (rhoF * MWC * VF);
@@ -455,7 +455,7 @@ void Reactor1G::foldMassWeights()
     };
 
     //Implement the disadvantage factor, if needed.
-    if (useZeta)
+    if (use_zeta)
     {
         calcZeta();
         for (int f = 0; f < F.size(); f++)
@@ -583,7 +583,7 @@ double Reactor1G::calc_deltaR()
 {
     //Calculates the deltaR of the reactor with the current ms_feed
     foldMassWeights();
-    deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D");
+    deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D");
     return deltaR;
 };
 
@@ -930,7 +930,7 @@ void Reactor1G::Calibrate_PNL_2_BUd()
         {
             Run_PNL(pnl_a);
             bud_a = BUd;
-            sign_a = (bud_a - TargetBU) / fabs(bud_a - TargetBU);
+            sign_a = (bud_a - target_BU) / fabs(bud_a - target_BU);
             FoundA = true;
         }
         catch (BadFuelForm e)
@@ -952,7 +952,7 @@ void Reactor1G::Calibrate_PNL_2_BUd()
         {
             Run_PNL(pnl_b);
             bud_b = BUd;
-            sign_b = (bud_b - TargetBU) / fabs(bud_b - TargetBU);
+            sign_b = (bud_b - target_BU) / fabs(bud_b - target_BU);
             FoundB = true;
         }
         catch (BadFuelForm e)
@@ -974,7 +974,7 @@ void Reactor1G::Calibrate_PNL_2_BUd()
         pnl_c = (pnl_a + pnl_b) / 2.0;
         Run_PNL(pnl_c);
         bud_c = BUd;
-        sign_c = (bud_c - TargetBU) / fabs(bud_c - TargetBU);
+        sign_c = (bud_c - target_BU) / fabs(bud_c - target_BU);
 
         q = q + 1;
 

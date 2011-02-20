@@ -103,27 +103,27 @@ in different manners in the same fuel cycle code.
     The nominal flux value (float) that the library for this reactor type was generated with.  Used to correctly
     weight batch-specific fluxes.
 
-.. attribute:: Reactor1G.FuelChemicalForm
+.. attribute:: Reactor1G.fuel_chemical_form
 
     This is the chemical form of fuel as dictionary.  Keys are strings that represent isotopes (mixed form) while 
     values represent the corresponding mass weights.  The heavy metal concentration by the key ``"IHM"``.  This 
     will automatically fill in the nuclides in :attr:`ms_feed <bright.FCComp.ms_feed>` for the ``"IHM"`` weight.  For 
     example, LWRs typically use a UOX fuel form::
 
-        LWR.FuelChemicalForm = {"IHM": 1.0, "O16": 2.0}
+        LWR.fuel_chemical_form = {"IHM": 1.0, "O16": 2.0}
 
-.. attribute:: Reactor1G.CoolantChemicalForm
+.. attribute:: Reactor1G.coolant_chemical_form
 
-    This is the chemical form of coolant as dictionary.  This uses the same notation as :attr:`FuelChemicalForm` except 
+    This is the chemical form of coolant as dictionary.  This uses the same notation as :attr:`fuel_chemical_form` except 
     that ``"IHM"`` is no longer a valid key.  The term 'coolant' is used in preference over the term 'moderator' because
     not all reactors moderate neutrons.  For example, LWRs often cool the reactor core with borated water::
 
-        LWR.CoolantChemicalForm = {}
+        LWR.coolant_chemical_form = {}
 
         LWR.CoolantchemicalForm["H1"]  = 2.0
-        LWR.CoolantChemicalForm["O16"] = 1.0
-        LWR.CoolantChemicalForm["B10"] = 0.199 * 550 * 10.0**-6
-        LWR.CoolantChemicalForm["B11"] = 0.801 * 550 * 10.0**-6
+        LWR.coolant_chemical_form["O16"] = 1.0
+        LWR.coolant_chemical_form["B10"] = 0.199 * 550 * 10.0**-6
+        LWR.coolant_chemical_form["B11"] = 0.801 * 550 * 10.0**-6
 
 .. attribute:: Reactor1G.rhoF
 
@@ -137,12 +137,12 @@ in different manners in the same fuel cycle code.
 
     The reactor's non-leakage probability (float).  This is often used as a calibration parameter.
 
-.. attribute:: Reactor1G.TargetBU
+.. attribute:: Reactor1G.target_BU
 
     The reactor's target discharge burnup (float).  This is given in units of [MWd/kgIHM].  Often the
     actual discharge burnup :attr:`BUd` does not quite hit this value, but comes acceptably close.
 
-.. attribute:: Reactor1G.useZeta
+.. attribute:: Reactor1G.use_zeta
 
     A boolean value that determines whether the thermal disadvantage factor is employed or not.  LWRs 
     typically set this as ``True`` while FRs have a ``False`` value.
@@ -351,7 +351,7 @@ process and relate important information about the state of the reactor at disch
 .. attribute:: Reactor1G.BUd
 
     The discharge burnup (float).  This has units of [MWd/kgIHM] and, unless something went very wrong, 
-    should be rather close in value to :attr:`TargetBU`.
+    should be rather close in value to :attr:`target_BU`.
 
 .. attribute:: Reactor1G.k
 
@@ -406,7 +406,7 @@ Other Attributes
     The :math:`\delta R` value of the core with ``ms_feed``.  This is equal to the 
     production rate minus the destruction rate at the target burnup::
 
-        deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+        deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
 
     This is computed via the ``Reactor1G.calc_deltaR()`` method.
 
@@ -571,7 +571,7 @@ The following functions represent basic calculations common to most reactor type
     Calculates and sets the :math:`\delta R` (:attr:`deltaR`) value of the reactor.  
     This is equal to the production rate minus the destruction rate at the target burnup::
 
-        deltaR = batchAve(TargetBU, "P") - batchAve(TargetBU, "D")
+        deltaR = batchAve(target_BU, "P") - batchAve(target_BU, "D")
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
@@ -662,7 +662,7 @@ should this control be unnecessary for simple calculations.
 
     Often times the non-leakage probability of a reactor is not known, though the input isotopics 
     and the target discharge burnup are.  This function handles that situation by
-    calibrating the non-leakage probability of this reactor :attr:`P_NL` to hit its target burnup :attr:`TargetBU`.
+    calibrating the non-leakage probability of this reactor :attr:`P_NL` to hit its target burnup :attr:`target_BU`.
     Such a calibration proceeds by bisection method as well.  This function is extremely useful for 
     benchmarking calculations.
 
