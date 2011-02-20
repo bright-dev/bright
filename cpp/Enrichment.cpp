@@ -103,7 +103,7 @@ Enrichment::~Enrichment ()
 /*** Public Functions ***/
 /************************/
 
-void Enrichment::setParams ()
+void Enrichment::calc_params ()
 {
     params_prior_calc["MassFeed"]  = ms_feed.mass;
     params_after_calc["MassFeed"] = 0.0;	
@@ -133,27 +133,27 @@ void Enrichment::setParams ()
     params_after_calc["SWUperProduct"] = SWUperProduct;	
 }
 
-MassStream Enrichment::doCalc ()
+MassStream Enrichment::calc ()
 {
     //Does the Enriching
     MstarOptimize();
     return ms_prod;
 }
 
-MassStream Enrichment::doCalc (CompDict incomp)
+MassStream Enrichment::calc (CompDict incomp)
 {
     //Does the Enriching
     //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to ms_feed.
     ms_feed = MassStream (incomp);
-    return doCalc();
+    return calc();
 }
 
-MassStream Enrichment::doCalc (MassStream instream)
+MassStream Enrichment::calc (MassStream instream)
 {
     //Does the Enrichmenting
     //instream = input stream of all nuclides. Standard MassStream object.
     ms_feed = instream;
-    return doCalc();
+    return calc();
 }
 
 

@@ -49,35 +49,35 @@ int main()
 	print("Try Decaying Implicit Mass for 1000 days.");
 	s.decay_time = 1000.0 * 24.0 * 3600.0;
 	s.ms_feed = MassStream (samplemass);
-	s.doCalc().print_ms();
+	s.calc().print_ms();
 	print("");
 
 	print("Try Decaying CompDict Mass for 2000 days.");
 	s.decay_time = 2000.0 * 24.0 * 3600.0;
-	s.doCalc(samplemass).print_ms();
+	s.calc(samplemass).print_ms();
 	print("");
 
 	print("Try Decaying Mass Stream Mass for 3000 days.");
 	s.decay_time = 3000.0 * 24.0 * 3600.0;
 	MassStream ms (samplemass);
-	s.doCalc(ms).print_ms();
+	s.calc(ms).print_ms();
 	print("");
 
 	double t;
 	print("Try Decaying Implicit Mass for t = 4000 days.");
 	t = 4000.0 * 24.0 * 3600.0;
 	s.ms_feed = MassStream (samplemass);
-	s.doCalc(t).print_ms();
+	s.calc(t).print_ms();
 	print("");
 		
 	print("Try Decaying CompDict Mass for t = 5000 days.");
 	t = 5000.0 * 24.0 * 3600.0;
-	s.doCalc(samplemass, t).print_ms();
+	s.calc(samplemass, t).print_ms();
 	print("");
 		
 	print("Try Decaying CompDict Mass for t = 6000 days.");
 	t = 6000.0 * 24.0 * 3600.0;
-	s.doCalc(ms, t).print_ms();
+	s.calc(ms, t).print_ms();
 	print("");
 
 	print("Try Decaying Mass From a File for t = 7000 days.");
@@ -89,7 +89,7 @@ int main()
 		itrack2.insert(ci->first);
 	}
 	Storage s2 (itrack2, "Storage");
-	s2.doCalc(ms2, t).print_ms();
+	s2.calc(ms2, t).print_ms();
 
 
 	return 0;

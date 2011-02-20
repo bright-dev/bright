@@ -102,18 +102,18 @@ class TestReprocessMethods(TestCase):
             elif f in [".h5", "r.h5"]:
                 os.remove(f)
 
-    def test_doCalc_1(self):
+    def test_calc_1(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
         r.ms_feed = MassStream({942390: 1.0})
-        r.doCalc()
+        r.calc()
         assert_equal(r.ms_prod.mass, 0.99)
         assert_equal(r.ms_prod.comp[942390], 1.0) # Recall ms.comp is normalized
 
-    def test_doCalc_2(self):
+    def test_calc_2(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
-        r.doCalc(MassStream({942390: 1.0}))
+        r.calc(MassStream({942390: 1.0}))
         assert_equal(r.ms_prod.mass, 0.99)
         assert_equal(r.ms_prod.comp[942390], 1.0) # Recall ms.comp is normalized
 
@@ -143,11 +143,11 @@ class TestReprocessMethods(TestCase):
         assert_almost_equal(r.sepeff[922380], 0.99)
         assert_almost_equal(r.sepeff[942390], 1.0)
 
-    def test_setParams(self):
+    def test_calc_params(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
-        r.doCalc(MassStream({942390: 1.0}))
-        r.setParams()
+        r.calc(MassStream({942390: 1.0}))
+        r.calc_params()
         assert_equal(r.params_prior_calc["Mass"],  1.00)
         assert_equal(r.params_after_calc["Mass"], 0.99)
         

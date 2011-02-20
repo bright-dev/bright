@@ -230,14 +230,14 @@ class TestFastReactor1GMethods(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_setParams(self):
+    def test_calc_params(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
         bright.load_track_isos_hdf5(lf)
         rp = bright.FRDefaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
-        fr.doCalc(MassStream({922350: 0.30, 922380: 0.70}))
-        fr.setParams()
+        fr.calc(MassStream({922350: 0.30, 922380: 0.70}))
+        fr.calc_params()
         assert_equal(fr.params_prior_calc["BUd"],  0.0)
         assert_equal(fr.params_after_calc["BUd"], fr.BUd)
         assert_equal(fr.params_prior_calc["TRUCR"],  0.0)

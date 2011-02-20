@@ -75,13 +75,13 @@ Reprocess::~Reprocess ()
 /*** Public Functions ***/
 /************************/
 
-void Reprocess::setParams ()
+void Reprocess::calc_params ()
 {
     params_prior_calc["Mass"]  = ms_feed.mass;
     params_after_calc["Mass"] = ms_prod.mass;	
 }
 
-MassStream Reprocess::doCalc ()
+MassStream Reprocess::calc ()
 {
     //Does the Reprocessing
     CompDict incomp  = ms_feed.mult_by_mass();
@@ -94,7 +94,7 @@ MassStream Reprocess::doCalc ()
     return ms_prod;
 }
 
-MassStream Reprocess::doCalc (CompDict incomp)
+MassStream Reprocess::calc (CompDict incomp)
 {
     //Does the Reprocessing
     //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to ms_feed.
@@ -108,10 +108,10 @@ MassStream Reprocess::doCalc (CompDict incomp)
     return ms_prod;
 }
 
-MassStream Reprocess::doCalc (MassStream instream)
+MassStream Reprocess::calc (MassStream instream)
 {
     //Does the Reprocessing
     //instream = input stream of all nuclides. Standard MassStream object.
     ms_feed = instream;
-    return doCalc();
+    return calc();
 }

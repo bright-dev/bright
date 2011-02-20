@@ -75,13 +75,13 @@ public:
     double decay_time;			//time to decay for
 
     //Public Functions
-    void setParams();
-    MassStream doCalc ();
-    MassStream doCalc (CompDict);
-    MassStream doCalc (MassStream);
-    MassStream doCalc (double);
-    MassStream doCalc (CompDict, double);
-    MassStream doCalc (MassStream, double);
+    void calc_params();
+    MassStream calc ();
+    MassStream calc (CompDict);
+    MassStream calc (MassStream);
+    MassStream calc (double);
+    MassStream calc (CompDict, double);
+    MassStream calc (MassStream, double);
 };
 
 #endif

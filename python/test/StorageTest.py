@@ -44,29 +44,29 @@ print("")
 
 st1.ms_feed = ms
 print("Empty Decay")
-st1.doCalc()
+st1.calc()
 print(str( st1.ms_prod ))
 
-st1.doCalc(cd)
+st1.calc(cd)
 print("CompDict Decay")
 print(str( st1.ms_prod ) )
 
 st1.decay_time =  st1.decay_time * 10000
-st1.doCalc(ms)
+st1.calc(ms)
 print("MassStream Decay")
 print(str( st1.ms_prod ) )
 
 st2.ms_feed = ms 
 t = 3600 * 24 * 10000000
-st2.doCalc(t)
+st2.calc(t)
 print("Double Decay")
 print(str( st2.ms_prod ) )
 
-st2.doCalc(cd, t)
+st2.calc(cd, t)
 print("CompDict, Double Decay")
 print(str( st2.ms_prod ) )
 
-st2.doCalc(ms, t*10000)
+st2.calc(ms, t*10000)
 print("MassStream, Double Decay")
 print(str( st2.ms_prod ) )
 

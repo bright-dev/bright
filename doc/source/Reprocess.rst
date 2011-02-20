@@ -72,7 +72,7 @@ The following is a listing of the additional attributes specific to this class.
 Reprocess Methods
 =================
 
-.. method:: Reprocess.doCalc([input])
+.. method:: Reprocess.calc([input])
 
     This method performs the relatively simply task of multiplying the current input stream by 
     the SE to form a new output stream::
@@ -104,7 +104,7 @@ Reprocess Methods
         * `sepdict` (dict): Integer valued dictionary of SE to be converted to :attr:`sepeff`.
 
 
-.. method:: Reprocess.setParams()
+.. method:: Reprocess.calc_params()
 
     Here the parameters for :class:`Reprocess` are set.  For reprocessing, this amounts to just
     a "Mass" parameter::

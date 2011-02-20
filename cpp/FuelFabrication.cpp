@@ -217,7 +217,7 @@ void FuelFabrication::calc_mass_ratios()
 };
 
 
-MassStream FuelFabrication::doCalc()
+MassStream FuelFabrication::calc()
 {
     calc_mass_ratios();
     ms_prod = calc_core_input();
@@ -225,14 +225,14 @@ MassStream FuelFabrication::doCalc()
 };
 
 
-MassStream FuelFabrication::doCalc(MassStreams mss, MassWeights mws_in, Reactor1G r)
+MassStream FuelFabrication::calc(MassStreams mss, MassWeights mws_in, Reactor1G r)
 {
     initialize(mss, mws_in, r);
-    return doCalc();
+    return calc();
 };
 
 
-void FuelFabrication::setParams ()
+void FuelFabrication::calc_params ()
 {
     for ( MassWeights::iterator mws = mass_weights_in.begin(); mws != mass_weights_in.end(); mws++ )
     {

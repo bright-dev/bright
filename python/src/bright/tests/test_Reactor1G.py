@@ -577,7 +577,7 @@ class TestReactor1GDischargeAttributes(TestCase):
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.doCalc()
+        cls.r1g.calc()
 
     @classmethod
     def teardown_class(cls):
@@ -610,7 +610,7 @@ class TestReactor1GSubStreamAndTruCRAttributes(TestCase):
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.doCalc()
+        cls.r1g.calc()
         cls.r1g.calcSubStreams()
 
     @classmethod
@@ -820,7 +820,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
 
 
     def test_calcSubStreams(self):
-        self.r1g.doCalc()
+        self.r1g.calc()
         self.r1g.calcSubStreams()
         assert_equal(self.r1g.InU.mass, 1.0)
         assert_equal(self.r1g.InTRU.mass, 0.0)
@@ -832,7 +832,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
         assert(self.r1g.OutACT.mass < 1.0)
 
     def test_calcTruCR(self):
-        self.r1g.doCalc()
+        self.r1g.calc()
         tmp_TruCR = 1.0 - (self.r1g.InTRU.mass - self.r1g.OutTRU.mass) / (self.r1g.BUd / 931.46)
         assert_almost_equal(self.r1g.calcTruCR() / tmp_TruCR, 1.0)
 
@@ -865,7 +865,7 @@ class TestReactor1GBurnupMethods(TestCase):
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.doCalc()
+        cls.r1g.calc()
 
     @classmethod
     def teardown_class(cls):
@@ -895,13 +895,13 @@ class TestReactor1GBurnupMethods(TestCase):
         BUd = self.r1g.BUd
         assert_almost_equal(self.r1g.batchAveK(BUd), 1.0)
 
-    def test_doCalc_1(self):
-        self.r1g.doCalc()
+    def test_calc_1(self):
+        self.r1g.calc()
         assert(self.r1g.ms_prod.mass < 1.0)
         assert(self.r1g.ms_prod.comp[922350] < 0.5) 
 
-    def test_doCalc_2(self):
-        self.r1g.doCalc(MassStream({942390: 0.05, 922380: 0.95}))
+    def test_calc_2(self):
+        self.r1g.calc(MassStream({942390: 0.05, 922380: 0.95}))
         assert(self.r1g.ms_prod.mass < 1.0)
         assert(self.r1g.ms_prod.comp[942390] < 1.0) 
 
@@ -918,7 +918,7 @@ class TestReactor1GBurnupMethods2(TestCase):
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.doCalc()
+        cls.r1g.calc()
 
     @classmethod
     def teardown_class(cls):
@@ -943,7 +943,7 @@ class TestReactor1GBurnupMethods3(TestCase):
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.doCalc()
+        cls.r1g.calc()
 
     @classmethod
     def teardown_class(cls):
@@ -969,7 +969,7 @@ class TestReactor1GBurnupMethods4(TestCase):
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.doCalc()
+        cls.r1g.calc()
 
     @classmethod
     def teardown_class(cls):
@@ -994,7 +994,7 @@ class TestReactor1GLatticeMethods(TestCase):
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadLib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
-        cls.r1g.doCalc()
+        cls.r1g.calc()
 
     @classmethod
     def teardown_class(cls):

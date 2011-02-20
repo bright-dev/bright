@@ -46,13 +46,13 @@ cdef extern from "../FCComp.h":
         set[std.string] track_params
 
         # Methods
-        void setParams()
-        void writeIsoPass()
-        void writeParamPass()
+        void calc_params()
+        void write_ms_pass()
+        void write_params_pass()
         void writeText()
         void writeHDF5()
         void writeout()
-        cpp_mass_stream.MassStream doCalc()
+        cpp_mass_stream.MassStream calc()
 
 
 cdef extern from "../Enrichment.h":
@@ -104,10 +104,10 @@ cdef extern from "../Enrichment.h":
 
         # Methods
         void initialize(EnrichmentParameters)
-        void setParams ()
-        cpp_mass_stream.MassStream doCalc ()
-        cpp_mass_stream.MassStream doCalc (map[int, double])
-        cpp_mass_stream.MassStream doCalc (cpp_mass_stream.MassStream)
+        void calc_params ()
+        cpp_mass_stream.MassStream calc ()
+        cpp_mass_stream.MassStream calc (map[int, double])
+        cpp_mass_stream.MassStream calc (cpp_mass_stream.MassStream)
 
         double PoverF (double, double, double)
         double WoverF (double, double, double)
@@ -143,10 +143,10 @@ cdef extern from "../Reprocess.h":
 
         # Methods
         void initialize(map[int, double])
-        void setParams()
-        cpp_mass_stream.MassStream doCalc()
-        cpp_mass_stream.MassStream doCalc(map[int, double])
-        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream)
+        void calc_params()
+        cpp_mass_stream.MassStream calc()
+        cpp_mass_stream.MassStream calc(map[int, double])
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
 
 
 cdef extern from "../Storage.h":
@@ -160,13 +160,13 @@ cdef extern from "../Storage.h":
         double decay_time
 
         # Methods
-        void setParams()
-        cpp_mass_stream.MassStream doCalc()
-        cpp_mass_stream.MassStream doCalc(map[int, double])
-        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream)
-        cpp_mass_stream.MassStream doCalc(double)
-        cpp_mass_stream.MassStream doCalc(map[int, double], double)
-        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream, double)
+        void calc_params()
+        cpp_mass_stream.MassStream calc()
+        cpp_mass_stream.MassStream calc(map[int, double])
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
+        cpp_mass_stream.MassStream calc(double)
+        cpp_mass_stream.MassStream calc(map[int, double], double)
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream, double)
 
 
 
@@ -309,9 +309,9 @@ cdef extern from "../Reactor1G.h":
         void Run_PNL(double)
         void Calibrate_PNL_2_BUd()
 
-        cpp_mass_stream.MassStream doCalc()
-        cpp_mass_stream.MassStream doCalc(map[int, double])
-        cpp_mass_stream.MassStream doCalc(cpp_mass_stream.MassStream)
+        cpp_mass_stream.MassStream calc()
+        cpp_mass_stream.MassStream calc(map[int, double])
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
 
         void LatticeEPlanar(double, double)
         void LatticeFPlanar(double, double)
@@ -340,7 +340,7 @@ cdef extern from "../LightWaterReactor1G.h":
         LightWaterReactor1G(std.string, ReactorParameters, std.string)
 
         # Methods
-        void setParams()
+        void calc_params()
 
 
 
@@ -357,7 +357,7 @@ cdef extern from "../FastReactor1G.h":
         FastReactor1G(std.string, ReactorParameters, std.string)
 
         # Methods
-        void setParams()
+        void calc_params()
 
 
 
@@ -381,11 +381,11 @@ cdef extern from "../FuelFabrication.h":
 
         # Methods
         void initialize(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)
-        void setParams()
+        void calc_params()
 
         void calc_deltaRs()
         cpp_mass_stream.MassStream calc_core_input()
         void calc_mass_ratios()
 
-        cpp_mass_stream.MassStream doCalc()
-        cpp_mass_stream.MassStream doCalc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)
+        cpp_mass_stream.MassStream calc()
+        cpp_mass_stream.MassStream calc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)

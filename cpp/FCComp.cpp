@@ -352,7 +352,7 @@ FCComp::~FCComp ()
 /*** Public Access Functions ***/
 /*******************************/
 
-void FCComp::setParams ()
+void FCComp::calc_params ()
 {
     //Placeholder function that sets the states of params_prior_calc and params_after_calc.
     for ( std::set<std::string>::iterator p2t = track_params.begin(); p2t != track_params.end(); p2t++)
@@ -362,7 +362,7 @@ void FCComp::setParams ()
     }
 }
 
-void FCComp::writeIsoPass ()
+void FCComp::write_ms_pass ()
 {
     //Writes a single pass to the isotopic tracking file.
     std::ifstream isofilein  ( (name + "Isos.txt").c_str() );
@@ -411,7 +411,7 @@ void FCComp::writeIsoPass ()
     isofileout.close();
 }
 
-void FCComp::writeParamPass ()
+void FCComp::write_params_pass ()
 {
     //Writes a single pass to the parameter tracking file.
     std::ifstream paramfilein  ( (name + "Params.txt").c_str() );
@@ -441,11 +441,11 @@ void FCComp::writeParamPass ()
 void FCComp::writeText()
 {
     //Write the isotopic streams
-    writeIsoPass();
+    write_ms_pass();
 
     //Write the parameters if they are there to write!
     if (!track_params.empty()) 
-        writeParamPass();
+        write_params_pass();
 }
 
 void FCComp::appendHDF5array(H5::H5File *dbFile, std::string set_name, double *append_value, const int *rank, \
@@ -512,7 +512,7 @@ void FCComp::writeout ()
 
     //Set the parameters for this pass.
     if (!track_params.empty())
-        setParams();
+        calc_params();
 
     //Writes the output table files.
     if (FCComps::write_text)
@@ -522,21 +522,21 @@ void FCComp::writeout ()
         writeHDF5();
 }
 
-MassStream FCComp::doCalc ()
+MassStream FCComp::calc ()
 {
     //Placehodler function for the calculation of all relevant isotopes and parameters.
     //Returns an empty MassStream object.
     return MassStream ();
 }
 
-MassStream FCComp::doCalc (CompDict cd)
+MassStream FCComp::calc (CompDict cd)
 {
     //Placehodler function for the calculation of all relevant isotopes and parameters.
     //Returns an empty MassStream object.
     return MassStream ();
 }
 
-MassStream FCComp::doCalc (MassStream ms)
+MassStream FCComp::calc (MassStream ms)
 {
     //Placehodler function for the calculation of all relevant isotopes and parameters.
     //Returns an empty MassStream object.

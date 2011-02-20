@@ -90,10 +90,10 @@ public:
 
     //Public access functions
     void initialize(EnrichmentParameters);		//Initializes the constructors.
-    void setParams ();
-    MassStream doCalc ();
-    MassStream doCalc (CompDict);
-    MassStream doCalc (MassStream);	
+    void calc_params ();
+    MassStream calc ();
+    MassStream calc (CompDict);
+    MassStream calc (MassStream);	
 
     double PoverF (double, double, double);
     double WoverF (double, double, double);

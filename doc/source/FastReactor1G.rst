@@ -40,7 +40,7 @@ FastReactor1G Methods
 As a daughter class of :class:`Reactor1G`, most of the LWR methods are inherited.  The following are the ones that are not
 or have been otherwise altered.
 
-.. method:: FastReactor1G.setParams()
+.. method:: FastReactor1G.calc_params()
 
     Along with its own parameter set to track, the FR model implements its own function to set these
     parameters.  This function is equivalent to the following::

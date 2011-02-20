@@ -283,8 +283,8 @@ class TestFuelFabricationMethodss(TestCase):
         assert_almost_equal(core_input.comp[922350], self.ff.mass_weights_out["U235"])
         assert_almost_equal(core_input.comp[922380], self.ff.mass_weights_out["U238"])
 
-    def test_doCalc1(self):
-        core_input = self.ff.doCalc()
+    def test_calc1(self):
+        core_input = self.ff.calc()
 
         assert_equal(core_input.mass, 1.0)
         assert_equal(core_input.name, "CoreInput")
@@ -292,11 +292,11 @@ class TestFuelFabricationMethodss(TestCase):
         assert_almost_equal(core_input.comp[922350], self.ff.mass_weights_out["U235"])
         assert_almost_equal(core_input.comp[922380], self.ff.mass_weights_out["U238"])
 
-    def test_doCalc2(self):
+    def test_calc2(self):
         r1g = self.r1g
         r1g.name = "r1g name"
 
-        core_input = self.ff.doCalc(self.mss, self.mws, r1g)
+        core_input = self.ff.calc(self.mss, self.mws, r1g)
 
         assert_equal(self.ff.reactor.name, "r1g name")
 
@@ -306,9 +306,9 @@ class TestFuelFabricationMethodss(TestCase):
         assert_almost_equal(core_input.comp[922350], self.ff.mass_weights_out["U235"])
         assert_almost_equal(core_input.comp[922380], self.ff.mass_weights_out["U238"])
 
-    def test_setParams(self):
-        core_input = self.ff.doCalc()
-        self.ff.setParams()
+    def test_calc_params(self):
+        core_input = self.ff.calc()
+        self.ff.calc_params()
 
         assert_equal(self.ff.params_prior_calc["Weight_U235"], -1.0)
         assert_equal(self.ff.params_prior_calc["Weight_U238"], -1.0)

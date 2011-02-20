@@ -116,10 +116,10 @@ bAK = r2.batchAve(40.0, "P")
 
 
 testCD = {922350: 10.0, 10010: 1.0}
-print("Do Calc Dictonary: " + str( r2.doCalc(testCD) ))
+print("Do Calc Dictonary: " + str( r2.calc(testCD) ))
 testMS = MassStream({942390: 10.0, 80160: 20.0})
-print("Do Calc MassStream: " + str( r2.doCalc(testMS) ))
-print("Do Calc Empty: " + str( r2.doCalc() ))
+print("Do Calc MassStream: " + str( r2.calc(testMS) ))
+print("Do Calc Empty: " + str( r2.calc() ))
 
 
 if os.name == "posix":

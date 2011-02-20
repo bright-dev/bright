@@ -40,7 +40,7 @@ LightWaterReactor1G Methods
 As a daughter class of :class:`Reactor1G`, most of the LWR methods are inherited.  The following are the ones that are not
 or have been otherwise altered.
 
-.. method:: LightWaterReactor1G.setParams()
+.. method:: LightWaterReactor1G.calc_params()
 
     Along with its own parameter set to track, the LWR model implements its own function to set these
     parameters.  This function is equivalent to the following::

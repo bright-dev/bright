@@ -281,31 +281,31 @@ class TestEnrichmentMethods(TestCase):
         assert_almost_equal(e.xW_j, 0.0)
 
 
-    def test_doCalc_1(self):
+    def test_calc_1(self):
         e = Enrichment()
         e.ms_feed = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
-        e.doCalc()
+        e.calc()
         assert_almost_equal(e.ms_prod.comp[922350],  0.05,   6) 
         assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 6)
 
-    def test_doCalc_2(self):
+    def test_calc_2(self):
         e = Enrichment()
-        e.doCalc({922350: 0.01, 922380: 0.985, 922360: 0.005})
+        e.calc({922350: 0.01, 922380: 0.985, 922360: 0.005})
         assert_almost_equal(e.ms_prod.comp[922350],  0.05,   6) 
         assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 6)
 
-    def test_doCalc_3(self):
-        e = Enrichment()
-        ms = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
-        e.doCalc(ms)
-        assert_almost_equal(e.ms_prod.comp[922350],  0.05,   6) 
-        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 6)
-
-    def test_setParams(self):
+    def test_calc_3(self):
         e = Enrichment()
         ms = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
-        e.doCalc(ms)
-        e.setParams()
+        e.calc(ms)
+        assert_almost_equal(e.ms_prod.comp[922350],  0.05,   6) 
+        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 6)
+
+    def test_calc_params(self):
+        e = Enrichment()
+        ms = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
+        e.calc(ms)
+        e.calc_params()
 
         assert_equal(e.params_prior_calc["MassFeed"],  e.ms_feed.mass)
         assert_equal(e.params_after_calc["MassFeed"], 0.0)
@@ -359,7 +359,7 @@ class TestEnrichmentBenchmarks(TestCase):
             922360: 0.0042,
             922380: 0.9863899989,
             })
-        e.doCalc(ms)
+        e.calc(ms)
 
         assert_almost_equal(e.ms_prod.comp[922350],  0.06,   5) 
         assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 5)
@@ -386,7 +386,7 @@ class TestEnrichmentBenchmarks(TestCase):
             922350: 0.00720,
             922380: 0.992745,
             })
-        e.doCalc(ms)
+        e.calc(ms)
 
         assert_almost_equal(e.ms_prod.comp[922350],  0.05,   5) 
         assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 5)
@@ -414,7 +414,7 @@ class TestEnrichmentBenchmarks(TestCase):
             922360: 0.00610641667100979,
             922380: 0.985523854246919,
             })
-        e.doCalc(ms)
+        e.calc(ms)
 
         assert_almost_equal(e.ms_prod.comp[922350],  0.055,   5) 
         assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 5)
@@ -456,7 +456,7 @@ class TestEnrichmentBenchmarks(TestCase):
             741840: 0.30618, 
             741860: 0.28417,
             })
-        e.doCalc(ms)
+        e.calc(ms)
 
         assert_almost_equal(e.ms_prod.comp[741800],  0.5109,  5) 
         assert_almost_equal(e.ms_tail.comp[741800], 0.00014, 5)

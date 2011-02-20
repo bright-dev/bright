@@ -16,11 +16,11 @@ def printFCComp(fc):
     print("params_prior_calc: " + str(fc.params_prior_calc))
     print("params_after_calc: " + str(fc.params_after_calc))
     print("Pass Number: " + str(fc.pass_num))
-    print("Do Calc Empty: " + str( fc.doCalc() ))
+    print("Do Calc Empty: " + str( fc.calc() ))
     testCD = {922350: 10.0, 10010: 1.0}
-    print("Do Calc Dictonary: " + str( fc.doCalc(testCD) ))
+    print("Do Calc Dictonary: " + str( fc.calc(testCD) ))
     testMS = bright.MassStream({942390: 10.0, 80160: 20.0})
-    print("Do Calc MassStream: " + str( fc.doCalc(testMS) ))
+    print("Do Calc MassStream: " + str( fc.calc(testMS) ))
     return
 
 fc0 = bright.FCComp()

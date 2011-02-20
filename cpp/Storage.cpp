@@ -155,13 +155,13 @@ Storage::~Storage ()
 /*** Public Functions ***/
 /************************/
 
-void Storage::setParams()
+void Storage::calc_params()
 {
     params_prior_calc["Mass"]  = ms_feed.mass;
     params_after_calc["Mass"] = ms_prod.mass;
 }
 
-MassStream Storage::doCalc()
+MassStream Storage::calc()
 {
     //Main part of the cooling code.
     //	instream is a mass stream of nuclides as the keys with the mass as a float as the value.
@@ -200,34 +200,34 @@ MassStream Storage::doCalc()
     return ms_prod;
 }
 
-MassStream Storage::doCalc(CompDict cd)
+MassStream Storage::calc(CompDict cd)
 {
     ms_feed = MassStream (cd);
-    return doCalc();
+    return calc();
 }
 
-MassStream Storage::doCalc(MassStream ms)
+MassStream Storage::calc(MassStream ms)
 {
     ms_feed = ms;
-    return doCalc();
+    return calc();
 }
 
-MassStream Storage::doCalc(double t)
+MassStream Storage::calc(double t)
 {
     decay_time = t;
-    return doCalc();
+    return calc();
 }
 
-MassStream Storage::doCalc(CompDict cd, double t)
+MassStream Storage::calc(CompDict cd, double t)
 {
     decay_time = t;
     ms_feed = MassStream (cd);
-    return doCalc();
+    return calc();
 }
 
-MassStream Storage::doCalc(MassStream ms, double t)
+MassStream Storage::calc(MassStream ms, double t)
 {
     decay_time = t;
     ms_feed = ms;
-    return doCalc();
+    return calc();
 }

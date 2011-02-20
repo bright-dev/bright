@@ -42,7 +42,7 @@ public:
     //Set Functions
 
     //Public access functions
-    void setParams();
+    void calc_params();
 };
 
 #endif

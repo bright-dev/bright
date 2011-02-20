@@ -1020,7 +1020,7 @@ void Reactor1G::Calibrate_PNL_2_BUd()
 
 
 
-MassStream Reactor1G::doCalc ()
+MassStream Reactor1G::calc ()
 {
     //Finds BUd and output isotopics.
     foldMassWeights();
@@ -1032,20 +1032,20 @@ MassStream Reactor1G::doCalc ()
     return ms_prod;
 };
 
-MassStream Reactor1G::doCalc (CompDict incomp)
+MassStream Reactor1G::calc (CompDict incomp)
 {
     //Finds BUd and output isotopics.
     ms_feed = MassStream (incomp);
 
-    return doCalc();
+    return calc();
 };
 
-MassStream Reactor1G::doCalc (MassStream instream)
+MassStream Reactor1G::calc (MassStream instream)
 {
     //Finds BUd and output isotopics.
     ms_feed = instream;
 
-    return doCalc();
+    return calc();
 };
 
 

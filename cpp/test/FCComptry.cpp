@@ -59,8 +59,8 @@ int main()
 	print("\t\t\tDone!");
 	print("");
 
-	print("Testing setParams:");
-	ipFCC.setParams();
+	print("Testing calc_params:");
+	ipFCC.calc_params();
 	print("\tTesting Input Params:");
 	for (ParamDictIter p = ipFCC.params_prior_calc.begin(); p !=  ipFCC.params_prior_calc.end(); p++)
 	{
@@ -75,18 +75,18 @@ int main()
 
 	print("Testing File Pass Writing:");
 	//First Pass
-	ipFCC.writeIsoPass();
-	ipFCC.writeParamPass();
+	ipFCC.write_ms_pass();
+	ipFCC.write_params_pass();
 
 	//Second Pass	
 	ipFCC.ms_feed.mass = 1.0;
 	ipFCC.ms_feed.comp[922350]  = 0.05;
 	ipFCC.ms_prod.mass = 1.0;
 	ipFCC.ms_prod.comp[922350] = 0.008;
-	ipFCC.writeIsoPass();
+	ipFCC.write_ms_pass();
 	ipFCC.params_prior_calc["mass"]  = 10.0;
 	ipFCC.params_after_calc["mass"] = 5.0;
-	ipFCC.writeParamPass();
+	ipFCC.write_params_pass();
 
 	//Third Pass, same data as second
 	ipFCC.writeout();

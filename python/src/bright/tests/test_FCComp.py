@@ -153,30 +153,30 @@ class TestFCCompMethods(TestCase):
             elif f in [".h5", "fcc.h5", "fuel_cycle.h5"]:
                 os.remove(f)
 
-    def test_setParams(self):
+    def test_calc_params(self):
         fcc = FCComp(set(["Mass"]))
-        fcc.setParams()
+        fcc.calc_params()
         assert_equal(fcc.params_prior_calc["Mass"],  0.0)
         assert_equal(fcc.params_after_calc["Mass"], 0.0)
 
-    def test_writeIsoPass(self):
+    def test_write_ms_pass(self):
         bright_config.track_isos = set([922350])
         fcc = FCComp()
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
-        fcc.writeIsoPass()
+        fcc.write_ms_pass()
 
-    def test_writeParamPass(self):
+    def test_write_params_pass(self):
         fcc = FCComp(set(["Mass"]))
-        fcc.setParams()
-        fcc.writeParamPass()
+        fcc.calc_params()
+        fcc.write_params_pass()
 
     def test_writeText(self):
         bright_config.track_isos = set([922350])
         fcc = FCComp(set(["Mass"]))
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
-        fcc.setParams()
+        fcc.calc_params()
         fcc.writeText()
 
     def test_writeHDF5_1(self):
@@ -194,7 +194,7 @@ class TestFCCompMethods(TestCase):
         fcc = FCComp(set(["Mass"]), 'fcc')
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
-        fcc.setParams()
+        fcc.calc_params()
         fcc.pass_num = 1
         fcc.writeHDF5()
 

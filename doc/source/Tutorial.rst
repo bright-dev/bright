@@ -79,9 +79,9 @@ However, a reaction will not take place unless the Uranium has a bigger concentr
     enrd.xP_j = 0.036
     enr = bright.Enrichment(enrd, "Enrichment")
 
-The first line in the code snippet above gets the default parameters of the Enrichment component. The parameter xP_j needs to be changed to 3.6% since its default value is 5%. Finally, the Enrichment component is created with the parameters wanted and its is given the name "Enrichment." Now that the Enrichment component is created and has the parameters wanted, it is time to enrich the natural Uranium. This is done with the method doCalc, which calculates the output of the Enrichment component (or any component) from the input MassStream::
+The first line in the code snippet above gets the default parameters of the Enrichment component. The parameter xP_j needs to be changed to 3.6% since its default value is 5%. Finally, the Enrichment component is created with the parameters wanted and its is given the name "Enrichment." Now that the Enrichment component is created and has the parameters wanted, it is time to enrich the natural Uranium. This is done with the method calc, which calculates the output of the Enrichment component (or any component) from the input MassStream::
 
-    doCalc(nu)
+    calc(nu)
 
 Now that we have the Uranium with the concentration of U-235 needed to produce a reaction, it is time to feed it to the Light Water Reactor. In order to create a Light Water Reactor, we need the path to the LWR HDF5 data library. This is done in the following line of code::
 
@@ -99,12 +99,12 @@ The Light Water Reactor is instantiated with the following line of code::
 
 The MassStream that is produced by the Enrichment component can now be feed to the Light Water Reactor::
 
-    lwr.doCalc(enr.ms_prod)
+    lwr.calc(enr.ms_prod)
 
-It is important to know that ms_prod is calculated after doCalc is called. Finally, we feed instantiate a Storage component and feed the output MassStream of the Light Water Reactor to it::
+It is important to know that ms_prod is calculated after calc is called. Finally, we feed instantiate a Storage component and feed the output MassStream of the Light Water Reactor to it::
 
     st = bright.Storage("Storage")
-    st.doCalc(lwr.ms_prod)
+    st.calc(lwr.ms_prod)
 
 Lastly, every fuel cycle component contains a ``writeout()`` method that is used for outputting 
 data to the hard disk in either text or HDF5 format. 
@@ -128,7 +128,7 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     enrd = bright.UraniumEnrichmentDefaults()
     enrd.xP_j = 0.036
     enr = bright.Enrichment(enrd, "Enrichment")
-    enr.doCalc(nu)
+    enr.calc(nu)
     enr.writeout()
 
     # Reactor Calculation
@@ -136,11 +136,11 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     lwrd.BUt = 35.0
     lwrd.batches = 3
     lwr = bright.LightWaterReactor1G(lwr_data, lwrd, "LWR")
-    lwr.doCalc(enr.ms_prod)
+    lwr.calc(enr.ms_prod)
     lwr.writeout()
 
     # Storage Calculation
     st = bright.Storage("Storage")
     st.decay_time = 5.0 * 365.25 * 24.0 * 3600.0
-    st.doCalc(lwr.ms_prod)
+    st.calc(lwr.ms_prod)
     st.writeout()

@@ -61,25 +61,25 @@ int main()
 	printSepEff(rssed);
 	print("");
 
-	print("Test doCalc(CompDict):");
+	print("Test calc(CompDict):");
 	CompDict cd;
 	cd[922350] = 10.0;
 	cd[922360] = 1.0;
 	cd[922380] = 50.0;
 	cd[942390] = 20.0;
 	cd[952421] = 5.0;
-	rssed.doCalc(cd).print_ms();
+	rssed.calc(cd).print_ms();
 	rssed.writeout();
 	print("\t\t\tDone!");
 
-	print("Test doCalc(MassStream):");
-	rssed.doCalc(rssed.ms_prod).print_ms();
+	print("Test calc(MassStream):");
+	rssed.calc(rssed.ms_prod).print_ms();
 	rssed.writeout();
 	print("\t\t\tDone!");
 
-	print("Test doCalc():");
+	print("Test calc():");
 	rssed.ms_feed = rssed.ms_prod;
-	rssed.doCalc().print_ms();
+	rssed.calc().print_ms();
 	rssed.writeout();
 	print("\t\t\tDone!");
 	

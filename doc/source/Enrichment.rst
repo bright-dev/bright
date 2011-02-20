@@ -148,7 +148,7 @@ attributes specific to this class.
 Enrichment Methods
 ==================
 
-.. method:: Enrichment.doCalc([input])
+.. method:: Enrichment.calc([input])
 
     This method performs an optimization calculation on :math:`M^*` and solves for 
     appropriate values for all :class:`Enrichment` attributes.  This includes the 
@@ -174,7 +174,7 @@ Enrichment Methods
           (re-)initialize an :class:`Enrichment` cascade with.
 
 
-.. method:: Enrichment.setParams()
+.. method:: Enrichment.calc_params()
 
     Here the parameters for :class:`Enrichment` are set::
 

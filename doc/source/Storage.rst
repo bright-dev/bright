@@ -79,7 +79,7 @@ Storage Methods
 .. method:: Storage.addchains(iso)
 
     This method adds an isotope's decay chains or a single chain to the :attr:`isochains` set. 
-    This functionality is protected and called automatically by :meth:`doCalc`.
+    This functionality is protected and called automatically by :meth:`calc`.
 
     Args:
         * `iso` (int or isochain):  The isotope or chain to add.  If iso is an integer (zzaaam form), 
@@ -91,16 +91,16 @@ Storage Methods
     This is the central part of the storage algorithm as :meth:`bateman` solves the Bateman
     equation for an isotope decaying into the last nuclide in the isochain vector, starting with a given mass.
     Note that this decay is calculated for a :attr:`decay_time` number of seconds.  This method is private 
-    and implicitly called by :meth:`doCalc`.
+    and implicitly called by :meth:`calc`.
 
     Args:
         * `iso` (zzaaam int): The parent nuclide.  Must be the same as ``isocahin[0]``.
         * `mass` (double): The initial mass of iso.
         * `isochain` (C-vector): The decay chain for iso into a daughter nuclide, ``isochain[-1]``.
 
-.. method:: Storage.doCalc([input, time])
+.. method:: Storage.calc([input, time])
 
-    As usual, :meth:`doCalc` sets up the Storage component's input stream and calculates the corresponding 
+    As usual, :meth:`calc` sets up the Storage component's input stream and calculates the corresponding 
     output :class:`MassStream`.  Here, this amounts to calling :meth:`bateman` for every nuclide in 
     :attr:`ms_feed <bright.FCComp.ms_feed>`, for each chain that ends with a nuclide in :meth:`BriPy.track_isos`.
 
@@ -123,7 +123,7 @@ Storage Methods
     appropriate points in memory.  It is protected and called automatically by the :class:`Storage` constructor.
 
 
-.. method:: Storage.setParams()
+.. method:: Storage.calc_params()
 
     Here the parameters for :class:`Storage` are set.  For storage, this amounts to just
     a "Mass" parameter::

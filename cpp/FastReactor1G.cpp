@@ -56,10 +56,10 @@ FastReactor1G::~FastReactor1G()
 {
 };
 
-void FastReactor1G::setParams()
+void FastReactor1G::calc_params()
 {
     /** Sets relevent FR parameters.
-     *  Overwrites standard, do-nothing setParams() function.
+     *  Overwrites standard, do-nothing calc_params() function.
      */
 
     calcSubStreams();

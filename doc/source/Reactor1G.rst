@@ -527,7 +527,7 @@ only be called as needed (*ie* for generating :attr:`ms_prod <bright.FCComp.ms_p
     This function evaluates :attr:`Mj_F_` calculated from :meth:`mkMj_F_` at the discharge fluence :attr:`Fd`.
     The resultant isotopic dictionary is then converted into the :attr:`ms_prod <bright.FCComp.ms_prod>` mass stream
     for this pass through the reactor.  Thus if ever you need to calculate :attr:`ms_prod <bright.FCComp.ms_prod>`
-    without going through :meth:`doCalc`, use this function.
+    without going through :meth:`calc`, use this function.
 
 
 -------------------------
@@ -667,10 +667,10 @@ should this control be unnecessary for simple calculations.
     benchmarking calculations.
 
 
-.. method:: Reactor1G.doCalc([input])
+.. method:: Reactor1G.calc([input])
 
     Since many other methods provide the computational heavy-lifting of reactor calculations, 
-    the :meth:`doCalc` method is relatively simple::
+    the :meth:`calc` method is relatively simple::
 
         self.ms_feed = input
         self.foldMassWeights()

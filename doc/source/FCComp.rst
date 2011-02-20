@@ -44,7 +44,7 @@ FCComp Attributes
         
     This attribute may be accessed and altered directly (public).
 
-    .. note:: Calling :meth:`FCComp.doCalc` should calculate :attr:`ms_prod` from the :attr:`ms_feed` values.
+    .. note:: Calling :meth:`FCComp.calc` should calculate :attr:`ms_prod` from the :attr:`ms_feed` values.
 
 
 .. attribute:: FCComp.params_prior_calc
@@ -67,13 +67,13 @@ FCComp Attributes
         
     .. note::
 
-        The :attr:`params_prior_calc` and :attr:`params_after_calc` attributes do not have meaningful values until :meth:`FCComp.setParams` is
-        called.  This should be done after :meth:`FCComp.doCalc` but prior to output.
+        The :attr:`params_prior_calc` and :attr:`params_after_calc` attributes do not have meaningful values until :meth:`FCComp.calc_params` is
+        called.  This should be done after :meth:`FCComp.calc` but prior to output.
 
 .. attribute:: FCComp.pass_num
 
     An integer representing the number of passes this component has been cycled through.  
-    It starts at zero and is incremented by one each time ``FCComp.writeIsoPass()`` is called.
+    It starts at zero and is incremented by one each time ``FCComp.write_ms_pass()`` is called.
 
     This attribute may be accessed and altered directly (public).
 
@@ -99,11 +99,11 @@ FCComp Attributes
 FCComp Methods
 ==============
 
-.. method:: FCComp.doCalc([input])
+.. method:: FCComp.calc([input])
 
     This method is used to determine a component's output isotopics from its input isotopics.
     Therefore, this is typically where the bulk of a fuel cycle component's algorithm lies.
-    As each component type has a distinct methodology, the :meth:`doCalc` method  needs 
+    As each component type has a distinct methodology, the :meth:`calc` method  needs 
     to be overridden child classes.
 
     This method should return :attr:`ms_prod` so that component calculations may be easily 
@@ -135,26 +135,26 @@ FCComp Methods
        in the current working directory.  Either rename the files or the components if you 
        want to ensure that data is not lost.
 
-.. method:: FCComp.setParams()
+.. method:: FCComp.calc_params()
 
     By calling this method, all parameter values are calculated and set for the fuel cycle component.
-    This should be done following a :meth:`doCalc` calculation but before data is written out.
+    This should be done following a :meth:`calc` calculation but before data is written out.
     If a component has important parameters associated with it, this function must be overridden and called.
 
-    Note that this is called first thing when `writeParamPass` is called.  For example, reprocessing only 
-    has a "Mass" parameter.  Translated into Python, :meth:`setParams` here looks like the following::
+    Note that this is called first thing when `write_params_pass` is called.  For example, reprocessing only 
+    has a "Mass" parameter.  Translated into Python, :meth:`calc_params` here looks like the following::
 
-        def setParams(self):
+        def calc_params(self):
             self.params_prior_calc["Mass"]  = self.ms_feed.mass
             self.params_after_calc["Mass"] = self.ms_prod.mass
             return
 
 
-.. method:: FCComp.writeIsoPass()
+.. method:: FCComp.write_ms_pass()
 
     This method is responsible for adding a new pass to the output text file 
     "``{FCComp.name}Isos.txt``" for this component.  Further calculations should
-    not be performed after :meth:`writeIsoPass` has been called.
+    not be performed after :meth:`write_ms_pass` has been called.
 
     This function has one very important subtlety: it does not write out mass streams data.
     Rather, input columns are given as normalized isotopic vectors (:attr:`MassStream.MassStream.comp`).
@@ -194,11 +194,11 @@ FCComp Methods
         PU239   0.000000E+00    5.353362E-03
         PU240   0.000000E+00    2.114728E-03
 
-.. method:: FCComp.writeParamPass()
+.. method:: FCComp.write_params_pass()
 
-    What :meth:`writeIsoPass` does for a component's input and output isotopics, 
+    What :meth:`write_ms_pass` does for a component's input and output isotopics, 
     this function does for the components parameters.  To ensure that meaningful 
-    data is available, :meth:`writeParamPass` first must have :meth:`setParams` 
+    data is available, :meth:`write_params_pass` first must have :meth:`calc_params` 
     called elsewhere in the program.  Note that to get the pass numbering correct, 
     :attr:`pass_num` should always be incremented prior to this method.  The 
     following is an example of "``{FCComp.name}Params.txt``" for a light water 
@@ -209,8 +209,8 @@ FCComp Methods
 
 .. method:: FCComp.writeText()
 
-    This method calls :meth:`writeIsoPass` and then, if available, calls 
-    :meth:`writeParamPass`.  This is convience function for producing 
+    This method calls :meth:`write_ms_pass` and then, if available, calls 
+    :meth:`write_params_pass`.  This is convience function for producing 
     text-based output.  However, using :meth:`writeout` is recommended.
 
 .. method:: FCComp.writeHDF5()
@@ -223,7 +223,7 @@ FCComp Methods
 
     This is a convenience function that first increments up :attr:`pass_num`.
     Then, it checks to see if there are any parameters for this component.
-    If there are, it sets the current values using :meth:`setParams`.
+    If there are, it sets the current values using :meth:`calc_params`.
 
     If :attr:`bright.write_hdf5` is set, then :meth:`writeHDF5` is called.
 

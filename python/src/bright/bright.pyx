@@ -269,10 +269,10 @@ cdef class FCComp:
     # Class Methods
     #
 
-    def writeIsoPass(self):
+    def write_ms_pass(self):
         """This method is responsible for adding a new pass to the output text file 
         "{FCComp.name}Isos.txt" for this component.  Further calculations should
-        not be performed after :meth:`writeIsoPass` has been called.
+        not be performed after :meth:`write_ms_pass` has been called.
 
         This function has one very important subtlety: it does not write out mass streams data.
         Rather, input columns are given as normalized isotopic vectors.
@@ -313,13 +313,13 @@ cdef class FCComp:
             PU240   0.000000E+00    2.114728E-03
 
         """
-        self.fccomp_pointer.writeIsoPass()
+        self.fccomp_pointer.write_ms_pass()
 
 
-    def writeParamPass(self):
-        """What writeIsoPass() does for a component's input and output isotopics, 
+    def write_params_pass(self):
+        """What write_ms_pass() does for a component's input and output isotopics, 
         this function does for the components parameters.  To ensure that meaningful 
-        data is available, writeParamPass() first must have setParams()
+        data is available, write_params_pass() first must have calc_params()
         called elsewhere in the program.  Note that to get the pass numbering correct, 
         pass_num should always be incremented prior to this method.  The 
         following is an example of "{FCComp.name}Params.txt" for a light water 
@@ -329,12 +329,12 @@ cdef class FCComp:
             Mass    9.985828E-01    9.975915E-01
 
         """
-        self.fccomp_pointer.writeParamPass()
+        self.fccomp_pointer.write_params_pass()
         
 
     def writeText(self):
-        """This method calls writeIsoPass() and then, if available, calls 
-        writeParamPass().  This is convience function for producing 
+        """This method calls write_ms_pass() and then, if available, calls 
+        write_params_pass().  This is convience function for producing 
         text-based output.  However, using writeout() is recommended.
         """
         self.fccomp_pointer.writeText()
@@ -351,7 +351,7 @@ cdef class FCComp:
     def writeout(self):
         """This is a convenience function that first increments up pass_num.
         Then, it checks to see if there are any parameters for this component.
-        If there are, it sets the current values using :meth:`setParams`.
+        If there are, it sets the current values using :meth:`calc_params`.
 
         If bright.write_hdf5 is set, then writeHDF5() is called.
 
@@ -365,26 +365,26 @@ cdef class FCComp:
 
     # Virtual methods
 
-    def setParams(self):
+    def calc_params(self):
         """By calling this method, all parameter values are calculated and set for the fuel cycle component.
-        This should be done following a doCalc() calculation but before data is written out.
+        This should be done following a calc() calculation but before data is written out.
         If a component has important parameters associated with it, this function must be overridden and called.
 
-        Note that this is called first thing when writeParamPass() is called.  For example, reprocessing only 
-        has a "Mass" parameter.  Translated into Python, setParams() here looks like the following::
+        Note that this is called first thing when write_params_pass() is called.  For example, reprocessing only 
+        has a "Mass" parameter.  Translated into Python, calc_params() here looks like the following::
 
-            def setParams(self):
+            def calc_params(self):
                 self.params_prior_calc["Mass"]  = self.ms_feed.mass
                 self.params_after_calc["Mass"] = self.ms_prod.mass
                 return
         """
-        self.fccomp_pointer.setParams()
+        self.fccomp_pointer.calc_params()
 
 
-    def doCalc(self):
+    def calc(self):
         """This method is used to determine a component's output isotopics from its input isotopics.
         Therefore, this is typically where the bulk of a fuel cycle component's algorithm lies.
-        As each component type has a distinct methodology, the doCalc() method  needs 
+        As each component type has a distinct methodology, the calc() method  needs 
         to be overridden child classes.
 
         This method should return ms_prod so that component calculations may be easily 
@@ -400,7 +400,7 @@ cdef class FCComp:
 
         """
         cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
-        py_ms.ms_pointer[0] = self.fccomp_pointer.doCalc()
+        py_ms.ms_pointer[0] = self.fccomp_pointer.calc()
         return py_ms
 
 
@@ -749,7 +749,7 @@ cdef class Enrichment(FCComp):
         self.e_pointer.initialize(<cpp_bright.EnrichmentParameters> enr_par.ep_pointer[0])
 
 
-    def setParams(self):
+    def calc_params(self):
         """Here the parameters for Enrichment are set::
 
             self.params_prior_calc["MassFeed"]  = self.ms_feed.mass
@@ -780,10 +780,10 @@ cdef class Enrichment(FCComp):
             self.params_after_calc["SWUperProduct"] = self.SWUperProduct
 
         """
-        (<cpp_bright.FCComp *> self.e_pointer).setParams()
+        (<cpp_bright.FCComp *> self.e_pointer).calc_params()
 
 
-    def doCalc(self, input=None):
+    def calc(self, input=None):
         """This method performs an optimization calculation on M* and solves for 
         appropriate values for all Enrichment attributes.  This includes the 
         product and waste streams flowing out of the the cascade as well.
@@ -801,12 +801,12 @@ cdef class Enrichment(FCComp):
         cdef mass_stream.MassStream output = mass_stream.MassStream()
 
         if input is None:
-            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.e_pointer).doCalc()
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.e_pointer).calc()
         elif isinstance(input, dict):
-            output.ms_pointer[0] = self.e_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+            output.ms_pointer[0] = self.e_pointer.calc(conv.dict_to_map_int_dbl(input))
         elif isinstance(input, mass_stream.MassStream):
             in_ms = input
-            output.ms_pointer[0] = self.e_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+            output.ms_pointer[0] = self.e_pointer.calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
 
@@ -1018,7 +1018,7 @@ cdef class Reprocess(FCComp):
         self.r_pointer.initialize(conv.dict_to_map_int_dbl(sepdict))
 
 
-    def setParams(self):
+    def calc_params(self):
         """Here the parameters for Reprocess are set.  For reprocessing, this amounts to just
         a "Mass" parameter::
 
@@ -1026,10 +1026,10 @@ cdef class Reprocess(FCComp):
             self.params_after_calc["Mass"] = self.ms_prod.mass
 
         """
-        (<cpp_bright.FCComp *> self.r_pointer).setParams()
+        (<cpp_bright.FCComp *> self.r_pointer).calc_params()
 
 
-    def doCalc(self, input=None):
+    def calc(self, input=None):
         """This method performs the relatively simply task of multiplying the current input stream by 
         the SE to form a new output stream::
 
@@ -1052,12 +1052,12 @@ cdef class Reprocess(FCComp):
         cdef mass_stream.MassStream output = mass_stream.MassStream()
 
         if input is None:
-            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.r_pointer).doCalc()
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.r_pointer).calc()
         elif isinstance(input, dict):
-            output.ms_pointer[0] = self.r_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+            output.ms_pointer[0] = self.r_pointer.calc(conv.dict_to_map_int_dbl(input))
         elif isinstance(input, mass_stream.MassStream):
             in_ms = input
-            output.ms_pointer[0] = self.r_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+            output.ms_pointer[0] = self.r_pointer.calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
 
@@ -1174,18 +1174,18 @@ cdef class Storage(FCComp):
     # Class Methods
     # 
 
-    def setParams(self):
+    def calc_params(self):
         """Here the parameters for Storage are set.  For storage, this amounts to just
         a "Mass" parameter::
 
             self.params_prior_calc["Mass"]  = self.ms_feed.mass
             self.params_after_calc["Mass"] = self.ms_prod.mass
         """
-        (<cpp_bright.FCComp *> self.s_pointer).setParams()
+        (<cpp_bright.FCComp *> self.s_pointer).calc_params()
 
 
-    def doCalc(self, input=None, decay_time=None):
-        """As usual, doCalc sets up the Storage component's input stream and calculates the corresponding 
+    def calc(self, input=None, decay_time=None):
+        """As usual, calc sets up the Storage component's input stream and calculates the corresponding 
         output MassStream.  Here, this amounts to calling bateman() for every nuclide in 
         ms_feed, for each chain that ends with a nuclide in track_isos.
 
@@ -1206,22 +1206,22 @@ cdef class Storage(FCComp):
 
         if decay_time is None:
             if input is None:
-                output.ms_pointer[0] = (<cpp_bright.FCComp *> self.s_pointer).doCalc()
+                output.ms_pointer[0] = (<cpp_bright.FCComp *> self.s_pointer).calc()
             elif isinstance(input, dict):
-                output.ms_pointer[0] = self.s_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+                output.ms_pointer[0] = self.s_pointer.calc(conv.dict_to_map_int_dbl(input))
             elif isinstance(input, mass_stream.MassStream):
                 in_ms = input
-                output.ms_pointer[0] = self.s_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+                output.ms_pointer[0] = self.s_pointer.calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
             else:
                 raise TypeError("'input' must be a MassStream, dict, or None.")
         else:
             if input is None:
-                output.ms_pointer[0] = self.s_pointer.doCalc(<double> decay_time)
+                output.ms_pointer[0] = self.s_pointer.calc(<double> decay_time)
             elif isinstance(input, dict):
-                output.ms_pointer[0] = self.s_pointer.doCalc(conv.dict_to_map_int_dbl(input), <double> decay_time)
+                output.ms_pointer[0] = self.s_pointer.calc(conv.dict_to_map_int_dbl(input), <double> decay_time)
             elif isinstance(input, mass_stream.MassStream):
                 in_ms = input
-                output.ms_pointer[0] = self.s_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0], <double> decay_time)
+                output.ms_pointer[0] = self.s_pointer.calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0], <double> decay_time)
             else:
                 raise TypeError("'input' must be a MassStream, dict, or None.")
 
@@ -2210,7 +2210,7 @@ cdef class Reactor1G(FCComp):
         """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
         The resultant isotopic dictionary is then converted into the ms_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate ms_prod
-        without going through doCalc(), use this function.
+        without going through calc(), use this function.
         """
         self.r1g_pointer.mkMj_Fd_()
 
@@ -2380,9 +2380,9 @@ cdef class Reactor1G(FCComp):
 
 
 
-    def doCalc(self, input=None):
+    def calc(self, input=None):
         """Since many other methods provide the computational heavy-lifting of reactor calculations, 
-        the doCalc() method is relatively simple::
+        the calc() method is relatively simple::
 
             self.ms_feed = input
             self.foldMassWeights()
@@ -2405,12 +2405,12 @@ cdef class Reactor1G(FCComp):
         cdef mass_stream.MassStream output = mass_stream.MassStream()
 
         if input is None:
-            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.r1g_pointer).doCalc()
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.r1g_pointer).calc()
         elif isinstance(input, dict):
-            output.ms_pointer[0] = self.r1g_pointer.doCalc(conv.dict_to_map_int_dbl(input))
+            output.ms_pointer[0] = self.r1g_pointer.calc(conv.dict_to_map_int_dbl(input))
         elif isinstance(input, mass_stream.MassStream):
             in_ms = input
-            output.ms_pointer[0] = self.r1g_pointer.doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+            output.ms_pointer[0] = self.r1g_pointer.calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
 
@@ -3200,7 +3200,7 @@ cdef class LightWaterReactor1G(Reactor1G):
 
     # LWR1G Methods
 
-    def setParams(self):
+    def calc_params(self):
         """Along with its own parameter set to track, the LWR model implements its own function to set these
         parameters.  This function is equivalent to the following::
 
@@ -3222,7 +3222,7 @@ cdef class LightWaterReactor1G(Reactor1G):
             self.params_prior_calc["FP"]  = 1.0 - self.InACT.mass  - self.InLAN.mass
 
         """
-        (<cpp_bright.FCComp *> self.lwr1g_pointer).setParams()
+        (<cpp_bright.FCComp *> self.lwr1g_pointer).calc_params()
 
 
     # Reactor1G Methods
@@ -3279,7 +3279,7 @@ cdef class LightWaterReactor1G(Reactor1G):
         """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
         The resultant isotopic dictionary is then converted into the ms_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate ms_prod
-        without going through doCalc(), use this function.
+        without going through calc(), use this function.
         """
         (<cpp_bright.Reactor1G *> self.lwr1g_pointer).mkMj_Fd_()
 
@@ -3449,9 +3449,9 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
 
-    def doCalc(self, input=None):
+    def calc(self, input=None):
         """Since many other methods provide the computational heavy-lifting of reactor calculations, 
-        the doCalc() method is relatively simple::
+        the calc() method is relatively simple::
 
             self.ms_feed = input
             self.foldMassWeights()
@@ -3474,12 +3474,12 @@ cdef class LightWaterReactor1G(Reactor1G):
         cdef mass_stream.MassStream output = mass_stream.MassStream()
 
         if input is None:
-            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.lwr1g_pointer).doCalc()
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.lwr1g_pointer).calc()
         elif isinstance(input, dict):
-            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).doCalc(conv.dict_to_map_int_dbl(input))
+            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc(conv.dict_to_map_int_dbl(input))
         elif isinstance(input, mass_stream.MassStream):
             in_ms = input
-            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
 
@@ -4269,7 +4269,7 @@ cdef class FastReactor1G(Reactor1G):
 
     # FastReactor1G Methods
 
-    def setParams(self):
+    def calc_params(self):
         """Along with its own parameter set to track, the FR model implements its own function to set these
         parameters.  This function is equivalent to the following::
 
@@ -4298,7 +4298,7 @@ cdef class FastReactor1G(Reactor1G):
             self.params_after_calc["FP"] = 1.0 - self.OutACT.mass - self.OutLAN.mass
 
         """
-        (<cpp_bright.FCComp *> self.fr1g_pointer).setParams()
+        (<cpp_bright.FCComp *> self.fr1g_pointer).calc_params()
 
 
     # Reactor1G Methods
@@ -4355,7 +4355,7 @@ cdef class FastReactor1G(Reactor1G):
         """This function evaluates Mj_F_ calculated from mkMj_F_() at the discharge fluence Fd.
         The resultant isotopic dictionary is then converted into the ms_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate ms_prod
-        without going through doCalc(), use this function.
+        without going through calc(), use this function.
         """
         (<cpp_bright.Reactor1G *> self.fr1g_pointer).mkMj_Fd_()
 
@@ -4525,9 +4525,9 @@ cdef class FastReactor1G(Reactor1G):
 
 
 
-    def doCalc(self, input=None):
+    def calc(self, input=None):
         """Since many other methods provide the computational heavy-lifting of reactor calculations, 
-        the doCalc() method is relatively simple::
+        the calc() method is relatively simple::
 
             self.ms_feed = input
             self.foldMassWeights()
@@ -4550,12 +4550,12 @@ cdef class FastReactor1G(Reactor1G):
         cdef mass_stream.MassStream output = mass_stream.MassStream()
 
         if input is None:
-            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.fr1g_pointer).doCalc()
+            output.ms_pointer[0] = (<cpp_bright.FCComp *> self.fr1g_pointer).calc()
         elif isinstance(input, dict):
-            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).doCalc(conv.dict_to_map_int_dbl(input))
+            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc(conv.dict_to_map_int_dbl(input))
         elif isinstance(input, mass_stream.MassStream):
             in_ms = input
-            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).doCalc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
+            output.ms_pointer[0] = (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
 
@@ -4884,7 +4884,7 @@ cdef class FuelFabrication(FCComp):
                                    r1g.r1g_pointer[0])
 
 
-    def setParams(self):
+    def calc_params(self):
         """Here the parameters for FuelFabrication are set.  For example::
 
             self.params_prior_calc["Weight_U235"]  = self.mass_weights_in["U235"]
@@ -4899,7 +4899,7 @@ cdef class FuelFabrication(FCComp):
             self.params_prior_calc["deltaR_U238"]  = self.deltaRs["U238"]
             self.Paramsout["deltaR_U238"] = self.deltaRs["U238"]
         """
-        (<cpp_bright.FCComp *> self.ff_pointer).setParams()
+        (<cpp_bright.FCComp *> self.ff_pointer).calc_params()
 
 
 
@@ -4933,7 +4933,7 @@ cdef class FuelFabrication(FCComp):
 
 
 
-    def doCalc(self, mass_streams=None, mass_weights_in=None, reactor=None):
+    def calc(self, mass_streams=None, mass_weights_in=None, reactor=None):
         """This method performs an optimization calculation on all input mass streams to determine
         the mass ratios that generate the correct fuel form for the reactor.  It then compiles 
         the fuel and returns the resultant MassStream. 
@@ -4951,11 +4951,11 @@ cdef class FuelFabrication(FCComp):
         cdef mass_stream.MassStream core_input = mass_stream.MassStream()
 
         if (mass_streams is None) and (mass_weights_in is None) and (reactor is None):
-            core_input.ms_pointer[0] = (<cpp_bright.FCComp *> self.ff_pointer).doCalc()
+            core_input.ms_pointer[0] = (<cpp_bright.FCComp *> self.ff_pointer).calc()
 
         elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G):
             r1g = reactor
-            core_input.ms_pointer[0] = self.ff_pointer.doCalc(
+            core_input.ms_pointer[0] = self.ff_pointer.calc(
                                                             mass_stream.dict_to_map_str_msp(mass_streams), 
                                                             conv.dict_to_map_str_dbl(mass_weights_in), 
                                                             r1g.r1g_pointer[0])

@@ -97,7 +97,7 @@ attributes specific to this class.
 FuelFabrication Commom Methods
 ==============================
 
-.. method:: FuelFabrication.doCalc([mass_streams, mass_weights_in, reactor])
+.. method:: FuelFabrication.calc([mass_streams, mass_weights_in, reactor])
 
     This method performs an optimization calculation on all input mass streams to determine
     the mass ratios that generate the correct fuel form for the reactor.  It then compiles 
@@ -125,7 +125,7 @@ FuelFabrication Commom Methods
         * `reactor` (:class:`Reactor1G`): An instance of a Reactor1G class to fabricate fuel for.
 
 
-.. method:: FuelFabrication.setParams()
+.. method:: FuelFabrication.calc_params()
 
     Here the parameters for :class:`FuelFabrication` are set.  For example::
 

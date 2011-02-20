@@ -82,43 +82,43 @@ class TestStorageMethods(TestCase):
             elif f in [".h5", "s.h5"]:
                 os.remove(f)
 
-    def test_doCalc_1(self):
+    def test_calc_1(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.decay_time = 0.0
         s.ms_feed = MassStream({942390: 1.0})
-        s.doCalc()
+        s.calc()
         assert_equal(s.ms_prod.mass, 1.0)
         assert_almost_equal(s.ms_prod.comp[942390], 1.0) 
 
-    def test_doCalc_2(self):
+    def test_calc_2(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.decay_time = 0.0
-        s.doCalc(MassStream({942390: 1.0}))
+        s.calc(MassStream({942390: 1.0}))
         assert_equal(s.ms_prod.mass, 1.0)
         assert_equal(s.ms_prod.comp[942390], 1.0) 
 
-    def test_doCalc_3(self):
+    def test_calc_3(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
         s.ms_feed = MassStream({942390: 1.0})
-        s.doCalc(decay_time=24110*365.25*24*3600)
+        s.calc(decay_time=24110*365.25*24*3600)
         assert(s.ms_prod.mass < 1.0)
         assert_almost_equal(s.ms_prod.comp[942390], 0.5, 3) 
 
-    def test_doCalc_4(self):
+    def test_calc_4(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
-        s.doCalc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
+        s.calc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
         assert(s.ms_prod.mass < 1.0)
         assert_almost_equal(s.ms_prod.comp[942390], 0.5, 3) 
 
-    def test_setParams(self):
+    def test_calc_params(self):
         bright_config.track_isos = set([922350, 922380, 942390])
         s = Storage()
-        s.doCalc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
-        s.setParams()
+        s.calc(MassStream({942390: 1.0}), 24110*365.25*24*3600)
+        s.calc_params()
         assert_equal(s.params_prior_calc["Mass"],  1.00)
         assert(0.5 < s.params_after_calc["Mass"] < 1.0)
         

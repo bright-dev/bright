@@ -72,15 +72,15 @@ public:
     std::set<std::string> track_params;	//Set of Parameters to track for this component
 
     //Public access functions
-    virtual void setParams ();
-    void writeIsoPass ();
-    void writeParamPass ();
+    virtual void calc_params ();
+    void write_ms_pass ();
+    void write_params_pass ();
     void writeText ();
     void writeHDF5 ();
     void writeout ();
-    virtual MassStream doCalc ();
-    virtual MassStream doCalc (CompDict);
-    virtual MassStream doCalc (MassStream);
+    virtual MassStream calc ();
+    virtual MassStream calc (CompDict);
+    virtual MassStream calc (MassStream);
 };
 
 #endif

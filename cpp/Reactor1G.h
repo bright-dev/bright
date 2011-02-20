@@ -201,9 +201,9 @@ public:
     void         Run_PNL(double);
     void         Calibrate_PNL_2_BUd();
 
-    MassStream   doCalc ();
-    MassStream   doCalc (CompDict);
-    MassStream   doCalc (MassStream);	
+    MassStream   calc ();
+    MassStream   calc (CompDict);
+    MassStream   calc (MassStream);	
 
     void LatticeEPlanar(double, double);
     void LatticeFPlanar(double, double);

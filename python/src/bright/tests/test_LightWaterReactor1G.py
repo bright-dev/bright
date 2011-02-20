@@ -262,14 +262,14 @@ class TestLightWaterReactor1GMethods(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_setParams(self):
+    def test_calc_params(self):
         lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
         bright.load_track_isos_hdf5(lf)
         rp = bright.LWRDefaults()
         rp.BUt = 50.0
         lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
-        lwr.doCalc(MassStream({922350: 0.05, 922380:0.95}))
-        lwr.setParams()
+        lwr.calc(MassStream({922350: 0.05, 922380:0.95}))
+        lwr.calc_params()
         assert_equal(lwr.params_prior_calc["BUd"],  0.0)
         assert_equal(lwr.params_after_calc["BUd"], lwr.BUd)
         assert_equal(lwr.params_prior_calc["U"],  lwr.InU.mass)
