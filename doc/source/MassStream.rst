@@ -220,44 +220,22 @@ Once again, we'll use the natural uranium stream from before as an example::
 SubStream Methods
 -----------------
 
-.. method:: MassStream.get_sub_streamInt(iso_list [, name])
+.. method:: MassStream.get_sub_stream(iso_list [, name])
 
     Grabs a subset of the mass streams and returns a new stream comprised of only
     the specified nuclides.  The elements or isotopes included in the new substream
-    are determined by iso_list, which is must only contain integers. 
+    are determined by iso_list, which may contain integers or strings. 
 
     The input here is seen as a suggestion and so no error is raised if a nuclide 
     is asked for via iso_list that is not present in the original mass stream.
 
     Args:
         * `isoname` (list): Elements and isotopes to be taken from current stream.
-          Members of this list must be integers.  For example, ``[92, 942390]``
+          Members of this list must be integers.  For example, ``[92, 942390, 'U235']``
           would take all uranium atoms and Pu-239.  
         * `name` (str): The name of the substream.
 
      Returns:
-        * `substream` (MassStream): A new mass stream object that only 
-          has the members given in iso_list.  The mass of the substream
-          is calculated based on the weight fraction composition and mass
-          of the original mass stream.
-
-
-.. method:: MassStream.get_sub_streamStr(iso_list [, name])
-
-    Grabs a subset of the mass streams and returns a new stream comprised of only
-    the specified nuclides.  The elements or isotopes included in the substream
-    are determined by iso_list, which is must only contain strings. 
-
-    The input here is seen as a suggestion and so no error is raised if a nuclide 
-    is asked for via iso_list that is not present in the original mass stream.
-
-    Args:
-        * `isoname` (list): Elements and isotopes to be taken from current stream.
-           Members of this list must be strings.  For example, ``['U', 'PU239']``
-           would take all uranium atoms and Pu-239.  
-        * `name` (str): The name of the substream.
-
-    Returns:
         * `substream` (MassStream): A new mass stream object that only 
           has the members given in iso_list.  The mass of the substream
           is calculated based on the weight fraction composition and mass

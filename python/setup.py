@@ -11,6 +11,8 @@ from Cython.Distutils import build_ext
 
 import numpy as np
 
+from setup_data import INFO
+
 # Clean up old files
 cython_cpp_files = ['src/stlconverters.cpp', 
                     'src/isoname/isoname.cpp', 
@@ -172,7 +174,7 @@ elif os.name == "nt":
 ### Call setup! ###
 ###################
 setup(name="bright",
-    version = '0.25',
+    version = INFO['version'],
     description = 'Bright/Python',
     author = 'Anthony Scopatz',
     author_email = 'scopatz@gmail.com',
