@@ -457,7 +457,7 @@ void Reactor1G::fold_mass_weights()
     //Implement the disadvantage factor, if needed.
     if (use_zeta)
     {
-        calcZeta();
+        calc_zeta();
         for (int f = 0; f < F.size(); f++)
         {
             dC_F_[f] = zeta_F_[f] * dC_F_[f];
@@ -1049,7 +1049,7 @@ MassStream Reactor1G::calc (MassStream instream)
 };
 
 
-void Reactor1G::LatticeEPlanar(double a, double b)
+void Reactor1G::lattice_E_planar(double a, double b)
 {
     lattice_E_F_.clear();
         lattice_E_F_.assign( F.size(), 0.0 );
@@ -1064,7 +1064,7 @@ void Reactor1G::LatticeEPlanar(double a, double b)
     return;
 };
 
-void Reactor1G::LatticeFPlanar(double a, double b)
+void Reactor1G::lattice_F_planar(double a, double b)
 {
     lattice_F_F_.clear();
         lattice_F_F_.assign( F.size(), 0.0 );
@@ -1079,7 +1079,7 @@ void Reactor1G::LatticeFPlanar(double a, double b)
     return; 
 };
 
-void Reactor1G::LatticeESpherical(double a, double b)
+void Reactor1G::lattice_E_spherical(double a, double b)
 {
     lattice_E_F_.clear();
         lattice_E_F_.assign( F.size(), 0.0 );
@@ -1099,7 +1099,7 @@ void Reactor1G::LatticeESpherical(double a, double b)
     return;
 };
     
-void Reactor1G::LatticeFSpherical(double a, double b)
+void Reactor1G::lattice_F_spherical(double a, double b)
 {
     lattice_F_F_.clear();
         lattice_F_F_.assign( F.size(), 0.0 );
@@ -1114,7 +1114,7 @@ void Reactor1G::LatticeFSpherical(double a, double b)
     return; 
 };
 
-void Reactor1G::LatticeECylindrical(double a, double b)
+void Reactor1G::lattice_E_cylindrical(double a, double b)
 {
     namespace bm = boost::math;
 
@@ -1138,7 +1138,7 @@ void Reactor1G::LatticeECylindrical(double a, double b)
     return;
 };
     
-void Reactor1G::LatticeFCylindrical(double a, double b)
+void Reactor1G::lattice_F_cylindrical(double a, double b)
 {
     namespace bm = boost::math;
 
@@ -1159,7 +1159,7 @@ void Reactor1G::LatticeFCylindrical(double a, double b)
     return;
 };
 
-void Reactor1G::calcZeta()
+void Reactor1G::calc_zeta()
 {
     // Computes the thermal disadvantage factor
 
@@ -1254,24 +1254,24 @@ void Reactor1G::calcZeta()
         a = r;
         b = l / 2.0;
     
-        LatticeEPlanar(a, b);
-        LatticeFPlanar(a, b);
+        lattice_E_planar(a, b);
+        lattice_F_planar(a, b);
     }
     else if (lattice_flag == "Spherical")
     {
         a = r;
         b = l / 2.0;
     
-        LatticeESpherical(a, b);
-        LatticeFSpherical(a, b);
+        lattice_E_spherical(a, b);
+        lattice_F_spherical(a, b);
     }
     else if (lattice_flag == "Cylindrical")
     {
         a = r;
         b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
 
-        LatticeECylindrical(a, b);
-        LatticeFCylindrical(a, b);
+        lattice_E_cylindrical(a, b);
+        lattice_F_cylindrical(a, b);
     }
     else
     {
@@ -1281,8 +1281,8 @@ void Reactor1G::calcZeta()
         a = r;
         b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
 
-        LatticeECylindrical(a, b);
-        LatticeFCylindrical(a, b);
+        lattice_E_cylindrical(a, b);
+        lattice_F_cylindrical(a, b);
     };
 
     //Finally, Calculate Zeta
@@ -1336,23 +1336,23 @@ void Reactor1G::calcZeta()
     return;
 };
 
-void Reactor1G::calcZetaPlanar()
+void Reactor1G::calc_zeta_planar()
 {
     lattice_flag = "Planar";
-    calcZeta();
+    calc_zeta();
     return;
 };
 
-void Reactor1G::calcZetaSpherical()
+void Reactor1G::calc_zeta_spherical()
 {
     lattice_flag = "Spherical";
-    calcZeta();
+    calc_zeta();
     return;
 };
 
-void Reactor1G::calcZetaCylindrical()
+void Reactor1G::calc_zeta_cylindrical()
 {
     lattice_flag = "Cylindrical";
-    calcZeta();
+    calc_zeta();
     return;
 };

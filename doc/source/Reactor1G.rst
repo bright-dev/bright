@@ -328,7 +328,7 @@ are C-vectors of doubles or floats.
 .. attribute:: Reactor1G.zeta_F_
 
     The thermal disadvantage factor as a function of fluence.  This attribute is unitless and is set when 
-    :meth:`calcZeta` is called.
+    :meth:`calc_zeta` is called.
 
 
 --------------------
@@ -701,7 +701,7 @@ Lamarsh's `Nuclear Reactor Theory <http://www.amazon.com/Introduction-Nuclear-Re
 for more information.
 
 
-.. method:: Reactor1G.LatticeEPlanar(a, b)
+.. method:: Reactor1G.lattice_E_planar(a, b)
 
     Calculates the lattice function E(F) for planar geometry.  Sets value as :attr:`lattice_E_F_`
 
@@ -709,7 +709,7 @@ for more information.
         * `a` (float): Fuel region radius equivalent [cm].
         * `b` (float): Unit fuel cell pitch length equivalent [cm].
 
-.. method:: Reactor1G.LatticeFPlanar(a, b)
+.. method:: Reactor1G.lattice_F_planar(a, b)
 
     Calculates the lattice function F(F) for planar geometry.  Sets value as :attr:`lattice_F_F_`
 
@@ -717,7 +717,7 @@ for more information.
         * `a` (float): Fuel region radius equivalent [cm].
         * `b` (float): Unit fuel cell pitch length equivalent [cm].
 
-.. method:: Reactor1G.LatticeESpherical(a, b)
+.. method:: Reactor1G.lattice_E_spherical(a, b)
 
     Calculates the lattice function E(F) for spherical geometry.  Sets value as :attr:`lattice_E_F_`
 
@@ -725,7 +725,7 @@ for more information.
         * `a` (float): Fuel region radius equivalent [cm].
         * `b` (float): Unit fuel cell pitch length equivalent [cm].
 
-.. method:: Reactor1G.LatticeFSpherical(a, b)
+.. method:: Reactor1G.lattice_F_spherical(a, b)
 
     Calculates the lattice function F(F) for spherical geometry.  Sets value as :attr:`lattice_F_F_`
 
@@ -733,7 +733,7 @@ for more information.
         * `a` (float): Fuel region radius equivalent [cm].
         * `b` (float): Unit fuel cell pitch length equivalent [cm].
 
-.. method:: Reactor1G.LatticeECylindrical(a, b)
+.. method:: Reactor1G.lattice_E_cylindrical(a, b)
 
     Calculates the lattice function E(F) for cylindrical geometry.  Sets value as :attr:`lattice_E_F_`
 
@@ -741,7 +741,7 @@ for more information.
         * `a` (float): Fuel region radius equivalent [cm].
         * `b` (float): Unit fuel cell pitch length equivalent [cm].
 
-.. method:: Reactor1G.LatticeFCylindrical(a, b)
+.. method:: Reactor1G.lattice_F_cylindrical(a, b)
 
     Calculates the lattice function F(F) for cylindrical geometry.  Sets value as :attr:`lattice_F_F_`
 
@@ -778,22 +778,22 @@ This baseline value happens to be a function of ``VF/VC``.
 The Lamarsh method is then used as a scaling factor on the baseline function to 
 account for variations in fuel composition and fluence.
 
-.. method:: Reactor1G.calcZeta()
+.. method:: Reactor1G.calc_zeta()
 
     This calculates the thermal disadvantage factor for the geometry specified by :attr:`Lattice`.  The results
     are set to :attr:`zeta_F_`.
 
-.. method:: Reactor1G.calcZetaPlanar()
+.. method:: Reactor1G.calc_zeta_planar()
 
     This calculates the thermal disadvantage factor for a planar geometry.  The results
     are set to :attr:`zeta_F_`.
 
-.. method:: Reactor1G.calcZetaSpherical()
+.. method:: Reactor1G.calc_zeta_spherical()
 
     This calculates the thermal disadvantage factor for a spherical geometry.  The results
     are set to :attr:`zeta_F_`.
 
-.. method:: Reactor1G.calcZetaCylindrical()
+.. method:: Reactor1G.calc_zeta_cylindrical()
 
     This calculates the thermal disadvantage factor for a cylindrical geometry.  The results
     are set to :attr:`zeta_F_`.

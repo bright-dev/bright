@@ -313,17 +313,17 @@ cdef extern from "../Reactor1G.h":
         cpp_mass_stream.MassStream calc(map[int, double])
         cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
 
-        void LatticeEPlanar(double, double)
-        void LatticeFPlanar(double, double)
-        void LatticeESpherical(double, double)
-        void LatticeFSpherical(double, double)
-        void LatticeECylindrical(double, double)
-        void LatticeFCylindrical(double, double)
+        void lattice_E_planar(double, double)
+        void lattice_F_planar(double, double)
+        void lattice_E_spherical(double, double)
+        void lattice_F_spherical(double, double)
+        void lattice_E_cylindrical(double, double)
+        void lattice_F_cylindrical(double, double)
 
-        void calcZeta()
-        void calcZetaPlanar()
-        void calcZetaSpherical()
-        void calcZetaCylindrical()
+        void calc_zeta()
+        void calc_zeta_planar()
+        void calc_zeta_spherical()
+        void calc_zeta_cylindrical()
 
 
 

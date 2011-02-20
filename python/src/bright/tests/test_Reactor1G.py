@@ -1000,7 +1000,7 @@ class TestReactor1GLatticeMethods(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_LatticeEPlanar(self):
+    def test_lattice_E_planar(self):
         prev = self.r1g.lattice_E_F_
         self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
@@ -1010,7 +1010,7 @@ class TestReactor1GLatticeMethods(TestCase):
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
-    def test_LatticeFPlanar(self):
+    def test_lattice_F_planar(self):
         prev = self.r1g.lattice_F_F_
         self.r1g.lattice_flag = "Planar"
         self.r1g.r = 0.5
@@ -1020,7 +1020,7 @@ class TestReactor1GLatticeMethods(TestCase):
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
-    def test_LatticeESpherical(self):
+    def test_lattice_E_spherical(self):
         prev = self.r1g.lattice_E_F_
         self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
@@ -1030,7 +1030,7 @@ class TestReactor1GLatticeMethods(TestCase):
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
-    def test_LatticeFSpherical(self):
+    def test_lattice_F_spherical(self):
         prev = self.r1g.lattice_F_F_
         self.r1g.lattice_flag = "Spherical"
         self.r1g.r = 0.5
@@ -1040,7 +1040,7 @@ class TestReactor1GLatticeMethods(TestCase):
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
-    def test_LatticeECylindrical(self):
+    def test_lattice_E_cylindrical(self):
         prev = self.r1g.lattice_E_F_
         self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
@@ -1050,7 +1050,7 @@ class TestReactor1GLatticeMethods(TestCase):
         for f in range(len(self.r1g.F)):
             assert_not_equal(prev[f], curr[f])
 
-    def test_LatticeFCylindrical(self):
+    def test_lattice_F_cylindrical(self):
         prev = self.r1g.lattice_F_F_
         self.r1g.lattice_flag = "Cylindrical"
         self.r1g.r = 0.5
@@ -1062,10 +1062,10 @@ class TestReactor1GLatticeMethods(TestCase):
 
     # Since the above are not exposed directly, 
     # They implicitly test the following Reactor1G functions:
-    #   calcZeta()
-    #   calcZetaPlanar()
-    #   calcZetaSpherical()
-    #   calcZetaCylindrical()
+    #   calc_zeta()
+    #   calc_zeta_planar()
+    #   calc_zeta_spherical()
+    #   calc_zeta_cylindrical()
 
 
 if __name__ == "__main__":

@@ -2419,95 +2419,95 @@ cdef class Reactor1G(FCComp):
 
 
 
-    def LatticeEPlanar(self, double a, double b):
+    def lattice_E_planar(self, double a, double b):
         """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        self.r1g_pointer.LatticeEPlanar(a, b)
+        self.r1g_pointer.lattice_E_planar(a, b)
 
 
-    def LatticeFPlanar(self, double a, double b):
+    def lattice_F_planar(self, double a, double b):
         """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        self.r1g_pointer.LatticeFPlanar(a, b)
+        self.r1g_pointer.lattice_F_planar(a, b)
 
 
-    def LatticeESpherical(self, double a, double b):
+    def lattice_E_spherical(self, double a, double b):
         """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        self.r1g_pointer.LatticeESpherical(a, b)
+        self.r1g_pointer.lattice_E_spherical(a, b)
 
 
-    def LatticeFSpherical(self, double a, double b):
+    def lattice_F_spherical(self, double a, double b):
         """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        self.r1g_pointer.LatticeFSpherical(a, b)
+        self.r1g_pointer.lattice_F_spherical(a, b)
 
 
-    def LatticeECylindrical(self, double a, double b):
+    def lattice_E_cylindrical(self, double a, double b):
         """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        self.r1g_pointer.LatticeECylindrical(a, b)
+        self.r1g_pointer.lattice_E_cylindrical(a, b)
 
 
-    def LatticeFCylindrical(self, double a, double b):
+    def lattice_F_cylindrical(self, double a, double b):
         """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        self.r1g_pointer.LatticeFCylindrical(a, b)
+        self.r1g_pointer.lattice_F_cylindrical(a, b)
 
 
 
 
 
-    def calcZeta(self):
+    def calc_zeta(self):
         """This calculates the thermal disadvantage factor for the geometry specified by Lattice.  The results
         are set to zeta_F_.
         """
-        self.r1g_pointer.calcZeta()
+        self.r1g_pointer.calc_zeta()
 
 
-    def calcZetaPlanar(self):
+    def calc_zeta_planar(self):
         """This calculates the thermal disadvantage factor for a planar geometry.  The results
         are set to zeta_F_.
         """
-        self.r1g_pointer.calcZetaPlanar()
+        self.r1g_pointer.calc_zeta_planar()
 
 
-    def calcZetaSpherical(self):
+    def calc_zeta_spherical(self):
         """This calculates the thermal disadvantage factor for a spherical geometry.  The results
         are set to zeta_F_.
         """
-        self.r1g_pointer.calcZetaSpherical()
+        self.r1g_pointer.calc_zeta_spherical()
 
 
-    def calcZetaCylindrical(self):
+    def calc_zeta_cylindrical(self):
         """This calculates the thermal disadvantage factor for a clyindrical geometry.  The results
         are set to zeta_F_.
         """
-        self.r1g_pointer.calcZetaCylindrical()
+        self.r1g_pointer.calc_zeta_cylindrical()
 
 
 
@@ -3488,95 +3488,95 @@ cdef class LightWaterReactor1G(Reactor1G):
 
 
 
-    def LatticeEPlanar(self, double a, double b):
+    def lattice_E_planar(self, double a, double b):
         """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).LatticeEPlanar(a, b)
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).lattice_E_planar(a, b)
 
 
-    def LatticeFPlanar(self, double a, double b):
+    def lattice_F_planar(self, double a, double b):
         """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).LatticeFPlanar(a, b)
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).lattice_F_planar(a, b)
 
 
-    def LatticeESpherical(self, double a, double b):
+    def lattice_E_spherical(self, double a, double b):
         """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).LatticeESpherical(a, b)
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).lattice_E_spherical(a, b)
 
 
-    def LatticeFSpherical(self, double a, double b):
+    def lattice_F_spherical(self, double a, double b):
         """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).LatticeFSpherical(a, b)
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).lattice_F_spherical(a, b)
 
 
-    def LatticeECylindrical(self, double a, double b):
+    def lattice_E_cylindrical(self, double a, double b):
         """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).LatticeECylindrical(a, b)
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).lattice_E_cylindrical(a, b)
 
 
-    def LatticeFCylindrical(self, double a, double b):
+    def lattice_F_cylindrical(self, double a, double b):
         """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).LatticeFCylindrical(a, b)
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).lattice_F_cylindrical(a, b)
 
 
 
 
 
-    def calcZeta(self):
+    def calc_zeta(self):
         """This calculates the thermal disadvantage factor for the geometry specified by Lattice.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcZeta()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_zeta()
 
 
-    def calcZetaPlanar(self):
+    def calc_zeta_planar(self):
         """This calculates the thermal disadvantage factor for a planar geometry.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcZetaPlanar()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_zeta_planar()
 
 
-    def calcZetaSpherical(self):
+    def calc_zeta_spherical(self):
         """This calculates the thermal disadvantage factor for a spherical geometry.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcZetaSpherical()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_zeta_spherical()
 
 
-    def calcZetaCylindrical(self):
+    def calc_zeta_cylindrical(self):
         """This calculates the thermal disadvantage factor for a clyindrical geometry.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calcZetaCylindrical()
+        (<cpp_bright.Reactor1G *> self.lwr1g_pointer).calc_zeta_cylindrical()
 
 
 
@@ -4564,95 +4564,95 @@ cdef class FastReactor1G(Reactor1G):
 
 
 
-    def LatticeEPlanar(self, double a, double b):
+    def lattice_E_planar(self, double a, double b):
         """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeEPlanar(a, b)
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).lattice_E_planar(a, b)
 
 
-    def LatticeFPlanar(self, double a, double b):
+    def lattice_F_planar(self, double a, double b):
         """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeFPlanar(a, b)
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).lattice_F_planar(a, b)
 
 
-    def LatticeESpherical(self, double a, double b):
+    def lattice_E_spherical(self, double a, double b):
         """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeESpherical(a, b)
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).lattice_E_spherical(a, b)
 
 
-    def LatticeFSpherical(self, double a, double b):
+    def lattice_F_spherical(self, double a, double b):
         """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeFSpherical(a, b)
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).lattice_F_spherical(a, b)
 
 
-    def LatticeECylindrical(self, double a, double b):
+    def lattice_E_cylindrical(self, double a, double b):
         """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeECylindrical(a, b)
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).lattice_E_cylindrical(a, b)
 
 
-    def LatticeFCylindrical(self, double a, double b):
+    def lattice_F_cylindrical(self, double a, double b):
         """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
 
         Args:
             * a (float): Fuel region radius equivalent [cm].
             * b (float): Unit fuel cell pitch length equivalent [cm].
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).LatticeFCylindrical(a, b)
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).lattice_F_cylindrical(a, b)
 
 
 
 
 
-    def calcZeta(self):
+    def calc_zeta(self):
         """This calculates the thermal disadvantage factor for the geometry specified by Lattice.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZeta()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_zeta()
 
 
-    def calcZetaPlanar(self):
+    def calc_zeta_planar(self):
         """This calculates the thermal disadvantage factor for a planar geometry.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZetaPlanar()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_zeta_planar()
 
 
-    def calcZetaSpherical(self):
+    def calc_zeta_spherical(self):
         """This calculates the thermal disadvantage factor for a spherical geometry.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZetaSpherical()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_zeta_spherical()
 
 
-    def calcZetaCylindrical(self):
+    def calc_zeta_cylindrical(self):
         """This calculates the thermal disadvantage factor for a clyindrical geometry.  The results
         are set to zeta_F_.
         """
-        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZetaCylindrical()
+        (<cpp_bright.Reactor1G *> self.fr1g_pointer).calc_zeta_cylindrical()
 
 
 
