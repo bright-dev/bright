@@ -12,6 +12,6 @@ the raw docstrings are presented here is internal C++ information is needed.
 :mod:`FCComps` -- Fuel Cycle Components Module
 ==============================================
 
-.. automodule:: BriPy.FCComps
+.. automodule:: bright.FCComps
    :members:
    :noindex:

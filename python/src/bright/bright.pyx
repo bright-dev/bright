@@ -355,9 +355,9 @@ cdef class FCComp:
         Then, it checks to see if there are any parameters for this component.
         If there are, it sets the current values using :meth:`setParams`.
 
-        If BriPy.write_hdf5 is set, then writeHDF5() is called.
+        If bright.write_hdf5 is set, then writeHDF5() is called.
 
-        If BriPy.write_text is set, then writeText() is called.
+        If bright.write_text is set, then writeText() is called.
 
         This is what is most often used to write Bright output.  Therefore it is
         seen as the last step for every component in each pass.
@@ -507,7 +507,7 @@ def UraniumEnrichmentDefaults():
 
 
 cdef class Enrichment(FCComp):
-    """Enrichment Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+    """Enrichment Fuel Cycle Component Class.  Daughter of bright.FCComp class.
 
     Args:
         * enrich_params (EnrichmentParameters): This specifies how the enrichment 
@@ -856,7 +856,7 @@ cdef class Enrichment(FCComp):
 
 
 cdef class Reprocess(FCComp):
-    """Reprocess Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+    """Reprocess Fuel Cycle Component Class.  Daughter of bright.FCComp class.
 
     Args:
         * sepeff (dict): A dictionary containing the separation efficiencies (float) to initialize
@@ -1011,7 +1011,7 @@ cdef class Reprocess(FCComp):
         """The initialize() function calculates the sepeff from an integer-keyed dictionary
         of separation efficiencies.  The difference is that sepdict may contain either elemental or
         isotopic keys and need not contain every isotope tracked.  On the other hand, sepeff
-        must have only zzaaam keys that match exactly the isotopes in BriPy.isos2track.
+        must have only zzaaam keys that match exactly the isotopes in bright.isos2track.
 
         Args:
             * sepdict (dict): Integer valued dictionary of SE to be converted to sepeff.
@@ -1071,7 +1071,7 @@ cdef class Reprocess(FCComp):
 
 
 cdef class Storage(FCComp):
-    """Storage Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+    """Storage Fuel Cycle Component Class.  Daughter of bright.FCComp class.
 
     Args:
         * name (str): The name of the storage fuel cycle component instance.
@@ -1485,7 +1485,7 @@ cdef class ReactorParameters:
 
 
 cdef class Reactor1G(FCComp):
-    """One-Group Reactor Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+    """One-Group Reactor Fuel Cycle Component Class.  Daughter of bright.FCComp class.
 
     Args:
         * reactor_parameters (ReactorParameters): A special data structure that contains information
@@ -4666,7 +4666,7 @@ cdef class FastReactor1G(Reactor1G):
 
 
 cdef class FuelFabrication(FCComp):
-    """Fuel Fabrication Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+    """Fuel Fabrication Fuel Cycle Component Class.  Daughter of bright.FCComp class.
 
     Keyword Args:
         * mass_streams (dict): A dictionary whose keys are string labels (eg, "U-235", 

@@ -1,4 +1,4 @@
-.. currentmodule:: BriPy
+.. currentmodule:: bright
 
 *************************
 Light Water Reactor Class
@@ -77,7 +77,7 @@ Light Water Reactor Default Parameters
         * `lwrd` (:class:`ReactorParameters`): Light water reactor default physical parameters.
           These defaults take on the following hard-coded values::
 
-            lwrd = BriPy.LWRDeafaults()
+            lwrd = bright.LWRDeafaults()
 
             lwrd.batches = 3
             lwrd.flux = 4.0 * 10.0**14

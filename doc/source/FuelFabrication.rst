@@ -19,11 +19,11 @@ correct reactor input given some set of available fuels. Currently,
 only two streams of all of the available are allowed to vary.  In the future,
 a more sophisticated optimizer may be implemented.
 
-.. currentmodule:: BriPy
+.. currentmodule:: bright
     
 .. class:: FuelFabrication([mass_streams, mass_weights_in, reactor, params2track, name])
 
-    Fuel Fabrication Fuel Cycle Component Class.  Daughter of :class:`BriPy.FCComp` class.
+    Fuel Fabrication Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
 
     Args:
         * `mass_streams` (dict): A dictionary whose keys are string labels (eg, "U-235", 
@@ -59,7 +59,7 @@ a more sophisticated optimizer may be implemented.
 ==========================
 FuelFabrication Attributes
 ==========================
-As a daughter class of :class:`BriPy.FCComp`, :class:`FuelFabrication` inherits all of 
+As a daughter class of :class:`bright.FCComp`, :class:`FuelFabrication` inherits all of 
 the attributes of its parent.  The following is a listing of the additional 
 attributes specific to this class.
 
@@ -79,7 +79,7 @@ attributes specific to this class.
 
 .. attribute:: FuelFabrication.deltaRs
 
-    A dictionary representing the :attr:`deltaR <BriPy.Reactor1G.deltaR>` values of each of the :attr:`mass_streams`.
+    A dictionary representing the :attr:`deltaR <bright.Reactor1G.deltaR>` values of each of the :attr:`mass_streams`.
 
 .. attribute:: FuelFabrication.reactor
 
@@ -110,7 +110,7 @@ FuelFabrication Commom Methods
         * `reactor` (:class:`Reactor1G`): An instance of a Reactor1G class to fabricate fuel for.
 
     Returns:
-        * `core_input` (MassStream): :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
+        * `core_input` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
 
 
 .. method:: FuelFabrication.initialize(mass_streams, mass_weights_in, reactor)
@@ -156,7 +156,7 @@ FuelFabrication Calculation Methods
     :attr:`mass_weights_out`.
 
     Returns:
-        * `core_input` (MassStream): :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
+        * `core_input` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
 
 .. method:: FuelFabrication.calc_mass_ratios()
 

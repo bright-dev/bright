@@ -8,18 +8,18 @@ and takes on type-specific base case values.  The reactor types that have been f
 reactor (LWR) and a fast reactor (FR).  You may read more about these on their own pages.
 
 All one-group (1G) reactors share a common methodological backbone.  This page describes what is fundamentally the same 
-about reactor objects via the :class:`BriPy.Reactor1G` class.  This is a subclass of :class:`BriPy.FCComp`.  Moreover, all 
-one-group reactor types have :class:`BriPy.Reactor1G` as their parent.  The type-specific reactor objects turn out to 
-be relatively simple since most of the computational effort is in  :class:`BriPy.Reactor1G`.
+about reactor objects via the :class:`bright.Reactor1G` class.  This is a subclass of :class:`BriPy.FCComp`.  Moreover, all 
+one-group reactor types have :class:`bright.Reactor1G` as their parent.  The type-specific reactor objects turn out to 
+be relatively simple since most of the computational effort is in  :class:`bright.Reactor1G`.
 
 All one energy group reactors are based on a algorithm published by the author in Nuclear Engineering & Design, 
 "`A new method for rapid computation of transient fuel cycle material balances <http://www.sciencedirect.com/science?_ob=ArticleURL&_udi=B6V4D-4W0SSGY-1&_user=10&_coverDate=10/31/2009&_rdoc=1&_fmt=high&_orig=search&_sort=d&_docanchor=&view=c&_acct=C000050221&_version=1&_urlVersion=0&_userid=10&md5=e52ececcd93400f84cc630ba20b01994>`_".
 
-.. currentmodule:: BriPy
+.. currentmodule:: bright
     
 .. class:: Reactor1G([reactor_parameters, params2track, name])
 
-    One-Group Reactor Fuel Cycle Component Class.  Daughter of :class:`BriPy.FCComp` class.
+    One-Group Reactor Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
 
     Args:
         * `reactor_parameters` (:class:`ReactorParameters`): A special data structure that contains information
@@ -28,7 +28,7 @@ All one energy group reactors are based on a algorithm published by the author i
           store and set.  Different reactor types may have different characteristic parameters that are of interest.
         * `name` (str): The name of the reactor fuel cycle component instance.
 
-    Note that this automatically calls the public :meth:`initialize <BriPy.Reactor1G.initialize>` C function.
+    Note that this automatically calls the public :meth:`initialize <bright.Reactor1G.initialize>` C function.
 
 .. note:: 
 
@@ -50,7 +50,7 @@ All one energy group reactors are based on a algorithm published by the author i
 ====================
 Reactor1G Attributes
 ====================
-As a daughter class of :class:`BriPy.FCComp`, :class:`Reactor1G` inherits all of the attributes of its parent.  
+As a daughter class of :class:`bright.FCComp`, :class:`Reactor1G` inherits all of the attributes of its parent.  
 The following is a listing of the additional attributes specific to this class and those modified from the parent values.
 
 --------------------
@@ -63,13 +63,13 @@ All other attributes are public and may be retrieved and modified from via the P
 
     This is an zzaaam-integer isotopic set representing all of the nuclides that are valid inputs to the core.  This
     includes not just the heavy metal, but also coolant and cladding material as well.  :attr:`I` is typically 
-    indexed by ``i``.  This is usually a strict subset of :func:`BriPy.isos2track`.
+    indexed by ``i``.  This is usually a strict subset of :func:`bright.isos2track`.
 
 .. attribute:: Reactor1G.J
 
     This is an zzaaam-integer isotopic set representing all of the nuclides that are valid outputs from the core.  This
     encompasses all actinides and fission products.  :attr:`J` is typically 
-    indexed by ``j``.  This is usually equivalent to :func:`BriPy.isos2track`.
+    indexed by ``j``.  This is usually equivalent to :func:`bright.isos2track`.
 
 
 .. attribute:: Reactor1G.sigma_a_therm
@@ -107,7 +107,7 @@ in different manners in the same fuel cycle code.
 
     This is the chemical form of fuel as dictionary.  Keys are strings that represent isotopes (mixed form) while 
     values represent the corresponding mass weights.  The heavy metal concentration by the key ``"IHM"``.  This 
-    will automatically fill in the nuclides in :attr:`IsosIn <BriPy.FCComp.IsosIn>` for the ``"IHM"`` weight.  For 
+    will automatically fill in the nuclides in :attr:`IsosIn <bright.FCComp.IsosIn>` for the ``"IHM"`` weight.  For 
     example, LWRs typically use a UOX fuel form::
 
         LWR.FuelChemicalForm = {"IHM": 1.0, "O16": 2.0}
@@ -232,7 +232,7 @@ into memory when the :meth:`Reactor1G.loadLib` function is called.
 ----------------------------
 Calculated Weight Attributes
 ----------------------------
-This data represents mass weights that are calculated from the initial isotopics :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+This data represents mass weights that are calculated from the initial isotopics :attr:`IsosIn <bright.FCComp.IsosIn>`.
 They are assigned appropriate values during the :meth:`Reactor1G.foldMassWeights` execution.
 
 .. attribute:: Reactor1G.A_IHM
@@ -280,7 +280,7 @@ They are assigned appropriate values during the :meth:`Reactor1G.foldMassWeights
 --------------------------
 Calculated Data Attributes
 --------------------------
-The following represents reactor that are calculated from the initial isotopics :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+The following represents reactor that are calculated from the initial isotopics :attr:`IsosIn <bright.FCComp.IsosIn>`.
 These attributes are assigned appropriate values when :meth:`Reactor1G.foldMassWeights` is called.  Almost all of these
 are C-vectors of doubles or floats.
 
@@ -320,9 +320,9 @@ are C-vectors of doubles or floats.
 
 .. attribute:: Reactor1G.Mj_F_
 
-    The transmutation matrix of the fuel (specifically, :attr:`IsosIn <BriPy.FCComp.IsosIn>`) into 
+    The transmutation matrix of the fuel (specifically, :attr:`IsosIn <bright.FCComp.IsosIn>`) into 
     the jth nuclide as a function of fluence.  Used with the discharge fluence :attr:`Fd` to calculate 
-    :attr:`IsosOut <BriPy.FCComp.IsosOut>`.  This object is therefore a dictionary from zzaaam-integers to the 
+    :attr:`IsosOut <bright.FCComp.IsosOut>`.  This object is therefore a dictionary from zzaaam-integers to the 
     vectors of floats.
 
 .. attribute:: Reactor1G.zeta_F_
@@ -361,7 +361,7 @@ process and relate important information about the state of the reactor at disch
 SubStream Attributes
 --------------------
 Several parameters are dependent on knowing the mass or composition of specific substreams.  The ``In`` streams are derived from
-:attr:`IsosIn <BriPy.FCComp.IsosIn>` while the ``Out`` SubStreams are derived from :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
+:attr:`IsosIn <bright.FCComp.IsosIn>` while the ``Out`` SubStreams are derived from :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
 The easiest way to set these attributes is through the :meth:`Reactor1G.calcSubStreams` method.
 
 .. attribute:: Reactor1G.InU
@@ -471,7 +471,7 @@ Initialization Related Methods
 ------------------------------
 Unlike other fuel cycle objects, the reactor component contains more than one setup related method.
 Moreover, some of these will be often be called outside of a strict object instantiation context.
-For instance, every time :attr:`IsosIn <BriPy.FCComp.IsosIn>` is changed, :meth:`foldMassWeights`
+For instance, every time :attr:`IsosIn <bright.FCComp.IsosIn>` is changed, :meth:`foldMassWeights`
 should be called as well.
 
 .. method:: Reactor1G.initialize(reactor_parameters)
@@ -497,12 +497,12 @@ should be called as well.
 
     This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
     In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-    as the values of :attr:`IsosIn <BriPy.FCComp.IsosIn>`.  The raw data must have previously been 
+    as the values of :attr:`IsosIn <bright.FCComp.IsosIn>`.  The raw data must have previously been 
     read in from :meth:`loadLib`.  
 
     .. warning::
 
-        Anytime any reactor parameter whatsoever (:attr:`IsosIn <BriPy.FCComp.IsosIn>`, :attr:`P_NL`, *etc*) is 
+        Anytime any reactor parameter whatsoever (:attr:`IsosIn <bright.FCComp.IsosIn>`, :attr:`P_NL`, *etc*) is 
         altered in any way, the :meth:`foldMassWeights` function must be called to reset all of the resultant data.
         If you are unsure, please call this function anyway to be safe.  There is little harm in calling it twice by accident
         as it is computationally cheap to do so.  
@@ -514,19 +514,19 @@ Transmutation Matrix Methods
 Computing the transmutation matrix is one of the more expensive :class:`Reactor1G` operations.  This is 
 because transmutation is implicitly a function of three parameters: the input isotope ``i``, the output isotope
 ``j``, and the fluence :attr:`F`.  Therefore, for speedy execution times, the following functions should
-only be called as needed (*ie* for generating :attr:`IsosOut <BriPy.FCComp.IsosOut>`).
+only be called as needed (*ie* for generating :attr:`IsosOut <bright.FCComp.IsosOut>`).
 
 
 .. method:: Reactor1G.mkMj_F_()
 
-    This function calculates and sets the :attr:`Mj_F_` attribute from :attr:`IsosIn <BriPy.FCComp.IsosIn>` and the 
+    This function calculates and sets the :attr:`Mj_F_` attribute from :attr:`IsosIn <bright.FCComp.IsosIn>` and the 
     raw reactor data :attr:`Tij_F_`.
 
 .. method:: Reactor1G.mkMj_Fd_()
 
     This function evaluates :attr:`Mj_F_` calculated from :meth:`mkMj_F_` at the discharge fluence :attr:`Fd`.
-    The resultant isotopic dictionary is then converted into the :attr:`IsosOut <BriPy.FCComp.IsosOut>` mass stream
-    for this pass through the reactor.  Thus if ever you need to calculate :attr:`IsosOut <BriPy.FCComp.IsosOut>`
+    The resultant isotopic dictionary is then converted into the :attr:`IsosOut <bright.FCComp.IsosOut>` mass stream
+    for this pass through the reactor.  Thus if ever you need to calculate :attr:`IsosOut <bright.FCComp.IsosOut>`
     without going through :meth:`doCalc`, use this function.
 
 
@@ -575,8 +575,8 @@ The following functions represent basic calculations common to most reactor type
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
-          :attr:`IsosIn <BriPy.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
-          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
 
     Returns:
         * `deltaR` (float): :attr:`deltaR`.
@@ -585,7 +585,7 @@ The following functions represent basic calculations common to most reactor type
 --------------
 Burnup Methods    
 --------------
-These functions all relate to the calculation of burnup for the reactor from a given :attr:`IsosIn <BriPy.FCComp.IsosIn>`
+These functions all relate to the calculation of burnup for the reactor from a given :attr:`IsosIn <bright.FCComp.IsosIn>`
 stream.  The burnup functionality is separated out into so many functions so that the user has a fine 
 degree of control over the burnup operation, if desired.  Higher level functions are also provided 
 should this control be unnecessary for simple calculations.
@@ -634,7 +634,7 @@ should this control be unnecessary for simple calculations.
 
 .. method:: Reactor1G.BUd_BisectionMethod()
 
-    Calculates the maximum discharge burnup via the Bisection Method for a given :attr:`IsosIn <BriPy.FCComp.IsosIn>`
+    Calculates the maximum discharge burnup via the Bisection Method for a given :attr:`IsosIn <bright.FCComp.IsosIn>`
     in this reactor.  This iterates over values of ``BUd`` to find a batch averaged multiplication factor 
     that is closest to ``1.0``.
 
@@ -645,7 +645,7 @@ should this control be unnecessary for simple calculations.
 .. method:: Reactor1G.Run_PNL(pnl)
 
     Performs a reactor run for a specific non-leakage probability value.
-    This requires that :attr:`IsosIn <BriPy.FCComp.IsosIn>` be (meaningfully) set and is
+    This requires that :attr:`IsosIn <bright.FCComp.IsosIn>` be (meaningfully) set and is
     for use with :meth:`Calibrate_PNL_2_BUd`.
 
     This function amounts to the following code::
@@ -683,11 +683,11 @@ should this control be unnecessary for simple calculations.
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
-          :attr:`IsosIn <BriPy.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
-          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
+        * `output` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
 
 
 ------------------------

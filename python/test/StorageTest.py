@@ -6,7 +6,7 @@ elif os.name == "nt":
         sys.path.append("../build/lib.win32-2.6")
 
 import subprocess
-import BriPy
+import bright
 
 def printFCComp(fc):
     print("Name: " + fc.name)
@@ -18,22 +18,22 @@ def printFCComp(fc):
     print("Pass Number: " + str(fc.PassNum))
     return
 
-st0 = BriPy.Storage()
+st0 = bright.Storage()
 print("Empty Storage Component")
 printFCComp(st0)
 print("")
 
-BriPy.isos2track([922350, 942390, 10010])
+bright.isos2track([922350, 942390, 10010])
 cd = {922350: 10.0, 10010: 1.0}
-ms = BriPy.MassStream("MassStreamtry02.txt")
+ms = bright.MassStream("MassStreamtry02.txt")
 
-st1 = BriPy.Storage()
+st1 = bright.Storage()
 print("Storage No Name...")
 printFCComp(st1)
 print("")
 
-BriPy.isos2track(ms.comp.keys())
-st2 = BriPy.Storage("Storage With Name!")
+bright.isos2track(ms.comp.keys())
+st2 = bright.Storage("Storage With Name!")
 printFCComp(st2)
 print("")
 

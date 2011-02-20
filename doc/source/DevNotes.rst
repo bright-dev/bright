@@ -38,7 +38,7 @@ Also you will need to add HDF5 information to the variables above::
     INCLUDE += C:\hdf5\include
 
 Also, note that if you compile with newer versions of the dependent libraries (boost, hdf5) you will need to manually 
-copy the new dlls into the ``src/isoname/``, ``src/MassStream/``, and ``src/BriPy`` directories.  You will probably also
+copy the new dlls into the ``src/isoname/``, ``src/MassStream/``, and ``src/bright`` directories.  You will probably also
 need to change the version number of the boost dll inside of setup.py.  While the code will compile and build nicely
 if you don't do this, it will exhibit the runtime failure:: 
 

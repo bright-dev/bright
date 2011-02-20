@@ -9,7 +9,7 @@ in a child-class's initializer.
 The following documentation is provided as needed information to produce your own components and as a description of 
 how other fuel cycle objects behave.
 
-.. currentmodule:: BriPy
+.. currentmodule:: bright
 
 .. class:: FCComp([paramlist, name])
 
@@ -225,9 +225,9 @@ FCComp Methods
     Then, it checks to see if there are any parameters for this component.
     If there are, it sets the current values using :meth:`setParams`.
 
-    If :attr:`BriPy.write_hdf5` is set, then :meth:`writeHDF5` is called.
+    If :attr:`bright.write_hdf5` is set, then :meth:`writeHDF5` is called.
 
-    If :attr:`BriPy.write_text` is set, then :meth:`writeText` is called.
+    If :attr:`bright.write_text` is set, then :meth:`writeText` is called.
 
     This is what is most often used to write Bright output.  Therefore it is
     seen as the last step for every component in each pass.  

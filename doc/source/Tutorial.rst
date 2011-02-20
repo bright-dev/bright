@@ -1,12 +1,12 @@
 ******************
-The BriPy Tutorial
+The bright Tutorial
 ******************
-BriPy (Br-eye Pie), or Bright/Python, is a set of Python bindings for the Bright nuclear fuel cycle model. Bright is a pure C++ library that models many canonical components such as reactors, storage facilities, and more. These components are then linked to one another using a Mass Stream object. Lastly, an isotopic naming module is available that conveniently converts between several standard nuclide naming schemes.
+bright (Br-eye Pie), or Bright/Python, is a set of Python bindings for the Bright nuclear fuel cycle model. Bright is a pure C++ library that models many canonical components such as reactors, storage facilities, and more. These components are then linked to one another using a Mass Stream object. Lastly, an isotopic naming module is available that conveniently converts between several standard nuclide naming schemes.
 
-BriPy contains three modules. This modules are isoname, MassStream, and FCComps.
+bright contains three modules. This modules are isoname, MassStream, and FCComps.
 The command::
 
-    import BriPy
+    import bright
 
 will import the three modules. However, the isoname and MassStream are also provided as separate packages for convenience to non-Bright programs::
 
@@ -62,22 +62,22 @@ This module contains all of the fuel cycle components, such as the Enrichment mo
 ===================================================
 Example: Once-Through Nuclear Fuel Cycle Simulation
 ===================================================
-In this section, we present a small program that models a nuclear fuel cycle. This will help in getting familiar with the different modules and methods of BriPy.
+In this section, we present a small program that models a nuclear fuel cycle. This will help in getting familiar with the different modules and methods of bright.
 
-First, we need to get the functionality of BriPy and also some operating system functionally provided by the os module. This is done by the following code::
+First, we need to get the functionality of bright and also some operating system functionally provided by the os module. This is done by the following code::
 
-    import BriPy
+    import bright
     import os
 
-To produce a nuclear reaction, Uranium is needed. Uranium is obtained from the Earth's crust in its natural form. Natural Uranium has an isotope concentration of 0.0055% U-234, 0.72% U-235, and 99.2745% U-238. Thus, the nuclear fuel cycle is started with a stream of natural Uranium. To represent natural uranium as a stream using BriPy, the zzaaam representation of the isotopes are put together with their corresponding concentrations in a dictionary::
+To produce a nuclear reaction, Uranium is needed. Uranium is obtained from the Earth's crust in its natural form. Natural Uranium has an isotope concentration of 0.0055% U-234, 0.72% U-235, and 99.2745% U-238. Thus, the nuclear fuel cycle is started with a stream of natural Uranium. To represent natural uranium as a stream using bright, the zzaaam representation of the isotopes are put together with their corresponding concentrations in a dictionary::
 
-    nu = BriPy.MassStream({922340 : 0.000055, 922350 : 0.0072, 922380: 0.992745})
+    nu = bright.MassStream({922340 : 0.000055, 922350 : 0.0072, 922380: 0.992745})
 
 However, a reaction will not take place unless the Uranium has a bigger concentration of the isotope U-235. Thus, the natural Uranium needs to be enriched. The enrichment process is accomplished by an Enrichment component. In this particular example, the Uranium is enriched to a concentration of 3.6% U-235::
 
-    enrd = BriPy.UraniumEnrichmentDefaults()
+    enrd = bright.UraniumEnrichmentDefaults()
     enrd.xP_j = 0.036
-    enr = BriPy.Enrichment(enrd, "Enrichment")
+    enr = bright.Enrichment(enrd, "Enrichment")
 
 The first line in the code snippet above gets the default parameters of the Enrichment component. The parameter xP_j needs to be changed to 3.6% since its default value is 5%. Finally, the Enrichment component is created with the parameters wanted and its is given the name "Enrichment." Now that the Enrichment component is created and has the parameters wanted, it is time to enrich the natural Uranium. This is done with the method doCalc, which calculates the output of the Enrichment component (or any component) from the input MassStream::
 
@@ -90,12 +90,12 @@ Now that we have the Uranium with the concentration of U-235 needed to produce a
 
 Also, parameter data needs to be provided in order to initialize the Light Water Reactor. In this example, the parameters BUt is set to 40::
 
-    lwrd = BriPy.LWRDefaults()
+    lwrd = bright.LWRDefaults()
     lwrd.BUt = 40.0
 
 The Light Water Reactor is instantiated with the following line of code::
 
-    lwr = BriPy.LightWaterReactor1G(lwr_data, lwrd, "LWR")
+    lwr = bright.LightWaterReactor1G(lwr_data, lwrd, "LWR")
 
 The MassStream that is produced by the Enrichment component can now be feed to the Light Water Reactor::
 
@@ -103,7 +103,7 @@ The MassStream that is produced by the Enrichment component can now be feed to t
 
 It is important to know that IsosOut is calculated after doCalc is called. Finally, we feed instantiate a Storage component and feed the output MassStream of the Light Water Reactor to it::
 
-    st = BriPy.Storage("Storage")
+    st = bright.Storage("Storage")
     st.doCalc(lwr.IsosOut)
 
 Lastly, every fuel cycle component contains a ``writeout()`` method that is used for outputting 
@@ -111,7 +111,7 @@ data to the hard disk in either text or HDF5 format.
 
 The complete program of this nuclear fuel cycle simulation is provided below::
 
-    import BriPy
+    import bright
     import os
 
     # Set-up pointer to reactor database
@@ -119,28 +119,28 @@ The complete program of this nuclear fuel cycle simulation is provided below::
     lwr_data = data_dir + "/LWR.h5"
 
     # Customize output
-    BriPy.write_text(False)
-    BriPy.write_hdf5(True)
-    BriPy.load_isos2track_hdf5(lwr_data)
+    bright.write_text(False)
+    bright.write_hdf5(True)
+    bright.load_isos2track_hdf5(lwr_data)
     
     # Enrichment Calculation
-    nu = BriPy.MassStream({922340 : 0.000055, 922350 : 0.0072, 922380: 0.992745})
-    enrd = BriPy.UraniumEnrichmentDefaults()
+    nu = bright.MassStream({922340 : 0.000055, 922350 : 0.0072, 922380: 0.992745})
+    enrd = bright.UraniumEnrichmentDefaults()
     enrd.xP_j = 0.036
-    enr = BriPy.Enrichment(enrd, "Enrichment")
+    enr = bright.Enrichment(enrd, "Enrichment")
     enr.doCalc(nu)
     enr.writeout()
 
     # Reactor Calculation
-    lwrd = BriPy.LWRDefaults()
+    lwrd = bright.LWRDefaults()
     lwrd.BUt = 35.0
     lwrd.batches = 3
-    lwr = BriPy.LightWaterReactor1G(lwr_data, lwrd, "LWR")
+    lwr = bright.LightWaterReactor1G(lwr_data, lwrd, "LWR")
     lwr.doCalc(enr.IsosOut)
     lwr.writeout()
 
     # Storage Calculation
-    st = BriPy.Storage("Storage")
+    st = bright.Storage("Storage")
     st.decay_time = 5.0 * 365.25 * 24.0 * 3600.0
     st.doCalc(lwr.IsosOut)
     st.writeout()

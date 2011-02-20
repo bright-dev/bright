@@ -1,7 +1,7 @@
-from BriPy import LWRDefaults
+from bright import LWRDefaults
 lwr_params = LWRDefaults()
 
-from BriPy import FRDefaults
+from bright import FRDefaults
 fr_params = FRDefaults()
 
 #General Specifications

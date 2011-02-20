@@ -162,10 +162,10 @@ elif os.name == "nt":
 
     if cp_symlinks:
         mkpath('build/temp/')
-        for f in BriPy_data_files:
+        for f in bright_data_files:
             copy_file(pack_dir['bright'] + '/' + f, 'build/temp/' + f, verbose=True)
 
-        for f in BriPy_data_files:
+        for f in bright_data_files:
             copy_file(dat_dir + f, pack_dir['bright'] + '/' + f, verbose=True)
 
 ###################

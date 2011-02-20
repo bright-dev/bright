@@ -8,7 +8,7 @@ elif os.name == "nt":
 
 import subprocess
 
-from BriPy import *
+from bright import *
 
 def printFCComp(fc):
     print("Name: " + fc.name)

@@ -1,20 +1,20 @@
 *********************
 Bright/Python Package
 *********************
-The BriPy package is the central place for accessing all of Bright's features::
+The bright package is the central place for accessing all of Bright's features::
 
-    from BriPy import *
+    from bright import *
 
 This command implicitly imports the three extension modules: `isoname`, `MassStream`, and `FCComps`.
 The first two are given separate packages in Python as a convenience to non-Bright programs.  
 Switching between isotopic names is a common task.  A mass stream model, like the one here, is useful
-in a variety of situations.  Partitioning `isoname` and `MassStream` out of `BriPy` allows for them to 
+in a variety of situations.  Partitioning `isoname` and `MassStream` out of `bright` allows for them to 
 be easily imported elsewhere as needed.
 
 However, the fuel cycle component library `FCComps` is essentially synonymous with Bright.  Therefore, the 
-way to access all of the fuel cycle components is explicitly through `BriPy`.  
+way to access all of the fuel cycle components is explicitly through `bright`.  
 
-While `BriPy` is primarily a collection of components (under `FCComps`), there are a couple of module 
+While `bright` is primarily a collection of components (under `FCComps`), there are a couple of module 
 level functions and attributes that must be set for Bright to run successfully.  These are explained here.
 Meanwhile, because of their potential for complexity, each fuel cycle component object is given its own page.  
 
@@ -26,24 +26,24 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
 
 
 ====================================
-:mod:`BriPy` -- Bright/Python Module
+:mod:`bright` -- Bright/Python Module
 ====================================
-.. currentmodule:: BriPy
+.. currentmodule:: bright
 
 .. function:: BrightStart()
 
     This function primarily serves to grab the environmental variable `BRIGHT_DATA` and set its value 
     within the extension module.  In Python, though not in C, `BRIGHT_DATA` is set automatically 
     to be the directory of the Bright/Python installation (usually within the site-packages directory).
-    Also when you `import BriPy`, this function is called.  Therefore, the typical BriPy user should
+    Also when you `import bright`, this function is called.  Therefore, the typical BriPy user should
     never need to explicitly use this function.  However, if you wish to override the default behavior 
     you may do so with the following::
 
         import os
-        import BriPy
+        import bright
 
         os.putenv('BRIGHT_DATA', 'some/other/dir/')
-        BriPy.BrightStart()
+        bright.BrightStart()
 
         #Continue with the fuel cycle code...
 
@@ -63,14 +63,14 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
     may be executed appropriately.  Moreover, this isotopic list is given and received in zzaaam form.  
     However, using `isoname` functions you can specify isotopic lists in a more natural way::
 
-        import BriPy
+        import bright
 
         #Set isos2track
-        isolist = BriPy.mixed_2_zzaaam_List(["U235", 94239, "H1", 80160])
-        BriPy.isos2track(isolist)
+        isolist = bright.mixed_2_zzaaam_List(["U235", 94239, "H1", 80160])
+        bright.isos2track(isolist)
 
         #Get isos2track
-        BriPy.isos2track()  #returns the list [922350, 942390, 10010, 80160]
+        bright.isos2track()  #returns the list [922350, 942390, 10010, 80160]
 
     Args:
         * `isolist` (zzaaam list): Integer list of isotopes (in zzaaam form) for fuel cycle components to track.
@@ -132,11 +132,11 @@ Meanwhile, because of their potential for complexity, each fuel cycle component 
     to no extra output).  This function can be used to get/set the current level to any other positive 
     integer.  Increased levels will typically yield more output::
 
-        import BriPy
+        import bright
 
-        BriPy.verbosity()    #returns 0, need more...
+        bright.verbosity()    #returns 0, need more...
 
-        BriPy.verbosity(100) #Let me see everything!
+        bright.verbosity(100) #Let me see everything!
 
     Args:
         * `v` (int): New verbosity level.

@@ -14,15 +14,15 @@ the overall stage separation factor is unity.
 This is largely based off of the work of A. de la Garza, E. von Halle, 
 and H. Wood.
 
-.. currentmodule:: BriPy
+.. currentmodule:: bright
     
 .. class:: Enrichment([enrich_params[, name]])
 
-    Enrichment Fuel Cycle Component Class.  Daughter of :class:`BriPy.FCComp` class.
+    Enrichment Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
 
     Args:
         * `enrich_params` (EnrichmentParameters): This specifies how the enrichment 
-          cascade should be set up.  It is a :class:`BriPy.EnrichmentParameters`
+          cascade should be set up.  It is a :class:`bright.EnrichmentParameters`
           helper object.  If ``enrich_params`` is not specified, then the cascade 
           is initialized with ``UraniumEnrichmentDefaults``.
         * `name` (str): The name of the enrichment fuel cycle component instance.
@@ -34,7 +34,7 @@ and H. Wood.
 =====================
 Enrichment Attributes
 =====================
-As a daughter class of :class:`BriPy.FCComp`, :class:`Enrichment` inherits all of 
+As a daughter class of :class:`bright.FCComp`, :class:`Enrichment` inherits all of 
 the attributes of its parent.  The following is a listing of the additional 
 attributes specific to this class.
 
@@ -73,7 +73,7 @@ attributes specific to this class.
 .. attribute:: Enrichment.xP_j
 
     This is the target enrichment of the :attr:`j`th isotope in the 
-    product stream :attr:`IsosOut <BriPy.FCComp.IsosOut>`.  The
+    product stream :attr:`IsosOut <bright.FCComp.IsosOut>`.  The
     :math:`x^P_j` value is set by the user at initialization or
     run-time.  For typical uranium vectors, this value is about 
     U-235 = 0.05.
@@ -129,12 +129,12 @@ attributes specific to this class.
 
 .. attribute:: Enrichment.IsosTail
 
-    In addition to the :attr:`IsosIn <BriPy.FCComp.IsosIn>` and 
-    :attr:`IsosOut <BriPy.FCComp.IsosOut>` mass streams, :class:`Enrichment`
+    In addition to the :attr:`IsosIn <bright.FCComp.IsosIn>` and 
+    :attr:`IsosOut <bright.FCComp.IsosOut>` mass streams, :class:`Enrichment`
     also has a tails or waste stream that is represented by this attribute.
-    The mass of this stream and the :attr:`IsosOut <BriPy.FCComp.IsosOut>`
+    The mass of this stream and the :attr:`IsosOut <bright.FCComp.IsosOut>`
     product stream should always add up to the mass of the 
-    :attr:`IsosIn <BriPy.FCComp.IsosIn>` feed stream.
+    :attr:`IsosIn <bright.FCComp.IsosIn>` feed stream.
 
 .. attribute:: Enrichment.params2track
 
@@ -156,12 +156,12 @@ Enrichment Methods
 
     Args:
         * `input` (dict or MassStream): If input is present, it is set as the component's 
-          :attr:`IsosIn <BriPy.FCComp.IsosIn>`.  If input is a isotopic dictionary 
+          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary 
           (zzaaam keys, float values), this dictionary is first converted into a MassStream 
-          before being set as :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+          before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
+        * `output` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
 
 
 .. method:: Enrichment.initialize(enrich_params)
@@ -223,7 +223,7 @@ for uranium enrichment.
     This class is a collection of values that mirror the attributes in 
     :class:`Enrichment` that are required for the cascade model to run.
     In C-code this a simple ``struct``.  Like 
-    :class:`ReactorParameters <BriPy.ReactorParameters>`, this class 
+    :class:`ReactorParameters <bright.ReactorParameters>`, this class 
     takes no arguments on initialization.  An empty :class:`ErichmentParameters`
     instance has all values (weakly) set to zero. 
 
@@ -256,7 +256,7 @@ for uranium enrichment.
 .. attribute:: EnrichmentParameters.xP_j
 
     This is the target enrichment of the :attr:`j`th isotope in the 
-    product stream :attr:`IsosOut <BriPy.FCComp.IsosOut>`.  The
+    product stream :attr:`IsosOut <bright.FCComp.IsosOut>`.  The
     :math:`x^P_j` value is set by the user at initialization or
     run-time.  For typical uranium vectors, this value is about 
     U-235 = 0.05.
@@ -288,7 +288,7 @@ for uranium enrichment.
     The values of this sub-class of :class:`EnrichmentParameters` are as
     follows::
 
-        ued = BriPy.UraniumEnrichmentDefaults()
+        ued = bright.UraniumEnrichmentDefaults()
 
         ued.alpha_0 = 1.05
         ued.Mstar_0 = 236.5

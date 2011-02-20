@@ -1,4 +1,4 @@
-.. currentmodule:: BriPy
+.. currentmodule:: bright
 
 ************************
 Reactor1G Helper Classes
@@ -56,7 +56,7 @@ Reactor Parameters Class
 
         This is the chemical form of fuel as dictionary.  Keys are strings that represent isotopes (mixed form) while 
         values represent the corresponding mass weights.  The heavy metal concentration by the key ``"IHM"``.  This 
-        will automatically fill in the nuclides in :attr:`IsosIn <BriPy.FCComp.IsosIn>` for the ``"IHM"`` weight.  For 
+        will automatically fill in the nuclides in :attr:`IsosIn <bright.FCComp.IsosIn>` for the ``"IHM"`` weight.  For 
         example, LWRs typically use a UOX fuel form::
 
             ReactorParameters.FuelForm = {"IHM": 1.0, "O16": 2.0}

@@ -7,7 +7,7 @@ elif os.name == "nt":
         sys.path.append("../build/lib.win32-2.6")
 
 import subprocess
-import BriPy
+import bright
 
 def printFCComp(fc):
     print("Name: " + fc.name)
@@ -20,47 +20,47 @@ def printFCComp(fc):
     print("Do Calc Empty: " + str( fc.doCalc() ))
     testCD = {922350: 10.0, 10010: 1.0}
     print("Do Calc Dictonary: " + str( fc.doCalc(testCD) ))
-    testMS = BriPy.MassStream({942390: 10.0, 80160: 20.0})
+    testMS = bright.MassStream({942390: 10.0, 80160: 20.0})
     print("Do Calc MassStream: " + str( fc.doCalc(testMS) ))
     return
 
-rp0 = BriPy.Reprocess()
+rp0 = bright.Reprocess()
 print("Empty Reprocessing Cycle Component")
 printFCComp(rp0)
 print("")
 
 SE1 = {92: 0.99, 94: 0.9}
-BriPy.isos2track([922350, 942390, 10010])
+bright.isos2track([922350, 942390, 10010])
 
-rp1 = BriPy.Reprocess({})
+rp1 = bright.Reprocess({})
 rp1.initialize(SE1)
 print("SE with no name...")
 printFCComp(rp1)
 print("")
 
 SE2 = {922350: 0.99, 942390: 0.9}
-rp2 = BriPy.Reprocess({}, "SE with name!")
+rp2 = bright.Reprocess({}, "SE with name!")
 rp2.initialize(SE2)
 printFCComp(rp2)
 print("")
 
 SE3 = {"U": 0.99, "PU239": 0.9}
-rp3 = BriPy.Reprocess(SE3)
+rp3 = bright.Reprocess(SE3)
 print("String SE with no name...")
 printFCComp(rp3)
 print("")
 
 SE4 = {"U": 0.99, "PU239": 0.9, "80160": 1.0}
-rp4 = BriPy.Reprocess(SE3, "String SE with name!")
+rp4 = bright.Reprocess(SE3, "String SE with name!")
 printFCComp(rp4)
 print("")
 
 print("Starting Real Reprocessing trial...")
-ms = BriPy.MassStream("MassStreamtry02.txt", -1, "RealMS")
+ms = bright.MassStream("MassStreamtry02.txt", -1, "RealMS")
 
 isotrack = ms.comp.keys()
 SE = {"U": 0.99, "PU": 0.9, "CM": 0.8}
-R = BriPy.Reprocess(SE, "RealRep")
+R = bright.Reprocess(SE, "RealRep")
 print(str(R.sepeff))
 print("")
 Rsef = R.sepeff

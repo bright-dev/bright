@@ -28,7 +28,7 @@ def main():
 
     shutil.copy(name + "_fcparams.py", "fcparams.py")
 
-    import BriPy
+    import bright
     import tables
 
     from fcparams import lwr_params
@@ -37,27 +37,27 @@ def main():
     #Various Variables
     snf_need = []
     if (not Quiet) or (options.verbose):
-        BriPy.verbosity(100)
+        bright.verbosity(100)
 
 
     #redefine isotrak
     trackfile = tables.openFile("../LWR.h5", 'r')
     itrack = trackfile.root.ToIso_zz.read()
     trackfile.close()
-    BriPy.isos2track(itrack)
+    bright.isos2track(itrack)
 
     if name == "LWR_NEA":
         #NEA
-        U234 = BriPy.MassStream({922340: 1.0}, 0.00032, "U234")
-        U235 = BriPy.MassStream({922350: 1.0}, 0.03600, "U235")
-        U236 = BriPy.MassStream({922350: 1.0}, 0.00016, "U235")
-        U238 = BriPy.MassStream({922380: 1.0}, 0.96352, "U238")
+        U234 = bright.MassStream({922340: 1.0}, 0.00032, "U234")
+        U235 = bright.MassStream({922350: 1.0}, 0.03600, "U235")
+        U236 = bright.MassStream({922350: 1.0}, 0.00016, "U235")
+        U238 = bright.MassStream({922380: 1.0}, 0.96352, "U238")
     elif name == "LWR_VIS51":
         #VISION
-        U234 = BriPy.MassStream({922340: 1.0}, 3.439849E-04, "U234")
-        U235 = BriPy.MassStream({922350: 1.0}, 4.299811E-02, "U235")
-        U236 = BriPy.MassStream({922350: 1.0}, 0.000000E+00, "U235")
-        U238 = BriPy.MassStream({922380: 1.0}, 9.566579E-01, "U238")
+        U234 = bright.MassStream({922340: 1.0}, 3.439849E-04, "U234")
+        U235 = bright.MassStream({922350: 1.0}, 4.299811E-02, "U235")
+        U236 = bright.MassStream({922350: 1.0}, 0.000000E+00, "U235")
+        U238 = bright.MassStream({922380: 1.0}, 9.566579E-01, "U238")
     else:
         print "Case not valid, please pick from: LWR_NEA, or LWR_VIS51."
         raise SystemExit
@@ -67,7 +67,7 @@ def main():
     #######################
 
     #Fuel Cycle Components
-    LWR = BriPy.LightWaterReactor1G("../LWR.h5", lwr_params, name)
+    LWR = bright.LightWaterReactor1G("../LWR.h5", lwr_params, name)
 
     def LWR_delR_BU_(ms):
         "Calculates the delta Reaction Rates at the target burnup."

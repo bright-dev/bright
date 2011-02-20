@@ -9,13 +9,13 @@ However, a more efficient, more general matrix exponential method is expected so
 
 To use this class necessary decay information must be available.  This is stored in a ``decay.h5`` database that must be
 present within `BRIGHT_DATA` directory.   Instantiation of this class automatically calls the protected 
-:meth:`initialize <BriPy.Storage.initialize>`  C function, which loads the ``decay.h5`` library.
+:meth:`initialize <bright.Storage.initialize>`  C function, which loads the ``decay.h5`` library.
 
-.. currentmodule:: BriPy
+.. currentmodule:: bright
     
 .. class:: Storage([name])
 
-    Storage Fuel Cycle Component Class.  Daughter of :class:`BriPy.FCComp` class.
+    Storage Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
 
     Args:
         * `name` (str): The name of the storage fuel cycle component instance.
@@ -26,7 +26,7 @@ present within `BRIGHT_DATA` directory.   Instantiation of this class automatica
 ==================
 Storage Attributes
 ==================
-As a daughter class of :class:`BriPy.FCComp`, :class:`Storage` inherits all of the attributes of its parent.  
+As a daughter class of :class:`bright.FCComp`, :class:`Storage` inherits all of the attributes of its parent.  
 The following is a listing of the additional attributes specific to this class and those modified from the parent.
 
 .. attribute:: Storage.decay 
@@ -102,19 +102,19 @@ Storage Methods
 
     As usual, :meth:`doCalc` sets up the Storage component's input stream and calculates the corresponding 
     output :class:`MassStream`.  Here, this amounts to calling :meth:`bateman` for every nuclide in 
-    :attr:`IsosIn <BriPy.FCComp.IsosIn>`, for each chain that ends with a nuclide in :meth:`BriPy.isos2track`.
+    :attr:`IsosIn <bright.FCComp.IsosIn>`, for each chain that ends with a nuclide in :meth:`BriPy.isos2track`.
 
     This method is public and accessible from Python.
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
-          :attr:`IsosIn <BriPy.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
-          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
         * `time` (float): :attr:`decay_time` is set to the time value here prior to any other calculations.  This
           time has units of seconds.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
+        * `output` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
 
 
 .. method:: Storage.initialize()

@@ -2,7 +2,7 @@
 FCComps Extension Module
 ************************
 The `FCComps` extension module contains all of the fuel cycle components that Bright may use and exists 
-within the `BriPy` package.  
+within the `bright` package.  
 
 The documentation for `FCComps` is split up based on component object (or class).  This demonstrates the heirarchy 
 between classes and allows for greater exploration of each components methodology.

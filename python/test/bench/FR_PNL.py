@@ -32,7 +32,7 @@ def main():
 
     shutil.copy(name + "_fcparams.py", "fcparams.py")
 
-    import BriPy
+    import bright
     import tables
 
     from fcparams import fr_params
@@ -41,22 +41,22 @@ def main():
     #Various Variables
     snf_need = []
     if (not Quiet) or (options.verbose):
-        BriPy.verbosity(100)
+        bright.verbosity(100)
 
     #redefine isotrak
     trackfile = tables.openFile("../FR.h5", 'r')
     itrack = trackfile.root.ToIso_zz.read()
     trackfile.close()
-    BriPy.isos2track(itrack)
+    bright.isos2track(itrack)
 
     ######################
     ### FR Computation ###
     ######################
-    InStream = BriPy.MassStream(name + '_Benchmark_In.txt', 1.0, "InStream")
+    InStream = bright.MassStream(name + '_Benchmark_In.txt', 1.0, "InStream")
 
 
     #Fuel Cycle Components
-    FR = BriPy.FastReactor1G("../FR.h5", fr_params, name)
+    FR = bright.FastReactor1G("../FR.h5", fr_params, name)
 
     def Run_PNL(temp_pnl):
         FR.P_NL = temp_pnl

@@ -1,4 +1,4 @@
-from BriPy import FRDefaults
+from bright import FRDefaults
 fr_params = FRDefaults()
 
 #General Specifications

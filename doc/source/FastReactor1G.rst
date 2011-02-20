@@ -1,4 +1,4 @@
-.. currentmodule:: BriPy
+.. currentmodule:: bright
 
 ******************
 Fast Reactor Class
@@ -83,7 +83,7 @@ Fast Reactor Default Parameters
         * `frd` (:class:`ReactorParameters`): Fast reactor default physical parameters.
           These defaults take on the following hard-coded values::
 
-            frd = BriPy.LWRDeafaults()
+            frd = bright.LWRDeafaults()
 
             frd.batches = 3
             frd.flux = 2.0 * 10.0**15

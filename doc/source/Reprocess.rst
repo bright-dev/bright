@@ -4,17 +4,17 @@ Reprocess Class
 The reprocessing object is one of the simplest that Bright offers.  In a technology nonspecific way, it performs
 separations on an input mass stream.  Reprocessing facilities have nominal separation efficiencies (SE) for each element 
 (and possibly nuclide).  These SE are valued on the range [0,1] and represent the fractional portion of an element that 
-is recovered in the reprocessing output (:attr:`IsosOut <BriPy.FCComp.IsosOut>`).
+is recovered in the reprocessing output (:attr:`IsosOut <bright.FCComp.IsosOut>`).
 
 The SE, if left unspecified, default to full recovery (a value of 1).  Currently, Reprocess does not contain a ``TailsOut`` 
-attribute that corresponds to material not recovered in :attr:`IsosOut <BriPy.FCComp.IsosOut>` (equivalent to 1 - SE).  
+attribute that corresponds to material not recovered in :attr:`IsosOut <bright.FCComp.IsosOut>` (equivalent to 1 - SE).  
 However, as such an item is becoming evermore useful, its future implementation is likely.
 
-.. currentmodule:: BriPy
+.. currentmodule:: bright
     
 .. class:: Reprocess([sepeff[, name]])
 
-    Reprocess Fuel Cycle Component Class.  Daughter of :class:`BriPy.FCComp` class.
+    Reprocess Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
 
     Args:
         * `sepeff` (dict): A dictionary containing the separation efficiencies (float) to initialize
@@ -48,12 +48,12 @@ However, as such an item is becoming evermore useful, its future implementation 
 ====================
 Reprocess Attributes
 ====================
-As a daughter class of :class:`BriPy.FCComp`, :class:`Reprocess` inherits all of the attributes of its parent.  
+As a daughter class of :class:`bright.FCComp`, :class:`Reprocess` inherits all of the attributes of its parent.  
 The following is a listing of the additional attributes specific to this class.
 
 .. attribute:: Reprocess.sepeff
 
-    This is a dictionary or map representing the separation efficiencies of each isotope in :func:`BriPy.isos2track`.
+    This is a dictionary or map representing the separation efficiencies of each isotope in :func:`bright.isos2track`.
     Therefore it has zzaaam-integer keys and float (double) values.  During initialization, other SE dictionaries are converted 
     to this standard form::
 
@@ -86,11 +86,11 @@ Reprocess Methods
 
     Args:
         * `input` (dict or MassStream): If input is present, it set as the component's 
-          :attr:`IsosIn <BriPy.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
-          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <BriPy.FCComp.IsosIn>`.
+          :attr:`IsosIn <bright.FCComp.IsosIn>`.  If input is a isotopic dictionary (zzaaam keys, float values), this
+          dictionary is first converted into a MassStream before being set as :attr:`IsosIn <bright.FCComp.IsosIn>`.
 
     Returns:
-        * `output` (MassStream): :attr:`IsosOut <BriPy.FCComp.IsosOut>`.
+        * `output` (MassStream): :attr:`IsosOut <bright.FCComp.IsosOut>`.
 
 
 .. method:: Reprocess.initialize(sepdict)
@@ -98,7 +98,7 @@ Reprocess Methods
     The :meth:`initialize` function calculates the :attr:`sepeff` from an integer-keyed dictionary
     of separation efficiencies.  The difference is that `sepdict` may contain either elemental or
     isotopic keys and need not contain every isotope tracked.  On the other hand, :attr:`sepeff`
-    must have only zzaaam keys that match exactly the isotopes in :func:`BriPy.isos2track`.
+    must have only zzaaam keys that match exactly the isotopes in :func:`bright.isos2track`.
 
     Args:
         * `sepdict` (dict): Integer valued dictionary of SE to be converted to :attr:`sepeff`.

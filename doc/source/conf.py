@@ -37,7 +37,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'BriPy'
+project = u'bright'
 copyright = u'2010, Anthony Scopatz'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -180,7 +180,7 @@ htmlhelp_basename = 'brightdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'BriPy.tex', u'BriPy Documentation',
+  ('index', 'bright.tex', u'BriPy Documentation',
    u'Anthony Scopatz', 'manual'),
 ]
 
