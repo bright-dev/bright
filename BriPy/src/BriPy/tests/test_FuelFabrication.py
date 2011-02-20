@@ -12,12 +12,12 @@ import tables as tb
 import numpy as np
 
 import BriPy
-
+import mass_stream
 
 Reactor1G = BriPy.Reactor1G
 FluencePoint = BriPy.FluencePoint
 ReactorParameters = BriPy.ReactorParameters
-MassStream = BriPy.MassStream
+MassStream = mass_stream.MassStream
 FuelFabrication = BriPy.FuelFabrication
 
 default_rp = BriPy.ReactorParameters()

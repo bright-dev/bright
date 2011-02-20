@@ -447,3 +447,39 @@ cdef class MassStream:
     
     def __truediv__(MassStream self, y):
         return self.__div__(y)
+
+
+
+
+##############################
+### Mass Stream Converters ###
+##############################
+
+# <string, MassStream *>
+
+cdef cpp_map[std.string, msp] dict_to_map_str_msp(dict pydict):
+    cdef MassStream pyms 
+    cdef cpp_mass_stream.MassStream * cpp_msp
+    cdef cpp_map[std.string, msp] cppmap = cpp_map[std.string, msp]()
+
+    for key, value in pydict.items():
+        pyms = value
+        cpp_msp = pyms.ms_pointer
+        cppmap[std.string(key)] = cpp_msp
+
+    return cppmap
+
+
+cdef dict map_to_dict_str_msp(cpp_map[std.string, msp] cppmap):
+    pydict = {}
+    cdef MassStream pyms 
+    cdef cpp_map[std.string, msp].iterator mapiter = cppmap.begin()
+
+    while mapiter != cppmap.end():
+        pyms = MassStream()
+        pyms.ms_pointer = deref(mapiter).second
+        pydict[deref(mapiter).first.c_str()] = pyms
+        inc(mapiter)
+
+    return pydict
+

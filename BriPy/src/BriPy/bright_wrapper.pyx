@@ -4660,3 +4660,245 @@ cdef class FastReactor1G(Reactor1G):
         are set to zeta_F_.
         """
         (<cpp_bright.Reactor1G *> self.fr1g_pointer).calcZetaCylindrical()
+
+
+
+
+
+#############################
+### FuelFabrication Class ###
+#############################
+
+
+cdef class FuelFabrication(FCComp):
+    """Fuel Fabrication Fuel Cycle Component Class.  Daughter of BriPy.FCComp class.
+
+    Keyword Args:
+        * mass_streams (dict): A dictionary whose keys are string labels (eg, "U-235", 
+          "TRU", "My Fuel") and whose values are mass streams.  For example::
+
+            mass_streams = {
+                "U235": MassStream({922350: 1.0}, 1.0, "U-235"),
+                "U236": MassStream({922360: 1.0}, 1.0, "U-236"),
+                "U238": MassStream({922380: 1.0}, 1.0, "U-238"),
+                }
+
+          would be valid for a light water reactor.
+        * mass_weights_in (dict): A dictionary whose keys are the same as for mass_streams
+          and whose values are the associated weight (float) for that stream.  If a stream
+          should be allowed to vary (optimized over), specify its weight as a negative number.
+          For instance::
+
+            mass_weights_in = {
+                "U235": -1.0,
+                "U236": 0.005,
+                "U238": -1.0,        
+                }
+
+          would be valid for a light water reactor with half a percent of U-236 always present.
+        * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
+        * params2track (list of str): Additional parameters to track, if any.        
+        * name (str): The name of the fuel fabrication fuel cycle component instance.
+
+    Note that this automatically calls the public initialize() C function.
+    """
+
+    cdef cpp_bright.FuelFabrication * ff_pointer
+
+    def __cinit__(self, mass_streams=None, mass_weights_in=None, reactor=None, params2track=None, char * name=""):
+        cdef std.string cpp_name = std.string(name)
+
+        if (mass_streams is None) and (mass_weights_in is None) and (reactor is None) and (params2track is None):
+            self.ff_pointer = new cpp_bright.FuelFabrication(std.string(name))
+
+        elif (mass_streams is None) and (mass_weights_in is None) and (reactor is None) and isinstance(params2track, set):
+            self.ff_pointer = new cpp_bright.FuelFabrication(conv.py_to_cpp_set_str(params2track), cpp_name)
+
+        elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and (params2track is None):
+            self.ff_pointer = new cpp_bright.FuelFabrication(
+                                mass_stream.dict_to_map_str_msp(mass_streams), 
+                                conv.dict_to_map_str_dbl(mass_weights_in), 
+                                reactor.r1g_pointer[0], 
+                                std.string(name))
+
+        elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and isinstance(params2track, set):
+            self.ff_pointer = new cpp_bright.FuelFabrication(
+                                mass_stream.dict_to_map_str_msp(mass_streams), 
+                                conv.dict_to_map_str_dbl(mass_weights_in), 
+                                reactor.r1g_pointer[0], 
+                                conv.py_to_cpp_set_str(params2track),
+                                std.string(name))
+
+        else:
+            if mass_streams is not None:
+                raise TypeError("The mass_streams keyword must be a dictionary of (string, MassStream) items or None.  Got " + str(type(mass_streams)))
+
+            if mass_weights_in is not None:
+                raise TypeError("The mass_weights_in keyword must be a dictionary of (string, float) items or None.  Got " + str(type(mass_weights)))
+
+            if reactor is not None:
+                raise TypeError("The reactor keyword must be a Reactor1G instance or None.  Got " + str(type(reactor)))
+
+            if params2track is not None:
+                raise TypeError("The params2track keyword must be a set of strings or None.  Got " + str(type(params2track)))
+
+
+    def __dealloc__(self):
+        del self.ff_pointer
+
+
+    #
+    # Class Attributes
+    #
+
+    # FuelFabrication attributes
+
+
+
+    # FCComps inherited attributes
+
+    property name:
+        def __get__(self):
+            cdef std.string n = self.ff_pointer.name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.ff_pointer.name = std.string(n)
+
+
+    property natural_name:
+        def __get__(self):
+            cdef std.string n = self.ff_pointer.natural_name
+            return n.c_str()
+
+        def __set__(self, char * n):
+            self.ff_pointer.natural_name = std.string(n)
+
+
+    property IsosIn:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.ff_pointer.IsosIn
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.ff_pointer.IsosIn = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property IsosOut:
+        def __get__(self):
+            cdef mass_stream.MassStream py_ms = mass_stream.MassStream()
+            py_ms.ms_pointer[0] = self.ff_pointer.IsosOut
+            return py_ms
+
+        def __set__(self, mass_stream.MassStream ms):
+            self.ff_pointer.IsosOut = <cpp_mass_stream.MassStream> ms.ms_pointer[0]
+
+
+    property ParamsIn:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.ff_pointer.ParamsIn)
+
+        def __set__(self, dict pi):
+            self.ff_pointer.ParamsIn = conv.dict_to_map_str_dbl(pi)
+
+
+    property ParamsOut:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.ff_pointer.ParamsOut)
+
+        def __set__(self, dict po):
+            self.ff_pointer.ParamsOut = conv.dict_to_map_str_dbl(po)
+
+
+    property PassNum:
+        def __get__(self):
+            return self.ff_pointer.PassNum
+
+        def __set__(self, int pn):
+            self.ff_pointer.PassNum = pn
+
+
+    property params2track:
+        def __get__(self):
+            return conv.cpp_to_py_set_str(self.ff_pointer.params2track)
+
+        def __set__(self, set p2t):
+            self.ff_pointer.params2track = conv.py_to_cpp_set_str(p2t)
+
+
+
+    #
+    # Class Methods
+    # 
+
+    def initialize(self, dict mass_streams, dict mass_weights_in, Reactor1G reactor):
+        """The initialize() method takes the appropriate mass streams, input mass weights,
+        a reactor objects and resets the current FuelFabrication instance.
+
+        Args:
+            * mass_streams (dict): A dictionary whose keys are string labels and whose values are mass streams.  
+            * mass_weights_in (dict): A dictionary whose keys are the same as for mass_streams
+              and whose values are the associated weight (float) for that stream.
+            * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
+        """
+        self.ff_pointer.initialize(mass_stream.dict_to_map_str_msp(mass_streams), 
+                                   conv.dict_to_map_str_dbl(mass_weights_in), 
+                                   reactor.r1g_pointer[0])
+
+
+    def setParams(self):
+        """Here the parameters for FuelFabrication are set.  For example::
+
+            self.ParamsIn["Weight_U235"]  = self.mass_weights_in["U235"]
+            self.Paramsout["Weight_U235"] = self.mass_weights_out["U235"]
+
+            self.ParamsIn["deltaR_U235"]  = self.deltaRs["U235"]
+            self.Paramsout["deltaR_U235"] = self.deltaRs["U235"]
+
+            self.ParamsIn["Weight_U238"]  = self.mass_weights_in["U238"]
+            self.Paramsout["Weight_U238"] = self.mass_weights_out["U238"]
+
+            self.ParamsIn["deltaR_U238"]  = self.deltaRs["U238"]
+            self.Paramsout["deltaR_U238"] = self.deltaRs["U238"]
+        """
+        (<cpp_bright.FCComp *> self.ff_pointer).setParams()
+
+
+    def doCalc(self, mass_streams=None, mass_weights_in=None, reactor=None):
+        """This method performs an optimization calculation on all input mass streams to determine
+        the mass ratios that generate the correct fuel form for the reactor.  It then compiles 
+        the fuel and returns the resultant MassStream. 
+
+        Args:
+            * mass_streams (dict): A dictionary whose keys are string labels and whose values are mass streams.  
+            * mass_weights_in (dict): A dictionary whose keys are the same as for mass_streams
+              and whose values are the associated weight (float) for that stream.
+            * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
+
+        Returns:
+            * core_input (MassStream): IsosOut.
+        """
+        cdef mass_stream.MassStream core_input = mass_stream.MassStream()
+
+        if (mass_streams is None) and (mass_weights_in is None) and (reactor is None):
+            core_input.ms_pointer[0] = (<cpp_bright.FCComp *> self.ff_pointer).doCalc()
+
+        elif isinstance(mass_streams, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and isinstance(params2track, set):
+            core_input.ms_pointer[0] = self.ff_pointer.doCalc(
+                                                            mass_stream.dict_to_map_str_msp(mass_streams), 
+                                                            conv.dict_to_map_str_dbl(mass_weights_in), 
+                                                            reactor.r1g_pointer[0])
+
+        else:
+            if mass_streams is not None:
+                raise TypeError("The mass_streams keyword must be a dictionary of (string, MassStream) items or None.  Got " + str(type(mass_streams)))
+
+            if mass_weights_in is not None:
+                raise TypeError("The mass_weights_in keyword must be a dictionary of (string, float) items or None.  Got " + str(type(mass_weights)))
+
+            if reactor is not None:
+                raise TypeError("The reactor keyword must be a Reactor1G instance or None.  Got " + str(type(reactor)))
+
+        return core_input
+

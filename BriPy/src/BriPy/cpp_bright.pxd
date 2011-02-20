@@ -5,7 +5,7 @@ from libcpp.vector cimport vector
 
 cimport std
 cimport cpp_mass_stream
-
+cimport mass_stream
 
 cdef extern from "../bright.h" namespace "bright":
     std.string BRIGHT_DATA
@@ -329,11 +329,13 @@ cdef extern from "../LightWaterReactor1G.h":
     ReactorParameters fillLWRDefaults()
 
     cdef cppclass LightWaterReactor1G(Reactor1G):
+        # Constructors        
         LightWaterReactor1G()
         LightWaterReactor1G(std.string, std.string)
         LightWaterReactor1G(ReactorParameters, std.string)
         LightWaterReactor1G(std.string, ReactorParameters, std.string)
 
+        # Methods
         void setParams()
 
 
@@ -344,9 +346,30 @@ cdef extern from "../FastReactor1G.h":
     ReactorParameters fillFRDefaults()
 
     cdef cppclass FastReactor1G(Reactor1G):
+        # Constructors        
         FastReactor1G()
         FastReactor1G(std.string, std.string)
         FastReactor1G(ReactorParameters, std.string)
         FastReactor1G(std.string, ReactorParameters, std.string)
 
+        # Methods
         void setParams()
+
+
+
+cdef extern from "../FuelFabrication.h":
+
+    cdef cppclass FuelFabrication(FCComp):
+        # Constructors        
+        FuelFabrication()
+        FuelFabrication(std.string)
+        FuelFabrication(set[std.string], std.string)
+        FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, std.string)
+        FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, set[std.string], std.string)
+
+        # Methods
+        void initialize(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)
+        void setParams()
+
+        cpp_mass_stream.MassStream doCalc()
+        cpp_mass_stream.MassStream doCalc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)

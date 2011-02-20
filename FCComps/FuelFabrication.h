@@ -40,14 +40,6 @@ class FuelFabrication : public FCComp
 protected:
 
 public:
-    //Public data
-    MassStreams mass_streams;
-    MassWeights mass_weights_in;
-    MassWeights mass_weights_out;
-    MassDeltaRs deltaRs;
-
-    Reactor1G reactor;
-
     //Reactor1G Constructors
     FuelFabrication ();
     FuelFabrication (std::string);
@@ -56,22 +48,13 @@ public:
     FuelFabrication (MassStreams, MassWeights, Reactor1G, std::set<std::string>, std::string = "");
     ~FuelFabrication ();
     
-    //Get Functions
-    MassStreams get_mass_streams() const {return mass_streams;};
-    MassWeights get_mass_weights_in() const {return mass_weights_in;};
-    MassWeights get_mass_weights_out() const {return mass_weights_out;};
+    //Public data
+    MassStreams mass_streams;
+    MassWeights mass_weights_in;
+    MassWeights mass_weights_out;
+    MassDeltaRs deltaRs;
 
-    MassDeltaRs get_deltaRs() const {return deltaRs;};
-
-    Reactor1G get_reactor() const {return reactor;};
-
-    //Set Functions
-    void set_mass_streams(MassStreams mss) {mass_streams = mss;};
-    void set_mass_weights_in(MassWeights mws_in) {mass_weights_in = mws_in;};
-    void set_mass_weights_out(MassWeights mws_out) {mass_weights_out = mws_out;};
-    void set_deltaRs(MassDeltaRs drs) {deltaRs = drs;};
-
-    void set_reactor(Reactor1G r) {reactor = r;};
+    Reactor1G reactor;
 
     //Public access functions
     void initialize(MassStreams, MassWeights, Reactor1G);
