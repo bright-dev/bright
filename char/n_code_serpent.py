@@ -100,7 +100,7 @@ class NCodeSerpent(object):
             # generate a non-pertubed stream
             all_isos = set(defchar.IHM_stream.comp.keys())
             non_pert_isos = all_isos - pert_isos
-            non_pert_stream = defchar.IHM_stream.getSubStreamInt(list(non_pert_isos))
+            non_pert_stream = defchar.IHM_stream.get_sub_stream(non_pert_isos)
             non_pert_stream.mass = 1.0 - pert_stream.mass
 
             # generate an initial heavy metal stream
@@ -126,7 +126,7 @@ class NCodeSerpent(object):
         if ms == None:
             comp_str = self.make_input_material_weights(self.initial_fuel_stream.comp, mass_weighted)
         else:
-            comp_str = self.make_input_material_weights(ms.multByMass(), True)
+            comp_str = self.make_input_material_weights(ms.mult_by_mass(), True)
 
         return comp_str
 
@@ -631,8 +631,8 @@ class NCodeSerpent(object):
             ms_n.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", 2)
 
             # Calc restricted mass streams
-            ms_n_in_serpent = ms_n.getSubStreamInt(defchar.core_transmute_in_serpent['zzaaam'])
-            ms_n_not_in_serpent = ms_n.getSubStreamInt(defchar.core_transmute_not_in_serpent['zzaaam'])
+            ms_n_in_serpent = ms_n.get_sub_stream(defchar.core_transmute_in_serpent['zzaaam'])
+            ms_n_not_in_serpent = ms_n.get_sub_stream(defchar.core_transmute_not_in_serpent['zzaaam'])
 
             #
             # Loop over all output isotopes that are valid in serpent
