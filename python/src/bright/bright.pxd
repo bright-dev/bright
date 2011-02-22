@@ -55,3 +55,9 @@ cdef class FastReactor1G(Reactor1G):
 
 cdef class FuelFabrication(FCComp):
     cdef cpp_bright.FuelFabrication * ff_pointer
+
+
+cdef class ReactorMG(FCComp):
+    cdef cpp_bright.ReactorMG * rmg_pointer
+
+

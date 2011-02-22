@@ -393,3 +393,131 @@ cdef extern from "../FuelFabrication.h":
 
         cpp_mass_stream.MassStream calc()
         cpp_mass_stream.MassStream calc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)
+
+
+
+cdef extern from "../ReactorMG.h":
+
+    cdef cppclass ReactorMG(FCComp):
+        # Constructors        
+        ReactorMG()
+        ReactorMG(std.string)
+        ReactorMG(set[std.string], std.string)
+        ReactorMG(ReactorParameters, std.string)
+        ReactorMG(ReactorParameters, set[std.string], std.string)
+
+        # Attributes
+        int B
+        double phi
+        map[std.string, double] fuel_chemical_form
+        map[std.string, double] coolant_chemical_form
+        double rhoF
+        double rhoC
+        double P_NL
+        double target_BU
+        bint use_zeta
+        std.string lattice_flag
+        bint rescale_hydrogen_xs
+
+        double r
+        double l
+        double S_O
+        double S_T
+        double VF
+        double VC
+
+        std.string libfile
+        vector[double] F
+        map[int, vector[double]] BUi_F_
+        map[int, vector[double]] pi_F_
+        map[int, vector[double]] di_F_
+        map[int, map[int, vector[double]]] Tij_F_
+
+        set[int] I
+
+        double A_IHM
+        double MWF
+        double MWC
+        map[int, double] niF
+        map[int, double] niC
+        map[int, double] miF
+        map[int, double] miC
+        map[int, double] NiF
+        map[int, double] NiC
+
+        vector[double] dF_F_
+        vector[double] dC_F_
+        vector[double] BU_F_
+        vector[double] P_F_
+        vector[double] D_F_
+        vector[double] k_F_
+        map[int, vector[double]] Mj_F_
+        vector[double] zeta_F_
+
+        int fd
+        double Fd
+        double BUd
+        double k
+
+        cpp_mass_stream.MassStream ms_feed_u
+        cpp_mass_stream.MassStream ms_feed_tru
+        cpp_mass_stream.MassStream ms_feed_lan
+        cpp_mass_stream.MassStream ms_feed_act
+        cpp_mass_stream.MassStream ms_prod_u
+        cpp_mass_stream.MassStream ms_prod_tru
+        cpp_mass_stream.MassStream ms_prod_lan
+        cpp_mass_stream.MassStream ms_prod_act
+
+        double deltaR
+        double tru_cr
+
+        vector[double] SigmaFa_F_
+        vector[double] SigmaFtr_F_
+        vector[double] kappaF_F_
+
+        vector[double] SigmaCa_F_
+        vector[double] SigmaCtr_F_
+        vector[double] kappaC_F_
+
+        vector[double] lattice_E_F_
+        vector[double] lattice_F_F_
+
+        # Methods
+        void initialize(ReactorParameters)
+        void loadlib(std.string)
+        void fold_mass_weights()
+
+        void calc_Mj_F_()
+        void calc_Mj_Fd_()
+
+        void calc_ms_prod()
+        void calcSubStreams()
+        double calc_tru_cr()
+
+        double calc_deltaR()
+        double calc_deltaR(map[int, double])
+        double calc_deltaR(cpp_mass_stream.MassStream)
+
+        FluencePoint fluence_at_BU(double)
+        double batch_average(double, std.string)
+        double batch_average_k(double)
+        void BUd_bisection_method()
+        void run_P_NL(double)
+        void calibrate_P_NL_to_BUd()
+
+        cpp_mass_stream.MassStream calc()
+        cpp_mass_stream.MassStream calc(map[int, double])
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
+
+        void lattice_E_planar(double, double)
+        void lattice_F_planar(double, double)
+        void lattice_E_spherical(double, double)
+        void lattice_F_spherical(double, double)
+        void lattice_E_cylindrical(double, double)
+        void lattice_F_cylindrical(double, double)
+
+        void calc_zeta()
+        void calc_zeta_planar()
+        void calc_zeta_spherical()
+        void calc_zeta_cylindrical()
+
