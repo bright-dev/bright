@@ -730,7 +730,7 @@ void Reactor1G::BUd_bisection_method()
         };
 
         if ( (BUd_b < 0.0) || (1000.0 < BUd_b) )
-            throw Badfuel_form ();
+            throw bright::BadFuelForm ();
     };
 
     BUd_c = 0.0;
@@ -793,7 +793,7 @@ void Reactor1G::BUd_bisection_method()
             std::cout << "BUd_c = " << BUd_c << "\tk_c = " << k_c << "\tsign_c = " << sign_c << "\n";
             std::cout << "\n";
         };
-        throw BisectionMethodNotPerformed ("Burnup");
+        throw bright::BisectionMethodNotPerformed ("Burnup");
     };
 
     //print results, if desired.
@@ -888,11 +888,11 @@ void Reactor1G::calibrate_P_NL_to_BUd()
             sign_a = (bud_a - target_BU) / fabs(bud_a - target_BU);
             FoundA = true;
         }
-        catch (Badfuel_form e)
+        catch (bright::BadFuelForm e)
         {
             pnl_a = pnl_a + 0.05;
         }
-        catch (BisectionMethodNotPerformed e)
+        catch (bright::BisectionMethodNotPerformed e)
         {
             pnl_a = pnl_a + 0.05;
         };
@@ -910,11 +910,11 @@ void Reactor1G::calibrate_P_NL_to_BUd()
             sign_b = (bud_b - target_BU) / fabs(bud_b - target_BU);
             FoundB = true;
         }
-        catch (Badfuel_form e)
+        catch (bright::BadFuelForm e)
         {
             pnl_b = pnl_b - 0.05;
         }
-        catch (BisectionMethodNotPerformed e)
+        catch (bright::BisectionMethodNotPerformed e)
         {
             pnl_b = pnl_b - 0.05;
         };
