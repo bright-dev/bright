@@ -170,7 +170,7 @@ cdef extern from "../Storage.h":
 
 
 
-cdef extern from "../Reactor1G.h":
+cdef extern from "../FluencePoint.h":
 
     cdef cppclass FluencePoint:
         # Constructors        
@@ -181,6 +181,8 @@ cdef extern from "../Reactor1G.h":
         double F
         double m
 
+
+cdef extern from "../ReactorParameters.h":
 
     cdef cppclass ReactorParameters:
         # Constructors        
@@ -203,6 +205,8 @@ cdef extern from "../Reactor1G.h":
         double open_slots
         double total_slots
 
+
+cdef extern from "../Reactor1G.h":
 
     cdef cppclass Reactor1G(FCComp):
         # Constructors        

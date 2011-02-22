@@ -24,6 +24,9 @@
 #include "MassStream.h"
 #include "isoname.h"
 
+#include "FluencePoint.h"
+#include "ReactorParameters.h"
+
 /***********************************************/
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/
@@ -35,48 +38,6 @@ typedef std::vector<double> Data_F_;
 
 typedef std::set<int> IsoSet;
 typedef IsoSet::iterator IsoIter;
-
-class FluencePoint
-{
-public:
-    // Constructors
-    FluencePoint();
-    ~FluencePoint();
-
-    // Attributes
-    int f;
-    double F;
-    double m;
-};
-
-
-//struct ReactorParameters
-class ReactorParameters
-{
-public:
-    // Constructors
-    ReactorParameters();
-    ~ReactorParameters();
-
-    // Attributes
-    int batches;
-    double flux;
-    std::map<std::string, double> fuel_form;
-    std::map<std::string, double> coolant_form;
-    double fuel_density;
-    double coolant_density;
-    double pnl;
-    double BUt;
-    bool use_disadvantage_factor;
-    std::string lattice_type;
-    bool rescale_hydrogen;
-    double radius;
-    double pitch;
-    double open_slots;
-    double total_slots;
-
-};
-
 
 class Reactor1G : public FCComp
 {
