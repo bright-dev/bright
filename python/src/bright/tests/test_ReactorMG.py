@@ -254,6 +254,19 @@ class TestReactorMGBasicDataAttributes(TestCase):
         for iso in self.rmg.I:
             assert_equal(isoname.CurrentForm(iso), 'zzaaam')
 
+
+    def test_J(self):
+        assert_not_equal(len(self.rmg.J), 0)
+        for iso in self.rmg.J:
+            assert_equal(isoname.CurrentForm(iso), 'zzaaam')
+
+
+#    def test_IJ(self):
+#        # Bad dataset
+#        print self.rmg.J
+#        assert(self.rmg.I <= self.rmg.J)
+
+
 """\
 
     def test_F(self):

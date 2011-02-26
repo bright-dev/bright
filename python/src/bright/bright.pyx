@@ -5243,6 +5243,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.I = conv.py_to_cpp_set_int(value)
 
 
+    property J:
+        def __get__(self):
+            return conv.cpp_to_py_set_int(self.rmg_pointer.J)
+
+        def __set__(self, set value):
+            self.rmg_pointer.J = conv.py_to_cpp_set_int(value)
+
+
 
 
 

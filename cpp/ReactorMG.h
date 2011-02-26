@@ -50,7 +50,6 @@ class ReactorMG : public FCComp
  */
 protected:
     //Protected data
-    IsoSet J;						//Set of isotopes that may be in ms_prod.
 
     //Thermal XS data is read in from static KAERI Data
     //Only read in if the disadvantage factor will be used.
@@ -94,6 +93,7 @@ public:
     std::map<int, IsoFluenceDict> Tij_F_;				//Transformation Matrix [kg_i/kgIHM]
 
     IsoSet I;						//Set of isotopes that may be in ms_feed.
+    IsoSet J;						//Set of isotopes that may be in ms_prod.
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight

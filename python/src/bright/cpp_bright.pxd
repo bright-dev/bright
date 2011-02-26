@@ -434,6 +434,7 @@ cdef extern from "../ReactorMG.h":
         map[int, map[int, vector[double]]] Tij_F_
 
         set[int] I
+        set[int] J
 
         double A_IHM
         double MWF

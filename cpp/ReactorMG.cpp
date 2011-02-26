@@ -81,29 +81,22 @@ void ReactorMG::loadlib(std::string libfile)
     //H5::Exception::dontPrint();
 
     // Open file
-    H5::H5File lib(libfile, H5F_ACC_RDONLY);
+    H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
 
 
-    // Load 'I'sos
+    // Load isos
+    I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/load_isos_zz", H5::PredType::NATIVE_INT);
+    J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
+
+    /*
     H5::DataSet I_set = lib.openDataSet("/load_isos_zz");
     h5wrap::h5_array_to_cpp_set<int>(&I_set, &I, H5::PredType::NATIVE_INT);
     I_set.close();
 
-    /*
-    int I_iso;
-    hsize_t I_len[1];
-
-    I.clear();
-    H5::DataSet I_set = lib.openDataSet("/load_isos_zz");
-    H5::DataSpace I_space = I_set.getSpace();
-    int I_dim = I_space.getSimpleExtentDims(I_len, NULL);
-
-    for(int n = 0; n < I_len[0]; n++)
-    {
-        I_iso = h5wrap::get_array_index<int>(&I_set, n, H5::PredType::NATIVE_INT);
-        I.insert(isoname::mixed_2_zzaaam(I_iso));
-    };
-
+    // Load 'J'sos
+    H5::DataSet J_set = lib.openDataSet("/transmute_isos_zz");
+    h5wrap::h5_array_to_cpp_set<int>(&J_set, &J, H5::PredType::NATIVE_INT);
+    J_set.close();
 
     
     //Initializes Burnup Parameters...
