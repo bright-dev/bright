@@ -15,6 +15,7 @@ import numpy as np
 
 import bright
 import mass_stream
+import isoname
 
 bright_config = bright.bright_config
 MassStream = mass_stream.MassStream
@@ -246,6 +247,12 @@ class TestReactorMGBasicDataAttributes(TestCase):
     def test_libfile(self):
         self.rmg.libfile = "It's Ruth!"
         assert_equal(self.rmg.libfile, "It's Ruth!")
+
+
+    def test_I(self):
+        assert_not_equal(len(self.rmg.I), 0)
+        for iso in self.rmg.I:
+            assert_equal(isoname.CurrentForm(iso), 'zzaaam')
 
 """\
 

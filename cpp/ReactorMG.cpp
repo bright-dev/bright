@@ -85,6 +85,11 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     // Load 'I'sos
+    H5::DataSet I_set = lib.openDataSet("/load_isos_zz");
+    h5wrap::h5_array_to_cpp_set<int>(&I_set, &I, H5::PredType::NATIVE_INT);
+    I_set.close();
+
+    /*
     int I_iso;
     hsize_t I_len[1];
 
@@ -100,7 +105,6 @@ void ReactorMG::loadlib(std::string libfile)
     };
 
 
-    /*
     
     //Initializes Burnup Parameters...
     hsize_t dimFromIso[1];
