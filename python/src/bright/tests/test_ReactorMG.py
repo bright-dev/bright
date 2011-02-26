@@ -51,7 +51,6 @@ def general_teardown():
 
 
 
-
 class TestReactorMGConstructors(TestCase):
     "Tests that the ReactorMG component constructors work."
 
@@ -229,12 +228,13 @@ class TestReactorMGParameterAttributes(TestCase):
         assert_almost_equal(rmg.VC, 1.0 - 3.14159265*0.25) 
 
 
+
 class TestReactorMGBasicDataAttributes(TestCase):
     "Tests that the ReactorMG basic data attributes work."
 
     @classmethod
     def setup_class(cls):
-        libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
+        libfile = os.getenv("BRIGHT_DATA") + '/lwr_mg.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.rmg = ReactorMG()
         cls.rmg.loadlib(libfile)
@@ -246,6 +246,8 @@ class TestReactorMGBasicDataAttributes(TestCase):
     def test_libfile(self):
         self.rmg.libfile = "It's Ruth!"
         assert_equal(self.rmg.libfile, "It's Ruth!")
+
+"""\
 
     def test_F(self):
         assert_equal(self.rmg.F[0], 0.0)
@@ -301,7 +303,6 @@ class TestReactorMGBasicDataAttributes(TestCase):
         self.rmg.Tij_F_ = old_T
 
 
-"""\
 
 
 class TestReactorMGCalculatedWeightAttributes(TestCase):

@@ -16,6 +16,7 @@
 //#include "hdf5.h"
 //#include "hdf5_hl.h"
 #include "H5Cpp.h"
+#include "h5wrap.h"
 
 //Boost
 #include <boost/math/special_functions/bessel.hpp>

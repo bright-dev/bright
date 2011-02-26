@@ -85,10 +85,8 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     // Load 'I'sos
-    size_t sel_len = 1;
-    int I_iso[1];
+    int I_iso;
     hsize_t I_len[1];
-    hsize_t I_index[1][1];
 
     I.clear();
     H5::DataSet I_set = lib.openDataSet("/load_isos_zz");
@@ -97,10 +95,8 @@ void ReactorMG::loadlib(std::string libfile)
 
     for(int n = 0; n < I_len[0]; n++)
     {
-        I_index[0][0] = n;
-        I_space.selectElements(H5S_SELECT_SET, 1, *I_index);
-        I_set.read(I_iso, H5::PredType::NATIVE_INT, I_space);
-        I.insert(isoname::mixed_2_zzaaam(I_iso[n]));
+        I_iso = h5wrap::get_array_index<int>(&I_set, n, H5::PredType::NATIVE_INT);
+        I.insert(isoname::mixed_2_zzaaam(I_iso));
     };
 
 
