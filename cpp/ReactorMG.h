@@ -95,6 +95,8 @@ public:
     IsoSet I;						//Set of isotopes that may be in ms_feed.
     IsoSet J;						//Set of isotopes that may be in ms_prod.
 
+    h5wrap::HomogenousTypeTable<double> perturbations;
+
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight
     double MWC;							//Coolant Molecular Weight

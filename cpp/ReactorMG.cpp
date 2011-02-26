@@ -78,26 +78,19 @@ void ReactorMG::loadlib(std::string libfile)
         return;
     };
 
-    //H5::Exception::dontPrint();
+    // Turn off the exceptions
+//    H5::Exception::dontPrint();
 
     // Open file
     H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
-
 
     // Load isos
     I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/load_isos_zz", H5::PredType::NATIVE_INT);
     J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
 
+    perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
+
     /*
-    H5::DataSet I_set = lib.openDataSet("/load_isos_zz");
-    h5wrap::h5_array_to_cpp_set<int>(&I_set, &I, H5::PredType::NATIVE_INT);
-    I_set.close();
-
-    // Load 'J'sos
-    H5::DataSet J_set = lib.openDataSet("/transmute_isos_zz");
-    h5wrap::h5_array_to_cpp_set<int>(&J_set, &J, H5::PredType::NATIVE_INT);
-    J_set.close();
-
     
     //Initializes Burnup Parameters...
     hsize_t dimFromIso[1];
