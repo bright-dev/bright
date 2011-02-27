@@ -135,66 +135,15 @@ void ReactorMG::loadlib(std::string libfile)
         sigma_s_gh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
     };
 
-    /*
-    
-    for (IsoIter i = I.begin(); i != I.end(); i++ )
-    {
-        std::string iso = isoname::zzaaam_2_LLAAAM(*i);
+    // close the reactor library
+    rmglib.close();
 
-        //Build BUi_F_
-        #ifdef _WIN32
-            float * tempBUi;
-            tempBUi = new float [lenF];
-        #else
-            float tempBUi [lenF];
-        #endif
-        rstat = H5LTread_dataset_float(rlib, ("/Burnup/" + iso).c_str(), tempBUi);		
-        BUi_F_[*i].assign(&tempBUi[0], &tempBUi[lenF]);
-
-        //Build pi_F_
-        #ifdef _WIN32
-            float * temppi;
-            temppi = new float [lenF];
-        #else
-            float temppi [lenF];
-        #endif
-        rstat = H5LTread_dataset_float(rlib, ("/Production/" + iso).c_str(), temppi);		
-        pi_F_[*i].assign(&temppi[0], &temppi[lenF]);
-        pi_F_[*i][0] = bright::SolveLine(0.0, F[2], pi_F_[*i][2], F[1], pi_F_[*i][1]);
-
-        //Build di_F_
-        #ifdef _WIN32
-            float * tempdi;
-            tempdi = new float [lenF];
-        #else
-            float tempdi [lenF];
-        #endif
-        rstat = H5LTread_dataset_float(rlib, ("/Destruction/" + iso).c_str(), tempdi);		
-        di_F_[*i].assign(&tempdi[0], &tempdi[lenF]);
-        di_F_[*i][0] = bright::SolveLine(0.0, F[2], di_F_[*i][2], F[1], di_F_[*i][1]);
-        
-        //Build Tij_F_
-        for (int jn = 0; jn < dimToIso[0] ; jn++)
-        {
-            int j = ToIso[jn];
-            std::string jso = isoname::zzaaam_2_LLAAAM(j);
-
-            #ifdef _WIN32
-                float * tempTij;
-                tempTij = new float [lenF];
-            #else
-                float tempTij [lenF];
-            #endif
-            rstat = H5LTread_dataset_float(rlib, ("/Transmutation/" + iso + "/" + jso).c_str(), tempTij);
-            Tij_F_[*i][j].assign(&tempTij[0], &tempTij[lenF]);
-        };
-    };
-    rstat = H5Fclose(rlib);
 
     //Now get microscopic XS data from KAERI...
     //...But only if the disadvantage factor is used.
     if (!use_zeta)
         return;
+
 
     //HDF5 types
     hid_t  kdblib;			//KaeriData.h5 file reference
@@ -272,7 +221,6 @@ void ReactorMG::loadlib(std::string libfile)
     };
 
     kdbstat = H5Fclose(kdblib);
-*/
 
     return;
 };

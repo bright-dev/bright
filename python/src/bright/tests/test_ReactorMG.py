@@ -374,7 +374,7 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert(iso in J)
             assert_equal(sigma_s_gh[iso].shape, (nperturbations, G, G))
 
-"""\
+    """\
 
     def test_F(self):
         assert_equal(self.rmg.F[0], 0.0)
@@ -428,9 +428,11 @@ class TestReactorMGBasicDataAttributes(TestCase):
         assert_equal(self.rmg.Tij_F_[1].keys(), [2])
         assert_array_equal(self.rmg.Tij_F_[1][2], np.arange(0.0, 10.0))
         self.rmg.Tij_F_ = old_T
+    """\
 
 
 
+"""\
 
 class TestReactorMGCalculatedWeightAttributes(TestCase):
     "Tests that the ReactorMG calculated weight attributes work."
