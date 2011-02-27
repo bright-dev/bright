@@ -436,6 +436,11 @@ cdef extern from "../ReactorMG.h":
         set[int] I
         set[int] J
 
+        # Perturbation table goes here
+
+        int G
+        vector[double] E_g
+
         double A_IHM
         double MWF
         double MWC

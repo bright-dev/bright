@@ -1,5 +1,8 @@
 """ReactorMG Component and Helper Class tests"""
 
+#import faulthandler
+#faulthandler.enable()
+
 from unittest import TestCase
 import nose 
 
@@ -265,6 +268,15 @@ class TestReactorMGBasicDataAttributes(TestCase):
 #        # Bad dataset
 #        print self.rmg.J
 #        assert(self.rmg.I <= self.rmg.J)
+
+
+    def test_G(self):
+        assert(0 < self.rmg.G)
+
+
+    def test_E_g(self):
+        assert_equal(len(self.rmg.E_g), self.rmg.G+1)
+        assert((self.rmg.E_g[1:] < self.rmg.E_g[:-1]).all())
 
 
 """\

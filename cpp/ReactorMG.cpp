@@ -79,7 +79,7 @@ void ReactorMG::loadlib(std::string libfile)
     };
 
     // Turn off the exceptions
-//    H5::Exception::dontPrint();
+    H5::Exception::dontPrint();
 
     // Open file
     H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
@@ -88,7 +88,13 @@ void ReactorMG::loadlib(std::string libfile)
     I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/load_isos_zz", H5::PredType::NATIVE_INT);
     J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
 
+    // Load perturbation table
     perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
+
+    // Load in energy structure
+    std::vector< std::vector<double> > full_E = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/energy");
+    E_g = full_E[0];
+    G = E_g.size() - 1;
 
     /*
     

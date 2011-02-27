@@ -95,7 +95,10 @@ public:
     IsoSet I;						//Set of isotopes that may be in ms_feed.
     IsoSet J;						//Set of isotopes that may be in ms_prod.
 
-    h5wrap::HomogenousTypeTable<double> perturbations;
+    h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
+
+    int G;                      // number of energu bins
+    std::vector<double> E_g;    // Energy bin boundaries
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight

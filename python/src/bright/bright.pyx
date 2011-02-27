@@ -5254,6 +5254,30 @@ cdef class ReactorMG(FCComp):
 
 
 
+    # Perturbation table goes here
+
+
+
+
+    property G:
+        def __get__(self):
+            return self.rmg_pointer.G
+
+        def __set__(self, int value):
+            self.rmg_pointer.G = value
+
+
+    property E_g:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.E_g)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.E_g = conv.array_to_vector_1d_dbl(value)
+
+
+
+
+
 
     property A_IHM:
         def __get__(self):
