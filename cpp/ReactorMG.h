@@ -39,6 +39,7 @@ typedef IsoFluenceDict::iterator IsoFluenceIter;
 typedef std::vector<double> Data_F_;
 typedef std::vector<double> pert_data;
 typedef std::vector< std::vector<double> > pert_data_g; 
+typedef std::vector< std::vector< std::vector<double> > > pert_data_gh; 
 
 typedef std::set<int> IsoSet;
 typedef IsoSet::iterator IsoIter;
@@ -114,6 +115,7 @@ public:
     std::map<int, pert_data_g> sigma_f;
     std::map<int, pert_data_g> nubar_sigma_f;
     std::map<int, pert_data_g> nubar;
+    std::map<int, pert_data_gh> sigma_s_gh;
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight

@@ -360,6 +360,14 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert_equal(len(nubar[iso]), nperturbations)
 
 
+    def test_sigma_s_gh(self):
+        J = self.rmg.J
+        sigma_s_gh = self.rmg.sigma_s_gh
+        nperturbations = self.rmg.nperturbations
+        for iso in sigma_s_gh.keys():
+            assert(iso in J)
+            assert_equal(len(sigma_s_gh[iso]), nperturbations)
+
 """\
 
     def test_F(self):
