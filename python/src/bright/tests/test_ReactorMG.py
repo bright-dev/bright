@@ -317,56 +317,62 @@ class TestReactorMGBasicDataAttributes(TestCase):
 
     def test_sigma_a(self):
         J = self.rmg.J
+        G = self.rmg.G
         sigma_a = self.rmg.sigma_a
         nperturbations = self.rmg.nperturbations
         for iso in sigma_a.keys():
             assert(iso in J)
-            assert_equal(len(sigma_a[iso]), nperturbations)
+            assert_equal(sigma_a[iso].shape, (nperturbations, G))
 
 
     def test_sigma_s(self):
         J = self.rmg.J
+        G = self.rmg.G
         sigma_s = self.rmg.sigma_s
         nperturbations = self.rmg.nperturbations
         for iso in sigma_s.keys():
             assert(iso in J)
-            assert_equal(len(sigma_s[iso]), nperturbations)
+            assert_equal(sigma_s[iso].shape, (nperturbations, G))
 
 
     def test_sigma_f(self):
         J = self.rmg.J
+        G = self.rmg.G
         sigma_f = self.rmg.sigma_f
         nperturbations = self.rmg.nperturbations
         for iso in sigma_f.keys():
             assert(iso in J)
-            assert_equal(len(sigma_f[iso]), nperturbations)
+            assert_equal(sigma_f[iso].shape, (nperturbations, G))
 
 
     def test_nubar_sigma_f(self):
         J = self.rmg.J
+        G = self.rmg.G
         nubar_sigma_f = self.rmg.nubar_sigma_f
         nperturbations = self.rmg.nperturbations
         for iso in nubar_sigma_f.keys():
             assert(iso in J)
-            assert_equal(len(nubar_sigma_f[iso]), nperturbations)
+            assert_equal(nubar_sigma_f[iso].shape, (nperturbations, G))
 
 
     def test_nubar(self):
         J = self.rmg.J
+        G = self.rmg.G
         nubar = self.rmg.nubar
         nperturbations = self.rmg.nperturbations
         for iso in nubar.keys():
             assert(iso in J)
-            assert_equal(len(nubar[iso]), nperturbations)
+            assert_equal(nubar[iso].shape, (nperturbations, G))
 
 
     def test_sigma_s_gh(self):
         J = self.rmg.J
+        G = self.rmg.G
         sigma_s_gh = self.rmg.sigma_s_gh
         nperturbations = self.rmg.nperturbations
         for iso in sigma_s_gh.keys():
             assert(iso in J)
-            assert_equal(len(sigma_s_gh[iso]), nperturbations)
+            assert_equal(sigma_s_gh[iso].shape, (nperturbations, G, G))
 
 """\
 
