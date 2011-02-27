@@ -102,9 +102,11 @@ public:
 
     int G;                      // number of energu bins
     std::vector<double> E_g;    // Energy bin boundaries
-    pert_data_g phi_g;
-    pert_data phi;
-    pert_data Phi;
+    pert_data_g phi_g;          // Group fluxes
+    pert_data phi;              // Total fluxes
+    pert_data Phi;              // Fluence
+    pert_data time0;            // initial time steps
+    pert_data BU0;              // initial burnups
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight

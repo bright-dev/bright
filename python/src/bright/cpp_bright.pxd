@@ -444,6 +444,8 @@ cdef extern from "../ReactorMG.h":
         vector[vector[double]] phi_g
         vector[double] phi
         vector[double] Phi
+        vector[double] time0
+        vector[double] BU0
 
 
         double A_IHM

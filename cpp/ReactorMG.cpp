@@ -102,6 +102,10 @@ void ReactorMG::loadlib(std::string libfile)
     phi = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/phi");
     Phi = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Phi");
 
+    // Load time and burnup
+    time0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/time0");
+    BU0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/BU0");
+
     /*
     
     //Initializes Burnup Parameters...

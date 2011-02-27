@@ -298,6 +298,14 @@ class TestReactorMGBasicDataAttributes(TestCase):
         assert_equal(len(self.rmg.Phi), self.rmg.nperturbations)
 
 
+    def test_time0(self):
+        assert_equal(len(self.rmg.time0), self.rmg.nperturbations)
+
+
+    def test_BU0(self):
+        assert_equal(len(self.rmg.BU0), self.rmg.nperturbations)
+
+
 """\
 
     def test_F(self):
