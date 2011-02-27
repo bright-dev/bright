@@ -88,7 +88,7 @@ class TestReactorMGConstructors(TestCase):
         assert_equal(rmg.name, 'rmg')
         assert_equal(rmg.track_params, set())
         assert_equal(rmg.B, 0)
-        assert_equal(rmg.phi, 0.0)
+        assert_equal(rmg.flux, 0.0)
         assert_equal(rmg.fuel_chemical_form, {})
         assert_equal(rmg.coolant_chemical_form, {})
         assert_equal(rmg.rhoF, 0.0)
@@ -109,7 +109,7 @@ class TestReactorMGConstructors(TestCase):
         assert_equal(rmg.name, 'rmg')
         assert_equal(rmg.track_params, set(["Mass"]))
         assert_equal(rmg.B, 0)
-        assert_almost_equal(rmg.phi, 0.0)
+        assert_almost_equal(rmg.flux, 0.0)
         assert_equal(rmg.fuel_chemical_form, {})
         assert_equal(rmg.coolant_chemical_form, {})
         assert_almost_equal(rmg.rhoF, 0.0)
@@ -139,10 +139,10 @@ class TestReactorMGParameterAttributes(TestCase):
         rmg.B = 3
         assert_equal(rmg.B, 3)
 
-    def test_phi(self):
+    def test_flux(self):
         rmg = ReactorMG()
-        rmg.phi = 2*(10**14)
-        assert_equal(rmg.phi, 2*(10**14))
+        rmg.flux = 2*(10**14)
+        assert_equal(rmg.flux, 2*(10**14))
 
     def test_fuel_chemical_form(self):
         rmg = ReactorMG()
@@ -252,6 +252,10 @@ class TestReactorMGBasicDataAttributes(TestCase):
         assert_equal(self.rmg.libfile, "It's Ruth!")
 
 
+    def test_npertubations(self):
+        assert(0 < self.rmg.nperturbations)
+
+
     def test_I(self):
         assert_not_equal(len(self.rmg.I), 0)
         for iso in self.rmg.I:
@@ -281,7 +285,18 @@ class TestReactorMGBasicDataAttributes(TestCase):
 
     def test_phi_g(self):
         phi_g = self.rmg.phi_g
+        assert_equal(len(phi_g), self.rmg.nperturbations)
         assert_equal(len(phi_g[0]), self.rmg.G)
+
+
+    def test_phi(self):
+        assert_equal(len(self.rmg.phi), self.rmg.nperturbations)
+        assert_array_almost_equal(self.rmg.phi_g.sum(axis=1) / self.rmg.phi, np.ones(self.rmg.nperturbations), 5)
+
+
+    def test_Phi(self):
+        assert_equal(len(self.rmg.Phi), self.rmg.nperturbations)
+
 
 """\
 
@@ -643,7 +658,7 @@ class TestReactorMGInitializationMethods(TestCase):
         rp = ReactorParameters()
         self.rmg.initialize(rp)
         assert_equal(self.rmg.B, 0)
-        assert_equal(self.rmg.phi, 0.0)
+        assert_equal(self.rmg.flux, 0.0)
         assert_equal(self.rmg.fuel_chemical_form, {})
         assert_equal(self.rmg.coolant_chemical_form, {})
         assert_equal(self.rmg.rhoF, 0.0)

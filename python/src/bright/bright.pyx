@@ -5047,12 +5047,12 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.B = value
 
 
-    property phi:
+    property flux:
         def __get__(self):
-            return self.rmg_pointer.phi
+            return self.rmg_pointer.flux
 
         def __set__(self, double value):
-            self.rmg_pointer.phi = value
+            self.rmg_pointer.flux = value
 
 
     property fuel_chemical_form:
@@ -5257,6 +5257,18 @@ cdef class ReactorMG(FCComp):
     # Perturbation table goes here
 
 
+    property nperturbations:
+        def __get__(self):
+            return self.rmg_pointer.nperturbations
+
+        def __set__(self, int value):
+            self.rmg_pointer.nperturbations = value
+
+
+
+
+
+
 
 
     property G:
@@ -5281,6 +5293,23 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, np.ndarray[np.float64_t, ndim=2] value):
             self.rmg_pointer.phi_g = conv.array_to_vector_2d_dbl(value)
+
+
+    property phi:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.phi)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.phi = conv.array_to_vector_1d_dbl(value)
+
+
+    property Phi:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.Phi)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.Phi = conv.array_to_vector_1d_dbl(value)
+
 
 
 

@@ -408,7 +408,7 @@ cdef extern from "../ReactorMG.h":
 
         # Attributes
         int B
-        double phi
+        double flux
         map[std.string, double] fuel_chemical_form
         map[std.string, double] coolant_chemical_form
         double rhoF
@@ -437,10 +437,14 @@ cdef extern from "../ReactorMG.h":
         set[int] J
 
         # Perturbation table goes here
+        int nperturbations
 
         int G
         vector[double] E_g
         vector[vector[double]] phi_g
+        vector[double] phi
+        vector[double] Phi
+
 
         double A_IHM
         double MWF

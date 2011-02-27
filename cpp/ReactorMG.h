@@ -37,6 +37,7 @@ typedef std::map<int, std::vector<double> > IsoFluenceDict;
 typedef IsoFluenceDict::iterator IsoFluenceIter;
 
 typedef std::vector<double> Data_F_;
+typedef std::vector<double> pert_data;
 typedef std::vector< std::vector<double> > pert_data_g; 
 
 typedef std::set<int> IsoSet;
@@ -68,7 +69,7 @@ public:
     
     //Public data
     int B; 								//Total number of fuel loading batches
-    double phi;							//Flux used for Fluence
+    double flux;							//Flux used for Fluence
     std::map<std::string, double> fuel_chemical_form;			//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
     std::map<std::string, double> coolant_chemical_form;		//Same a fuel chemical form but for coolant.  Should not have "IHM"
     double rhoF;							//Fuel Density
@@ -97,10 +98,13 @@ public:
     IsoSet J;						//Set of isotopes that may be in ms_prod.
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
+    int nperturbations;
 
     int G;                      // number of energu bins
     std::vector<double> E_g;    // Energy bin boundaries
     pert_data_g phi_g;
+    pert_data phi;
+    pert_data Phi;
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight

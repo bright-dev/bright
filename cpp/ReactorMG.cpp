@@ -39,7 +39,7 @@ void ReactorMG::initialize(ReactorParameters rp)
      */
 
     B = rp.batches;				//Total number of fuel loading batches
-    phi = rp.flux;				//Flux used for Fluence
+    flux = rp.flux;				//Flux used for Fluence
     fuel_chemical_form = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
     coolant_chemical_form = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
     rhoF = rp.fuel_density;			//Fuel Density
@@ -90,6 +90,7 @@ void ReactorMG::loadlib(std::string libfile)
 
     // Load perturbation table
     perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
+    nperturbations = perturbations.shape[0];
 
     // Load in energy structure
     pert_data_g full_E_g = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/energy");
@@ -98,6 +99,8 @@ void ReactorMG::loadlib(std::string libfile)
 
     // Load fluxes and fluence
     phi_g = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/phi_g");
+    phi = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/phi");
+    Phi = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Phi");
 
     /*
     
