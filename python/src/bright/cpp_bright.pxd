@@ -440,6 +440,7 @@ cdef extern from "../ReactorMG.h":
 
         int G
         vector[double] E_g
+        vector[vector[double]] phi_g
 
         double A_IHM
         double MWF

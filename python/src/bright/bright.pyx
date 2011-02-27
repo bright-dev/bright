@@ -5275,6 +5275,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.E_g = conv.array_to_vector_1d_dbl(value)
 
 
+    property phi_g:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.phi_g)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=2] value):
+            self.rmg_pointer.phi_g = conv.array_to_vector_2d_dbl(value)
+
+
 
 
 

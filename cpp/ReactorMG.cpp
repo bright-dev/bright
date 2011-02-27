@@ -92,9 +92,12 @@ void ReactorMG::loadlib(std::string libfile)
     perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
 
     // Load in energy structure
-    std::vector< std::vector<double> > full_E = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/energy");
-    E_g = full_E[0];
+    pert_data_g full_E_g = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/energy");
+    E_g = full_E_g[0];
     G = E_g.size() - 1;
+
+    // Load fluxes and fluence
+    phi_g = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/phi_g");
 
     /*
     

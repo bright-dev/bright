@@ -37,6 +37,7 @@ typedef std::map<int, std::vector<double> > IsoFluenceDict;
 typedef IsoFluenceDict::iterator IsoFluenceIter;
 
 typedef std::vector<double> Data_F_;
+typedef std::vector< std::vector<double> > pert_data_g; 
 
 typedef std::set<int> IsoSet;
 typedef IsoSet::iterator IsoIter;
@@ -99,6 +100,7 @@ public:
 
     int G;                      // number of energu bins
     std::vector<double> E_g;    // Energy bin boundaries
+    pert_data_g phi_g;
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight

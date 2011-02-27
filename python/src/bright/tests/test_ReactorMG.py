@@ -279,6 +279,10 @@ class TestReactorMGBasicDataAttributes(TestCase):
         assert((self.rmg.E_g[1:] < self.rmg.E_g[:-1]).all())
 
 
+    def test_phi_g(self):
+        phi_g = self.rmg.phi_g
+        assert_equal(len(phi_g[0]), self.rmg.G)
+
 """\
 
     def test_F(self):
