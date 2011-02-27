@@ -108,6 +108,9 @@ public:
     pert_data time0;            // initial time steps
     pert_data BU0;              // initial burnups
 
+    std::map<int, pert_data> Ti0;
+    std::map<int, pert_data_g> sigma_f;
+
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight
     double MWC;							//Coolant Molecular Weight

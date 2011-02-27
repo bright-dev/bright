@@ -106,50 +106,28 @@ void ReactorMG::loadlib(std::string libfile)
     time0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/time0");
     BU0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/BU0");
 
+
+    // Clear transmutation vectors and cross sections before reading in
+    Ti0.clear();
+    sigma_f.clear();
+
+    // Load transmutation vectors and cross sections that are based off of isotope
+    int iso_zz;
+    std::string iso_LL;
+    for(std::set<int>::iterator iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
+    {
+        iso_zz = *iso_iter;
+        iso_LL = isoname::zzaaam_2_LLAAAM(iso_zz);
+
+        // Add transmutation vector
+        Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
+
+        // Add cross sections
+        sigma_f[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
+    };
+
     /*
     
-    //Initializes Burnup Parameters...
-    hsize_t dimFromIso[1];
-    hsize_t dimToIso[1];
-
-    rstat = H5LTget_dataset_info(rlib, "/load_isos_zz", dimFromIso, NULL, NULL);
-    rstat = H5LTget_dataset_info(rlib, "/transmute_isos_zz",   dimToIso,   NULL, NULL);
-
-    #ifdef _WIN32
-        int * FromIso;
-        int * ToIso;
-
-        FromIso = new int [dimFromIso[0]];
-        ToIso   = new int [dimToIso[0]];
-    #else
-        int FromIso [dimFromIso[0]];
-        int ToIso   [dimToIso[0]];
-    #endif
-
-    rstat = H5LTread_dataset_int(rlib, "/load_isos_zz", FromIso);		
-    rstat = H5LTread_dataset_int(rlib, "/transmute_isos_zz",   ToIso);		
-
-    I.clear();
-    I.insert(&FromIso[0], &FromIso[dimFromIso[0]]);
-    J.clear();
-    J.insert(&ToIso[0],   &ToIso[dimToIso[0]]);
-    
-    //Get Time Vector
-    hsize_t dims_time0[1];							//Read in number of data points
-    rstat = H5LTget_dataset_info(rlib, "/time0", dimsF, NULL, NULL);
-    int len_time0 = dims_time0[0];
-
-    //Make temp array
-    #ifdef _WIN32
-        float * temp_time0;
-        temp_time0 = new float [len_time0];
-    #else
-        float temp_time0 [len_time0];
-    #endif
-
-    rstat = H5LTread_dataset_float(rlib, "/time0", temp_time0);		
-    time0.assign(&temp_time0[0], &temp_time0[len_time0]);					//Fluence in [n/kb]
-
     for (IsoIter i = I.begin(); i != I.end(); i++ )
     {
         std::string iso = isoname::zzaaam_2_LLAAAM(*i);

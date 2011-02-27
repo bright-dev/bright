@@ -306,6 +306,24 @@ class TestReactorMGBasicDataAttributes(TestCase):
         assert_equal(len(self.rmg.BU0), self.rmg.nperturbations)
 
 
+    def test_Ti0(self):
+        J = self.rmg.J
+        Ti0 = self.rmg.Ti0
+        nperturbations = self.rmg.nperturbations
+        for iso in Ti0.keys():
+            assert(iso in J)
+            assert_equal(len(Ti0[iso]), nperturbations)
+
+
+    def test_sigma_f(self):
+        J = self.rmg.J
+        sigma_f = self.rmg.sigma_f
+        nperturbations = self.rmg.nperturbations
+        for iso in sigma_f.keys():
+            assert(iso in J)
+            assert_equal(len(sigma_f[iso]), nperturbations)
+
+
 """\
 
     def test_F(self):
