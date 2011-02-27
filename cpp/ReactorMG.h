@@ -109,7 +109,11 @@ public:
     pert_data BU0;              // initial burnups
 
     std::map<int, pert_data> Ti0;
+    std::map<int, pert_data_g> sigma_a;
+    std::map<int, pert_data_g> sigma_s;
     std::map<int, pert_data_g> sigma_f;
+    std::map<int, pert_data_g> nubar_sigma_f;
+    std::map<int, pert_data_g> nubar;
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight

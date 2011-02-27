@@ -315,6 +315,24 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert_equal(len(Ti0[iso]), nperturbations)
 
 
+    def test_sigma_a(self):
+        J = self.rmg.J
+        sigma_a = self.rmg.sigma_a
+        nperturbations = self.rmg.nperturbations
+        for iso in sigma_a.keys():
+            assert(iso in J)
+            assert_equal(len(sigma_a[iso]), nperturbations)
+
+
+    def test_sigma_s(self):
+        J = self.rmg.J
+        sigma_s = self.rmg.sigma_s
+        nperturbations = self.rmg.nperturbations
+        for iso in sigma_s.keys():
+            assert(iso in J)
+            assert_equal(len(sigma_s[iso]), nperturbations)
+
+
     def test_sigma_f(self):
         J = self.rmg.J
         sigma_f = self.rmg.sigma_f
@@ -322,6 +340,24 @@ class TestReactorMGBasicDataAttributes(TestCase):
         for iso in sigma_f.keys():
             assert(iso in J)
             assert_equal(len(sigma_f[iso]), nperturbations)
+
+
+    def test_nubar_sigma_f(self):
+        J = self.rmg.J
+        nubar_sigma_f = self.rmg.nubar_sigma_f
+        nperturbations = self.rmg.nperturbations
+        for iso in nubar_sigma_f.keys():
+            assert(iso in J)
+            assert_equal(len(nubar_sigma_f[iso]), nperturbations)
+
+
+    def test_nubar(self):
+        J = self.rmg.J
+        nubar = self.rmg.nubar
+        nperturbations = self.rmg.nperturbations
+        for iso in nubar.keys():
+            assert(iso in J)
+            assert_equal(len(nubar[iso]), nperturbations)
 
 
 """\

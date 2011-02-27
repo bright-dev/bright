@@ -448,7 +448,11 @@ cdef extern from "../ReactorMG.h":
         vector[double] BU0
 
         map[int, vector[double]] Ti0
+        map[int, vector[vector[double]]] sigma_a
+        map[int, vector[vector[double]]] sigma_s
         map[int, vector[vector[double]]] sigma_f
+        map[int, vector[vector[double]]] nubar_sigma_f
+        map[int, vector[vector[double]]] nubar
 
         double A_IHM
         double MWF

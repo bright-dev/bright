@@ -5339,12 +5339,44 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.Ti0 = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
 
 
+    property sigma_a:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.sigma_a)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_a = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+
+
+    property sigma_s:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.sigma_s)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_s = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+
+
     property sigma_f:
         def __get__(self):
             return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.sigma_f)
 
         def __set__(self, dict value):
             self.rmg_pointer.sigma_f = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+
+
+    property nubar_sigma_f:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.nubar_sigma_f)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.nubar_sigma_f = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+
+
+    property nubar:
+        def __get__(self):
+            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.nubar)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.nubar = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
 
 
 

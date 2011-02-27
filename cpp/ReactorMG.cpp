@@ -109,7 +109,11 @@ void ReactorMG::loadlib(std::string libfile)
 
     // Clear transmutation vectors and cross sections before reading in
     Ti0.clear();
+    sigma_a.clear();
+    sigma_s.clear();
     sigma_f.clear();
+    nubar_sigma_f.clear();
+    nubar.clear();
 
     // Load transmutation vectors and cross sections that are based off of isotope
     int iso_zz;
@@ -123,7 +127,11 @@ void ReactorMG::loadlib(std::string libfile)
         Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
 
         // Add cross sections
+        sigma_a[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
+        sigma_s[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_s/" + iso_LL);
         sigma_f[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
+        nubar_sigma_f[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
+        nubar[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar/" + iso_LL);
     };
 
     /*
