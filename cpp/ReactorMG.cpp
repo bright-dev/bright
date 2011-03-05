@@ -10,27 +10,33 @@ ReactorMG::ReactorMG()
 {
 };
 
+
 ReactorMG::ReactorMG(std::string n) : FCComp(n)
 {
 };
 
+
 ReactorMG::ReactorMG(std::set<std::string> paramtrack, std::string n) : FCComp(paramtrack, n)
 {
 };
+
 
 ReactorMG::ReactorMG(ReactorParameters rp, std::string n) : FCComp(n)
 {
     initialize(rp);
 };
 
+
 ReactorMG::ReactorMG(ReactorParameters rp, std::set<std::string> paramtrack, std::string n) : FCComp(paramtrack, n)
 {
     initialize(rp);
 };
 
+
 ReactorMG::~ReactorMG()
 {
 };
+
 
 void ReactorMG::initialize(ReactorParameters rp)
 {
@@ -42,8 +48,8 @@ void ReactorMG::initialize(ReactorParameters rp)
     flux = rp.flux;				//Flux used for Fluence
     fuel_chemical_form = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
     coolant_chemical_form = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
-    rhoF = rp.fuel_density;			//Fuel Density
-    rhoC = rp.coolant_density;		//Coolant Density
+    rho_fuel = rp.fuel_density;			//Fuel Density
+    rho_cool = rp.coolant_density;		//Coolant Density
     P_NL = rp.pnl;				//Non-Leakage Probability
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
     use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
@@ -60,6 +66,7 @@ void ReactorMG::initialize(ReactorParameters rp)
     //Coolant Volume
     VC = ((l*l - bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T) + (S_O/S_T);
 };
+
 
 
 void ReactorMG::loadlib(std::string libfile)
@@ -227,6 +234,28 @@ void ReactorMG::loadlib(std::string libfile)
 
 
 
+
+
+std::vector<int> ReactorMG::nearest_neighbors()
+{
+    /**
+     * Returns a vector of the indices sorted, sorted by nearest neighbor
+     */
+
+    // The nearest neighbor vector
+    std::vector<int> nn (nperturbations, -1);
+    std::map<std::string, std::vector<double> > norm_deltas;
+
+    // Calcumlate normailized deltas
+    norm_deltas["fuel_density"] = bright::normalized_delta(rho_fuel, perturbations["fuel_density"]);
+
+    return nn;
+};
+
+
+
+
+
 void ReactorMG::fold_mass_weights()
 {
     /** Multiplies the burnup parameters by the mass weights."
@@ -308,7 +337,7 @@ void ReactorMG::fold_mass_weights()
         MWC = MWC + (coolant_chemical_form[key->first] * isoname::nuc_weight(key_zz));
     };
     miC.clear();
-    double rel_Vol_coef = (rhoC * MWF * VC) / (rhoF * MWC * VF);
+    double rel_Vol_coef = (rho_cool * MWF * VC) / (rho_fuel * MWC * VF);
     for (CompIter iso = niC.begin(); iso != niC.end(); iso++)
     {
         if (niC[iso->first] == 0.0)
@@ -321,13 +350,13 @@ void ReactorMG::fold_mass_weights()
     NiF.clear();
     for (CompIter iso = niF.begin(); iso != niF.end(); iso++)
     {
-        NiF[iso->first] = niF[iso->first] * rhoF * (bright::N_A) / MWF;
+        NiF[iso->first] = niF[iso->first] * rho_fuel * (bright::N_A) / MWF;
     };
 
     //Coolant Number Density
     NiC.clear();
     for (CompIter iso = niC.begin(); iso != niC.end(); iso++)	{
-        NiC[iso->first] = niC[iso->first] * rhoC * (bright::N_A) / MWC;
+        NiC[iso->first] = niC[iso->first] * rho_cool * (bright::N_A) / MWC;
     };
 
     //BU(F)

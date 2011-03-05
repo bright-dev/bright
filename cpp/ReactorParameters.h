@@ -4,6 +4,7 @@
 #if !defined(_Bright_ReactorParameters_)
 #define _Bright_ReactorParameters_
 
+#include <math.h>
 #include <map>
 #include <string>
 
@@ -20,6 +21,7 @@ public:
     std::map<std::string, double> fuel_form;
     std::map<std::string, double> coolant_form;
     double fuel_density;
+    double cladding_density;
     double coolant_density;
     double pnl;
     double BUt;
@@ -32,5 +34,14 @@ public:
     double total_slots;
 
 };
+
+
+// Preset Defaults
+
+ReactorParameters fill_lwr_defaults();
+extern ReactorParameters lwr_defaults;
+
+ReactorParameters fill_fr_defaults();
+extern ReactorParameters fr_defaults;
 
 #endif

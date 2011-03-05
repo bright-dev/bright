@@ -205,6 +205,10 @@ cdef extern from "../ReactorParameters.h":
         double open_slots
         double total_slots
 
+    ReactorParameters fill_lwr_defaults()
+
+    ReactorParameters fill_fr_defaults()
+
 
 cdef extern from "../Reactor1G.h":
 
@@ -334,8 +338,6 @@ cdef extern from "../Reactor1G.h":
 
 cdef extern from "../LightWaterReactor1G.h":
 
-    ReactorParameters filllwr_defaults()
-
     cdef cppclass LightWaterReactor1G(Reactor1G):
         # Constructors        
         LightWaterReactor1G()
@@ -350,8 +352,6 @@ cdef extern from "../LightWaterReactor1G.h":
 
 
 cdef extern from "../FastReactor1G.h":
-
-    ReactorParameters fillfr_defaults()
 
     cdef cppclass FastReactor1G(Reactor1G):
         # Constructors        
@@ -411,8 +411,9 @@ cdef extern from "../ReactorMG.h":
         double flux
         map[std.string, double] fuel_chemical_form
         map[std.string, double] coolant_chemical_form
-        double rhoF
-        double rhoC
+        double rho_fuel
+        double rho_clad
+        double rho_cool
         double P_NL
         double target_BU
         bint use_zeta

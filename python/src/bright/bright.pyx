@@ -1229,9 +1229,9 @@ cdef class Storage(FCComp):
 
 
 
-#######################
-### Reactor1G Class ###
-#######################
+##########################
+### FluencePoint Class ###
+##########################
 
 
 cdef class FluencePoint:
@@ -1279,6 +1279,13 @@ cdef class FluencePoint:
 
         def __set__(self, double value):
             self.fp_pointer.m = value
+
+
+
+
+###############################
+### ReactorParameters Class ###
+###############################
 
 
 
@@ -1480,6 +1487,33 @@ cdef class ReactorParameters:
             self.rp_pointer.total_slots = value
 
 
+
+
+##################################
+### Reactor Parameter Defaults ###
+##################################
+
+
+def lwr_defaults():
+    cdef cpp_bright.ReactorParameters cpp_lwrd = cpp_bright.fill_lwr_defaults()
+    cdef ReactorParameters lwrd = ReactorParameters()
+    lwrd.rp_pointer[0] = cpp_lwrd
+    return lwrd
+
+
+
+def fr_defaults():
+    cdef cpp_bright.ReactorParameters cpp_frd = cpp_bright.fill_fr_defaults()
+    cdef ReactorParameters frd = ReactorParameters()
+    frd.rp_pointer[0] = cpp_frd
+    return frd
+
+
+
+
+#######################
+### Reactor1G Class ###
+#######################
 
 
 cdef class Reactor1G(FCComp):
@@ -2517,12 +2551,6 @@ cdef class Reactor1G(FCComp):
 ### Light Water Reactor 1G ###
 ##############################
 
-
-def lwr_defaults():
-    cdef cpp_bright.ReactorParameters cpp_lwrd = cpp_bright.filllwr_defaults()
-    cdef ReactorParameters lwrd = ReactorParameters()
-    lwrd.rp_pointer[0] = cpp_lwrd
-    return lwrd
 
 
 cdef class LightWaterReactor1G(Reactor1G):
@@ -3585,13 +3613,6 @@ cdef class LightWaterReactor1G(Reactor1G):
 #######################
 ### Fast Reactor 1G ###
 #######################
-
-
-def fr_defaults():
-    cdef cpp_bright.ReactorParameters cpp_frd = cpp_bright.fillfr_defaults()
-    cdef ReactorParameters frd = ReactorParameters()
-    frd.rp_pointer[0] = cpp_frd
-    return frd
 
 
 cdef class FastReactor1G(Reactor1G):
@@ -5071,20 +5092,28 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.coolant_chemical_form = conv.dict_to_map_str_dbl(value)
 
 
-    property rhoF:
+    property rho_fuel:
         def __get__(self):
-            return self.rmg_pointer.rhoF
+            return self.rmg_pointer.rho_fuel
 
         def __set__(self, double value):
-            self.rmg_pointer.rhoF = value
+            self.rmg_pointer.rho_fuel = value
 
 
-    property rhoC:
+    property rho_clad:
         def __get__(self):
-            return self.rmg_pointer.rhoC
+            return self.rmg_pointer.rho_clad
 
         def __set__(self, double value):
-            self.rmg_pointer.rhoC = value
+            self.rmg_pointer.rho_clad = value
+
+
+    property rho_cool:
+        def __get__(self):
+            return self.rmg_pointer.rho_cool
+
+        def __set__(self, double value):
+            self.rmg_pointer.rho_cool = value
 
 
     property P_NL:

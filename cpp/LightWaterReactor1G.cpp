@@ -1,41 +1,6 @@
 // One-Group Light Water Reactor Component Class
 
 #include "LightWaterReactor1G.h"
-
-ReactorParameters filllwr_defaults ()
-{
-    //Default LWR physical parameters
-    ReactorParameters lwrd;
-
-    lwrd.batches = 3;
-    lwrd.flux = 4.0 * pow(10.0, 14);
-
-    lwrd.fuel_form["IHM"] = 1.0;
-    lwrd.fuel_form["O16"] = 2.0;
-    lwrd.coolant_form["O16"] = 1.0;
-    lwrd.coolant_form["H1"]  = 2.0;
-    lwrd.coolant_form["B10"] = 0.199 * 550 * pow(10.0, -6);
-    lwrd.coolant_form["B11"] = 0.801 * 550 * pow(10.0, -6);
-
-    lwrd.fuel_density = 10.7;
-    lwrd.coolant_density = 0.73;
-
-    lwrd.pnl = 0.98;
-    lwrd.BUt = 0.0;
-
-    lwrd.use_disadvantage_factor = true;
-    lwrd.lattice_type = "Cylindrical";
-    lwrd.rescale_hydrogen = true;
-
-    lwrd.radius = 0.412;
-    lwrd.pitch = 1.33;
-    lwrd.open_slots = 25.0;
-    lwrd.total_slots = 289.0;
-
-    return lwrd;
-};
-ReactorParameters lwr_defaults (filllwr_defaults());
-
 LightWaterReactor1G::LightWaterReactor1G() : Reactor1G(lwr_defaults, lwr_p2track)
 {
 };

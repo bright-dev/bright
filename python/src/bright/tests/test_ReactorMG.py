@@ -91,8 +91,8 @@ class TestReactorMGConstructors(TestCase):
         assert_equal(rmg.flux, 0.0)
         assert_equal(rmg.fuel_chemical_form, {})
         assert_equal(rmg.coolant_chemical_form, {})
-        assert_equal(rmg.rhoF, 0.0)
-        assert_equal(rmg.rhoC, 0.0)
+        assert_equal(rmg.rho_fuel, 0.0)
+        assert_equal(rmg.rho_cool, 0.0)
         assert_equal(rmg.P_NL, 0.0)
         assert_equal(rmg.target_BU, 0.0)
         assert_false(rmg.use_zeta)
@@ -112,8 +112,8 @@ class TestReactorMGConstructors(TestCase):
         assert_almost_equal(rmg.flux, 0.0)
         assert_equal(rmg.fuel_chemical_form, {})
         assert_equal(rmg.coolant_chemical_form, {})
-        assert_almost_equal(rmg.rhoF, 0.0)
-        assert_almost_equal(rmg.rhoC, 0.0)
+        assert_almost_equal(rmg.rho_fuel, 0.0)
+        assert_almost_equal(rmg.rho_cool, 0.0)
         assert_almost_equal(rmg.P_NL, 0.0)
         assert_almost_equal(rmg.target_BU, 0.0)
         assert_false(rmg.use_zeta)
@@ -158,15 +158,15 @@ class TestReactorMGParameterAttributes(TestCase):
             "B10": 0.199 * 550 * 10.0**-6,
             "B11": 0.801 * 550 * 10.0**-6})
 
-    def test_rhoF(self):
+    def test_rho_fuel(self):
         rmg = ReactorMG()
-        rmg.rhoF = 10.7
-        assert_equal(rmg.rhoF, 10.7)
+        rmg.rho_fuel = 10.7
+        assert_equal(rmg.rho_fuel, 10.7)
 
-    def test_rhoC(self):
+    def test_rho_cool(self):
         rmg = ReactorMG()
-        rmg.rhoC = 0.73
-        assert_equal(rmg.rhoC, 0.73)
+        rmg.rho_cool = 0.73
+        assert_equal(rmg.rho_cool, 0.73)
 
     def test_P_NL(self):
         rmg = ReactorMG()
@@ -475,18 +475,18 @@ class TestReactorMGCalculatedWeightAttributes(TestCase):
 
     def test_miC(self):
         #First calculate the relative volume
-        rel_Vol = (self.rmg.rhoC * 268.5 * self.rmg.VC) / (self.rmg.rhoF * 18.0 * self.rmg.VF)
+        rel_Vol = (self.rmg.rho_cool * 268.5 * self.rmg.VC) / (self.rmg.rho_fuel * 18.0 * self.rmg.VF)
         assert_almost_equal(self.rmg.miC[10010],  rel_Vol * 2.0 * 1   / 236.5, 4)
         assert_almost_equal(self.rmg.miC[80160],  rel_Vol * 1.0 * 16  / 236.5, 4)
         
     def test_NiF(self):
-        assert_almost_equal(self.rmg.NiF[80160]  / (2.0 * self.rmg.rhoF * 6.022*(10**23) / 268.5), 1.0, 3)
-        assert_almost_equal(self.rmg.NiF[922350] / (0.5 * self.rmg.rhoF * 6.022*(10**23) / 268.5), 1.0, 3)
-        assert_almost_equal(self.rmg.NiF[922380] / (0.5 * self.rmg.rhoF * 6.022*(10**23) / 268.5), 1.0, 3)
+        assert_almost_equal(self.rmg.NiF[80160]  / (2.0 * self.rmg.rho_fuel * 6.022*(10**23) / 268.5), 1.0, 3)
+        assert_almost_equal(self.rmg.NiF[922350] / (0.5 * self.rmg.rho_fuel * 6.022*(10**23) / 268.5), 1.0, 3)
+        assert_almost_equal(self.rmg.NiF[922380] / (0.5 * self.rmg.rho_fuel * 6.022*(10**23) / 268.5), 1.0, 3)
 
     def test_NiC(self):
-        assert_almost_equal(self.rmg.NiC[10010] / (2.0 * self.rmg.rhoC * 6.022*(10**23) / 18.0), 1.0, 3)
-        assert_almost_equal(self.rmg.NiC[80160] / (1.0 * self.rmg.rhoC * 6.022*(10**23) / 18.0), 1.0, 3)
+        assert_almost_equal(self.rmg.NiC[10010] / (2.0 * self.rmg.rho_cool * 6.022*(10**23) / 18.0), 1.0, 3)
+        assert_almost_equal(self.rmg.NiC[80160] / (1.0 * self.rmg.rho_cool * 6.022*(10**23) / 18.0), 1.0, 3)
 
 
 class TestReactorMGCalculatedDataAttributes(TestCase):
@@ -739,8 +739,8 @@ class TestReactorMGInitializationMethods(TestCase):
         assert_equal(self.rmg.flux, 0.0)
         assert_equal(self.rmg.fuel_chemical_form, {})
         assert_equal(self.rmg.coolant_chemical_form, {})
-        assert_equal(self.rmg.rhoF, 0.0)
-        assert_equal(self.rmg.rhoC, 0.0)
+        assert_equal(self.rmg.rho_fuel, 0.0)
+        assert_equal(self.rmg.rho_cool, 0.0)
         assert_equal(self.rmg.P_NL, 0.0)
         assert_equal(self.rmg.target_BU, 0.0)
         assert_false(self.rmg.use_zeta)

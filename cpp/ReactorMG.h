@@ -73,8 +73,9 @@ public:
     double flux;							//Flux used for Fluence
     std::map<std::string, double> fuel_chemical_form;			//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
     std::map<std::string, double> coolant_chemical_form;		//Same a fuel chemical form but for coolant.  Should not have "IHM"
-    double rhoF;							//Fuel Density
-    double rhoC; 							//Coolant Density
+    double rho_fuel;							//Fuel Density
+    double rho_clad; 							//Coolant Density
+    double rho_cool; 							//Coolant Density
     double P_NL; 							//Non-Leakage Probability
     double target_BU; 						//Target Discharge Burnup, only used for graphing inside of this component
     bool use_zeta; 							//Boolean value on whether or not the disadvantage factor should be used
@@ -166,9 +167,10 @@ public:
 
 
     //Public access functions
-    void         initialize(ReactorParameters);
-    void         loadlib(std::string libfile = "Reactor.h5");
-    void         fold_mass_weights();
+    void              initialize(ReactorParameters);
+    void              loadlib(std::string libfile = "Reactor.h5");
+    void              fold_mass_weights();
+    std::vector<int>  nearest_neighbors();
 
     void         calc_Mj_F_();
     void         calc_Mj_Fd_();

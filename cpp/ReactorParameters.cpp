@@ -13,6 +13,7 @@ ReactorParameters::ReactorParameters()
     fuel_form = std::map<std::string, double>();
     coolant_form = std::map<std::string, double>();
     fuel_density = 0.0;
+    cladding_density = 0.0;
     coolant_density = 0.0;
     pnl = 0.0;
     BUt = 0.0;
@@ -29,3 +30,84 @@ ReactorParameters::ReactorParameters()
 ReactorParameters::~ReactorParameters()
 {
 };
+
+
+
+/************/
+/* Defaults */
+/************/
+
+// Light Water Reactor Defaults
+
+ReactorParameters fill_lwr_defaults ()
+{
+    //Default LWR physical parameters
+    ReactorParameters lwrd;
+
+    lwrd.batches = 3;
+    lwrd.flux = 4.0 * pow(10.0, 14);
+
+    lwrd.fuel_form["IHM"] = 1.0;
+    lwrd.fuel_form["O16"] = 2.0;
+
+    lwrd.coolant_form["O16"] = 1.0;
+    lwrd.coolant_form["H1"]  = 2.0;
+    lwrd.coolant_form["B10"] = 0.199 * 550 * pow(10.0, -6);
+    lwrd.coolant_form["B11"] = 0.801 * 550 * pow(10.0, -6);
+
+    lwrd.fuel_density = 10.7;
+    lwrd.cladding_density = 5.87;
+    lwrd.coolant_density = 0.73;
+
+    lwrd.pnl = 0.98;
+    lwrd.BUt = 0.0;
+
+    lwrd.use_disadvantage_factor = true;
+    lwrd.lattice_type = "Cylindrical";
+    lwrd.rescale_hydrogen = true;
+
+    lwrd.radius = 0.412;
+    lwrd.pitch = 1.33;
+    lwrd.open_slots = 25.0;
+    lwrd.total_slots = 289.0;
+
+    return lwrd;
+};
+
+ReactorParameters lwr_defaults (fill_lwr_defaults());
+
+
+
+// Fast Reactor Defaults
+
+ReactorParameters fill_fr_defaults ()
+{
+    //Default FR physical parameters
+    ReactorParameters frd;
+
+    frd.batches = 3;
+    frd.flux = 2.0 * pow(10.0, 15);
+
+    frd.fuel_form["IHM"] = 1.0;
+    frd.coolant_form["NA23"] = 1.0;
+
+    frd.fuel_density = 18.0;
+    frd.coolant_density = 0.927;
+
+    frd.pnl = 0.65;
+    frd.BUt = 0.0;
+
+    frd.use_disadvantage_factor = false;
+    frd.lattice_type = "Cylindrical";
+    frd.rescale_hydrogen = false;
+
+    frd.radius = 0.3115;
+    frd.pitch = 0.956;
+    frd.open_slots = 19.0;
+    frd.total_slots = 163.0;
+
+    return frd;
+};
+
+ReactorParameters fr_defaults (fill_fr_defaults());
+
