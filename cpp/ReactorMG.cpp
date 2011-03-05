@@ -49,6 +49,7 @@ void ReactorMG::initialize(ReactorParameters rp)
     fuel_chemical_form = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
     coolant_chemical_form = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
     rho_fuel = rp.fuel_density;			//Fuel Density
+    rho_clad = rp.cladding_density;			// Cladding Density
     rho_cool = rp.coolant_density;		//Coolant Density
     P_NL = rp.pnl;				//Non-Leakage Probability
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
@@ -248,6 +249,8 @@ std::vector<int> ReactorMG::nearest_neighbors()
 
     // Calcumlate normailized deltas
     norm_deltas["fuel_density"] = bright::normalized_delta(rho_fuel, perturbations["fuel_density"]);
+    norm_deltas["clad_density"] = bright::normalized_delta(rho_clad, perturbations["clad_density"]);
+    norm_deltas["cool_density"] = bright::normalized_delta(rho_cool, perturbations["cool_density"]);
 
     return nn;
 };
