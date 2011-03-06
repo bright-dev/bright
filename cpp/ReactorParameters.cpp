@@ -10,18 +10,25 @@ ReactorParameters::ReactorParameters()
 {
     batches = 0;
     flux = 0.0;
+
     fuel_form = std::map<std::string, double>();
     coolant_form = std::map<std::string, double>();
+
     fuel_density = 0.0;
     cladding_density = 0.0;
     coolant_density = 0.0;
+
     pnl = 0.0;
     BUt = 0.0;
     use_disadvantage_factor = false;
     lattice_type = std::string();
     rescale_hydrogen = false;
-    radius = 0.0;
-    pitch = 0.0;
+
+    fuel_radius = 0.0;
+    void_radius = 0.0;
+    clad_radius = 0.0;
+    unit_cell_pitch = 0.0;
+
     open_slots = 0.0;
     total_slots = 0.0;
 };
@@ -66,8 +73,11 @@ ReactorParameters fill_lwr_defaults ()
     lwrd.lattice_type = "Cylindrical";
     lwrd.rescale_hydrogen = true;
 
-    lwrd.radius = 0.412;
-    lwrd.pitch = 1.33;
+    lwrd.fuel_radius = 0.412;
+    lwrd.void_radius = 0.4205;
+    lwrd.clad_radius = 0.475;
+    lwrd.unit_cell_pitch = 1.33;
+
     lwrd.open_slots = 25.0;
     lwrd.total_slots = 289.0;
 
@@ -101,8 +111,11 @@ ReactorParameters fill_fr_defaults ()
     frd.lattice_type = "Cylindrical";
     frd.rescale_hydrogen = false;
 
-    frd.radius = 0.3115;
-    frd.pitch = 0.956;
+    frd.fuel_radius = 0.3115;
+    frd.void_radius = 0.3115;
+    frd.clad_radius = 0.3115;
+    frd.unit_cell_pitch = 0.956;
+
     frd.open_slots = 19.0;
     frd.total_slots = 163.0;
 

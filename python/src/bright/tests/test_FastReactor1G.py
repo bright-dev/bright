@@ -48,8 +48,8 @@ class TestFastReactorConstructors(TestCase):
         assert_false(frd.use_disadvantage_factor)
         assert_equal(frd.lattice_type, "Cylindrical")
         assert_false(frd.rescale_hydrogen)
-        assert_equal(frd.radius, 0.3115)
-        assert_equal(frd.pitch, 0.956)
+        assert_equal(frd.fuel_radius, 0.3115)
+        assert_equal(frd.unit_cell_pitch, 0.956)
         assert_equal(frd.open_slots, 19.0)
         assert_equal(frd.total_slots, 163.0)
 

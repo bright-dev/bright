@@ -1406,6 +1406,14 @@ cdef class ReactorParameters:
             self.rp_pointer.fuel_density = value
 
 
+    property cladding_density:
+        def __get__(self):
+            return self.rp_pointer.cladding_density
+
+        def __set__(self, double value):
+            self.rp_pointer.cladding_density = value
+
+
     property coolant_density:
         def __get__(self):
             return self.rp_pointer.coolant_density
@@ -1455,20 +1463,42 @@ cdef class ReactorParameters:
             self.rp_pointer.rescale_hydrogen = value
 
 
-    property radius:
+
+
+
+    property fuel_radius:
         def __get__(self):
-            return self.rp_pointer.radius
+            return self.rp_pointer.fuel_radius
 
         def __set__(self, double value):
-            self.rp_pointer.radius = value
+            self.rp_pointer.fuel_radius = value
 
 
-    property pitch:
+    property void_radius:
         def __get__(self):
-            return self.rp_pointer.pitch
+            return self.rp_pointer.void_radius
 
         def __set__(self, double value):
-            self.rp_pointer.pitch = value
+            self.rp_pointer.void_radius = value
+
+
+    property clad_radius:
+        def __get__(self):
+            return self.rp_pointer.clad_radius
+
+        def __set__(self, double value):
+            self.rp_pointer.clad_radius = value
+
+
+    property unit_cell_pitch:
+        def __get__(self):
+            return self.rp_pointer.unit_cell_pitch
+
+        def __set__(self, double value):
+            self.rp_pointer.unit_cell_pitch = value
+
+
+
 
 
     property open_slots:
@@ -5160,20 +5190,39 @@ cdef class ReactorMG(FCComp):
 
 
 
-    property r:
+    property r_fuel:
         def __get__(self):
-            return self.rmg_pointer.r
+            return self.rmg_pointer.r_fuel
 
         def __set__(self, double value):
-            self.rmg_pointer.r = value
+            self.rmg_pointer.r_fuel = value
 
 
-    property l:
+    property r_void:
         def __get__(self):
-            return self.rmg_pointer.l
+            return self.rmg_pointer.r_void
 
         def __set__(self, double value):
-            self.rmg_pointer.l = value
+            self.rmg_pointer.r_void = value
+
+
+    property r_clad:
+        def __get__(self):
+            return self.rmg_pointer.r_clad
+
+        def __set__(self, double value):
+            self.rmg_pointer.r_clad = value
+
+
+    property pitch:
+        def __get__(self):
+            return self.rmg_pointer.pitch
+
+        def __set__(self, double value):
+            self.rmg_pointer.pitch = value
+
+
+
 
 
     property S_O:

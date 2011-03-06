@@ -38,8 +38,8 @@ default_rp.BUt = 50.0
 default_rp.use_disadvantage_factor = True
 default_rp.lattice_type = 'Cylindrical'
 default_rp.rescale_hydrogen = True
-default_rp.radius = 0.411
-default_rp.pitch = 0.7
+default_rp.fuel_radius = 0.411
+default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
 
@@ -98,8 +98,8 @@ class TestReactorMGConstructors(TestCase):
         assert_false(rmg.use_zeta)
         assert_equal(rmg.lattice_flag, '')
         assert_false(rmg.rescale_hydrogen_xs)
-        assert_equal(rmg.r, 0.0)
-        assert_equal(rmg.l, 0.0)
+        assert_equal(rmg.r_fuel, 0.0)
+        assert_equal(rmg.pitch, 0.0)
         assert_equal(rmg.S_O, 0.0)
         assert_equal(rmg.S_T, 0.0)
 
@@ -119,8 +119,8 @@ class TestReactorMGConstructors(TestCase):
         assert_false(rmg.use_zeta)
         assert_equal(rmg.lattice_flag, '')
         assert_false(rmg.rescale_hydrogen_xs)
-        assert_almost_equal(rmg.r, 0.0)
-        assert_almost_equal(rmg.l, 0.0)
+        assert_almost_equal(rmg.r_fuel, 0.0)
+        assert_almost_equal(rmg.pitch, 0.0)
         assert_almost_equal(rmg.S_O, 0.0)
         assert_almost_equal(rmg.S_T, 0.0)
     
@@ -195,13 +195,13 @@ class TestReactorMGParameterAttributes(TestCase):
 
     def test_r(self):
         rmg = ReactorMG()
-        rmg.r = 0.411
-        assert_equal(rmg.r, 0.411)
+        rmg.r_fuel = 0.411
+        assert_equal(rmg.r_fuel, 0.411)
 
     def test_l(self):
         rmg = ReactorMG()
-        rmg.l = 0.7
-        assert_equal(rmg.l, 0.7)
+        rmg.pitch = 0.7
+        assert_equal(rmg.pitch, 0.7)
 
     def test_S_O(self):
         rmg = ReactorMG()
@@ -215,8 +215,8 @@ class TestReactorMGParameterAttributes(TestCase):
 
     def test_VF(self):
         rp = ReactorParameters()
-        rp.radius = 0.5
-        rp.pitch = 1.0
+        rp.fuel_radius = 0.5
+        rp.unit_cell_pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         rmg = ReactorMG(reactor_parameters=rp, name='rmg')
@@ -224,8 +224,8 @@ class TestReactorMGParameterAttributes(TestCase):
 
     def test_VC(self):
         rp = ReactorParameters()
-        rp.radius = 0.5
-        rp.pitch = 1.0
+        rp.fuel_radius = 0.5
+        rp.unit_cell_pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         rmg = ReactorMG(reactor_parameters=rp, name='rmg')
@@ -746,8 +746,8 @@ class TestReactorMGInitializationMethods(TestCase):
         assert_false(self.rmg.use_zeta)
         assert_equal(self.rmg.lattice_flag, '')
         assert_false(self.rmg.rescale_hydrogen_xs)
-        assert_equal(self.rmg.r, 0.0)
-        assert_equal(self.rmg.l, 0.0)
+        assert_equal(self.rmg.r_fuel, 0.0)
+        assert_equal(self.rmg.pitch, 0.0)
         assert_equal(self.rmg.S_O, 0.0)
         assert_equal(self.rmg.S_T, 0.0)
 
@@ -961,10 +961,10 @@ class TestReactorMGBurnupMethods3(TestCase):
 
     def test_run_P_NL(self):
         # Convergence is not gaurenteed!
-        self.rmg.run_P_NL(0.99)
+        self.rmg.r_fuelun_P_NL(0.99)
         assert_equal(self.rmg.P_NL, 0.99)
         assert_almost_equal(self.rmg.k, 1.0, 1)
-        self.rmg.run_P_NL(0.98)
+        self.rmg.r_fuelun_P_NL(0.98)
 
 
 
@@ -1012,8 +1012,8 @@ class TestReactorMGLatticeMethods(TestCase):
     def test_lattice_E_planar(self):
         prev = self.rmg.lattice_E_F_
         self.rmg.lattice_flag = "Planar"
-        self.rmg.r = 0.5
-        self.rmg.l = 1.0
+        self.rmg.r_fuel = 0.5
+        self.rmg.pitch = 1.0
         self.rmg.fold_mass_weights()
         curr = self.rmg.lattice_E_F_
         for f in range(len(self.rmg.F)):
@@ -1022,8 +1022,8 @@ class TestReactorMGLatticeMethods(TestCase):
     def test_lattice_F_planar(self):
         prev = self.rmg.lattice_F_F_
         self.rmg.lattice_flag = "Planar"
-        self.rmg.r = 0.5
-        self.rmg.l = 1.0
+        self.rmg.r_fuel = 0.5
+        self.rmg.pitch = 1.0
         self.rmg.fold_mass_weights()
         curr = self.rmg.lattice_F_F_
         for f in range(len(self.rmg.F)):
@@ -1032,8 +1032,8 @@ class TestReactorMGLatticeMethods(TestCase):
     def test_lattice_E_spherical(self):
         prev = self.rmg.lattice_E_F_
         self.rmg.lattice_flag = "Spherical"
-        self.rmg.r = 0.5
-        self.rmg.l = 1.0
+        self.rmg.r_fuel = 0.5
+        self.rmg.pitch = 1.0
         self.rmg.fold_mass_weights()
         curr = self.rmg.lattice_E_F_
         for f in range(len(self.rmg.F)):
@@ -1042,8 +1042,8 @@ class TestReactorMGLatticeMethods(TestCase):
     def test_lattice_F_spherical(self):
         prev = self.rmg.lattice_F_F_
         self.rmg.lattice_flag = "Spherical"
-        self.rmg.r = 0.5
-        self.rmg.l = 1.0
+        self.rmg.r_fuel = 0.5
+        self.rmg.pitch = 1.0
         self.rmg.fold_mass_weights()
         curr = self.rmg.lattice_F_F_
         for f in range(len(self.rmg.F)):
@@ -1052,8 +1052,8 @@ class TestReactorMGLatticeMethods(TestCase):
     def test_lattice_E_cylindrical(self):
         prev = self.rmg.lattice_E_F_
         self.rmg.lattice_flag = "Cylindrical"
-        self.rmg.r = 0.5
-        self.rmg.l = 1.0
+        self.rmg.r_fuel = 0.5
+        self.rmg.pitch = 1.0
         self.rmg.fold_mass_weights()
         curr = self.rmg.lattice_E_F_
         for f in range(len(self.rmg.F)):
@@ -1062,8 +1062,8 @@ class TestReactorMGLatticeMethods(TestCase):
     def test_lattice_F_cylindrical(self):
         prev = self.rmg.lattice_F_F_
         self.rmg.lattice_flag = "Cylindrical"
-        self.rmg.r = 0.5
-        self.rmg.l = 1.0
+        self.rmg.r_fuel = 0.5
+        self.rmg.pitch = 1.0
         self.rmg.fold_mass_weights()
         curr = self.rmg.lattice_F_F_
         for f in range(len(self.rmg.F)):

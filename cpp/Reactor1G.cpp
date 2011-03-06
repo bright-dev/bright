@@ -51,8 +51,9 @@ void Reactor1G::initialize(ReactorParameters rp)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
 
     //Calculates Volumes
-    r = rp.radius;			//Fuel region radius
-    l = rp.pitch;			//Unit cell side length
+    r = rp.fuel_radius;			//Fuel region radius
+    l = rp.unit_cell_pitch;			//Unit cell side length
+
     S_O = rp.open_slots;		//Number of open slots in fuel assembly
     S_T = rp.total_slots;		//Total number of Fuel assembly slots.
     //Fuel Volume

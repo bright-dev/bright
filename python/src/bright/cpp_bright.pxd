@@ -191,17 +191,25 @@ cdef extern from "../ReactorParameters.h":
         # Attributes
         int batches
         double flux
+
         map[std.string, double] fuel_form
         map[std.string, double] coolant_form
+
         double fuel_density
+        double cladding_density
         double coolant_density
+
         double pnl
         double BUt
         bint use_disadvantage_factor
         std.string lattice_type
         bint rescale_hydrogen
-        double radius
-        double pitch
+
+        double fuel_radius
+        double void_radius
+        double clad_radius
+        double unit_cell_pitch
+
         double open_slots
         double total_slots
 
@@ -409,19 +417,25 @@ cdef extern from "../ReactorMG.h":
         # Attributes
         int B
         double flux
+
         map[std.string, double] fuel_chemical_form
         map[std.string, double] coolant_chemical_form
+
         double rho_fuel
         double rho_clad
         double rho_cool
+
         double P_NL
         double target_BU
         bint use_zeta
         std.string lattice_flag
         bint rescale_hydrogen_xs
 
-        double r
-        double l
+        double r_fuel
+        double r_void
+        double r_clad
+        double pitch
+
         double S_O
         double S_T
         double VF

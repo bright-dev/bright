@@ -82,8 +82,10 @@ public:
     std::string lattice_flag;						//lattice_flag Type (Planar || Spherical || Cylindrical)
     bool rescale_hydrogen_xs;						//Rescale the Hydrogen-1 XS?
 
-    double r; 							//Fuel region radius
-    double l; 							//Unit cell side length
+    double r_fuel; 							//Fuel region radius
+    double r_void; 							//Void region radius
+    double r_clad; 							//Cladding region radius
+    double pitch; 							//Unit cell side length
     double S_O; 							//Number of open slots in fuel assembly
     double S_T; 							//Total number of Fuel assembly slots.
     double VF; 							//Fuel Volume

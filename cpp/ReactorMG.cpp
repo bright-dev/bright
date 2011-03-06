@@ -48,9 +48,11 @@ void ReactorMG::initialize(ReactorParameters rp)
     flux = rp.flux;				//Flux used for Fluence
     fuel_chemical_form = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
     coolant_chemical_form = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
+
     rho_fuel = rp.fuel_density;			//Fuel Density
     rho_clad = rp.cladding_density;			// Cladding Density
     rho_cool = rp.coolant_density;		//Coolant Density
+
     P_NL = rp.pnl;				//Non-Leakage Probability
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
     use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
@@ -58,14 +60,17 @@ void ReactorMG::initialize(ReactorParameters rp)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
 
     //Calculates Volumes
-    r = rp.radius;			//Fuel region radius
-    l = rp.pitch;			//Unit cell side length
+    r_fuel = rp.fuel_radius;			//Fuel region radius
+    r_void = rp.void_radius;	//Void region radius
+    r_clad = rp.clad_radius;	//clad region radius
+    pitch = rp.unit_cell_pitch;			//Unit cell side length
+
     S_O = rp.open_slots;		//Number of open slots in fuel assembly
     S_T = rp.total_slots;		//Total number of Fuel assembly slots.
     //Fuel Volume
-    VF = ((bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T); 
+    VF = ((bright::pi * r_fuel * r_fuel)/(pitch*pitch)) * (1.0 - S_O/S_T); 
     //Coolant Volume
-    VC = ((l*l - bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T) + (S_O/S_T);
+    VC = ((pitch*pitch - bright::pi * r_fuel * r_fuel)/(pitch*pitch)) * (1.0 - S_O/S_T) + (S_O/S_T);
 };
 
 
@@ -251,6 +256,11 @@ std::vector<int> ReactorMG::nearest_neighbors()
     norm_deltas["fuel_density"] = bright::normalized_delta(rho_fuel, perturbations["fuel_density"]);
     norm_deltas["clad_density"] = bright::normalized_delta(rho_clad, perturbations["clad_density"]);
     norm_deltas["cool_density"] = bright::normalized_delta(rho_cool, perturbations["cool_density"]);
+
+    norm_deltas["fuel_cell_radius"] = bright::normalized_delta(r_fuel, perturbations["fuel_cell_radius"]);
+    norm_deltas["void_cell_radius"] = bright::normalized_delta(r_void, perturbations["void_cell_radius"]);
+    norm_deltas["clad_cell_radius"] = bright::normalized_delta(r_clad, perturbations["clad_cell_radius"]);
+
 
     return nn;
 };
@@ -1213,24 +1223,24 @@ void ReactorMG::calc_zeta()
     double a, b;
     if (lattice_flag == "Planar")
     {
-        a = r;
-        b = l / 2.0;
+        a = r_fuel;
+        b = pitch / 2.0;
     
         lattice_E_planar(a, b);
         lattice_F_planar(a, b);
     }
     else if (lattice_flag == "Spherical")
     {
-        a = r;
-        b = l / 2.0;
+        a = r_fuel;
+        b = pitch / 2.0;
     
         lattice_E_spherical(a, b);
         lattice_F_spherical(a, b);
     }
     else if (lattice_flag == "Cylindrical")
     {
-        a = r;
-        b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
+        a = r_fuel;
+        b = pitch / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
 
         lattice_E_cylindrical(a, b);
         lattice_F_cylindrical(a, b);
@@ -1240,8 +1250,8 @@ void ReactorMG::calc_zeta()
         if (0 < FCComps::verbosity)
             std::cout << "Did not specify use of planar or spheical or cylindrical lattice functions! Assuming cylindrical...\n";
         
-        a = r;
-        b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
+        a = r_fuel;
+        b = pitch / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
 
         lattice_E_cylindrical(a, b);
         lattice_F_cylindrical(a, b);
