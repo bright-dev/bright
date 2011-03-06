@@ -57,6 +57,7 @@ void ReactorMG::initialize(ReactorParameters rp)
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
     burn_regions = rp.burn_regions;
     specific_power = rp.specific_power;
+    burn_time = 0.0;
     burn_times = rp.burn_times;
 
     // Flags
@@ -247,15 +248,16 @@ void ReactorMG::loadlib(std::string libfile)
 
 
 
-std::vector<int> ReactorMG::nearest_neighbors(double burn_time)
+void ReactorMG::calc_nearest_neighbors()
 {
     /**
      * Returns a vector of the indices sorted, sorted by nearest neighbor
      */
 
-    // The nearest neighbor vector
-    std::vector<int> nn (nperturbations, -1);
+    // Initialize
     std::map<std::string, std::vector<double> > norm_deltas;
+    std::vector<double> rss (nperturbations, 0.0);
+    nearest_neighbors.clear();
 
     // Calcumlate normailized deltas
     norm_deltas["fuel_density"] = bright::normalized_delta(rho_fuel, perturbations["fuel_density"]);
@@ -290,7 +292,35 @@ std::vector<int> ReactorMG::nearest_neighbors(double burn_time)
 
     norm_deltas["burn_times"] = bright::normalized_delta(burn_time, perturbations["burn_times"]);
 
-    return nn;
+
+    // Now that we have the normalized deltas for each index
+    // We want to calculate the 'distance' from the curent point
+    // This is done by taking the root of the sum of squares for 
+    // each index.
+    std::string key;
+    for (int p = 0; p < perturbations.shape[1]; p++)
+    {
+        key = perturbations.cols[p];
+
+        // Take the sum of the squares
+        for (int q = 0; q < perturbations.shape[0]; q++)
+        {
+            rss[q] = rss[q] + (norm_deltas[key][q] * norm_deltas[key][q]); 
+        };
+    };
+
+    // Takes the root of the sum of squares
+    for (int q = 0; q < perturbations.shape[0]; q++)
+    {
+        rss[q] = sqrt(rss[q]);
+    };
+
+
+
+    // Now that we have the root of the sum of squares, 
+    // we need to sort the indices by rss from lowest 
+    // to highest.
+    nearest_neighbors = bright::sorted_index(rss);
 };
 
 

@@ -81,6 +81,7 @@ public:
     double target_BU; 						//Target Discharge Burnup, only used for graphing inside of this component
     double specific_power; // The specific power of the fuel
     int burn_regions;   // Number of burn regions for this reactor 
+    double burn_time;
     std::vector<double> burn_times;
 
     bool use_zeta; 							//Boolean value on whether or not the disadvantage factor should be used
@@ -125,6 +126,8 @@ public:
     std::map<int, pert_data_g> nubar_sigma_f;
     std::map<int, pert_data_g> nubar;
     std::map<int, pert_data_gh> sigma_s_gh;
+
+    std::vector<int> nearest_neighbors;
 
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight
@@ -175,10 +178,11 @@ public:
 
 
     //Public access functions
-    void              initialize(ReactorParameters);
-    void              loadlib(std::string libfile = "Reactor.h5");
-    void              fold_mass_weights();
-    std::vector<int>  nearest_neighbors(double);
+    void initialize(ReactorParameters);
+    void loadlib(std::string libfile = "Reactor.h5");
+    void fold_mass_weights();
+
+    void calc_nearest_neighbors();
 
     void         calc_Mj_F_();
     void         calc_Mj_Fd_();

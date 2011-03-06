@@ -433,6 +433,7 @@ cdef extern from "../ReactorMG.h":
         double target_BU
         double specific_power
         int burn_regions
+        double burn_time
         vector[double] burn_times
 
         bint use_zeta
@@ -477,6 +478,8 @@ cdef extern from "../ReactorMG.h":
         map[int, vector[vector[double]]] nubar_sigma_f
         map[int, vector[vector[double]]] nubar
         map[int, vector[vector[vector[double]]]] sigma_s_gh
+
+        vector[int] nearest_neighbors
 
         double A_IHM
         double MWF
@@ -529,6 +532,8 @@ cdef extern from "../ReactorMG.h":
         void initialize(ReactorParameters)
         void loadlib(std.string)
         void fold_mass_weights()
+
+        void calc_nearest_neighbors()
 
         void calc_Mj_F_()
         void calc_Mj_Fd_()

@@ -5223,6 +5223,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.burn_regions = value
 
 
+    property burn_time:
+        def __get__(self):
+            return self.rmg_pointer.burn_time
+
+        def __set__(self, double value):
+            self.rmg_pointer.burn_time = value
+
+
     property burn_times:
         def __get__(self):
             return conv.vector_to_array_1d_dbl(self.rmg_pointer.burn_times)
@@ -5536,6 +5544,18 @@ cdef class ReactorMG(FCComp):
         def __set__(self, dict value):
             self.rmg_pointer.sigma_s_gh = conv.dict_to_map_int_vector_to_array_3d_dbl(value)
 
+
+
+
+
+
+
+    property nearest_neighbors:
+        def __get__(self):
+            return conv.vector_to_array_1d_int(self.rmg_pointer.nearest_neighbors)
+
+        def __set__(self, np.ndarray[np.int32_t, ndim=1] value):
+            self.rmg_pointer.nearest_neighbors = conv.array_to_vector_1d_int(value)
 
 
     
@@ -6005,6 +6025,17 @@ cdef class ReactorMG(FCComp):
             harm in calling it twice by accident.
         """
         self.rmg_pointer.fold_mass_weights()
+
+
+
+
+
+    def calc_nearest_neighbors(self):
+        """Calculates a sorted array that indexes the nearest neighbors of the 
+        perturbations based off of the current state of the reactor.  The results may
+        be found in the neareest_neighbors attribute.
+        """
+        self.rmg_pointer.calc_nearest_neighbors()
 
 
 
