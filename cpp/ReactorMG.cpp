@@ -247,7 +247,7 @@ void ReactorMG::loadlib(std::string libfile)
 
 
 
-std::vector<int> ReactorMG::nearest_neighbors()
+std::vector<int> ReactorMG::nearest_neighbors(double burn_time)
 {
     /**
      * Returns a vector of the indices sorted, sorted by nearest neighbor
@@ -268,6 +268,27 @@ std::vector<int> ReactorMG::nearest_neighbors()
 
     norm_deltas["unit_cell_pitch"] = bright::normalized_delta(pitch, perturbations["unit_cell_pitch"]);
     norm_deltas["burn_regions"] = bright::normalized_delta(burn_regions, perturbations["burn_regions"]);
+    norm_deltas["fuel_specifc_power"] = bright::normalized_delta(specific_power, perturbations["fuel_specifc_power"]);
+
+    // Calc pertubations for initial mass streams
+    if (10 < perturbations.shape[1])
+    {
+        int iso_zz;
+        std::string iso_LL;
+
+        for (int p = 9; p < perturbations.shape[1] - 1; p++)
+        {
+            iso_LL = perturbations.cols[p];
+            iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
+
+            if (0 < ms_feed.comp.count(iso_zz))
+                norm_deltas[iso_LL] = bright::normalized_delta(ms_feed.comp[iso_zz], perturbations[iso_LL]);
+            else
+                norm_deltas[iso_LL] = bright::normalized_delta(0.0, perturbations[iso_LL]);                
+        };
+    };
+
+    norm_deltas["burn_times"] = bright::normalized_delta(burn_time, perturbations["burn_times"]);
 
     return nn;
 };

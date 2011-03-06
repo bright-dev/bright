@@ -178,7 +178,7 @@ public:
     void              initialize(ReactorParameters);
     void              loadlib(std::string libfile = "Reactor.h5");
     void              fold_mass_weights();
-    std::vector<int>  nearest_neighbors();
+    std::vector<int>  nearest_neighbors(double);
 
     void         calc_Mj_F_();
     void         calc_Mj_Fd_();
