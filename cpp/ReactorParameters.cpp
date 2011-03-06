@@ -20,6 +20,10 @@ ReactorParameters::ReactorParameters()
 
     pnl = 0.0;
     BUt = 0.0;
+    specific_power = 0.0;
+    burn_regions = 0;
+    burn_times = std::vector<double>();
+
     use_disadvantage_factor = false;
     lattice_type = std::string();
     rescale_hydrogen = false;
@@ -68,6 +72,14 @@ ReactorParameters fill_lwr_defaults ()
 
     lwrd.pnl = 0.98;
     lwrd.BUt = 0.0;
+    lwrd.specific_power = 0.04;
+    lwrd.burn_regions = 1;
+    lwrd.burn_times = std::vector<double>(144, -1.0);
+    for (int t = 0; t < 144; t++)
+    {
+        lwrd.burn_times[t] = 30.0 * t;
+    };
+
 
     lwrd.use_disadvantage_factor = true;
     lwrd.lattice_type = "Cylindrical";
@@ -106,6 +118,13 @@ ReactorParameters fill_fr_defaults ()
 
     frd.pnl = 0.65;
     frd.BUt = 0.0;
+    frd.specific_power = 0.04;
+    frd.burn_regions = 1;
+    frd.burn_times = std::vector<double>(144, -1.0);
+    for (int t = 0; t < 144; t++)
+    {
+        frd.burn_times[t] = 31.0 * t;
+    };
 
     frd.use_disadvantage_factor = false;
     frd.lattice_type = "Cylindrical";

@@ -76,8 +76,13 @@ public:
     double rho_fuel;							//Fuel Density
     double rho_clad; 							//Coolant Density
     double rho_cool; 							//Coolant Density
+
     double P_NL; 							//Non-Leakage Probability
     double target_BU; 						//Target Discharge Burnup, only used for graphing inside of this component
+    double specific_power; // The specific power of the fuel
+    int burn_regions;   // Number of burn regions for this reactor 
+    std::vector<double> burn_times;
+
     bool use_zeta; 							//Boolean value on whether or not the disadvantage factor should be used
     std::string lattice_flag;						//lattice_flag Type (Planar || Spherical || Cylindrical)
     bool rescale_hydrogen_xs;						//Rescale the Hydrogen-1 XS?
@@ -86,6 +91,7 @@ public:
     double r_void; 							//Void region radius
     double r_clad; 							//Cladding region radius
     double pitch; 							//Unit cell side length
+
     double S_O; 							//Number of open slots in fuel assembly
     double S_T; 							//Total number of Fuel assembly slots.
     double VF; 							//Fuel Volume

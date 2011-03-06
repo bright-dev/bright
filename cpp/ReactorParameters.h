@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <map>
+#include <vector>
 #include <string>
 
 class ReactorParameters
@@ -28,6 +29,10 @@ public:
 
     double pnl;
     double BUt;
+    double specific_power;
+    int burn_regions;
+    std::vector<double> burn_times;
+
     bool use_disadvantage_factor;
     std::string lattice_type;
     bool rescale_hydrogen;

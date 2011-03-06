@@ -201,6 +201,10 @@ cdef extern from "../ReactorParameters.h":
 
         double pnl
         double BUt
+        double specific_power
+        int burn_regions
+        vector[double] burn_times
+
         bint use_disadvantage_factor
         std.string lattice_type
         bint rescale_hydrogen
@@ -427,6 +431,10 @@ cdef extern from "../ReactorMG.h":
 
         double P_NL
         double target_BU
+        double specific_power
+        int burn_regions
+        vector[double] burn_times
+
         bint use_zeta
         std.string lattice_flag
         bint rescale_hydrogen_xs

@@ -1382,6 +1382,9 @@ cdef class ReactorParameters:
             self.rp_pointer.flux = value
 
 
+
+
+
     property fuel_form:
         def __get__(self):
             return conv.map_to_dict_str_dbl(self.rp_pointer.fuel_form)
@@ -1396,6 +1399,9 @@ cdef class ReactorParameters:
 
         def __set__(self, dict value):
             self.rp_pointer.coolant_form = conv.dict_to_map_str_dbl(value)
+
+
+
 
 
     property fuel_density:
@@ -1422,6 +1428,9 @@ cdef class ReactorParameters:
             self.rp_pointer.coolant_density = value
 
 
+
+
+
     property pnl:
         def __get__(self):
             return self.rp_pointer.pnl
@@ -1436,6 +1445,33 @@ cdef class ReactorParameters:
 
         def __set__(self, double value):
             self.rp_pointer.BUt = value
+
+
+    property specific_power:
+        def __get__(self):
+            return self.rp_pointer.specific_power
+
+        def __set__(self, double value):
+            self.rp_pointer.specific_power = value
+
+
+    property burn_regions:
+        def __get__(self):
+            return self.rp_pointer.burn_regions
+
+        def __set__(self, int value):
+            self.rp_pointer.burn_regions = value
+
+
+    property burn_times:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rp_pointer.burn_times)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rp_pointer.burn_times = conv.array_to_vector_1d_dbl(value)
+
+
+
 
 
     property use_disadvantage_factor:
@@ -5106,6 +5142,9 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.flux = value
 
 
+
+
+
     property fuel_chemical_form:
         def __get__(self):
             return conv.map_to_dict_str_dbl(self.rmg_pointer.fuel_chemical_form)
@@ -5120,6 +5159,9 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, dict value):
             self.rmg_pointer.coolant_chemical_form = conv.dict_to_map_str_dbl(value)
+
+
+
 
 
     property rho_fuel:
@@ -5146,6 +5188,9 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.rho_cool = value
 
 
+
+
+
     property P_NL:
         def __get__(self):
             return self.rmg_pointer.P_NL
@@ -5160,6 +5205,33 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, double value):
             self.rmg_pointer.target_BU = value
+
+
+    property specific_power:
+        def __get__(self):
+            return self.rmg_pointer.specific_power
+
+        def __set__(self, double value):
+            self.rmg_pointer.specific_power = value
+
+
+    property burn_regions:
+        def __get__(self):
+            return self.rmg_pointer.burn_regions
+
+        def __set__(self, int value):
+            self.rmg_pointer.burn_regions = value
+
+
+    property burn_times:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.burn_times)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.burn_times = conv.array_to_vector_1d_dbl(value)
+
+
+
 
 
     property use_zeta:

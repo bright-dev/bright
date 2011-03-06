@@ -55,6 +55,11 @@ void ReactorMG::initialize(ReactorParameters rp)
 
     P_NL = rp.pnl;				//Non-Leakage Probability
     target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
+    burn_regions = rp.burn_regions;
+    specific_power = rp.specific_power;
+    burn_times = rp.burn_times;
+
+    // Flags
     use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
     lattice_flag = rp.lattice_type;		//lattice_flagType (Planar || Spherical || Cylindrical)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
@@ -261,6 +266,8 @@ std::vector<int> ReactorMG::nearest_neighbors()
     norm_deltas["void_cell_radius"] = bright::normalized_delta(r_void, perturbations["void_cell_radius"]);
     norm_deltas["clad_cell_radius"] = bright::normalized_delta(r_clad, perturbations["clad_cell_radius"]);
 
+    norm_deltas["unit_cell_pitch"] = bright::normalized_delta(pitch, perturbations["unit_cell_pitch"]);
+    norm_deltas["burn_regions"] = bright::normalized_delta(burn_regions, perturbations["burn_regions"]);
 
     return nn;
 };

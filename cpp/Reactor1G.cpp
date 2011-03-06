@@ -62,6 +62,7 @@ void Reactor1G::initialize(ReactorParameters rp)
     VC = ((l*l - bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T) + (S_O/S_T);
 };
 
+
 void Reactor1G::loadlib(std::string libfile)
 {
     //Loads Apporiate Libraries for Reactor and makes them into Burnup Parameters [F, pi(F), di(F), BUi(F), Tij(F)].
