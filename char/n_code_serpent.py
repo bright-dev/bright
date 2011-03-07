@@ -520,7 +520,13 @@ class NCodeSerpent(object):
         if hasattr(defchar, 'walltime'):
             return defchar.walltime
         else:
-            return 36
+            # Get the number of perturbatiosn from the reactor file.
+            rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+            nperturbations = len(rx_h5.root.perturbations)
+            rx_h5.close()
+
+            # Take a guess as to the number of hours required to run
+            return int(4.5 * nperturbations) + 1
 
 
     def run_script_fill_values(self):
