@@ -157,7 +157,6 @@ void ReactorMG::loadlib(std::string libfile)
     // close the reactor library
     rmglib.close();
 
-
     //Now get microscopic XS data from KAERI...
     //...But only if the disadvantage factor is used.
     if (!use_zeta)
@@ -270,7 +269,7 @@ void ReactorMG::calc_nearest_neighbors()
 
     norm_deltas["unit_cell_pitch"] = bright::normalized_delta(pitch, perturbations["unit_cell_pitch"]);
     norm_deltas["burn_regions"] = bright::normalized_delta(burn_regions, perturbations["burn_regions"]);
-    norm_deltas["fuel_specifc_power"] = bright::normalized_delta(specific_power, perturbations["fuel_specifc_power"]);
+    norm_deltas["fuel_specific_power"] = bright::normalized_delta(specific_power, perturbations["fuel_specific_power"]);
 
     // Calc pertubations for initial mass streams
     if (10 < perturbations.shape[1])
@@ -314,7 +313,6 @@ void ReactorMG::calc_nearest_neighbors()
     {
         rss[q] = sqrt(rss[q]);
     };
-
 
 
     // Now that we have the root of the sum of squares, 

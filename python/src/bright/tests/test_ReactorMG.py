@@ -428,7 +428,36 @@ class TestReactorMGBasicDataAttributes(TestCase):
         assert_equal(self.rmg.Tij_F_[1].keys(), [2])
         assert_array_equal(self.rmg.Tij_F_[1][2], np.arange(0.0, 10.0))
         self.rmg.Tij_F_ = old_T
-    """\
+    """
+
+
+
+
+
+
+class TestReactorMGMutliGroupMethods(TestCase):
+    "Tests that the ReactorMG basic data attributes work."
+
+    @classmethod
+    def setup_class(cls):
+        libfile = os.getenv("BRIGHT_DATA") + '/lwr_mg.h5'
+        bright.load_track_isos_hdf5(libfile)
+        cls.rmg = ReactorMG()
+        cls.rmg.loadlib(libfile)
+        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.burn_time = 0.0
+
+    @classmethod
+    def teardown_class(cls):
+        general_teardown()
+
+
+    def test_calc_nearest_neighbors(self):
+        assert_equal(len(self.rmg.nearest_neighbors), 0)
+        self.rmg.calc_nearest_neighbors()
+        assert(0 < len(self.rmg.nearest_neighbors))
+        print self.rmg.nearest_neighbors
+        raise TypeError
 
 
 
