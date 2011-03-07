@@ -39,6 +39,8 @@ default_rp.use_disadvantage_factor = True
 default_rp.lattice_type = 'Cylindrical'
 default_rp.rescale_hydrogen = True
 default_rp.fuel_radius = 0.411
+default_rp.void_radius = 0.4195
+default_rp.clad_radius = 0.475
 default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
@@ -442,7 +444,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/lwr_mg.h5'
         bright.load_track_isos_hdf5(libfile)
-        cls.rmg = ReactorMG()
+        cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.burn_time = 0.0
@@ -455,9 +457,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
     def test_calc_nearest_neighbors(self):
         assert_equal(len(self.rmg.nearest_neighbors), 0)
         self.rmg.calc_nearest_neighbors()
-        assert(0 < len(self.rmg.nearest_neighbors))
-        print self.rmg.nearest_neighbors
-        raise TypeError
+        assert_equal(len(self.rmg.nearest_neighbors), self.rmg.nperturbations)
 
 
 
