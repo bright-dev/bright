@@ -428,6 +428,22 @@ void ReactorMG::fold_mass_weights()
         NiC[iso->first] = niC[iso->first] * rho_cool * (bright::N_A) / MWC;
     };
 
+};
+
+
+
+
+void ReactorMG::burnup_core()
+{
+
+    // Burns up the core and fills in parameter values as we go.
+
+};
+
+/*
+
+void ReactorMG::old_burnup_core()
+{
     //BU(F)
     BU_F_.clear();
     BU_F_.assign( F.size(), 0.0 ); //re-initialize BU(F)
@@ -514,6 +530,9 @@ void ReactorMG::fold_mass_weights()
     };
 };
 
+
+
+
 void ReactorMG::calc_Mj_F_()
 {
     //Generates the Mj(F) table.
@@ -534,12 +553,15 @@ void ReactorMG::calc_Mj_F_()
     };
 };
 
+
+
 void ReactorMG::calc_Mj_Fd_()
 {
     /** Calculates the output isotopics of Mj(Fd).
      *  NOTE: Mj(Fd) is effectively the same variable as ms_prod before normalization!
      */
 
+/*
     CompDict tempOut;
 
     //Checks to see if the discharge index in at the end of the fluence table
@@ -641,6 +663,7 @@ double ReactorMG::calc_tru_cr()
 
 FluencePoint ReactorMG::fluence_at_BU(double BU)
 {
+*/
     /** Gives the fluence at which the burnup BU occurs.
      *  Data returned as FluenceIndex stucture:
      *  	FI.f: index imeadiately lower than where BU achieved (int),
@@ -648,6 +671,7 @@ FluencePoint ReactorMG::fluence_at_BU(double BU)
      *  	FI.m: slope dBU/dF bewteen points f and f+1 (double)
      */
 
+/*
     FluencePoint fp;
 
     //Finds the lower index
@@ -929,11 +953,13 @@ void ReactorMG::BUd_bisection_method()
 
 void ReactorMG::run_P_NL(double temp_pnl)
 {
+*/
     /** Does a reactor run for a specific P_NL.
      *  Requires that ms_feed be (meaningfully) set.
      *  For use with calibrate_P_NL_to_BUd
      */
 
+/*
     P_NL = temp_pnl;
     fold_mass_weights();
     BUd_bisection_method();
@@ -941,10 +967,11 @@ void ReactorMG::run_P_NL(double temp_pnl)
 
 void ReactorMG::calibrate_P_NL_to_BUd()
 {
+*/
     /** Calibrates the non-leakage probability of a reactors to hit a target burnup.
      *  Calibration proceeds by bisection method...
      */
-
+/*
     double pnl_a, bud_a, sign_a;
     double pnl_b, bud_b, sign_b;
     double pnl_c, bud_c, sign_c;
@@ -1384,3 +1411,6 @@ void ReactorMG::calc_zeta_cylindrical()
     calc_zeta();
     return;
 };
+
+
+*/
