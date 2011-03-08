@@ -73,8 +73,10 @@ public:
     // Attributes from ReactorParameters (initialization)
     int B;          // Total number of fuel loading batches
     double flux;    // Flux used for Fluence
+
     std::map<std::string, double> fuel_chemical_form;       // Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
     std::map<std::string, double> coolant_chemical_form;    // Same a fuel chemical form but for coolant.  Should not have "IHM"
+
     double rho_fuel;    // Fuel Density
     double rho_clad;    // Cladding Density
     double rho_cool;    // Coolant Density
@@ -84,7 +86,7 @@ public:
     double specific_power;  // The specific power of the fuel
     int burn_regions;       // Number of burn regions for this reactor 
     double burn_time;       // Cuurent burnup time.
-    std::vector<double> burn_times; // A non-negative, monotonically increasing vector of burnup steps
+    time_data burn_times; // A non-negative, monotonically increasing vector of burnup steps
 
     bool use_zeta;              // Boolean value on whether or not the disadvantage factor should be used
     std::string lattice_flag;   // lattice_flag Type (Planar || Spherical || Cylindrical)
@@ -143,12 +145,12 @@ public:
 
 
     // Attributes caluclated from burnup_core()
-    time_data Phi_t;   					//Fluence in [n/kb]
-    iso_time_map BU_t;						//Burnup [MWd/kgIHM]
-    time_data pF_t; 						//Production rate [n/s]
-    time_data dF_t;		      	   			//Destruction rate [n/s]
-    time_data dC_t;		      	   			//Destruction rate [n/s]
-    iso_time_map T_it;				//Transformation Matrix [kg_i/kgIHM]
+    time_data Phi_t;    // Fluence in [n/kb]
+    time_data BU_t;		// Burnup [MWd/kgIHM]
+    time_data pF_t;     // Production rate of the fuel [n/s]
+    time_data dF_t;     // Destruction rate of the fuel [n/s]
+    time_data dC_t;     // Destruction rate of the coolant [n/s]
+    iso_time_map T_it;  // Transformation Matrix [kg_i/kgIHM]
 
 
     // Attribute that denotes the indices of the perturbation table the 

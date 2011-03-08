@@ -451,11 +451,6 @@ cdef extern from "../ReactorMG.h":
         double VC
 
         std.string libfile
-        vector[double] F
-        map[int, vector[double]] BUi_F_
-        map[int, vector[double]] pi_F_
-        map[int, vector[double]] di_F_
-        map[int, map[int, vector[double]]] Tij_F_
 
         set[int] I
         set[int] J
@@ -479,8 +474,6 @@ cdef extern from "../ReactorMG.h":
         map[int, vector[vector[double]]] nubar
         map[int, vector[vector[vector[double]]]] sigma_s_gh
 
-        vector[int] nearest_neighbors
-
         double A_IHM
         double MWF
         double MWC
@@ -491,17 +484,22 @@ cdef extern from "../ReactorMG.h":
         map[int, double] NiF
         map[int, double] NiC
 
-        vector[double] dF_F_
-        vector[double] dC_F_
-        vector[double] BU_F_
-        vector[double] P_F_
-        vector[double] D_F_
-        vector[double] k_F_
-        map[int, vector[double]] Mj_F_
-        vector[double] zeta_F_
+        vector[double] Phi_t
+        vector[double] BU_t
+        vector[double] pF_t
+        vector[double] dF_t
+        vector[double] dC_t
+        map[int, vector[double]] T_it
 
-        int fd
-        double Fd
+        vector[int] nearest_neighbors
+
+        vector[double] P_t
+        vector[double] D_t
+        vector[double] k_t
+        vector[double] zeta_t
+
+        int td_n
+        double td
         double BUd
         double k
 
@@ -517,16 +515,16 @@ cdef extern from "../ReactorMG.h":
         double deltaR
         double tru_cr
 
-        vector[double] SigmaFa_F_
-        vector[double] SigmaFtr_F_
-        vector[double] kappaF_F_
+        vector[double] SigmaF_at
+        vector[double] SigmaF_trt
+        vector[double] kappaF_t
 
-        vector[double] SigmaCa_F_
-        vector[double] SigmaCtr_F_
-        vector[double] kappaC_F_
+        vector[double] SigmaC_at
+        vector[double] SigmaC_trt
+        vector[double] kappaC_t
 
-        vector[double] lattice_E_F_
-        vector[double] lattice_F_F_
+        vector[double] lattice_E_t
+        vector[double] lattice_F_t
 
         # Methods
         void initialize(ReactorParameters)
@@ -535,8 +533,7 @@ cdef extern from "../ReactorMG.h":
 
         void calc_nearest_neighbors()
 
-        void calc_Mj_F_()
-        void calc_Mj_Fd_()
+        void calc_T_itd()
 
         void calc_ms_prod()
         void calcSubStreams()
