@@ -5503,20 +5503,6 @@ cdef class ReactorMG(FCComp):
         def __set__(self, dict value):
             self.rmg_pointer.sigma_s_gh = conv.dict_to_map_int_array_to_vector_3d_dbl(value)
 
-
-
-
-
-
-
-    property nearest_neighbors:
-        def __get__(self):
-            return conv.vector_to_array_1d_int(self.rmg_pointer.nearest_neighbors)
-
-        def __set__(self, np.ndarray[np.int32_t, ndim=1] value):
-            self.rmg_pointer.nearest_neighbors = conv.array_to_vector_1d_int(value)
-
-
     
 
 
@@ -5644,97 +5630,79 @@ cdef class ReactorMG(FCComp):
 
     property T_it:
         def __get__(self):
-            return conv.map_to_dict_int_int_vector_to_array_1d_dbl(self.rmg_pointer.T_it)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.T_it)
 
         def __set__(self, dict value):
-            self.rmg_pointer.T_it = conv.dict_to_map_int_int_array_to_vector_1d_dbl(value)
+            self.rmg_pointer.T_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
 
 
 
 
-    property dF_F_:
+
+    property nearest_neighbors:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.dF_F_)
+            return conv.vector_to_array_1d_int(self.rmg_pointer.nearest_neighbors)
+
+        def __set__(self, np.ndarray[np.int32_t, ndim=1] value):
+            self.rmg_pointer.nearest_neighbors = conv.array_to_vector_1d_int(value)
+
+
+
+
+
+
+    property P_t:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.P_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.dF_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.P_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property dC_F_:
+    property D_t:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.dC_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.D_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.dC_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.D_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property BU_F_:
+    property k_t:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.BU_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.k_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.BU_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.k_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property P_F_:
+    property zeta_t:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.P_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.zeta_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.P_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.zeta_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property D_F_:
+
+
+
+
+    property td_n:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.D_F_)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.D_F_ = conv.array_to_vector_1d_dbl(value)
-
-
-    property k_F_:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.k_F_)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.k_F_ = conv.array_to_vector_1d_dbl(value)
-
-
-    property Mj_F_:
-        def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.Mj_F_)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.Mj_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
-
-
-    property zeta_F_:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.zeta_F_)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.zeta_F_ = conv.array_to_vector_1d_dbl(value)
-
-
-
-
-
-    property fd:
-        def __get__(self):
-            return self.rmg_pointer.fd
+            return self.rmg_pointer.td_n
 
         def __set__(self, int value):
-            self.rmg_pointer.fd = value
+            self.rmg_pointer.td_n = value
 
 
-    property Fd:
+    property td:
         def __get__(self):
-            return self.rmg_pointer.Fd
+            return self.rmg_pointer.td
 
         def __set__(self, double value):
-            self.rmg_pointer.Fd = value
+            self.rmg_pointer.td = value
 
 
     property BUd:
@@ -5751,6 +5719,7 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, double value):
             self.rmg_pointer.k = value
+
 
 
 
@@ -5838,6 +5807,7 @@ cdef class ReactorMG(FCComp):
 
 
 
+
     property deltaR:
         def __get__(self):
             return self.rmg_pointer.deltaR
@@ -5857,74 +5827,80 @@ cdef class ReactorMG(FCComp):
 
 
 
-    property SigmaFa_F_:
+
+    property SigmaF_at:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaFa_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaF_at)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaFa_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.SigmaF_at = conv.array_to_vector_1d_dbl(value)
 
 
-    property SigmaFtr_F_:
+    property SigmaF_trt:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaFtr_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaF_trt)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaFtr_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.SigmaF_trt = conv.array_to_vector_1d_dbl(value)
 
 
-    property kappaF_F_:
+    property kappaF_t:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.kappaF_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.kappaF_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.kappaF_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.kappaF_t = conv.array_to_vector_1d_dbl(value)
 
 
 
 
 
-    property SigmaCa_F_:
+
+    property SigmaC_at:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaCa_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaC_at)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaCa_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.SigmaC_at = conv.array_to_vector_1d_dbl(value)
 
 
-    property SigmaCtr_F_:
+    property SigmaC_trt:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaCtr_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaC_trt)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaCtr_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.SigmaC_trt = conv.array_to_vector_1d_dbl(value)
 
 
-    property kappaC_F_:
+    property kappaC_t:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.kappaC_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.kappaC_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.kappaC_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.kappaC_t = conv.array_to_vector_1d_dbl(value)
 
 
 
 
 
-    property lattice_E_F_:
+    property lattice_E_t:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.lattice_E_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.lattice_E_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.lattice_E_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.lattice_E_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property lattice_F_F_:
+    property lattice_F_t:
         def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.lattice_F_F_)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.lattice_F_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.lattice_F_F_ = conv.array_to_vector_1d_dbl(value)
+            self.rmg_pointer.lattice_F_t = conv.array_to_vector_1d_dbl(value)
+
+
+
+
 
 
 
@@ -6056,20 +6032,16 @@ cdef class ReactorMG(FCComp):
 
 
 
-    def calc_Mj_F_(self):
-        """This function calculates and sets the Mj_F_ attribute from ms_feed and the 
-        raw reactor data Tij_F_.
-        """
-        self.rmg_pointer.calc_Mj_F_()
 
 
-    def calc_Mj_Fd_(self):
-        """This function evaluates Mj_F_ calculated from calc_Mj_F_() at the discharge fluence Fd.
+    def calc_T_itd(self):
+        """This function evaluates transmutation matrix at the discharge time td.
         The resultant isotopic dictionary is then converted into the ms_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate ms_prod
         without going through calc(), use this function.
         """
-        self.rmg_pointer.calc_Mj_Fd_()
+        self.rmg_pointer.calc_T_itd()
+
 
 
 
