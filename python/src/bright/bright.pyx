@@ -1800,34 +1800,34 @@ cdef class Reactor1G(FCComp):
 
     property BUi_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.r1g_pointer.BUi_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.r1g_pointer.BUi_F_)
 
         def __set__(self, dict value):
-            self.r1g_pointer.BUi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.r1g_pointer.BUi_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property pi_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.r1g_pointer.pi_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.r1g_pointer.pi_F_)
 
         def __set__(self, dict value):
-            self.r1g_pointer.pi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.r1g_pointer.pi_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property di_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.r1g_pointer.di_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.r1g_pointer.di_F_)
 
         def __set__(self, dict value):
-            self.r1g_pointer.di_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.r1g_pointer.di_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property Tij_F_:
         def __get__(self):
-            return conv.map_to_dict_int_int_array_to_vector_1d_dbl(self.r1g_pointer.Tij_F_)
+            return conv.map_to_dict_int_int_vector_to_array_1d_dbl(self.r1g_pointer.Tij_F_)
 
         def __set__(self, dict value):
-            self.r1g_pointer.Tij_F_ = conv.dict_to_map_int_int_vector_to_array_1d_dbl(value)
+            self.r1g_pointer.Tij_F_ = conv.dict_to_map_int_int_array_to_vector_1d_dbl(value)
 
 
 
@@ -1958,10 +1958,10 @@ cdef class Reactor1G(FCComp):
 
     property Mj_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.r1g_pointer.Mj_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.r1g_pointer.Mj_F_)
 
         def __set__(self, dict value):
-            self.r1g_pointer.Mj_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.r1g_pointer.Mj_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property zeta_F_:
@@ -2833,34 +2833,34 @@ cdef class LightWaterReactor1G(Reactor1G):
 
     property BUi_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.lwr1g_pointer.BUi_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.lwr1g_pointer.BUi_F_)
 
         def __set__(self, dict value):
-            self.lwr1g_pointer.BUi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.lwr1g_pointer.BUi_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property pi_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.lwr1g_pointer.pi_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.lwr1g_pointer.pi_F_)
 
         def __set__(self, dict value):
-            self.lwr1g_pointer.pi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.lwr1g_pointer.pi_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property di_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.lwr1g_pointer.di_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.lwr1g_pointer.di_F_)
 
         def __set__(self, dict value):
-            self.lwr1g_pointer.di_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.lwr1g_pointer.di_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property Tij_F_:
         def __get__(self):
-            return conv.map_to_dict_int_int_array_to_vector_1d_dbl(self.lwr1g_pointer.Tij_F_)
+            return conv.map_to_dict_int_int_vector_to_array_1d_dbl(self.lwr1g_pointer.Tij_F_)
 
         def __set__(self, dict value):
-            self.lwr1g_pointer.Tij_F_ = conv.dict_to_map_int_int_vector_to_array_1d_dbl(value)
+            self.lwr1g_pointer.Tij_F_ = conv.dict_to_map_int_int_array_to_vector_1d_dbl(value)
 
 
 
@@ -2991,10 +2991,10 @@ cdef class LightWaterReactor1G(Reactor1G):
 
     property Mj_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.lwr1g_pointer.Mj_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.lwr1g_pointer.Mj_F_)
 
         def __set__(self, dict value):
-            self.lwr1g_pointer.Mj_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.lwr1g_pointer.Mj_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property zeta_F_:
@@ -3895,34 +3895,34 @@ cdef class FastReactor1G(Reactor1G):
 
     property BUi_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.BUi_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.fr1g_pointer.BUi_F_)
 
         def __set__(self, dict value):
-            self.fr1g_pointer.BUi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.fr1g_pointer.BUi_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property pi_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.pi_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.fr1g_pointer.pi_F_)
 
         def __set__(self, dict value):
-            self.fr1g_pointer.pi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.fr1g_pointer.pi_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property di_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.di_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.fr1g_pointer.di_F_)
 
         def __set__(self, dict value):
-            self.fr1g_pointer.di_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.fr1g_pointer.di_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property Tij_F_:
         def __get__(self):
-            return conv.map_to_dict_int_int_array_to_vector_1d_dbl(self.fr1g_pointer.Tij_F_)
+            return conv.map_to_dict_int_int_vector_to_array_1d_dbl(self.fr1g_pointer.Tij_F_)
 
         def __set__(self, dict value):
-            self.fr1g_pointer.Tij_F_ = conv.dict_to_map_int_int_vector_to_array_1d_dbl(value)
+            self.fr1g_pointer.Tij_F_ = conv.dict_to_map_int_int_array_to_vector_1d_dbl(value)
 
 
 
@@ -4053,10 +4053,10 @@ cdef class FastReactor1G(Reactor1G):
 
     property Mj_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.fr1g_pointer.Mj_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.fr1g_pointer.Mj_F_)
 
         def __set__(self, dict value):
-            self.fr1g_pointer.Mj_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.fr1g_pointer.Mj_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property zeta_F_:
@@ -5349,46 +5349,6 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.libfile = std.string(value)
 
 
-    property F:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.F)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.F = conv.array_to_vector_1d_dbl(value)
-
-
-    property BUi_F_:
-        def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.rmg_pointer.BUi_F_)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.BUi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
-
-
-    property pi_F_:
-        def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.rmg_pointer.pi_F_)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.pi_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
-
-
-    property di_F_:
-        def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.rmg_pointer.di_F_)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.di_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
-
-
-    property Tij_F_:
-        def __get__(self):
-            return conv.map_to_dict_int_int_array_to_vector_1d_dbl(self.rmg_pointer.Tij_F_)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.Tij_F_ = conv.dict_to_map_int_int_vector_to_array_1d_dbl(value)
-
-
 
 
 
@@ -5407,7 +5367,6 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, set value):
             self.rmg_pointer.J = conv.py_to_cpp_set_int(value)
-
 
 
 
@@ -5491,58 +5450,58 @@ cdef class ReactorMG(FCComp):
 
     property Ti0:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.rmg_pointer.Ti0)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.Ti0)
 
         def __set__(self, dict value):
-            self.rmg_pointer.Ti0 = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.rmg_pointer.Ti0 = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property sigma_a:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.sigma_a)
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a)
 
         def __set__(self, dict value):
-            self.rmg_pointer.sigma_a = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+            self.rmg_pointer.sigma_a = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property sigma_s:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.sigma_s)
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_s)
 
         def __set__(self, dict value):
-            self.rmg_pointer.sigma_s = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+            self.rmg_pointer.sigma_s = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property sigma_f:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.sigma_f)
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_f)
 
         def __set__(self, dict value):
-            self.rmg_pointer.sigma_f = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+            self.rmg_pointer.sigma_f = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property nubar_sigma_f:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.nubar_sigma_f)
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_sigma_f)
 
         def __set__(self, dict value):
-            self.rmg_pointer.nubar_sigma_f = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+            self.rmg_pointer.nubar_sigma_f = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property nubar:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_2d_dbl(self.rmg_pointer.nubar)
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar)
 
         def __set__(self, dict value):
-            self.rmg_pointer.nubar = conv.dict_to_map_int_vector_to_array_2d_dbl(value)
+            self.rmg_pointer.nubar = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property sigma_s_gh:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_3d_dbl(self.rmg_pointer.sigma_s_gh)
+            return conv.map_to_dict_int_vector_to_array_3d_dbl(self.rmg_pointer.sigma_s_gh)
 
         def __set__(self, dict value):
-            self.rmg_pointer.sigma_s_gh = conv.dict_to_map_int_vector_to_array_3d_dbl(value)
+            self.rmg_pointer.sigma_s_gh = conv.dict_to_map_int_array_to_vector_3d_dbl(value)
 
 
 
@@ -5639,6 +5598,62 @@ cdef class ReactorMG(FCComp):
 
 
 
+
+
+
+
+    property Phi_t:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.Phi_t)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.Phi_t = conv.array_to_vector_1d_dbl(value)
+
+
+    property BU_t:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.BU_t)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.BU_t = conv.array_to_vector_1d_dbl(value)
+
+
+    property pF_t:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.pF_t)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.pF_t = conv.array_to_vector_1d_dbl(value)
+
+
+    property dF_t:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.dF_t)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.dF_t = conv.array_to_vector_1d_dbl(value)
+
+
+    property dC_t:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.dC_t)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.dC_t = conv.array_to_vector_1d_dbl(value)
+
+
+    property T_it:
+        def __get__(self):
+            return conv.map_to_dict_int_int_vector_to_array_1d_dbl(self.rmg_pointer.T_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.T_it = conv.dict_to_map_int_int_array_to_vector_1d_dbl(value)
+
+
+
+
+
+
     property dF_F_:
         def __get__(self):
             return conv.vector_to_array_1d_dbl(self.rmg_pointer.dF_F_)
@@ -5689,10 +5704,10 @@ cdef class ReactorMG(FCComp):
 
     property Mj_F_:
         def __get__(self):
-            return conv.map_to_dict_int_array_to_vector_1d_dbl(self.rmg_pointer.Mj_F_)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.Mj_F_)
 
         def __set__(self, dict value):
-            self.rmg_pointer.Mj_F_ = conv.dict_to_map_int_vector_to_array_1d_dbl(value)
+            self.rmg_pointer.Mj_F_ = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
     property zeta_F_:
