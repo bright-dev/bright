@@ -59,6 +59,7 @@ void ReactorMG::initialize(ReactorParameters rp)
     specific_power = rp.specific_power;
     burn_time = 0.0;
     burn_times = rp.burn_times;
+    S = burn_times.size();
 
     // Flags
     use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
@@ -433,17 +434,75 @@ void ReactorMG::fold_mass_weights()
 
 
 
+
+void ReactorMG::interpolate_cross_sections()
+{
+};
+
+
+
+
+
 void ReactorMG::burnup_core()
 {
-
     // Burns up the core and fills in parameter values as we go.
+
+
+    // Initialize the transmutation matrix with values from ms_feed
+    // Also initialize the cross-section matrices as a function of time.
+    T_it.clear();
+    sigma_a_it.clear();
+    sigma_s_it.clear();
+    sigma_f_it.clear();
+    nubar_sigma_f_it.clear();
+    nubar_it.clear();
+    sigma_s_it_gh.clear();
+
+    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    {
+        // Init the transmutation matrix
+        T_it[*iso] = time_data(S, -1.0);
+
+        if (0 < ms_feed.comp.count(*iso))
+            T_it[*iso][0] = ms_feed.comp[*iso];
+        else
+            T_it[*iso][0] = 0.0;
+
+        // Init the cross-sections
+        sigma_a_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_s_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_f_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        nubar_sigma_f_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        nubar_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_s_it_gh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
+    };
+
+
+    // Loop through all time steps after the first
+    for (int s = 0; s < S - 1; s++)
+    {
+        // Set the current time
+        burn_time = burn_times[s];
+
+        // Find the nearest neightbors for this time.
+        calc_nearest_neighbors();
+
+        // Interpolate cross section in preparation for 
+        // criticality calculation.
+        interpolate_cross_sections();
+    };
 
 };
 
-/*
+
+
+
+
 
 void ReactorMG::old_burnup_core()
 {
+};
+/*
     //BU(F)
     BU_F_.clear();
     BU_F_.assign( F.size(), 0.0 ); //re-initialize BU(F)
@@ -529,34 +588,15 @@ void ReactorMG::old_burnup_core()
         k_F_[f] = P_F_[f] / D_F_[f];
     };
 };
+*/
 
 
 
 
-void ReactorMG::calc_Mj_F_()
+
+void ReactorMG::calc_T_itd()
 {
-    //Generates the Mj(F) table.
-    Mj_F_.clear();
-    for (IsoIter j = J.begin(); j != J.end(); j++ )
-    {
-        Mj_F_[*j].assign( F.size(), 0.0 );
-        for(CompIter i = ms_feed.comp.begin(); i != ms_feed.comp.end(); i++)
-        {
-            if (0 < I.count(i->first))
-            {
-                for (int f = 0; f < Mj_F_[*j].size(); f++)
-                {
-                    Mj_F_[*j][f] = Mj_F_[*j][f] + (miF[i->first] * Tij_F_[i->first][*j][f]);
-                };
-            };
-        };
-    };
 };
-
-
-
-void ReactorMG::calc_Mj_Fd_()
-{
     /** Calculates the output isotopics of Mj(Fd).
      *  NOTE: Mj(Fd) is effectively the same variable as ms_prod before normalization!
      */
@@ -579,13 +619,18 @@ void ReactorMG::calc_Mj_Fd_()
 
     ms_prod = MassStream(tempOut);	
 };
+*/
 
 void ReactorMG::calc_ms_prod()
 {
     //Wrapper to calculate discharge isotopics.
-    calc_Mj_F_();
-    calc_Mj_Fd_();
+    calc_T_itd();
 };
+
+
+
+
+
 
 void ReactorMG::calcSubStreams()
 {
@@ -629,27 +674,6 @@ void ReactorMG::calcSubStreams()
 };
 
 
-double ReactorMG::calc_deltaR()
-{
-    //Calculates the deltaR of the reactor with the current ms_feed
-    fold_mass_weights();
-    deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D");
-    return deltaR;
-};
-
-double ReactorMG::calc_deltaR(CompDict cd)
-{
-    //Calculates the deltaR of the reactor with the current ms_feed
-    ms_feed = MassStream (cd);
-    return calc_deltaR();
-};
-
-double ReactorMG::calc_deltaR(MassStream ms)
-{
-    //Calculates the deltaR of the reactor with the current ms_feed
-    ms_feed = ms;
-    return calc_deltaR();
-};
 
 
 double ReactorMG::calc_tru_cr()
@@ -661,9 +685,43 @@ double ReactorMG::calc_tru_cr()
 
 
 
+
+
+double ReactorMG::calc_deltaR()
+{
+};
+/*
+    //Calculates the deltaR of the reactor with the current ms_feed
+    fold_mass_weights();
+    deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D");
+    return deltaR;
+};
+*/
+
+double ReactorMG::calc_deltaR(CompDict cd)
+{
+};
+/*
+    //Calculates the deltaR of the reactor with the current ms_feed
+    ms_feed = MassStream (cd);
+    return calc_deltaR();
+};
+*/
+
+double ReactorMG::calc_deltaR(MassStream ms)
+{
+};
+/*
+    //Calculates the deltaR of the reactor with the current ms_feed
+    ms_feed = ms;
+    return calc_deltaR();
+};
+*/
+
+
 FluencePoint ReactorMG::fluence_at_BU(double BU)
 {
-*/
+};
     /** Gives the fluence at which the burnup BU occurs.
      *  Data returned as FluenceIndex stucture:
      *  	FI.f: index imeadiately lower than where BU achieved (int),
@@ -694,9 +752,13 @@ FluencePoint ReactorMG::fluence_at_BU(double BU)
 
     return fp;
 };
+*/
+
 
 double ReactorMG::batch_average(double BUd, std::string PDk_flag)
 {
+};
+/*
     //Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
     std::string PDk = bright::ToUpper(PDk_flag); 
 
@@ -759,14 +821,21 @@ double ReactorMG::batch_average(double BUd, std::string PDk_flag)
 
     return numerator/denominator;
 };
+*/
 
 double ReactorMG::batch_average_k(double BUd) 
 {
+};
+/*
         return batch_average(BUd, "K");
 };
+*/
+
 
 void ReactorMG::BUd_bisection_method()
 {
+};
+/*
     //Calculates the maximum discharge burnup via the Bisection Method.
     int tempk = 1;
     double BUd_a, k_a, sign_a;
@@ -950,10 +1019,11 @@ void ReactorMG::BUd_bisection_method()
     Fd = fp.F;				//Fluence at discharge
     return;
 };
+*/
 
 void ReactorMG::run_P_NL(double temp_pnl)
 {
-*/
+};
     /** Does a reactor run for a specific P_NL.
      *  Requires that ms_feed be (meaningfully) set.
      *  For use with calibrate_P_NL_to_BUd
@@ -964,10 +1034,12 @@ void ReactorMG::run_P_NL(double temp_pnl)
     fold_mass_weights();
     BUd_bisection_method();
 };
+*/
+
 
 void ReactorMG::calibrate_P_NL_to_BUd()
 {
-*/
+};
     /** Calibrates the non-leakage probability of a reactors to hit a target burnup.
      *  Calibration proceeds by bisection method...
      */
@@ -1072,11 +1144,14 @@ void ReactorMG::calibrate_P_NL_to_BUd()
 
     return;	
 };
+*/
 
 
 
-MassStream ReactorMG::calc ()
+MassStream ReactorMG::calc()
 {
+};
+/*
     //Finds BUd and output isotopics.
     fold_mass_weights();
 
@@ -1086,26 +1161,37 @@ MassStream ReactorMG::calc ()
 
     return ms_prod;
 };
+*/
+
 
 MassStream ReactorMG::calc (CompDict incomp)
 {
+};
+/*
     //Finds BUd and output isotopics.
     ms_feed = MassStream (incomp);
 
     return calc();
 };
+*/
+
 
 MassStream ReactorMG::calc (MassStream instream)
 {
+};
+/*
     //Finds BUd and output isotopics.
     ms_feed = instream;
 
     return calc();
 };
+*/
 
 
 void ReactorMG::lattice_E_planar(double a, double b)
 {
+};
+/*
     lattice_E_F_.clear();
         lattice_E_F_.assign( F.size(), 0.0 );
 
@@ -1118,9 +1204,14 @@ void ReactorMG::lattice_E_planar(double a, double b)
     };
     return;
 };
+*/
+
+
 
 void ReactorMG::lattice_F_planar(double a, double b)
 {
+};
+/*
     lattice_F_F_.clear();
         lattice_F_F_.assign( F.size(), 0.0 );
 
@@ -1133,9 +1224,13 @@ void ReactorMG::lattice_F_planar(double a, double b)
     };
     return; 
 };
+*/
+
 
 void ReactorMG::lattice_E_spherical(double a, double b)
 {
+};
+/*
     lattice_E_F_.clear();
         lattice_E_F_.assign( F.size(), 0.0 );
 
@@ -1153,9 +1248,13 @@ void ReactorMG::lattice_E_spherical(double a, double b)
     };
     return;
 };
-    
+*/
+  
+  
 void ReactorMG::lattice_F_spherical(double a, double b)
 {
+};
+/*
     lattice_F_F_.clear();
         lattice_F_F_.assign( F.size(), 0.0 );
 
@@ -1168,9 +1267,12 @@ void ReactorMG::lattice_F_spherical(double a, double b)
     };
     return; 
 };
+*/
 
 void ReactorMG::lattice_E_cylindrical(double a, double b)
 {
+};
+/*
     namespace bm = boost::math;
 
     lattice_E_F_.clear();
@@ -1192,9 +1294,12 @@ void ReactorMG::lattice_E_cylindrical(double a, double b)
     };
     return;
 };
-    
+*/  
+  
 void ReactorMG::lattice_F_cylindrical(double a, double b)
 {
+};
+/*
     namespace bm = boost::math;
 
     lattice_F_F_.clear();
@@ -1213,9 +1318,12 @@ void ReactorMG::lattice_F_cylindrical(double a, double b)
     };
     return;
 };
+*/
 
 void ReactorMG::calc_zeta()
 {
+};
+/*
     // Computes the thermal disadvantage factor
 
     //Prepare data sets to calculate the disadvantage factor
@@ -1390,27 +1498,34 @@ void ReactorMG::calc_zeta()
 
     return;
 };
+*/
 
 void ReactorMG::calc_zeta_planar()
 {
+};
+/*
     lattice_flag = "Planar";
     calc_zeta();
     return;
 };
+*/
 
 void ReactorMG::calc_zeta_spherical()
 {
+};
+/*
     lattice_flag = "Spherical";
     calc_zeta();
     return;
 };
+*/
 
 void ReactorMG::calc_zeta_cylindrical()
 {
+};
+/*
     lattice_flag = "Cylindrical";
     calc_zeta();
     return;
 };
-
-
 */

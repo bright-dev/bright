@@ -5223,6 +5223,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.burn_regions = value
 
 
+    property S:
+        def __get__(self):
+            return self.rmg_pointer.S
+
+        def __set__(self, int value):
+            self.rmg_pointer.S = value
+
+
     property burn_time:
         def __get__(self):
             return self.rmg_pointer.burn_time
@@ -6016,6 +6024,14 @@ cdef class ReactorMG(FCComp):
             harm in calling it twice by accident.
         """
         self.rmg_pointer.fold_mass_weights()
+
+
+    def burnup_core(self):
+        """This method generates a time-dependent parameters from an reactor's initial conditions.
+        This includes all burnup and criticality calculations.  These time-dependent data
+        are then used to determine discharge compositions and other parameters.
+        """
+        self.rmg_pointer.burnup_core()
 
 
 

@@ -36,13 +36,17 @@
 typedef std::vector<double> time_data;
 typedef std::map<int, std::vector<double> > iso_time_map;
 typedef iso_time_map::iterator iso_time_iter;
+typedef std::map<int, std::vector<time_data> > iso_time_g;
+typedef iso_time_g::iterator iso_time_g_iter;
+typedef std::map<int, std::vector< std::vector<time_data> > > iso_time_gh;
+typedef iso_time_gh::iterator iso_time_gh_iter;
 
 typedef std::vector<double> pert_data;
 typedef std::vector< std::vector<double> > pert_data_g; 
 typedef std::vector< std::vector< std::vector<double> > > pert_data_gh; 
 
-typedef std::set<int> IsoSet;
-typedef IsoSet::iterator IsoIter;
+typedef std::set<int> iso_set;
+typedef iso_set::iterator iso_iter;
 
 
 class ReactorMG : public FCComp
@@ -85,8 +89,9 @@ public:
     double target_BU;       // Target Discharge Burnup, only used for graphing inside of this component
     double specific_power;  // The specific power of the fuel
     int burn_regions;       // Number of burn regions for this reactor 
+    int S;                  // Number of burnup time steps.
     double burn_time;       // Cuurent burnup time.
-    time_data burn_times; // A non-negative, monotonically increasing vector of burnup steps
+    time_data burn_times;   // A non-negative, monotonically increasing vector of burnup steps
 
     bool use_zeta;              // Boolean value on whether or not the disadvantage factor should be used
     std::string lattice_flag;   // lattice_flag Type (Planar || Spherical || Cylindrical)
@@ -109,11 +114,12 @@ public:
 
 
     // Attributes read in from data library
-    IsoSet I;   // Set of isotopes that may be in ms_feed.
-    IsoSet J;   // Set of isotopes that may be in ms_prod.
+    iso_set I;   // Set of isotopes that may be in ms_feed.
+    iso_set J;   // Set of isotopes that may be in ms_prod.
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
     int nperturbations; // number of rows in the pertubtaion table
+    std::map<std::string, std::vector<double> > perturbed_fields;
 
     int G;                      // number of energu bins
     std::vector<double> E_g;    // Energy bin boundaries
@@ -133,15 +139,15 @@ public:
 
 
     // Attributes calculated from fold_mass_weights()
-    double A_IHM;							//Atomic weight of IHM
-    double MWF;							//Fuel Molecular Weight
-    double MWC;							//Coolant Molecular Weight
-    CompDict niF;							//Fuel Atom Number Weight
-    CompDict niC;							//Coolant Atom Number Weight
-    CompDict miF;							//Fuel Mass Weight
-    CompDict miC;							//Coolant Mass Weight
-    CompDict NiF;							//Fuel Number Density
-    CompDict NiC;							//Coolant Number Density
+    double A_IHM;   // Atomic weight of IHM
+    double MWF;     // Fuel Molecular Weight
+    double MWC;     // Coolant Molecular Weight
+    CompDict niF;   // Fuel Atom Number Weight
+    CompDict niC;   // Coolant Atom Number Weight
+    CompDict miF;   // Fuel Mass Weight
+    CompDict miC;   // Coolant Mass Weight
+    CompDict NiF;   // Fuel Number Density
+    CompDict NiC;   // Coolant Number Density
 
 
     // Attributes caluclated from burnup_core()
@@ -150,7 +156,14 @@ public:
     time_data pF_t;     // Production rate of the fuel [n/s]
     time_data dF_t;     // Destruction rate of the fuel [n/s]
     time_data dC_t;     // Destruction rate of the coolant [n/s]
-    iso_time_map T_it;  // Transformation Matrix [kg_i/kgIHM]
+
+    iso_time_map T_it;              // Transformation Matrix [kg_i/kgIHM]
+    iso_time_g sigma_a_it;          // Absorption cross section as a function of isotope and burn_time
+    iso_time_g sigma_s_it;          // Scattering cross section as a function of isotope and burn_time
+    iso_time_g sigma_f_it;          // Fission cross section  as a function of isotope and burn_time
+    iso_time_g nubar_sigma_f_it;    // Neutrons per fission times Fission cross section as a function of isotope and burn_time
+    iso_time_g nubar_it;            // Neutrons per fission from data library
+    iso_time_gh sigma_s_it_gh;      // Group to group scattering cross section as a function of isotope and burn_time
 
 
     // Attribute that denotes the indices of the perturbation table the 
@@ -208,13 +221,13 @@ public:
     void initialize(ReactorParameters);
     void loadlib(std::string libfile = "Reactor.h5");
     void fold_mass_weights();
+    void interpolate_cross_sections();
     void burnup_core();
     void old_burnup_core();
 
     void calc_nearest_neighbors();
 
     void         calc_T_itd();
-
     void         calc_ms_prod();
     void         calcSubStreams();
     double       calc_tru_cr();
@@ -245,6 +258,7 @@ public:
     void         calc_zeta_planar();
     void         calc_zeta_spherical();
     void         calc_zeta_cylindrical();
+
 };
 
 

@@ -433,6 +433,7 @@ cdef extern from "../ReactorMG.h":
         double target_BU
         double specific_power
         int burn_regions
+        int S
         double burn_time
         vector[double] burn_times
 
@@ -530,6 +531,7 @@ cdef extern from "../ReactorMG.h":
         void initialize(ReactorParameters)
         void loadlib(std.string)
         void fold_mass_weights()
+        void burnup_core()
 
         void calc_nearest_neighbors()
 
