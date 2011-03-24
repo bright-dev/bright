@@ -91,7 +91,8 @@ if os.name == 'posix':
         "hdf5_hl_cpp", 
         ] )
 elif os.name == 'nt':
-    bright_ext_kwargs["extra_link_args"] = [
+#    bright_ext_kwargs["extra_link_args"] = [
+    bright_ext_kwargs["libraries"] = [
         "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
@@ -109,6 +110,7 @@ elif os.name == 'nt':
         "/DEFAULTLIB:hdf5_cppdll.lib",
         "/DEFAULTLIB:hdf5_hl_cppdll.lib"
         ] 
+
     bright_ext_kwargs["define_macros"].extend([
         ("_HDF5USEDLL_", None),
         ("HDF5CPP_USEDLL", None),        
