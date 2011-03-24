@@ -33,8 +33,8 @@ numpy_include = np.get_include()
 ###########################################
 ext_kwargs = {}
 
-src_dir = os.path.join('..', '/cpp/')
-dat_dir = os.path.join('..', '/data/')
+src_dir = os.path.abspath(os.path.join('..', '/cpp/'))
+dat_dir = os.path.abspath(os.path.join('..', '/data/'))
 
 if os.name == 'posix':
 #    src_dir = 'src/'
