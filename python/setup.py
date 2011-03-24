@@ -61,7 +61,7 @@ if os.name == 'posix':
         ] )
 elif os.name == 'nt':
 #    mass_stream_ext_kwargs["extra_link_args"] = [
-    mass_stream_ext_kwargs["libraries"].extend( [
+    mass_stream_ext_kwargs["libraries"] = [
         "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
