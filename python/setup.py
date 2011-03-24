@@ -60,7 +60,8 @@ if os.name == 'posix':
         "hdf5_hl_cpp",
         ] )
 elif os.name == 'nt':
-    mass_stream_ext_kwargs["extra_link_args"] = [
+#    mass_stream_ext_kwargs["extra_link_args"] = [
+    mass_stream_ext_kwargs["libraries"].extend( [
         "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
