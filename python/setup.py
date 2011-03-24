@@ -33,13 +33,14 @@ numpy_include = np.get_include()
 ###########################################
 ext_kwargs = {}
 
+src_dir = os.path.join('..', '/cpp/')
+dat_dir = os.path.join('..', '/data/')
+
 if os.name == 'posix':
-    src_dir = 'src/'
-    dat_dir = 'src/bright/'
+#    src_dir = 'src/'
+#    dat_dir = 'src/bright/'
     ext_kwargs["libraries"] = ["boost_python"]
 elif os.name == 'nt':
-    src_dir = '../cpp/'
-    dat_dir = '../data/'
     ext_kwargs["extra_compile_args"] = ["/EHsc"]
     ext_kwargs["define_macros"] = [("_WIN32", None)]
 
@@ -125,10 +126,10 @@ pack_dir = {
 pack_data = {'bright': []}
 
 bright_data_files = [
-    'decay.h5', 
-    'KaeriData.h5', 
-    'FR.h5', 
-    'LWR.h5',
+    os.path.join(dat_dir, 'decay.h5'), 
+    os.path.join(dat_dir, 'KaeriData.h5'), 
+    os.path.join(dat_dir, 'FR.h5'), 
+    os.path.join(dat_dir, 'LWR.h5'),
     ]
         
 pack_dlls_boost= ["boost_python-vc90-mt-1_44.dll"]
