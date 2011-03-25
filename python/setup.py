@@ -120,19 +120,24 @@ elif os.name == 'nt':
 ### Setup Package Data ###
 ##########################
 pack_dir = {
-    'isoname': 'src/isoname',
-    'mass_stream': 'src/mass_stream', 
-    'bright': 'src/bright', 
-    'bright_data': 'src/bright_data',
+    'isoname': os.path.join('src', 'isoname'),
+    'mass_stream': os.path.join('src', 'mass_stream'), 
+    'bright': os.path.join('src', 'bright'), 
+    'bright_data': os.path.join('src', 'bright_data'),
     }
     
 pack_data = {'bright': []}
 
 bright_data_files = [
-    os.path.join(dat_dir, 'decay.h5'), 
-    os.path.join(dat_dir, 'KaeriData.h5'), 
-    os.path.join(dat_dir, 'FR.h5'), 
-    os.path.join(dat_dir, 'LWR.h5'),
+#    os.path.join(dat_dir, 'decay.h5'), 
+#    os.path.join(dat_dir, 'KaeriData.h5'), 
+#    os.path.join(dat_dir, 'FR.h5'), 
+#    os.path.join(dat_dir, 'LWR.h5'),
+
+    'decay.h5', 
+    'KaeriData.h5', 
+    'FR.h5', 
+    'LWR.h5',
     ]
         
 pack_dlls_boost= ["boost_python-vc90-mt-1_44.dll"]
@@ -160,19 +165,6 @@ elif os.name == "nt":
     pack_data['bright'].extend(pack_dlls_boost)
     pack_data['bright'].extend(pack_dlls_hdf5)
 
-    # Copy over actual data files, instead of symlinks
-    cp_symlinks = True
-    if 'build' in os.listdir('.'):
-        if 'temp' in os.listdir('build/'):
-            cp_symlinks = False
-
-    if cp_symlinks:
-        mkpath('build/temp/')
-        for f in bright_data_files:
-            copy_file(pack_dir['bright'] + '/' + f, 'build/temp/' + f, verbose=True)
-
-        for f in bright_data_files:
-            copy_file(dat_dir + f, pack_dir['bright'] + '/' + f, verbose=True)
 
 ###################
 ### Call setup! ###
@@ -239,10 +231,3 @@ if os.name == 'posix':
     pass
 elif os.name == "nt":
     print "Cleaning Windows specific files."
-
-    # Copy symlinks over data files. 
-    # Hopefully, leaving the repository in the previous state.
-    for f in bright_data_files:
-        copy_file('build/temp/' + f, pack_dir['bright'] + '/' + f, verbose=True)
-
-    remove_tree('build/temp/', verbose=True)
