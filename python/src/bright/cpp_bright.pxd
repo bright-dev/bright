@@ -458,6 +458,7 @@ cdef extern from "../ReactorMG.h":
 
         # Perturbation table goes here
         int nperturbations
+        map[std.string, vector[double]] perturbed_fields
 
         int G
         vector[double] E_g

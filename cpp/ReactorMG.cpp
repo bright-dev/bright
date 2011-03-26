@@ -112,6 +112,19 @@ void ReactorMG::loadlib(std::string libfile)
     perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
     nperturbations = perturbations.shape[0];
 
+    // Calculate perturbed fields
+    std::vector<double> col_vec;
+    perturbed_fields.clear();
+    for (std::vector<std::string>::iterator col = perturbations.cols.begin(); col != perturbations.cols.end(); col++)
+    {
+        col_vec = perturbations[*col];
+        perturbed_fields[*col] = std::vector<double> (3, -1.0);
+
+        perturbed_fields[*col][0] = *std::min_element(col_vec.begin(), col_vec.end());
+        perturbed_fields[*col][1] = *std::max_element(col_vec.begin(), col_vec.end());
+        perturbed_fields[*col][2] = perturbed_fields[*col][1] - perturbed_fields[*col][0];
+    };
+
     // Load in energy structure
     pert_data_g full_E_g = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/energy");
     E_g = full_E_g[0];

@@ -249,6 +249,7 @@ class TestReactorMGBasicDataAttributes(TestCase):
     def teardown_class(cls):
         general_teardown()
 
+
     def test_libfile(self):
         self.rmg.libfile = "It's Ruth!"
         assert_equal(self.rmg.libfile, "It's Ruth!")
@@ -256,6 +257,13 @@ class TestReactorMGBasicDataAttributes(TestCase):
 
     def test_npertubations(self):
         assert(0 < self.rmg.nperturbations)
+
+
+    def test_perturbed_fields(self):
+        pf = self.rmg.perturbed_fields
+        for key, value in pf.items():
+            assert_equal(len(value), 3)
+            assert_equal(value[1] - value[0], value[2])
 
 
     def test_I(self):
@@ -376,6 +384,8 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert(iso in J)
             assert_equal(sigma_s_gh[iso].shape, (nperturbations, G, G))
 
+
+
     """\
 
     def test_F(self):
@@ -436,7 +446,6 @@ class TestReactorMGBasicDataAttributes(TestCase):
 
 
 
-
 class TestReactorMGMutliGroupMethods(TestCase):
     "Tests that the ReactorMG basic data attributes work."
 
@@ -458,6 +467,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
         assert_equal(len(self.rmg.nearest_neighbors), 0)
         self.rmg.calc_nearest_neighbors()
         assert_equal(len(self.rmg.nearest_neighbors), self.rmg.nperturbations)
+
+
 
 
 

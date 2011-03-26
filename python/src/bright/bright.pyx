@@ -5390,6 +5390,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.nperturbations = value
 
 
+    property perturbed_fields:
+        def __get__(self):
+            return conv.map_to_dict_str_vector_to_array_1d_dbl(self.rmg_pointer.perturbed_fields)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.perturbed_fields = conv.dict_to_map_str_array_to_vector_1d_dbl(value)
+
+
 
 
 

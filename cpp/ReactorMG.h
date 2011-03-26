@@ -119,7 +119,7 @@ public:
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
     int nperturbations; // number of rows in the pertubtaion table
-    std::map<std::string, std::vector<double> > perturbed_fields;
+    std::map<std::string, std::vector<double> > perturbed_fields;  // {field_name: [min, max, delta
 
     int G;                      // number of energu bins
     std::vector<double> E_g;    // Energy bin boundaries
