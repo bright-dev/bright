@@ -268,42 +268,68 @@ void ReactorMG::calc_nearest_neighbors()
      */
 
     // Initialize
-    std::map<std::string, std::vector<double> > norm_deltas;
+    std::map<std::string, std::vector<double> > deltas;
     std::vector<double> rss (nperturbations, 0.0);
     nearest_neighbors.clear();
 
     // Calcumlate normailized deltas
-    norm_deltas["fuel_density"] = bright::normalized_delta(rho_fuel, perturbations["fuel_density"]);
-    norm_deltas["clad_density"] = bright::normalized_delta(rho_clad, perturbations["clad_density"]);
-    norm_deltas["cool_density"] = bright::normalized_delta(rho_cool, perturbations["cool_density"]);
+    if (perturbed_fields["fuel_density"][2] != 0.0)
+        deltas["fuel_density"] = bright::delta_vector(rho_fuel, perturbations["fuel_density"]);
 
-    norm_deltas["fuel_cell_radius"] = bright::normalized_delta(r_fuel, perturbations["fuel_cell_radius"]);
-    norm_deltas["void_cell_radius"] = bright::normalized_delta(r_void, perturbations["void_cell_radius"]);
-    norm_deltas["clad_cell_radius"] = bright::normalized_delta(r_clad, perturbations["clad_cell_radius"]);
+    if (perturbed_fields["clad_density"][2] != 0.0)
+        deltas["clad_density"] = bright::delta_vector(rho_clad, perturbations["clad_density"]);
 
-    norm_deltas["unit_cell_pitch"] = bright::normalized_delta(pitch, perturbations["unit_cell_pitch"]);
-    norm_deltas["burn_regions"] = bright::normalized_delta(burn_regions, perturbations["burn_regions"]);
-    norm_deltas["fuel_specific_power"] = bright::normalized_delta(specific_power, perturbations["fuel_specific_power"]);
+    if (perturbed_fields["cool_density"][2] != 0.0)
+        deltas["cool_density"] = bright::delta_vector(rho_cool, perturbations["cool_density"]);
+
+
+    if (perturbed_fields["fuel_cell_radius"][2] != 0.0)
+        deltas["fuel_cell_radius"] = bright::delta_vector(r_fuel, perturbations["fuel_cell_radius"]);
+
+    if (perturbed_fields["void_cell_radius"][2] != 0.0)
+        deltas["void_cell_radius"] = bright::delta_vector(r_void, perturbations["void_cell_radius"]);
+
+    if (perturbed_fields["clad_cell_radius"][2] != 0.0)
+        deltas["clad_cell_radius"] = bright::delta_vector(r_clad, perturbations["clad_cell_radius"]);
+
+
+    if (perturbed_fields["unit_cell_pitch"][2] != 0.0)
+        deltas["unit_cell_pitch"] = bright::delta_vector(pitch, perturbations["unit_cell_pitch"]);
+
+    if (perturbed_fields["burn_regions"][2] != 0.0)
+        deltas["burn_regions"] = bright::delta_vector(burn_regions, perturbations["burn_regions"]);
+
+    if (perturbed_fields["fuel_specific_power"][2] != 0.0)
+        deltas["fuel_specific_power"] = bright::delta_vector(specific_power, perturbations["fuel_specific_power"]);
+
 
     // Calc pertubations for initial mass streams
     if (10 < perturbations.shape[1])
     {
         int iso_zz;
         std::string iso_LL;
+        double iso_mass;
 
         for (int p = 9; p < perturbations.shape[1] - 1; p++)
         {
+            // Grab some names
             iso_LL = perturbations.cols[p];
             iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
 
+            // Determine the mass of the isotope in the feed
             if (0 < ms_feed.comp.count(iso_zz))
-                norm_deltas[iso_LL] = bright::normalized_delta(ms_feed.comp[iso_zz], perturbations[iso_LL]);
+                iso_mass = ms_feed.comp[iso_zz];
             else
-                norm_deltas[iso_LL] = bright::normalized_delta(0.0, perturbations[iso_LL]);                
+                iso_mass = 0.0;
+
+            // Calculate the delta if appropriate.
+            if (perturbed_fields[iso_LL][2] != 0.0)
+                deltas[iso_LL] = bright::delta_vector(iso_mass, perturbations[iso_LL]);                
         };
     };
 
-    norm_deltas["burn_times"] = bright::normalized_delta(burn_time, perturbations["burn_times"]);
+    if (perturbed_fields["burn_times"][2] != 0.0)
+        deltas["burn_times"] = bright::delta_vector(burn_time, perturbations["burn_times"]);
 
 
     // Now that we have the normalized deltas for each index
@@ -311,14 +337,16 @@ void ReactorMG::calc_nearest_neighbors()
     // This is done by taking the root of the sum of squares for 
     // each index.
     std::string key;
-    for (int p = 0; p < perturbations.shape[1]; p++)
+    double norm_factor_sqrd;
+    for (std::map<std::string, std::vector<double> >::iterator d = deltas.begin(); d != deltas.end(); d++)
     {
-        key = perturbations.cols[p];
+        key = (*d).first;
+        norm_factor_sqrd = (perturbed_fields[key][2] * perturbed_fields[key][2]);
 
         // Take the sum of the squares
         for (int q = 0; q < perturbations.shape[0]; q++)
         {
-            rss[q] = rss[q] + (norm_deltas[key][q] * norm_deltas[key][q]); 
+            rss[q] = rss[q] + (deltas[key][q] * deltas[key][q] / norm_factor_sqrd);
         };
     };
 
