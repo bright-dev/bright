@@ -5239,6 +5239,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.burn_time = value
 
 
+    property bt_s:
+        def __get__(self):
+            return self.rmg_pointer.bt_s
+
+        def __set__(self, int value):
+            self.rmg_pointer.bt_s = value
+
+
     property burn_times:
         def __get__(self):
             return conv.vector_to_array_1d_dbl(self.rmg_pointer.burn_times)

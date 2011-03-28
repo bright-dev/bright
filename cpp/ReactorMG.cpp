@@ -478,6 +478,102 @@ void ReactorMG::fold_mass_weights()
 
 void ReactorMG::interpolate_cross_sections()
 {
+    // Grab the nearest and next nearest neighbor maps
+    int a0 = nearest_neighbors[0]; 
+    int a1 = nearest_neighbors[1]; 
+    std::map<std::string, double> nn0 = perturbations[a0];
+    std::map<std::string, double> nn1 = perturbations[a1];
+
+    // Calculate the x-factors to interpolate against.
+    // For every variable that is perturbed, 
+    // this factor is the same for all y variables
+    // and is equal to:
+    //
+    //     (xa - xa1)     (xb - xb1)
+    //     ----------  x  ----------  ...
+    //     (xa2 - xa1)    (xb2 - xb2)
+    //
+    // Then the value of the interpolation is 
+    // calculated via
+    //
+    // y = x_factor * (y2 - y1) + y1
+    //
+    double x_factor = 0.0;    
+
+    if (nn0["fuel_density"] != nn1["fuel_density"])
+        x_factor = x_factor + ((rho_fuel - nn0["fuel_density"])/(nn1["fuel_density"] - nn0["fuel_density"]));
+
+    if (nn0["clad_density"] != nn1["clad_density"])
+        x_factor = x_factor + ((rho_clad - nn0["clad_density"])/(nn1["clad_density"] - nn0["clad_density"]));
+
+    if (nn0["cool_density"] != nn1["cool_density"])
+        x_factor = x_factor + ((rho_cool - nn0["cool_density"])/(nn1["cool_density"] - nn0["cool_density"]));
+
+
+    if (nn0["fuel_cell_radius"] != nn1["fuel_cell_radius"])
+        x_factor = x_factor + ((r_fuel - nn0["fuel_cell_radius"])/(nn1["fuel_cell_radius"] - nn0["fuel_cell_radius"]));
+
+    if (nn0["void_cell_radius"] != nn1["void_cell_radius"])
+        x_factor = x_factor + ((r_void - nn0["void_cell_radius"])/(nn1["void_cell_radius"] - nn0["void_cell_radius"]));
+
+    if (nn0["clad_cell_radius"] != nn1["clad_cell_radius"])
+        x_factor = x_factor + ((r_clad - nn0["clad_cell_radius"])/(nn1["clad_cell_radius"] - nn0["clad_cell_radius"]));
+
+
+    if (nn0["unit_cell_pitch"] != nn1["unit_cell_pitch"])
+        x_factor = x_factor + ((pitch - nn0["unit_cell_pitch"])/(nn1["unit_cell_pitch"] - nn0["unit_cell_pitch"]));
+
+    if (nn0["burn_regions"] != nn1["burn_regions"])
+        x_factor = x_factor + ((burn_regions - nn0["burn_regions"])/(nn1["burn_regions"] - nn0["burn_regions"]));
+
+    if (nn0["fuel_specific_power"] != nn1["fuel_specific_power"])
+        x_factor = x_factor + ((specific_power - nn0["fuel_specific_power"])/(nn1["fuel_specific_power"] - nn0["fuel_specific_power"]));
+
+
+    // Calc x-factor for initial mass streams
+    if (10 < perturbations.shape[1])
+    {
+        int iso_zz;
+        std::string iso_LL;
+        double iso_mass;
+
+        for (int p = 9; p < perturbations.shape[1] - 1; p++)
+        {
+            // Grab some names
+            iso_LL = perturbations.cols[p];
+            iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
+
+            // Determine the mass of the isotope in the feed
+            if (0 < ms_feed.comp.count(iso_zz))
+                iso_mass = ms_feed.comp[iso_zz];
+            else
+                iso_mass = 0.0;
+
+            // Calculate the x-factor if appropriate.
+            if (nn0[iso_LL] != nn1[iso_LL])
+                x_factor = x_factor + ((iso_mass - nn0[iso_LL])/(nn1[iso_LL] - nn0[iso_LL]));
+        };
+    };
+
+    if (nn0["burn_times"] != nn1["burn_times"])
+        x_factor = x_factor + ((burn_time - nn0["burn_times"])/(nn1["burn_times"] - nn0["burn_times"]));
+
+
+
+    // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
+    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    {
+        // Interpolate the cross-sections
+        sigma_a_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a[*iso][a1], sigma_a[*iso][a0]);
+        sigma_s_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_s[*iso][a1], sigma_s[*iso][a0]);
+        sigma_f_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f[*iso][a1], sigma_f[*iso][a0]);
+        nubar_sigma_f_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f[*iso][a1], nubar_sigma_f[*iso][a0]);
+        nubar_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar[*iso][a1], nubar[*iso][a0]);
+
+        for (int g = 0; g < G; g++)
+            sigma_s_it_gh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_gh[*iso][a1][g], sigma_s_gh[*iso][a0][g]);
+    };
+    
 };
 
 
@@ -523,6 +619,7 @@ void ReactorMG::burnup_core()
     for (int s = 0; s < S - 1; s++)
     {
         // Set the current time
+        bt_s = s;
         burn_time = burn_times[s];
 
         // Find the nearest neightbors for this time.

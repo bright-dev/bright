@@ -91,6 +91,7 @@ public:
     int burn_regions;       // Number of burn regions for this reactor 
     int S;                  // Number of burnup time steps.
     double burn_time;       // Cuurent burnup time.
+    int bt_s;               // Cuurent burnup time index.  burn_time == burn_times[bt_s]
     time_data burn_times;   // A non-negative, monotonically increasing vector of burnup steps
 
     bool use_zeta;              // Boolean value on whether or not the disadvantage factor should be used

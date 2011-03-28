@@ -435,6 +435,7 @@ cdef extern from "../ReactorMG.h":
         int burn_regions
         int S
         double burn_time
+        int bt_s
         vector[double] burn_times
 
         bint use_zeta
