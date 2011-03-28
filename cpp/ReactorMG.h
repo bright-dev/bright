@@ -34,10 +34,13 @@
 /***********************************************/
 
 typedef std::vector<double> time_data;
+
 typedef std::map<int, std::vector<double> > iso_time_map;
 typedef iso_time_map::iterator iso_time_iter;
+
 typedef std::map<int, std::vector<time_data> > iso_time_g;
 typedef iso_time_g::iterator iso_time_g_iter;
+
 typedef std::map<int, std::vector< std::vector<time_data> > > iso_time_gh;
 typedef iso_time_gh::iterator iso_time_gh_iter;
 

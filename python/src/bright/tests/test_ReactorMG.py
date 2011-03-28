@@ -44,6 +44,8 @@ default_rp.clad_radius = 0.475
 default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
+default_rp.burn_times = np.linspace(0.0, 4200.0, 21)
+
 
 
 def general_teardown():
@@ -457,6 +459,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.burn_time = 0.0
+        cls.rmg.bt_s = 0
 
     @classmethod
     def teardown_class(cls):
@@ -464,12 +467,57 @@ class TestReactorMGMutliGroupMethods(TestCase):
 
 
     def test_calc_nearest_neighbors(self):
-        assert_equal(len(self.rmg.nearest_neighbors), 0)
+        self.rmg.burn_time = 0.0
+        self.rmg.bt_s = 0
         self.rmg.calc_nearest_neighbors()
         assert_equal(len(self.rmg.nearest_neighbors), self.rmg.nperturbations)
 
 
+    def test_interpolate_cross_sections(self):
+        # dp some setup
+        self.rmg.burnup_core()
+        self.rmg.burn_time = 0.0
+        self.rmg.bt_s = 0
+        self.rmg.calc_nearest_neighbors()
 
+        # Call the method of interest
+        self.rmg.interpolate_cross_sections()
+
+        # Grab data from C++
+        G = self.rmg.G
+        J = self.rmg.J
+        S = self.rmg.S
+        s_a_it = self.rmg.sigma_a_it
+        s_s_it = self.rmg.sigma_s_it
+        s_f_it = self.rmg.sigma_f_it
+        ns_f_it = self.rmg.nubar_sigma_f_it
+        n_it = self.rmg.nubar_it
+        s_s_it_gh = self.rmg.sigma_s_it_gh
+
+        # Test Data
+        assert_equal(len(s_a_it), len(J))
+        assert_equal(len(s_s_it), len(J))
+        assert_equal(len(s_f_it), len(J))        
+        assert_equal(len(ns_f_it), len(J))
+        assert_equal(len(n_it), len(J))
+        assert_equal(len(s_s_it_gh), len(J))
+
+        for j in J:
+            # Assert shapes
+            assert_equal(s_a_it[j].shape, (S, G))
+            assert_equal(s_s_it[j].shape, (S, G))
+            assert_equal(s_f_it[j].shape, (S, G))
+            assert_equal(ns_f_it[j].shape, (S, G))
+            assert_equal(n_it[j].shape, (S, G))
+            assert_equal(s_s_it_gh[j].shape, (S, G, G))
+
+            # Assert Values
+            assert (0.0 <= s_a_it[j]).all()
+            assert (0.0 <= s_s_it[j]).all()
+            assert (0.0 <= s_f_it[j]).all()
+            assert (0.0 <= ns_f_it[j]).all()
+            assert (0.0 <= n_it[j]).all()
+            assert (0.0 <= s_s_it_gh[j]).all()
 
 
 """\

@@ -615,8 +615,8 @@ void ReactorMG::burnup_core()
     };
 
 
-    // Loop through all time steps after the first
-    for (int s = 0; s < S - 1; s++)
+    // Loop through all time steps
+    for (int s = 0; s < S; s++)
     {
         // Set the current time
         bt_s = s;

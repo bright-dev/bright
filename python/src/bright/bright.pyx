@@ -5652,12 +5652,65 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.dC_t = conv.array_to_vector_1d_dbl(value)
 
 
+
+
+
+
+
     property T_it:
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.T_it)
 
         def __set__(self, dict value):
             self.rmg_pointer.T_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
+
+    property sigma_a_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_a_it = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+
+
+    property sigma_s_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_s_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_s_it = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+
+
+    property sigma_f_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_f_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_f_it = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+
+
+    property nubar_sigma_f_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_sigma_f_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.nubar_sigma_f_it = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+
+
+    property nubar_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.nubar_it = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+
+
+    property sigma_s_it_gh:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_3d_dbl(self.rmg_pointer.sigma_s_it_gh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_s_it_gh = conv.dict_to_map_int_array_to_vector_3d_dbl(value)
+
 
 
 
@@ -6042,12 +6095,21 @@ cdef class ReactorMG(FCComp):
         self.rmg_pointer.fold_mass_weights()
 
 
+    def interpolate_cross_sections(self):
+        """This method iterpolates the isotopic, time-dependent cross-sections based on the current 
+        state of the burn_time, bt_s, and nearest_neighbors attributes.  It is prudent to call 
+        the calc_nearest_neighbors() method before this one.
+        """
+        self.rmg_pointer.interpolate_cross_sections()
+
+
     def burnup_core(self):
         """This method generates a time-dependent parameters from an reactor's initial conditions.
         This includes all burnup and criticality calculations.  These time-dependent data
         are then used to determine discharge compositions and other parameters.
         """
         self.rmg_pointer.burnup_core()
+
 
 
 

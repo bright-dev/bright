@@ -492,7 +492,14 @@ cdef extern from "../ReactorMG.h":
         vector[double] pF_t
         vector[double] dF_t
         vector[double] dC_t
+
         map[int, vector[double]] T_it
+        map[int, vector[vector[double]]] sigma_a_it
+        map[int, vector[vector[double]]] sigma_s_it
+        map[int, vector[vector[double]]] sigma_f_it
+        map[int, vector[vector[double]]] nubar_sigma_f_it
+        map[int, vector[vector[double]]] nubar_it
+        map[int, vector[vector[vector[double]]]] sigma_s_it_gh
 
         vector[int] nearest_neighbors
 
@@ -533,6 +540,7 @@ cdef extern from "../ReactorMG.h":
         void initialize(ReactorParameters)
         void loadlib(std.string)
         void fold_mass_weights()
+        void interpolate_cross_sections()
         void burnup_core()
 
         void calc_nearest_neighbors()
