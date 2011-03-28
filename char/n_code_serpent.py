@@ -1211,6 +1211,10 @@ class NCodeSerpent(object):
 
             nubar = nubar_sigma_f / sigma_f
 
+            # Ensure nubar is well-formed            
+            m = ((0.0 <= nubar) != True)
+            nubar[m] = 0.0
+
             tally_hdf5_array[n] = nubar
 
         # sigma_i
