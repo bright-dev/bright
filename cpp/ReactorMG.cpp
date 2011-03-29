@@ -46,8 +46,9 @@ void ReactorMG::initialize(ReactorParameters rp)
 
     B = rp.batches;				//Total number of fuel loading batches
     flux = rp.flux;				//Flux used for Fluence
-    fuel_chemical_form = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
-    coolant_chemical_form = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
+    chemical_form_fuel = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+    chemical_form_clad = rp.cladding_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+    chemical_form_cool = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
 
     rho_fuel = rp.fuel_density;			//Fuel Density
     rho_clad = rp.cladding_density;			// Cladding Density
@@ -66,18 +67,23 @@ void ReactorMG::initialize(ReactorParameters rp)
     lattice_flag = rp.lattice_type;		//lattice_flagType (Planar || Spherical || Cylindrical)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
 
-    //Calculates Volumes
-    r_fuel = rp.fuel_radius;			//Fuel region radius
-    r_void = rp.void_radius;	//Void region radius
-    r_clad = rp.clad_radius;	//clad region radius
-    pitch = rp.unit_cell_pitch;			//Unit cell side length
+    // Calculates Volumes
+    r_fuel = rp.fuel_radius;    // Fuel region radius
+    r_void = rp.void_radius;    // Void region radius
+    r_clad = rp.clad_radius;    // Clad region radius
+    pitch = rp.unit_cell_pitch; // Unit cell side length
 
     S_O = rp.open_slots;		//Number of open slots in fuel assembly
     S_T = rp.total_slots;		//Total number of Fuel assembly slots.
-    //Fuel Volume
-    VF = ((bright::pi * r_fuel * r_fuel)/(pitch*pitch)) * (1.0 - S_O/S_T); 
-    //Coolant Volume
-    VC = ((pitch*pitch - bright::pi * r_fuel * r_fuel)/(pitch*pitch)) * (1.0 - S_O/S_T) + (S_O/S_T);
+
+    // Fuel Volume
+    V_fuel = ((bright::pi * r_fuel * r_fuel)/(pitch*pitch)) * (1.0 - S_O/S_T); 
+
+    // Cladding Volume
+    V_clad = ((bright::pi * (r_clad * r_clad - r_void * r_void))/(pitch*pitch)) * (1.0 - S_O/S_T); 
+
+    // Coolant Volume
+    V_cool = ((pitch*pitch - bright::pi * r_clad * r_clad)/(pitch*pitch)) * (1.0 - S_O/S_T) + (S_O/S_T);
 };
 
 
@@ -369,107 +375,126 @@ void ReactorMG::calc_nearest_neighbors()
 
 void ReactorMG::fold_mass_weights()
 {
-    /** Multiplies the burnup parameters by the mass weights."
-     *  Calculates BU(F), P(F), D(F), and k(F)"
+    /** 
+     *  Calculates the appropriate mass fractions for this time step
      */
 
-    //First Things First, Let's calculate the atomic weight of the IHM
-    double inverseA_IHM = 0.0;
-    for (CompIter iso = ms_feed.comp.begin(); iso != ms_feed.comp.end(); iso++)
+    // First things first, let's calculate the atomic weight of the HM
+    double inverse_A_HM = 0.0;
+    double mass_HM = 0.0;
+    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
-        //Ensure that the isotope is officially allowed.
-        if (0 == I.count(iso->first))
-            continue;
-
-        inverseA_IHM = inverseA_IHM + (iso->second)/ isoname::nuc_weight(iso->first);
+        mass_HM += T_it[*iso][bt_s];
+        inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso);
     };
-    A_IHM = 1.0 / inverseA_IHM;
+    A_HM_t[bt_s] = mass_HM / inverse_A_HM;
 
-    //Build the number density dictionaries
-    niF.clear();
-    niC.clear();
-    //now for the ni in the Fuel
-    for (std::map<std::string, double>::iterator key = fuel_chemical_form.begin(); key != fuel_chemical_form.end(); key++)
+
+    //
+    // Calculate the molecular weight value
+    //
+    int key_zz;
+
+    // Fuel Molecular Weight
+    for (std::map<std::string, double>::iterator key = chemical_form_fuel.begin(); key != chemical_form_fuel.end(); key++)
+    {
+        if ( (key->first) == "IHM")
+            MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * A_HM_t[bt_s];
+        else
+        {
+            key_zz = isoname::mixed_2_zzaaam(key->first);
+            MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * isoname::nuc_weight(key_zz);
+        };
+    };
+
+    // Cladding Molecular Weight
+    for (std::map<std::string, double>::iterator key = chemical_form_clad.begin(); key != chemical_form_clad.end(); key++)
+    {
+        key_zz = isoname::mixed_2_zzaaam(key->first);
+        MW_clad_t[bt_s] += chemical_form_clad[key->first] * isoname::nuc_weight(key_zz);
+    };
+
+    // Coolant Molecular Weight
+    for (std::map<std::string, double>::iterator key = chemical_form_cool.begin(); key != chemical_form_cool.end(); key++)
+    {
+        key_zz = isoname::mixed_2_zzaaam(key->first);
+        MW_cool_t[bt_s] += chemical_form_cool[key->first] * isoname::nuc_weight(key_zz);
+    };
+
+
+
+    //
+    // Build the atom number density dictionaries
+    //
+
+    // now for the n_it in the Fuel
+    for (std::map<std::string, double>::iterator key = chemical_form_fuel.begin(); key != chemical_form_fuel.end(); key++)
     {
         if ( (key->first) == "IHM")
         {
-            for (CompIter iso = ms_feed.comp.begin(); iso != ms_feed.comp.end(); iso++)
-            {
-                //Ensure that the isotope is officially allowed.
-                if (0 == I.count(iso->first))
-                    continue;
-
-                niF[iso->first] = fuel_chemical_form[key->first] * ms_feed.comp[iso->first];
-            };
+            for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+                n_fuel_it[*iso][bt_s] += chemical_form_fuel[key->first] * T_it[*iso][bt_s];
         }
         else
         {
-            int key_zz = isoname::mixed_2_zzaaam(key->first);
-            niF[key_zz] = fuel_chemical_form[key->first];
-        }
-    };
-    //Note that the ni in the coolant is just coolant_chemical_form
-    for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
-    {
-        int key_zz = isoname::mixed_2_zzaaam(key->first);
-        niC[key_zz] = coolant_chemical_form[key->first];		
-    };
-
-    //Fuel mass weight
-    miF.clear(); 
-    for (CompIter iso = niF.begin(); iso != niF.end(); iso++)
-    {
-        if (niF[iso->first] == 0.0)
-        {
-            continue;
-        }
-        else
-        {
-            miF[iso->first] = niF[iso->first] * isoname::nuc_weight(iso->first) / A_IHM;
+            key_zz = isoname::mixed_2_zzaaam(key->first);
+            n_fuel_it[key_zz][bt_s] += chemical_form_fuel[key->first];
         }
     };
 
-    //Coolant mass weight Calculation...requires MWF
-    MWF = 0.0; 	//Fuel Molecular Weight
-    for (std::map<std::string, double>::iterator key = fuel_chemical_form.begin(); key != fuel_chemical_form.end(); key++)
+    // Note that the n_it in the cladding is just chemical_form_clad
+    for (std::map<std::string, double>::iterator key = chemical_form_clad.begin(); key != chemical_form_clad.end(); key++)
     {
-        if ( (key->first) == "IHM")
-            MWF = MWF + (fuel_chemical_form[key->first] * A_IHM);
-        else
-        {
-            int key_zz = isoname::mixed_2_zzaaam(key->first);
-            MWF = MWF + (fuel_chemical_form[key->first] * isoname::nuc_weight(key_zz));
-        }
-    };
-    MWC = 0.0;	//Coolant Molecular Weight
-    for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
-    {
-        int key_zz = isoname::mixed_2_zzaaam(key->first);
-        MWC = MWC + (coolant_chemical_form[key->first] * isoname::nuc_weight(key_zz));
-    };
-    miC.clear();
-    double rel_Vol_coef = (rho_cool * MWF * VC) / (rho_fuel * MWC * VF);
-    for (CompIter iso = niC.begin(); iso != niC.end(); iso++)
-    {
-        if (niC[iso->first] == 0.0)
-            continue;
-        else
-            miC[iso->first] = (niC[iso->first] * isoname::nuc_weight(iso->first) / A_IHM) * rel_Vol_coef;
+        key_zz = isoname::mixed_2_zzaaam(key->first);
+        n_clad_it[key_zz][bt_s] = chemical_form_clad[key->first];
     };
 
-    //Fuel Number Density
-    NiF.clear();
-    for (CompIter iso = niF.begin(); iso != niF.end(); iso++)
+    // Note that the n_it in the coolant is just chemical_form_cool
+    for (std::map<std::string, double>::iterator key = chemical_form_cool.begin(); key != chemical_form_cool.end(); key++)
     {
-        NiF[iso->first] = niF[iso->first] * rho_fuel * (bright::N_A) / MWF;
+        key_zz = isoname::mixed_2_zzaaam(key->first);
+        n_cool_it[key_zz][bt_s] = chemical_form_cool[key->first];
     };
 
-    //Coolant Number Density
-    NiC.clear();
-    for (CompIter iso = niC.begin(); iso != niC.end(); iso++)	{
-        NiC[iso->first] = niC[iso->first] * rho_cool * (bright::N_A) / MWC;
+
+
+    //
+    // Build the number density dictionaries
+    //
+    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    {
+        // Fuel Number Density
+        N_fuel_it[*iso][bt_s] = n_fuel_it[*iso][bt_s] * rho_fuel * (bright::N_A / MW_fuel_t[bt_s]);
+
+        // Cladding Number Density
+        N_clad_it[*iso][bt_s] = n_clad_it[*iso][bt_s] * rho_clad * (bright::N_A / MW_clad_t[bt_s]);
+
+        // Coolant Number Density
+        N_cool_it[*iso][bt_s] = n_cool_it[*iso][bt_s] * rho_cool * (bright::N_A / MW_cool_t[bt_s]);
     };
 
+
+
+    //
+    // Build the mass weight dictionaries
+    //
+    double iso_weight;
+    double relative_volume_clad = (rho_clad * MW_fuel_t[bt_s] * V_clad) / (rho_fuel * MW_clad_t[bt_s] * V_fuel);
+    double relative_volume_cool = (rho_cool * MW_fuel_t[bt_s] * V_cool) / (rho_fuel * MW_cool_t[bt_s] * V_fuel);
+
+    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    {
+        iso_weight = isoname::nuc_weight(*iso);
+
+        // Fuel mass weight
+        m_fuel_it[*iso][bt_s] =  n_fuel_it[*iso][bt_s] * iso_weight / A_HM_t[bt_s];
+
+        // Cladding mass weight 
+        m_clad_it[*iso][bt_s] = (n_clad_it[*iso][bt_s] * iso_weight / A_HM_t[bt_s]) * relative_volume_clad;
+
+        // Coolant mass weight 
+        m_cool_it[*iso][bt_s] = (n_cool_it[*iso][bt_s] * iso_weight / A_HM_t[bt_s]) * relative_volume_cool;
+    };
 };
 
 
@@ -586,14 +611,30 @@ void ReactorMG::burnup_core()
 
 
     // Initialize the transmutation matrix with values from ms_feed
-    // Also initialize the cross-section matrices as a function of time.
     T_it.clear();
+
+    // Also initialize the cross-section matrices as a function of time.
     sigma_a_it.clear();
     sigma_s_it.clear();
     sigma_f_it.clear();
     nubar_sigma_f_it.clear();
     nubar_it.clear();
     sigma_s_it_gh.clear();
+
+    // Also initilaize the mass weights
+    A_HM_t = std::vector<double>(S, 0.0);
+    MW_fuel_t = std::vector<double>(S, 0.0);
+    MW_clad_t = std::vector<double>(S, 0.0);
+    MW_cool_t = std::vector<double>(S, 0.0);
+    n_fuel_it.clear();
+    n_clad_it.clear();
+    n_cool_it.clear();
+    m_fuel_it.clear();
+    m_clad_it.clear();
+    m_cool_it.clear();
+    N_fuel_it.clear();
+    N_clad_it.clear();
+    N_cool_it.clear();
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
@@ -612,6 +653,17 @@ void ReactorMG::burnup_core()
         nubar_sigma_f_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         nubar_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         sigma_s_it_gh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
+
+        // Init the mass weights
+        n_fuel_it[*iso] = std::vector<double>(S, 0.0);
+        n_clad_it[*iso] = std::vector<double>(S, 0.0);
+        n_cool_it[*iso] = std::vector<double>(S, 0.0);
+        m_fuel_it[*iso] = std::vector<double>(S, 0.0);
+        m_clad_it[*iso] = std::vector<double>(S, 0.0);
+        m_cool_it[*iso] = std::vector<double>(S, 0.0);
+        N_fuel_it[*iso] = std::vector<double>(S, 0.0);
+        N_clad_it[*iso] = std::vector<double>(S, 0.0);
+        N_cool_it[*iso] = std::vector<double>(S, 0.0);
     };
 
 
@@ -628,6 +680,9 @@ void ReactorMG::burnup_core()
         // Interpolate cross section in preparation for 
         // criticality calculation.
         interpolate_cross_sections();
+
+        // Fold the mass weights for this time step
+        fold_mass_weights();
     };
 
 };

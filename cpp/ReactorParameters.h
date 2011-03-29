@@ -21,6 +21,7 @@ public:
     double flux;
 
     std::map<std::string, double> fuel_form;
+    std::map<std::string, double> cladding_form;
     std::map<std::string, double> coolant_form;
 
     double fuel_density;

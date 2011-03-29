@@ -12,6 +12,7 @@ ReactorParameters::ReactorParameters()
     flux = 0.0;
 
     fuel_form = std::map<std::string, double>();
+    cladding_form = std::map<std::string, double>();
     coolant_form = std::map<std::string, double>();
 
     fuel_density = 0.0;
@@ -60,6 +61,43 @@ ReactorParameters fill_lwr_defaults ()
 
     lwrd.fuel_form["IHM"] = 1.0;
     lwrd.fuel_form["O16"] = 2.0;
+
+    // Default zircaloy
+    // Natural Zirconium
+    lwrd.cladding_form["ZR90"] = 0.98135 * 0.5145;
+    lwrd.cladding_form["ZR91"] = 0.98135 * 0.1122;
+    lwrd.cladding_form["ZR92"] = 0.98135 * 0.1715;
+    lwrd.cladding_form["ZR94"] = 0.98135 * 0.1738;
+    lwrd.cladding_form["ZR96"] = 0.98135 * 0.0280;
+    // The plastic is all melted and the natural Chromium too..
+    lwrd.cladding_form["CR50"] = 0.00100 * 0.04345;
+    lwrd.cladding_form["CR52"] = 0.00100 * 0.83789;
+    lwrd.cladding_form["CR53"] = 0.00100 * 0.09501;
+    lwrd.cladding_form["CR54"] = 0.00100 * 0.02365;
+    // Natural Iron
+    lwrd.cladding_form["FE54"] = 0.00135 * 0.05845;
+    lwrd.cladding_form["FE56"] = 0.00135 * 0.91754;
+    lwrd.cladding_form["FE57"] = 0.00135 * 0.02119;
+    lwrd.cladding_form["FE58"] = 0.00135 * 0.00282;
+    // Natural Nickel
+    lwrd.cladding_form["NI58"] = 0.00055 * 0.68077;
+    lwrd.cladding_form["NI60"] = 0.00055 * 0.26223;
+    lwrd.cladding_form["NI61"] = 0.00055 * 0.01140;
+    lwrd.cladding_form["NI62"] = 0.00055 * 0.03634;
+    lwrd.cladding_form["NI64"] = 0.00055 * 0.00926;
+    // Natural Tin
+    lwrd.cladding_form["SN112"] = 0.01450 * 0.0097;
+    lwrd.cladding_form["SN114"] = 0.01450 * 0.0065;
+    lwrd.cladding_form["SN115"] = 0.01450 * 0.0034;
+    lwrd.cladding_form["SN116"] = 0.01450 * 0.1454;
+    lwrd.cladding_form["SN117"] = 0.01450 * 0.0768;
+    lwrd.cladding_form["SN118"] = 0.01450 * 0.2422;
+    lwrd.cladding_form["SN119"] = 0.01450 * 0.0858;
+    lwrd.cladding_form["SN120"] = 0.01450 * 0.3259;
+    lwrd.cladding_form["SN122"] = 0.01450 * 0.0463;
+    lwrd.cladding_form["SN124"] = 0.01450 * 0.0579;
+    // We Need Oxygen!
+    lwrd.cladding_form["O16"] = 0.00125;
 
     lwrd.coolant_form["O16"] = 1.0;
     lwrd.coolant_form["H1"]  = 2.0;

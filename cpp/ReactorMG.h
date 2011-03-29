@@ -81,8 +81,9 @@ public:
     int B;          // Total number of fuel loading batches
     double flux;    // Flux used for Fluence
 
-    std::map<std::string, double> fuel_chemical_form;       // Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
-    std::map<std::string, double> coolant_chemical_form;    // Same a fuel chemical form but for coolant.  Should not have "IHM"
+    std::map<std::string, double> chemical_form_fuel; // Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+    std::map<std::string, double> chemical_form_clad; // Same a fuel chemical form but for cladding.  Should not have "IHM"
+    std::map<std::string, double> chemical_form_cool; // Same a fuel chemical form but for coolant.  Should not have "IHM"
 
     double rho_fuel;    // Fuel Density
     double rho_clad;    // Cladding Density
@@ -109,9 +110,9 @@ public:
     // Attributes calculated from initialization
     double S_O; // Number of open slots in fuel assembly
     double S_T; // Total number of Fuel assembly slots.
-    double VF; 	// Fuel Volume
-    double VC;  // Coolant Volume
-
+    double V_fuel; 	// Fuel Volume
+    double V_clad;  // Cladding Volume
+    double V_cool;  // Coolant Volume
 
     // Path where the reactor's HDF5 library
     std::string libfile;
@@ -143,15 +144,19 @@ public:
 
 
     // Attributes calculated from fold_mass_weights()
-    double A_IHM;   // Atomic weight of IHM
-    double MWF;     // Fuel Molecular Weight
-    double MWC;     // Coolant Molecular Weight
-    CompDict niF;   // Fuel Atom Number Weight
-    CompDict niC;   // Coolant Atom Number Weight
-    CompDict miF;   // Fuel Mass Weight
-    CompDict miC;   // Coolant Mass Weight
-    CompDict NiF;   // Fuel Number Density
-    CompDict NiC;   // Coolant Number Density
+    time_data A_HM_t;       // Atomic weight of IHM
+    time_data MW_fuel_t;    // Fuel Molecular Weight
+    time_data MW_clad_t;    // Cladding Molecular Weight
+    time_data MW_cool_t;    // Coolant Molecular Weight
+    iso_time_map n_fuel_it; // Fuel Atom Number Weight
+    iso_time_map n_clad_it; // Cladding Atom Number Weight
+    iso_time_map n_cool_it; // Coolant Atom Number Weight
+    iso_time_map m_fuel_it; // Fuel Mass Weight
+    iso_time_map m_clad_it; // Cladding Mass Weight
+    iso_time_map m_cool_it; // Coolant Mass Weight
+    iso_time_map N_fuel_it; // Fuel Number Density
+    iso_time_map N_clad_it; // Cladding Number Density
+    iso_time_map N_cool_it; // Coolant Number Density
 
 
     // Attributes caluclated from burnup_core()
