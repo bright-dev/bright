@@ -93,8 +93,9 @@ class TestReactorMGConstructors(TestCase):
         assert_equal(rmg.track_params, set())
         assert_equal(rmg.B, 0)
         assert_equal(rmg.flux, 0.0)
-        assert_equal(rmg.fuel_chemical_form, {})
-        assert_equal(rmg.coolant_chemical_form, {})
+        assert_equal(rmg.chemical_form_fuel, {})
+        assert_equal(rmg.chemical_form_clad, {})
+        assert_equal(rmg.chemical_form_cool, {})
         assert_equal(rmg.rho_fuel, 0.0)
         assert_equal(rmg.rho_cool, 0.0)
         assert_equal(rmg.P_NL, 0.0)
@@ -114,8 +115,9 @@ class TestReactorMGConstructors(TestCase):
         assert_equal(rmg.track_params, set(["Mass"]))
         assert_equal(rmg.B, 0)
         assert_almost_equal(rmg.flux, 0.0)
-        assert_equal(rmg.fuel_chemical_form, {})
-        assert_equal(rmg.coolant_chemical_form, {})
+        assert_equal(rmg.chemical_form_fuel, {})
+        assert_equal(rmg.chemical_form_clad, {})
+        assert_equal(rmg.chemical_form_cool, {})
         assert_almost_equal(rmg.rho_fuel, 0.0)
         assert_almost_equal(rmg.rho_cool, 0.0)
         assert_almost_equal(rmg.P_NL, 0.0)
@@ -148,17 +150,17 @@ class TestReactorMGParameterAttributes(TestCase):
         rmg.flux = 2*(10**14)
         assert_equal(rmg.flux, 2*(10**14))
 
-    def test_fuel_chemical_form(self):
+    def test_chemical_form_fuel(self):
         rmg = ReactorMG()
-        rmg.fuel_chemical_form = {"IHM": 1.0, "O16": 2.0}
-        assert_equal(rmg.fuel_chemical_form, {"IHM": 1.0, "O16": 2.0})
+        rmg.chemical_form_fuel = {"IHM": 1.0, "O16": 2.0}
+        assert_equal(rmg.chemical_form_fuel, {"IHM": 1.0, "O16": 2.0})
 
-    def test_coolant_chemical_form(self):
+    def test_chemical_form_cool(self):
         rmg = ReactorMG()
-        rmg.coolant_chemical_form = {"H1": 2.0, "O16": 1.0,
+        rmg.chemical_form_cool = {"H1": 2.0, "O16": 1.0,
             "B10": 0.199 * 550 * 10.0**-6, 
             "B11": 0.801 * 550 * 10.0**-6}
-        assert_equal(rmg.coolant_chemical_form, {"H1": 2.0, "O16": 1.0,
+        assert_equal(rmg.chemical_form_cool, {"H1": 2.0, "O16": 1.0,
             "B10": 0.199 * 550 * 10.0**-6,
             "B11": 0.801 * 550 * 10.0**-6})
 
@@ -217,23 +219,25 @@ class TestReactorMGParameterAttributes(TestCase):
         rmg.S_T = 180
         assert_equal(rmg.S_T, 180)
 
-    def test_VF(self):
+    def test_V_fuel(self):
         rp = ReactorParameters()
         rp.fuel_radius = 0.5
         rp.unit_cell_pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         rmg = ReactorMG(reactor_parameters=rp, name='rmg')
-        assert_almost_equal(rmg.VF, 3.14159265*0.25) 
+        assert_almost_equal(rmg.V_fuel, 3.14159265*0.25) 
 
-    def test_VC(self):
+    def test_V_cool(self):
         rp = ReactorParameters()
         rp.fuel_radius = 0.5
+        rp.void_radius = 0.5
+        rp.clad_radius = 0.5
         rp.unit_cell_pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         rmg = ReactorMG(reactor_parameters=rp, name='rmg')
-        assert_almost_equal(rmg.VC, 1.0 - 3.14159265*0.25) 
+        assert_almost_equal(rmg.V_cool, 1.0 - 3.14159265*0.25) 
 
 
 
@@ -327,64 +331,64 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert_equal(len(Ti0[iso]), nperturbations)
 
 
-    def test_sigma_a(self):
+    def test_sigma_a_pg(self):
         J = self.rmg.J
         G = self.rmg.G
-        sigma_a = self.rmg.sigma_a
+        sigma_a_pg = self.rmg.sigma_a_pg
         nperturbations = self.rmg.nperturbations
-        for iso in sigma_a.keys():
+        for iso in sigma_a_pg.keys():
             assert(iso in J)
-            assert_equal(sigma_a[iso].shape, (nperturbations, G))
+            assert_equal(sigma_a_pg[iso].shape, (nperturbations, G))
 
 
-    def test_sigma_s(self):
+    def test_sigma_s_pg(self):
         J = self.rmg.J
         G = self.rmg.G
-        sigma_s = self.rmg.sigma_s
+        sigma_s_pg = self.rmg.sigma_s_pg
         nperturbations = self.rmg.nperturbations
-        for iso in sigma_s.keys():
+        for iso in sigma_s_pg.keys():
             assert(iso in J)
-            assert_equal(sigma_s[iso].shape, (nperturbations, G))
+            assert_equal(sigma_s_pg[iso].shape, (nperturbations, G))
 
 
-    def test_sigma_f(self):
+    def test_sigma_f_pg(self):
         J = self.rmg.J
         G = self.rmg.G
-        sigma_f = self.rmg.sigma_f
+        sigma_f_pg = self.rmg.sigma_f_pg
         nperturbations = self.rmg.nperturbations
-        for iso in sigma_f.keys():
+        for iso in sigma_f_pg.keys():
             assert(iso in J)
-            assert_equal(sigma_f[iso].shape, (nperturbations, G))
+            assert_equal(sigma_f_pg[iso].shape, (nperturbations, G))
 
 
-    def test_nubar_sigma_f(self):
+    def test_nubar_sigma_f_pg(self):
         J = self.rmg.J
         G = self.rmg.G
-        nubar_sigma_f = self.rmg.nubar_sigma_f
+        nubar_sigma_f_pg = self.rmg.nubar_sigma_f_pg
         nperturbations = self.rmg.nperturbations
-        for iso in nubar_sigma_f.keys():
+        for iso in nubar_sigma_f_pg.keys():
             assert(iso in J)
-            assert_equal(nubar_sigma_f[iso].shape, (nperturbations, G))
+            assert_equal(nubar_sigma_f_pg[iso].shape, (nperturbations, G))
 
 
-    def test_nubar(self):
+    def test_nubar_pg(self):
         J = self.rmg.J
         G = self.rmg.G
-        nubar = self.rmg.nubar
+        nubar_pg = self.rmg.nubar_pg
         nperturbations = self.rmg.nperturbations
-        for iso in nubar.keys():
+        for iso in nubar_pg.keys():
             assert(iso in J)
-            assert_equal(nubar[iso].shape, (nperturbations, G))
+            assert_equal(nubar_pg[iso].shape, (nperturbations, G))
 
 
-    def test_sigma_s_gh(self):
+    def test_sigma_s_pgh(self):
         J = self.rmg.J
         G = self.rmg.G
-        sigma_s_gh = self.rmg.sigma_s_gh
+        sigma_s_pgh = self.rmg.sigma_s_pgh
         nperturbations = self.rmg.nperturbations
-        for iso in sigma_s_gh.keys():
+        for iso in sigma_s_pgh.keys():
             assert(iso in J)
-            assert_equal(sigma_s_gh[iso].shape, (nperturbations, G, G))
+            assert_equal(sigma_s_pgh[iso].shape, (nperturbations, G, G))
 
 
 
@@ -487,37 +491,37 @@ class TestReactorMGMutliGroupMethods(TestCase):
         G = self.rmg.G
         J = self.rmg.J
         S = self.rmg.S
-        s_a_it = self.rmg.sigma_a_it
-        s_s_it = self.rmg.sigma_s_it
-        s_f_it = self.rmg.sigma_f_it
-        ns_f_it = self.rmg.nubar_sigma_f_it
-        n_it = self.rmg.nubar_it
-        s_s_it_gh = self.rmg.sigma_s_it_gh
+        s_a_itg = self.rmg.sigma_a_itg
+        s_s_itg = self.rmg.sigma_s_itg
+        s_f_itg = self.rmg.sigma_f_itg
+        ns_f_itg = self.rmg.nubar_sigma_f_itg
+        n_itg = self.rmg.nubar_itg
+        s_s_itgh = self.rmg.sigma_s_itgh
 
         # Test Data
-        assert_equal(len(s_a_it), len(J))
-        assert_equal(len(s_s_it), len(J))
-        assert_equal(len(s_f_it), len(J))        
-        assert_equal(len(ns_f_it), len(J))
-        assert_equal(len(n_it), len(J))
-        assert_equal(len(s_s_it_gh), len(J))
+        assert_equal(len(s_a_itg), len(J))
+        assert_equal(len(s_s_itg), len(J))
+        assert_equal(len(s_f_itg), len(J))        
+        assert_equal(len(ns_f_itg), len(J))
+        assert_equal(len(n_itg), len(J))
+        assert_equal(len(s_s_itgh), len(J))
 
         for j in J:
             # Assert shapes
-            assert_equal(s_a_it[j].shape, (S, G))
-            assert_equal(s_s_it[j].shape, (S, G))
-            assert_equal(s_f_it[j].shape, (S, G))
-            assert_equal(ns_f_it[j].shape, (S, G))
-            assert_equal(n_it[j].shape, (S, G))
-            assert_equal(s_s_it_gh[j].shape, (S, G, G))
+            assert_equal(s_a_itg[j].shape, (S, G))
+            assert_equal(s_s_itg[j].shape, (S, G))
+            assert_equal(s_f_itg[j].shape, (S, G))
+            assert_equal(ns_f_itg[j].shape, (S, G))
+            assert_equal(n_itg[j].shape, (S, G))
+            assert_equal(s_s_itgh[j].shape, (S, G, G))
 
             # Assert Values
-            assert (0.0 <= s_a_it[j]).all()
-            assert (0.0 <= s_s_it[j]).all()
-            assert (0.0 <= s_f_it[j]).all()
-            assert (0.0 <= ns_f_it[j]).all()
-            assert (0.0 <= n_it[j]).all()
-            assert (0.0 <= s_s_it_gh[j]).all()
+            assert (0.0 <= s_a_itg[j]).all()
+            assert (0.0 <= s_s_itg[j]).all()
+            assert (0.0 <= s_f_itg[j]).all()
+            assert (0.0 <= ns_f_itg[j]).all()
+            assert (0.0 <= n_itg[j]).all()
+            assert (0.0 <= s_s_itgh[j]).all()
 
 
 """\
@@ -563,7 +567,7 @@ class TestReactorMGCalculatedWeightAttributes(TestCase):
 
     def test_miC(self):
         #First calculate the relative volume
-        rel_Vol = (self.rmg.rho_cool * 268.5 * self.rmg.VC) / (self.rmg.rho_fuel * 18.0 * self.rmg.VF)
+        rel_Vol = (self.rmg.rho_cool * 268.5 * self.rmg.V_cool) / (self.rmg.rho_fuel * 18.0 * self.rmg.V_fuel)
         assert_almost_equal(self.rmg.miC[10010],  rel_Vol * 2.0 * 1   / 236.5, 4)
         assert_almost_equal(self.rmg.miC[80160],  rel_Vol * 1.0 * 16  / 236.5, 4)
         
@@ -825,8 +829,8 @@ class TestReactorMGInitializationMethods(TestCase):
         self.rmg.initialize(rp)
         assert_equal(self.rmg.B, 0)
         assert_equal(self.rmg.flux, 0.0)
-        assert_equal(self.rmg.fuel_chemical_form, {})
-        assert_equal(self.rmg.coolant_chemical_form, {})
+        assert_equal(self.rmg.chemical_form_fuel, {})
+        assert_equal(self.rmg.chemical_form_cool, {})
         assert_equal(self.rmg.rho_fuel, 0.0)
         assert_equal(self.rmg.rho_cool, 0.0)
         assert_equal(self.rmg.P_NL, 0.0)

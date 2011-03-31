@@ -472,12 +472,12 @@ cdef extern from "../ReactorMG.h":
         vector[double] BU0
 
         map[int, vector[double]] Ti0
-        map[int, vector[vector[double]]] sigma_a
-        map[int, vector[vector[double]]] sigma_s
-        map[int, vector[vector[double]]] sigma_f
-        map[int, vector[vector[double]]] nubar_sigma_f
-        map[int, vector[vector[double]]] nubar
-        map[int, vector[vector[vector[double]]]] sigma_s_gh
+        map[int, vector[vector[double]]] sigma_a_pg
+        map[int, vector[vector[double]]] sigma_s_pg
+        map[int, vector[vector[double]]] sigma_f_pg
+        map[int, vector[vector[double]]] nubar_sigma_f_pg
+        map[int, vector[vector[double]]] nubar_pg
+        map[int, vector[vector[vector[double]]]] sigma_s_pgh
 
         vector[double] A_HM_t
         vector[double] MW_fuel_t
@@ -500,12 +500,19 @@ cdef extern from "../ReactorMG.h":
         vector[double] dC_t
 
         map[int, vector[double]] T_it
-        map[int, vector[vector[double]]] sigma_a_it
-        map[int, vector[vector[double]]] sigma_s_it
-        map[int, vector[vector[double]]] sigma_f_it
-        map[int, vector[vector[double]]] nubar_sigma_f_it
-        map[int, vector[vector[double]]] nubar_it
-        map[int, vector[vector[vector[double]]]] sigma_s_it_gh
+        map[int, vector[vector[double]]] sigma_a_itg
+        map[int, vector[vector[double]]] sigma_s_itg
+        map[int, vector[vector[double]]] sigma_f_itg
+        map[int, vector[vector[double]]] nubar_sigma_f_itg
+        map[int, vector[vector[double]]] nubar_itg
+        map[int, vector[vector[vector[double]]]] sigma_s_itgh
+
+        vector[vector[double]] Sigma_a_tg
+        vector[vector[double]] Sigma_s_tg
+        vector[vector[double]] Sigma_f_tg
+        vector[vector[double]] nubar_Sigma_f_tg
+        vector[vector[double]] nubar_tg
+        vector[vector[vector[double]]] Sigma_s_tgh
 
         vector[int] nearest_neighbors
 
@@ -545,6 +552,7 @@ cdef extern from "../ReactorMG.h":
         # Methods
         void initialize(ReactorParameters)
         void loadlib(std.string)
+        void calc_mass_weights()
         void fold_mass_weights()
         void interpolate_cross_sections()
         void burnup_core()

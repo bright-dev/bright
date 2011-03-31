@@ -1141,9 +1141,9 @@ void Reactor1G::calc_zeta()
             //Else use KAERI Data for sigma_a
             if (570000 < iso->first < 720000 || 890000 < iso->first)
             {
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::bpcm2);
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::bpcm2 * (di_F_[iso->first][f] + \
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             }
             else
@@ -1151,9 +1151,9 @@ void Reactor1G::calc_zeta()
                 //renormalize sigma_a for this fluenece
                 double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
 
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::bpcm2);
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::cm2_per_barn);
 
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::bpcm2 * (sig_a + \
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (sig_a + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             };
         };
@@ -1183,9 +1183,9 @@ void Reactor1G::calc_zeta()
             //Else use KAERI Data for sigma_a
             if (570000 < iso->first < 720000 || 890000 < iso->first)
             {
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::bpcm2);
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::bpcm2 * (di_F_[iso->first][f] + \
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             }
             else
@@ -1193,9 +1193,9 @@ void Reactor1G::calc_zeta()
                 //renormalize sigma_a for this fluenece
                 double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
 
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::bpcm2);
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::cm2_per_barn);
 
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::bpcm2 * (sig_a + \
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (sig_a + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             };
         };

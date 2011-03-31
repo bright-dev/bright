@@ -35,6 +35,10 @@
 
 typedef std::vector<double> time_data;
 
+typedef std::vector<time_data> time_g;
+
+typedef std::vector<time_g> time_gh;
+
 typedef std::map<int, std::vector<double> > iso_time_map;
 typedef iso_time_map::iterator iso_time_iter;
 
@@ -134,13 +138,13 @@ public:
     pert_data time0;            // initial time steps
     pert_data BU0;              // initial burnups
 
-    std::map<int, pert_data> Ti0;               // Data library's transmutation vector
-    std::map<int, pert_data_g> sigma_a;         // Absorption cross section from data library
-    std::map<int, pert_data_g> sigma_s;         // Scattering cross section from data library
-    std::map<int, pert_data_g> sigma_f;         // Fission cross section from data library
-    std::map<int, pert_data_g> nubar_sigma_f;   // Neutrons per fission times Fission cross section from data library
-    std::map<int, pert_data_g> nubar;           // Neutrons per fission from data library
-    std::map<int, pert_data_gh> sigma_s_gh;     // Group to group scattering cross section from data library
+    std::map<int, pert_data> Ti0;                  // Data library's transmutation vector
+    std::map<int, pert_data_g> sigma_a_pg;         // Absorption cross section from data library
+    std::map<int, pert_data_g> sigma_s_pg;         // Scattering cross section from data library
+    std::map<int, pert_data_g> sigma_f_pg;         // Fission cross section from data library
+    std::map<int, pert_data_g> nubar_sigma_f_pg;   // Neutrons per fission times Fission cross section from data library
+    std::map<int, pert_data_g> nubar_pg;           // Neutrons per fission from data library
+    std::map<int, pert_data_gh> sigma_s_pgh;       // Group to group scattering cross section from data library
 
 
     // Attributes calculated from fold_mass_weights()
@@ -166,13 +170,20 @@ public:
     time_data dF_t;     // Destruction rate of the fuel [n/s]
     time_data dC_t;     // Destruction rate of the coolant [n/s]
 
-    iso_time_map T_it;              // Transformation Matrix [kg_i/kgIHM]
-    iso_time_g sigma_a_it;          // Absorption cross section as a function of isotope and burn_time
-    iso_time_g sigma_s_it;          // Scattering cross section as a function of isotope and burn_time
-    iso_time_g sigma_f_it;          // Fission cross section  as a function of isotope and burn_time
-    iso_time_g nubar_sigma_f_it;    // Neutrons per fission times Fission cross section as a function of isotope and burn_time
-    iso_time_g nubar_it;            // Neutrons per fission from data library
-    iso_time_gh sigma_s_it_gh;      // Group to group scattering cross section as a function of isotope and burn_time
+    iso_time_map T_it;               // Transformation Matrix [kg_i/kgIHM]
+    iso_time_g sigma_a_itg;          // Absorption cross section as a function of isotope and burn_time
+    iso_time_g sigma_s_itg;          // Scattering cross section as a function of isotope and burn_time
+    iso_time_g sigma_f_itg;          // Fission cross section  as a function of isotope and burn_time
+    iso_time_g nubar_sigma_f_itg;    // Neutrons per fission times Fission cross section as a function of isotope and burn_time
+    iso_time_g nubar_itg;            // Neutrons per fission from data library
+    iso_time_gh sigma_s_itgh;        // Group to group scattering cross section as a function of isotope and burn_time
+
+    time_g Sigma_a_tg;          // Core-average Macroscopic absorption cross-section as a function of time and energy group
+    time_g Sigma_s_tg;          // Core-average Macroscopic scattering cross-section as a function of time and energy group
+    time_g Sigma_f_tg;          // Core-average Macroscopic the fission cross-section as a function of time and energy group
+    time_g nubar_Sigma_f_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
+    time_g nubar_tg;            // Core-average nubar as a function of time and energy group
+    time_gh Sigma_s_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
 
 
     // Attribute that denotes the indices of the perturbation table the 
@@ -229,6 +240,7 @@ public:
     // Public access functions
     void initialize(ReactorParameters);
     void loadlib(std::string libfile = "Reactor.h5");
+    void calc_mass_weights();
     void fold_mass_weights();
     void interpolate_cross_sections();
     void burnup_core();

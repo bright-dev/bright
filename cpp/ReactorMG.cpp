@@ -76,13 +76,13 @@ void ReactorMG::initialize(ReactorParameters rp)
     S_O = rp.open_slots;		//Number of open slots in fuel assembly
     S_T = rp.total_slots;		//Total number of Fuel assembly slots.
 
-    // Fuel Volume
+    // Fuel Volume Fraction
     V_fuel = ((bright::pi * r_fuel * r_fuel)/(pitch*pitch)) * (1.0 - S_O/S_T); 
 
-    // Cladding Volume
+    // Cladding Volume Fraction
     V_clad = ((bright::pi * (r_clad * r_clad - r_void * r_void))/(pitch*pitch)) * (1.0 - S_O/S_T); 
 
-    // Coolant Volume
+    // Coolant Volume Fraction
     V_cool = ((pitch*pitch - bright::pi * r_clad * r_clad)/(pitch*pitch)) * (1.0 - S_O/S_T) + (S_O/S_T);
 };
 
@@ -148,11 +148,11 @@ void ReactorMG::loadlib(std::string libfile)
 
     // Clear transmutation vectors and cross sections before reading in
     Ti0.clear();
-    sigma_a.clear();
-    sigma_s.clear();
-    sigma_f.clear();
-    nubar_sigma_f.clear();
-    nubar.clear();
+    sigma_a_pg.clear();
+    sigma_s_pg.clear();
+    sigma_f_pg.clear();
+    nubar_sigma_f_pg.clear();
+    nubar_pg.clear();
 
     // Load transmutation vectors and cross sections that are based off of isotope
     int iso_zz;
@@ -166,12 +166,12 @@ void ReactorMG::loadlib(std::string libfile)
         Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
 
         // Add cross sections
-        sigma_a[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
-        sigma_s[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_s/" + iso_LL);
-        sigma_f[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
-        nubar_sigma_f[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
-        nubar[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar/" + iso_LL);
-        sigma_s_gh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
+        sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
+        sigma_s_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_s/" + iso_LL);
+        sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
+        nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
+        nubar_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar/" + iso_LL);
+        sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
     };
 
     // close the reactor library
@@ -373,7 +373,7 @@ void ReactorMG::calc_nearest_neighbors()
 
 
 
-void ReactorMG::fold_mass_weights()
+void ReactorMG::calc_mass_weights()
 {
     /** 
      *  Calculates the appropriate mass fractions for this time step
@@ -501,6 +501,46 @@ void ReactorMG::fold_mass_weights()
 
 
 
+
+void ReactorMG::fold_mass_weights()
+{
+    // Folds mass weight in with cross-sections for current time step
+
+    double V_total = V_fuel + V_clad + V_cool;
+    double V_frac_fuel = V_fuel / V_total;
+    double V_frac_clad = V_clad / V_total;
+    double V_frac_cool = V_cool / V_total;
+
+    double N_i_cm2pb = 0.0;
+
+    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    {
+        // Calculate the core-average number density for this isotope.
+        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
+                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
+                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool));
+
+        // Loop over all groups
+        for (int g = 0; g < G; g++)
+        {
+            Sigma_a_tg[bt_s][g] += N_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
+            Sigma_s_tg[bt_s][g] += N_i_cm2pb * sigma_s_itg[*iso][bt_s][g];
+            Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
+            nubar_tg[bt_s][g] += N_i_cm2pb * nubar_itg[*iso][bt_s][g];
+
+            for (int h =0; h < G; h++)
+                Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+        };
+    };
+};
+
+
+
+
+
+
+
 void ReactorMG::interpolate_cross_sections()
 {
     // Grab the nearest and next nearest neighbor maps
@@ -589,14 +629,14 @@ void ReactorMG::interpolate_cross_sections()
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         // Interpolate the cross-sections
-        sigma_a_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a[*iso][a1], sigma_a[*iso][a0]);
-        sigma_s_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_s[*iso][a1], sigma_s[*iso][a0]);
-        sigma_f_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f[*iso][a1], sigma_f[*iso][a0]);
-        nubar_sigma_f_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f[*iso][a1], nubar_sigma_f[*iso][a0]);
-        nubar_it[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar[*iso][a1], nubar[*iso][a0]);
+        sigma_a_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
+        sigma_s_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_s_pg[*iso][a1], sigma_s_pg[*iso][a0]);
+        sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
+        nubar_sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f_pg[*iso][a1], nubar_sigma_f_pg[*iso][a0]);
+        nubar_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_pg[*iso][a1], nubar_pg[*iso][a0]);
 
         for (int g = 0; g < G; g++)
-            sigma_s_it_gh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_gh[*iso][a1][g], sigma_s_gh[*iso][a0][g]);
+            sigma_s_itgh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_pgh[*iso][a1][g], sigma_s_pgh[*iso][a0][g]);
     };
     
 };
@@ -614,12 +654,12 @@ void ReactorMG::burnup_core()
     T_it.clear();
 
     // Also initialize the cross-section matrices as a function of time.
-    sigma_a_it.clear();
-    sigma_s_it.clear();
-    sigma_f_it.clear();
-    nubar_sigma_f_it.clear();
-    nubar_it.clear();
-    sigma_s_it_gh.clear();
+    sigma_a_itg.clear();
+    sigma_s_itg.clear();
+    sigma_f_itg.clear();
+    nubar_sigma_f_itg.clear();
+    nubar_itg.clear();
+    sigma_s_itgh.clear();
 
     // Also initilaize the mass weights
     A_HM_t = std::vector<double>(S, 0.0);
@@ -647,12 +687,12 @@ void ReactorMG::burnup_core()
             T_it[*iso][0] = 0.0;
 
         // Init the cross-sections
-        sigma_a_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        sigma_s_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        sigma_f_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        nubar_sigma_f_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        nubar_it[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        sigma_s_it_gh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
+        sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_s_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        nubar_sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        nubar_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_s_itgh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
 
         // Init the mass weights
         n_fuel_it[*iso] = std::vector<double>(S, 0.0);
@@ -665,6 +705,15 @@ void ReactorMG::burnup_core()
         N_clad_it[*iso] = std::vector<double>(S, 0.0);
         N_cool_it[*iso] = std::vector<double>(S, 0.0);
     };
+
+    // Init the macroscopic cross sections
+    Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_s_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    nubar_Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    nubar_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_s_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+
 
 
     // Loop through all time steps
@@ -682,6 +731,7 @@ void ReactorMG::burnup_core()
         interpolate_cross_sections();
 
         // Fold the mass weights for this time step
+        calc_mass_weights();
         fold_mass_weights();
     };
 
@@ -1540,9 +1590,9 @@ void ReactorMG::calc_zeta()
             //Else use KAERI Data for sigma_a
             if (570000 < iso->first < 720000 || 890000 < iso->first)
             {
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::bpcm2);
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::bpcm2 * (di_F_[iso->first][f] + \
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             }
             else
@@ -1550,9 +1600,9 @@ void ReactorMG::calc_zeta()
                 //renormalize sigma_a for this fluenece
                 double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
 
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::bpcm2);
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::cm2_per_barn);
 
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::bpcm2 * (sig_a + \
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (sig_a + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             };
         };
@@ -1582,9 +1632,9 @@ void ReactorMG::calc_zeta()
             //Else use KAERI Data for sigma_a
             if (570000 < iso->first < 720000 || 890000 < iso->first)
             {
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::bpcm2);
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::bpcm2 * (di_F_[iso->first][f] + \
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             }
             else
@@ -1592,9 +1642,9 @@ void ReactorMG::calc_zeta()
                 //renormalize sigma_a for this fluenece
                 double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
 
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::bpcm2);
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::cm2_per_barn);
 
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::bpcm2 * (sig_a + \
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (sig_a + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             };
         };
