@@ -422,8 +422,9 @@ cdef extern from "../ReactorMG.h":
         int B
         double flux
 
-        map[std.string, double] fuel_chemical_form
-        map[std.string, double] coolant_chemical_form
+        map[std.string, double] chemical_form_fuel
+        map[std.string, double] chemical_form_clad
+        map[std.string, double] chemical_form_cool
 
         double rho_fuel
         double rho_clad
@@ -449,8 +450,9 @@ cdef extern from "../ReactorMG.h":
 
         double S_O
         double S_T
-        double VF
-        double VC
+        double V_fuel
+        double V_clad
+        double V_cool
 
         std.string libfile
 
@@ -477,15 +479,19 @@ cdef extern from "../ReactorMG.h":
         map[int, vector[vector[double]]] nubar
         map[int, vector[vector[vector[double]]]] sigma_s_gh
 
-        double A_IHM
-        double MWF
-        double MWC
-        map[int, double] niF
-        map[int, double] niC
-        map[int, double] miF
-        map[int, double] miC
-        map[int, double] NiF
-        map[int, double] NiC
+        vector[double] A_HM_t
+        vector[double] MW_fuel_t
+        vector[double] MW_clad_t
+        vector[double] MW_cool_t
+        map[int, vector[double]] n_fuel_it
+        map[int, vector[double]] n_clad_it
+        map[int, vector[double]] n_cool_it
+        map[int, vector[double]] m_fuel_it
+        map[int, vector[double]] m_clad_it
+        map[int, vector[double]] m_cool_it
+        map[int, vector[double]] N_fuel_it
+        map[int, vector[double]] N_clad_it
+        map[int, vector[double]] N_cool_it
 
         vector[double] Phi_t
         vector[double] BU_t

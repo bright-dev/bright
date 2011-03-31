@@ -385,7 +385,7 @@ void ReactorMG::fold_mass_weights()
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         mass_HM += T_it[*iso][bt_s];
-        inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso);
+        inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso));
     };
     A_HM_t[bt_s] = mass_HM / inverse_A_HM;
 

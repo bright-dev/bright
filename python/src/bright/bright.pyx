@@ -5145,20 +5145,28 @@ cdef class ReactorMG(FCComp):
 
 
 
-    property fuel_chemical_form:
+    property chemical_form_fuel:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rmg_pointer.fuel_chemical_form)
+            return conv.map_to_dict_str_dbl(self.rmg_pointer.chemical_form_fuel)
 
         def __set__(self, dict value):
-            self.rmg_pointer.fuel_chemical_form = conv.dict_to_map_str_dbl(value)
+            self.rmg_pointer.chemical_form_fuel = conv.dict_to_map_str_dbl(value)
 
 
-    property coolant_chemical_form:
+    property chemical_form_clad:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rmg_pointer.coolant_chemical_form)
+            return conv.map_to_dict_str_dbl(self.rmg_pointer.chemical_form_clad)
 
         def __set__(self, dict value):
-            self.rmg_pointer.coolant_chemical_form = conv.dict_to_map_str_dbl(value)
+            self.rmg_pointer.chemical_form_clad = conv.dict_to_map_str_dbl(value)
+
+
+    property chemical_form_cool:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.rmg_pointer.chemical_form_cool)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.chemical_form_cool = conv.dict_to_map_str_dbl(value)
 
 
 
@@ -5337,20 +5345,30 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.S_T = value
 
 
-    property VF:
+    property V_fuel:
         def __get__(self):
-            return self.rmg_pointer.VF
+            return self.rmg_pointer.V_fuel
 
         def __set__(self, double value):
-            self.rmg_pointer.VF = value
+            self.rmg_pointer.V_fuel = value
 
 
-    property VC:
+    property V_clad:
         def __get__(self):
-            return self.rmg_pointer.VC
+            return self.rmg_pointer.V_clad
 
         def __set__(self, double value):
-            self.rmg_pointer.VC = value
+            self.rmg_pointer.V_clad = value
+
+
+    property V_cool:
+        def __get__(self):
+            return self.rmg_pointer.V_cool
+
+        def __set__(self, double value):
+            self.rmg_pointer.V_cool = value
+
+
 
 
 
@@ -5533,78 +5551,108 @@ cdef class ReactorMG(FCComp):
 
 
 
-    property A_IHM:
+    property A_HM_t:
         def __get__(self):
-            return self.rmg_pointer.A_IHM
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.A_HM_t)
 
         def __set__(self, double value):
-            self.rmg_pointer.A_IHM = value
+            self.rmg_pointer.A_HM_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property MWF:
+    property MW_fuel_t:
         def __get__(self):
-            return self.rmg_pointer.MWF
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.MW_fuel_t)
 
         def __set__(self, double value):
-            self.rmg_pointer.MWF = value
+            self.rmg_pointer.MW_fuel_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property MWC:
+    property MW_clad_t:
         def __get__(self):
-            return self.rmg_pointer.MWC
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.MW_clad_t)
 
         def __set__(self, double value):
-            self.rmg_pointer.MWC = value
+            self.rmg_pointer.MW_clad_t = conv.array_to_vector_1d_dbl(value)
 
-    
-    property niF:
+
+    property MW_cool_t:
         def __get__(self):
-            return conv.map_to_dict_int_dbl(self.rmg_pointer.niF)
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.MW_cool_t)
+
+        def __set__(self, double value):
+            self.rmg_pointer.MW_cool_t = conv.array_to_vector_1d_dbl(value)
+
+
+    property n_fuel_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.n_fuel_it)
 
         def __set__(self, dict value):
-            self.rmg_pointer.niF = conv.dict_to_map_int_dbl(value)
+            self.rmg_pointer.n_fuel_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
-    
-    property niC:
+
+    property n_clad_it:
         def __get__(self):
-            return conv.map_to_dict_int_dbl(self.rmg_pointer.niC)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.n_clad_it)
 
         def __set__(self, dict value):
-            self.rmg_pointer.niC = conv.dict_to_map_int_dbl(value)
+            self.rmg_pointer.n_clad_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
     
-    property miF:
+    property n_cool_it:
         def __get__(self):
-            return conv.map_to_dict_int_dbl(self.rmg_pointer.miF)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.n_cool_it)
 
         def __set__(self, dict value):
-            self.rmg_pointer.miF = conv.dict_to_map_int_dbl(value)
+            self.rmg_pointer.n_cool_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
+
+
+    property m_fuel_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.m_fuel_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.m_fuel_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
+
+
+    property m_clad_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.m_clad_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.m_clad_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
     
-    property miC:
+    property m_cool_it:
         def __get__(self):
-            return conv.map_to_dict_int_dbl(self.rmg_pointer.miC)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.m_cool_it)
 
         def __set__(self, dict value):
-            self.rmg_pointer.miC = conv.dict_to_map_int_dbl(value)
+            self.rmg_pointer.m_cool_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
+
+
+    property N_fuel_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.N_fuel_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.N_fuel_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
+
+
+    property N_clad_it:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.N_clad_it)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.N_clad_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
     
-    property NiF:
+    property N_cool_it:
         def __get__(self):
-            return conv.map_to_dict_int_dbl(self.rmg_pointer.NiF)
+            return conv.map_to_dict_int_vector_to_array_1d_dbl(self.rmg_pointer.N_cool_it)
 
         def __set__(self, dict value):
-            self.rmg_pointer.NiF = conv.dict_to_map_int_dbl(value)
-
-    
-    property NiC:
-        def __get__(self):
-            return conv.map_to_dict_int_dbl(self.rmg_pointer.NiC)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.NiC = conv.dict_to_map_int_dbl(value)
-
-
+            self.rmg_pointer.N_cool_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
 
