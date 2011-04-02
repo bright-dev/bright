@@ -148,11 +148,13 @@ void ReactorMG::loadlib(std::string libfile)
 
     // Clear transmutation vectors and cross sections before reading in
     Ti0.clear();
-    sigma_a_pg.clear();
-    sigma_s_pg.clear();
-    sigma_f_pg.clear();
+    sigma_t_pg.clear();
     nubar_sigma_f_pg.clear();
-    nubar_pg.clear();
+    sigma_s_pgh.clear();
+    //sigma_a_pg.clear();
+    //sigma_s_pg.clear();
+    //sigma_f_pg.clear();
+    //nubar_pg.clear();
 
     // Load transmutation vectors and cross sections that are based off of isotope
     int iso_zz;
@@ -166,12 +168,13 @@ void ReactorMG::loadlib(std::string libfile)
         Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
 
         // Add cross sections
-        sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
-        sigma_s_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_s/" + iso_LL);
-        sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
+        sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
         nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
-        nubar_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar/" + iso_LL);
         sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
+        //sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
+        //sigma_s_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_s/" + iso_LL);
+        //sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
+        //nubar_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar/" + iso_LL);
     };
 
     // close the reactor library
@@ -373,6 +376,122 @@ void ReactorMG::calc_nearest_neighbors()
 
 
 
+
+
+
+
+
+
+
+void ReactorMG::interpolate_cross_sections()
+{
+    // Grab the nearest and next nearest neighbor maps
+    int a0 = nearest_neighbors[0]; 
+    int a1 = nearest_neighbors[1]; 
+    std::map<std::string, double> nn0 = perturbations[a0];
+    std::map<std::string, double> nn1 = perturbations[a1];
+
+    // Calculate the x-factors to interpolate against.
+    // For every variable that is perturbed, 
+    // this factor is the same for all y variables
+    // and is equal to:
+    //
+    //     (xa - xa1)     (xb - xb1)
+    //     ----------  x  ----------  ...
+    //     (xa2 - xa1)    (xb2 - xb2)
+    //
+    // Then the value of the interpolation is 
+    // calculated via
+    //
+    // y = x_factor * (y2 - y1) + y1
+    //
+    double x_factor = 0.0;    
+
+    if (nn0["fuel_density"] != nn1["fuel_density"])
+        x_factor = x_factor + ((rho_fuel - nn0["fuel_density"])/(nn1["fuel_density"] - nn0["fuel_density"]));
+
+    if (nn0["clad_density"] != nn1["clad_density"])
+        x_factor = x_factor + ((rho_clad - nn0["clad_density"])/(nn1["clad_density"] - nn0["clad_density"]));
+
+    if (nn0["cool_density"] != nn1["cool_density"])
+        x_factor = x_factor + ((rho_cool - nn0["cool_density"])/(nn1["cool_density"] - nn0["cool_density"]));
+
+
+    if (nn0["fuel_cell_radius"] != nn1["fuel_cell_radius"])
+        x_factor = x_factor + ((r_fuel - nn0["fuel_cell_radius"])/(nn1["fuel_cell_radius"] - nn0["fuel_cell_radius"]));
+
+    if (nn0["void_cell_radius"] != nn1["void_cell_radius"])
+        x_factor = x_factor + ((r_void - nn0["void_cell_radius"])/(nn1["void_cell_radius"] - nn0["void_cell_radius"]));
+
+    if (nn0["clad_cell_radius"] != nn1["clad_cell_radius"])
+        x_factor = x_factor + ((r_clad - nn0["clad_cell_radius"])/(nn1["clad_cell_radius"] - nn0["clad_cell_radius"]));
+
+
+    if (nn0["unit_cell_pitch"] != nn1["unit_cell_pitch"])
+        x_factor = x_factor + ((pitch - nn0["unit_cell_pitch"])/(nn1["unit_cell_pitch"] - nn0["unit_cell_pitch"]));
+
+    if (nn0["burn_regions"] != nn1["burn_regions"])
+        x_factor = x_factor + ((burn_regions - nn0["burn_regions"])/(nn1["burn_regions"] - nn0["burn_regions"]));
+
+    if (nn0["fuel_specific_power"] != nn1["fuel_specific_power"])
+        x_factor = x_factor + ((specific_power - nn0["fuel_specific_power"])/(nn1["fuel_specific_power"] - nn0["fuel_specific_power"]));
+
+
+    // Calc x-factor for initial mass streams
+    if (10 < perturbations.shape[1])
+    {
+        int iso_zz;
+        std::string iso_LL;
+        double iso_mass;
+
+        for (int p = 9; p < perturbations.shape[1] - 1; p++)
+        {
+            // Grab some names
+            iso_LL = perturbations.cols[p];
+            iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
+
+            // Determine the mass of the isotope in the feed
+            if (0 < ms_feed.comp.count(iso_zz))
+                iso_mass = ms_feed.comp[iso_zz];
+            else
+                iso_mass = 0.0;
+
+            // Calculate the x-factor if appropriate.
+            if (nn0[iso_LL] != nn1[iso_LL])
+                x_factor = x_factor + ((iso_mass - nn0[iso_LL])/(nn1[iso_LL] - nn0[iso_LL]));
+        };
+    };
+
+    if (nn0["burn_times"] != nn1["burn_times"])
+        x_factor = x_factor + ((burn_time - nn0["burn_times"])/(nn1["burn_times"] - nn0["burn_times"]));
+
+
+
+    // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
+    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    {
+        // Interpolate the cross-sections
+        sigma_t_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
+        nubar_sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f_pg[*iso][a1], nubar_sigma_f_pg[*iso][a0]);
+        //sigma_a_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
+        //sigma_s_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_s_pg[*iso][a1], sigma_s_pg[*iso][a0]);
+        //sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
+        //nubar_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_pg[*iso][a1], nubar_pg[*iso][a0]);
+
+        for (int g = 0; g < G; g++)
+            sigma_s_itgh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_pgh[*iso][a1][g], sigma_s_pgh[*iso][a0][g]);
+    };
+    
+};
+
+
+
+
+
+
+
+
+
 void ReactorMG::calc_mass_weights()
 {
     /** 
@@ -502,6 +621,7 @@ void ReactorMG::calc_mass_weights()
 
 
 
+
 void ReactorMG::fold_mass_weights()
 {
     // Folds mass weight in with cross-sections for current time step
@@ -523,11 +643,12 @@ void ReactorMG::fold_mass_weights()
         // Loop over all groups
         for (int g = 0; g < G; g++)
         {
-            Sigma_a_tg[bt_s][g] += N_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
-            Sigma_s_tg[bt_s][g] += N_i_cm2pb * sigma_s_itg[*iso][bt_s][g];
-            Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            Sigma_t_tg[bt_s][g] += N_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
-            nubar_tg[bt_s][g] += N_i_cm2pb * nubar_itg[*iso][bt_s][g];
+            //Sigma_a_tg[bt_s][g] += N_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
+            //Sigma_s_tg[bt_s][g] += N_i_cm2pb * sigma_s_itg[*iso][bt_s][g];
+            //Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            //nubar_tg[bt_s][g] += N_i_cm2pb * nubar_itg[*iso][bt_s][g];
 
             for (int h =0; h < G; h++)
                 Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
@@ -539,106 +660,31 @@ void ReactorMG::fold_mass_weights()
 
 
 
-
-
-void ReactorMG::interpolate_cross_sections()
+void ReactorMG::assemble_multigroup_matrices()
 {
-    // Grab the nearest and next nearest neighbor maps
-    int a0 = nearest_neighbors[0]; 
-    int a1 = nearest_neighbors[1]; 
-    std::map<std::string, double> nn0 = perturbations[a0];
-    std::map<std::string, double> nn1 = perturbations[a1];
+    // Assembles the cross section matrices needed for multigroup 
+    // Burnup-criticality calculations.
 
-    // Calculate the x-factors to interpolate against.
-    // For every variable that is perturbed, 
-    // this factor is the same for all y variables
-    // and is equal to:
-    //
-    //     (xa - xa1)     (xb - xb1)
-    //     ----------  x  ----------  ...
-    //     (xa2 - xa1)    (xb2 - xb2)
-    //
-    // Then the value of the interpolation is 
-    // calculated via
-    //
-    // y = x_factor * (y2 - y1) + y1
-    //
-    double x_factor = 0.0;    
-
-    if (nn0["fuel_density"] != nn1["fuel_density"])
-        x_factor = x_factor + ((rho_fuel - nn0["fuel_density"])/(nn1["fuel_density"] - nn0["fuel_density"]));
-
-    if (nn0["clad_density"] != nn1["clad_density"])
-        x_factor = x_factor + ((rho_clad - nn0["clad_density"])/(nn1["clad_density"] - nn0["clad_density"]));
-
-    if (nn0["cool_density"] != nn1["cool_density"])
-        x_factor = x_factor + ((rho_cool - nn0["cool_density"])/(nn1["cool_density"] - nn0["cool_density"]));
-
-
-    if (nn0["fuel_cell_radius"] != nn1["fuel_cell_radius"])
-        x_factor = x_factor + ((r_fuel - nn0["fuel_cell_radius"])/(nn1["fuel_cell_radius"] - nn0["fuel_cell_radius"]));
-
-    if (nn0["void_cell_radius"] != nn1["void_cell_radius"])
-        x_factor = x_factor + ((r_void - nn0["void_cell_radius"])/(nn1["void_cell_radius"] - nn0["void_cell_radius"]));
-
-    if (nn0["clad_cell_radius"] != nn1["clad_cell_radius"])
-        x_factor = x_factor + ((r_clad - nn0["clad_cell_radius"])/(nn1["clad_cell_radius"] - nn0["clad_cell_radius"]));
-
-
-    if (nn0["unit_cell_pitch"] != nn1["unit_cell_pitch"])
-        x_factor = x_factor + ((pitch - nn0["unit_cell_pitch"])/(nn1["unit_cell_pitch"] - nn0["unit_cell_pitch"]));
-
-    if (nn0["burn_regions"] != nn1["burn_regions"])
-        x_factor = x_factor + ((burn_regions - nn0["burn_regions"])/(nn1["burn_regions"] - nn0["burn_regions"]));
-
-    if (nn0["fuel_specific_power"] != nn1["fuel_specific_power"])
-        x_factor = x_factor + ((specific_power - nn0["fuel_specific_power"])/(nn1["fuel_specific_power"] - nn0["fuel_specific_power"]));
-
-
-    // Calc x-factor for initial mass streams
-    if (10 < perturbations.shape[1])
+    // Assemble the A matrix 
+    for (int g = 0; g < G; g++)
     {
-        int iso_zz;
-        std::string iso_LL;
-        double iso_mass;
+        // Add the total cross section
+        A_tgh[bt_s][g][g] += Sigma_t_tg[bt_s][g];
 
-        for (int p = 9; p < perturbations.shape[1] - 1; p++)
-        {
-            // Grab some names
-            iso_LL = perturbations.cols[p];
-            iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
-
-            // Determine the mass of the isotope in the feed
-            if (0 < ms_feed.comp.count(iso_zz))
-                iso_mass = ms_feed.comp[iso_zz];
-            else
-                iso_mass = 0.0;
-
-            // Calculate the x-factor if appropriate.
-            if (nn0[iso_LL] != nn1[iso_LL])
-                x_factor = x_factor + ((iso_mass - nn0[iso_LL])/(nn1[iso_LL] - nn0[iso_LL]));
-        };
+        // Subtract the scattering kernel
+        for (int h = 0; h < G; h++)
+            A_tgh[bt_s][g][h] -= Sigma_s_tgh[bt_s][g][h];
     };
 
-    if (nn0["burn_times"] != nn1["burn_times"])
-        x_factor = x_factor + ((burn_time - nn0["burn_times"])/(nn1["burn_times"] - nn0["burn_times"]));
 
+    // Assemble the F matrix
+    F_tgh[bt_s] = bright::vector_outer_product(chi, nubar_Sigma_f_tg[bt_s]);
 
+    // Grab the inverse of the A matrix
+    A_inv_tgh[bt_s] = bright::inverse_matrix(A_tgh[bt_s]);
 
-    // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
-    {
-        // Interpolate the cross-sections
-        sigma_a_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
-        sigma_s_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_s_pg[*iso][a1], sigma_s_pg[*iso][a0]);
-        sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
-        nubar_sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f_pg[*iso][a1], nubar_sigma_f_pg[*iso][a0]);
-        nubar_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_pg[*iso][a1], nubar_pg[*iso][a0]);
-
-        for (int g = 0; g < G; g++)
-            sigma_s_itgh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_pgh[*iso][a1][g], sigma_s_pgh[*iso][a0][g]);
-    };
-    
+    // Multiply the inverse of A by F
+    A_inv_F_tgh[bt_s] = bright::matrix_multiplication(A_inv_tgh[bt_s], F_tgh[bt_s]);
 };
 
 
@@ -654,12 +700,13 @@ void ReactorMG::burnup_core()
     T_it.clear();
 
     // Also initialize the cross-section matrices as a function of time.
-    sigma_a_itg.clear();
-    sigma_s_itg.clear();
-    sigma_f_itg.clear();
+    sigma_t_itg.clear();
     nubar_sigma_f_itg.clear();
-    nubar_itg.clear();
     sigma_s_itgh.clear();
+    //sigma_a_itg.clear();
+    //sigma_s_itg.clear();
+    //sigma_f_itg.clear();
+    //nubar_itg.clear();
 
     // Also initilaize the mass weights
     A_HM_t = std::vector<double>(S, 0.0);
@@ -688,11 +735,12 @@ void ReactorMG::burnup_core()
 
         // Init the cross-sections
         sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        sigma_s_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         nubar_sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        nubar_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         sigma_s_itgh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
+        //sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        //sigma_s_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        //sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        //nubar_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
 
         // Init the mass weights
         n_fuel_it[*iso] = std::vector<double>(S, 0.0);
@@ -707,13 +755,20 @@ void ReactorMG::burnup_core()
     };
 
     // Init the macroscopic cross sections
-    Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
-    Sigma_s_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
-    Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_t_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     nubar_Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
-    nubar_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    //Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    //Sigma_s_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    //Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    //nubar_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
+
+    // Init the criticality matrices
+    A_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
 
     // Loop through all time steps
@@ -733,6 +788,9 @@ void ReactorMG::burnup_core()
         // Fold the mass weights for this time step
         calc_mass_weights();
         fold_mass_weights();
+
+        // Make the cross-section matrices before the criticality calulation
+        assemble_multigroup_matrices();
     };
 
 };
