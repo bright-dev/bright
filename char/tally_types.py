@@ -29,7 +29,12 @@ serpent_advanced = {"sigma_t": -1, "sigma_f": -6, "nubar_sigma_f": -7, "sigma_a"
 
 #serpent_default = {"sigma_f": 18, "nubar": -7,  "sigma_a": 27, "sigma_e": 2, "sigma_i": 4}
 
-serpent_default = {"sigma_f": -6, "nubar_sigma_f": -7,  "sigma_a": -2, "sigma_e": 2, 
+serpent_default = {
+            "sigma_t": -1, 
+            "sigma_f": -6, 
+            "nubar_sigma_f": -7,  
+#            "sigma_a": -2, 
+            "sigma_e": 2, 
             "sigma_i1": 51, 
             "sigma_i2": 52,
             "sigma_i3": 53, 
