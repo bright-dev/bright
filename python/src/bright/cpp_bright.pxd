@@ -7,13 +7,13 @@ cimport std
 cimport cpp_mass_stream
 cimport mass_stream
 
-cdef extern from "../bright.h" namespace "bright":
+cdef extern from "../../../cpp/bright.h" namespace "bright":
     std.string BRIGHT_DATA
 
     void bright_start()
 
 
-cdef extern from "../FCComp.h" namespace "FCComps":
+cdef extern from "../../../cpp/FCComp.h" namespace "FCComps":
     set[int] track_isos
     void load_track_isos_hdf5(std.string, std.string, bint)
     void load_track_isos_text(std.string, bint)
@@ -25,7 +25,7 @@ cdef extern from "../FCComp.h" namespace "FCComps":
     std.string output_filename
 
 
-cdef extern from "../FCComp.h":
+cdef extern from "../../../cpp/FCComp.h":
     cdef cppclass FCComp:
         # Constructors
         FCComp()
@@ -55,7 +55,7 @@ cdef extern from "../FCComp.h":
         cpp_mass_stream.MassStream calc()
 
 
-cdef extern from "../Enrichment.h":
+cdef extern from "../../../cpp/Enrichment.h":
 
     cdef cppclass EnrichmentParameters:
         # Constructors
@@ -131,7 +131,7 @@ cdef extern from "../Enrichment.h":
 
 
 
-cdef extern from "../Reprocess.h":
+cdef extern from "../../../cpp/Reprocess.h":
 
     cdef cppclass Reprocess(FCComp):
         # Constructors
@@ -149,7 +149,7 @@ cdef extern from "../Reprocess.h":
         cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
 
 
-cdef extern from "../Storage.h":
+cdef extern from "../../../cpp/Storage.h":
 
     cdef cppclass Storage(FCComp):
         # Constructors
@@ -182,7 +182,7 @@ cdef extern from "../FluencePoint.h":
         double m
 
 
-cdef extern from "../ReactorParameters.h":
+cdef extern from "../../../cpp/ReactorParameters.h":
 
     cdef cppclass ReactorParameters:
         # Constructors        
@@ -222,7 +222,7 @@ cdef extern from "../ReactorParameters.h":
     ReactorParameters fill_fr_defaults()
 
 
-cdef extern from "../Reactor1G.h":
+cdef extern from "../../../cpp/Reactor1G.h":
 
     cdef cppclass Reactor1G(FCComp):
         # Constructors        
@@ -348,7 +348,7 @@ cdef extern from "../Reactor1G.h":
 
 
 
-cdef extern from "../LightWaterReactor1G.h":
+cdef extern from "../../../cpp/LightWaterReactor1G.h":
 
     cdef cppclass LightWaterReactor1G(Reactor1G):
         # Constructors        
@@ -363,7 +363,7 @@ cdef extern from "../LightWaterReactor1G.h":
 
 
 
-cdef extern from "../FastReactor1G.h":
+cdef extern from "../../../cpp/FastReactor1G.h":
 
     cdef cppclass FastReactor1G(Reactor1G):
         # Constructors        
@@ -377,7 +377,7 @@ cdef extern from "../FastReactor1G.h":
 
 
 
-cdef extern from "../FuelFabrication.h":
+cdef extern from "../../../cpp/FuelFabrication.h":
 
     cdef cppclass FuelFabrication(FCComp):
         # Constructors        
@@ -408,7 +408,7 @@ cdef extern from "../FuelFabrication.h":
 
 
 
-cdef extern from "../ReactorMG.h":
+cdef extern from "../../../cpp/ReactorMG.h":
 
     cdef cppclass ReactorMG(FCComp):
         # Constructors        
