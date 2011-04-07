@@ -31,9 +31,9 @@ def copy_path(path_list):
     fpath = os.path.join(*path_list)
     with open(fpath, 'r') as f:
         for line in f:
-            m = re.match(include_pattern, line)
+            m = re.search(include_pattern, line)
 
-            if m is not None:
+            if (m is not None) and (m.group(1).split('/')[0] == 'boost'):
                 extra_path = m.group(1)
                 extra_paths.add(extra_path)
 
