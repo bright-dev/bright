@@ -12,7 +12,20 @@ FILES = [
     # Needed at compile time
     #
     "boost/config/",
+    "boost/detail/",
+    "boost/exception/",
     "boost/preprocessor/",
+    "boost/smart_ptr/",
+    "boost/fusion/container/",
+    "boost/mpl/aux_/", 
+    "boost/mpl/list/",
+    "boost/mpl/vector/",
+    "boost/mpl/limits/",
+    "boost/mpl/arg_fwd.hpp",
+    "boost/mpl/bind_fwd.hpp",
+    "boost/mpl/quote.hpp",
+    "boost/mpl/apply_fwd.hpp",
+    "boost/type_traits/detail/",
     ]
 
 
@@ -43,6 +56,9 @@ def copy_path(path_list):
     # Make new file
     fnew = ""
     fpath = os.path.join(*path_list)
+    if not os.path.exists(fpath):
+        path_list[-1] += ".hpp"
+        fpath = os.path.join(*path_list)
     with open(fpath, 'r') as f:
         for line in f:
             m = re.search(include_pattern, line)
