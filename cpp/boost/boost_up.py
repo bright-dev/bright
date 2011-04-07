@@ -5,7 +5,14 @@ import re
 
 
 FILES = [
+    # Desired files
     "boost/math/special_functions/bessel.hpp",
+
+    #
+    # Needed at compile time
+    #
+    "boost/config/",
+    "boost/preprocessor/",
     ]
 
 
@@ -19,6 +26,13 @@ def copy_path(path_list):
     found in this file.
     """
     extra_paths = set()
+    if os.path.isdir(os.path.join(*path_list)):
+        for f in os.listdir(os.path.join(*path_list)):
+            extra_path = path_list[1:] + [f]
+            extra_path = "/".join(extra_path)
+            extra_paths.add(extra_path)
+        return extra_paths
+
 
     # Set up directories
     dirs = path_list[2:-1]
