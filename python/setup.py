@@ -25,125 +25,180 @@ for f in cython_cpp_files:
         print "Removing {0}...".format(f)
         os.remove(f)
 
-# Get numpy include dir
-numpy_include = np.get_include()
+
 
 ###########################################
 ### Set compiler options for extensions ###
 ###########################################
-ext_kwargs = {}
+src_dir = os.path.abspath(os.path.join('src', ''))
+cpp_dir = os.path.abspath(os.path.join('..', 'cpp'))
+dat_dir = os.path.abspath(os.path.join('..', 'data'))
 
-src_dir = os.path.abspath(os.path.join('..', '/cpp/'))
-dat_dir = os.path.abspath(os.path.join('..', '/data/'))
-
-if os.name == 'posix':
-#    src_dir = 'src/'
-#    dat_dir = 'src/bright/'
-#    ext_kwargs["libraries"] = ["boost_python"]
-    ext_kwargs["libraries"] = []
-    pass
-elif os.name == 'nt':
-    ext_kwargs["extra_compile_args"] = ["/EHsc"]
-    ext_kwargs["define_macros"] = [("_WIN32", None)]
+# Get numpy include dir
+numpy_include = np.get_include()
 
 # Path to user's home directory
 user_home = os.path.expanduser('~')
 
+
+
+
+#
+# For stlconverters
+# 
+stlconv_ext = {'name': "stlconverters"}
+
+stlconv_ext['sources'] = [os.path.join(src_dir, 'stlconverters.pyx')]
+stlconv_ext['include_dirs'] = [src_dir, cpp_dir, numpy_include]
+stlconv_ext['language'] = "c++"
+
+if os.name == 'nt':
+    stlconv_ext["extra_compile_args"] = ["/EHsc"]
+    stlconv_ext["define_macros"] = [("_WIN32", None)]
+
+
+
+#
+# For isoname
+# 
+isoname_ext = {'name': 'isoname'}
+                 
+isoname_ext['sources'] = [
+    'bright.cpp', 
+    'isoname.cpp', 
+    ]
+isoname_ext['sources'] = [os.path.join(cpp_dir, s) for s in isoname_ext['sources']] + \
+                         [os.path.join(src_dir, 'isoname', 'isoname.pyx')]
+
+isoname_ext['include_dirs'] = [os.path.join(src_dir, 'isoname', ''), 
+                               src_dir, cpp_dir, numpy_include]
+isoname_ext['language'] = "c++"
+
+
+if os.name == 'nt':
+    isoname_ext["extra_compile_args"] = ["/EHsc"]
+    isoname_ext["define_macros"] = [("_WIN32", None)]
+
+
+
+#
 # For MassStream
-mass_stream_ext_kwargs = deepcopy(ext_kwargs)
+#
+mass_stream_ext = {'name': "mass_stream"}
+
+mass_stream_ext['sources'] = [
+    'bright.cpp', 
+    'isoname.cpp', 
+    'MassStream.cpp',
+    ]
+mass_stream_ext['sources'] = [os.path.join(cpp_dir, s) for s in mass_stream_ext['sources']] + \
+                             [os.path.join(src_dir, 'mass_stream', 'mass_stream.pyx')]
+                  
+mass_stream_ext['include_dirs'] = [os.path.join(src_dir, 'mass_stream', ''),
+                                   os.path.join(src_dir, 'isoname', ''), 
+                                   src_dir, cpp_dir, numpy_include]
+mass_stream_ext['language'] = "c++"
+
 
 if os.name == 'posix':
-    mass_stream_ext_kwargs["libraries"].extend( [
+    mass_stream_ext["libraries"] = [
         "z", 
         "m", 
         "hdf5", 
         "hdf5_hl", 
         "hdf5_cpp", 
         "hdf5_hl_cpp",
-        ] )
+        ] 
 elif os.name == 'nt':
-#    mass_stream_ext_kwargs["extra_link_args"] = [
-    mass_stream_ext_kwargs["libraries"] = [
+    mass_stream_ext["libraries"] = [
         "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
         # For Dynamic Libs (dll)
-#        "/DEFAULTLIB:szlibdll.lib",
         "/DEFAULTLIB:hdf5dll.lib",
         "/DEFAULTLIB:hdf5_hldll.lib",
         "/DEFAULTLIB:hdf5_cppdll.lib",
         "/DEFAULTLIB:hdf5_hl_cppdll.lib",
         ] 
 
-    mass_stream_ext_kwargs["define_macros"].extend([
+    mass_stream_ext["extra_compile_args"] = ["/EHsc"]
+
+    mass_stream_ext["define_macros"] = [
+        ("_WIN32", None),
         ("_HDF5USEDLL_", None),
         ("HDF5CPP_USEDLL", None),
-        ])
+        ]
 
+
+#
 # For bright
-bright_ext_kwargs = deepcopy(ext_kwargs)
+#
+bright_ext = {'name': "bright"}
+
+bright_ext['sources'] = [
+    'bright.cpp', 
+    'isoname.cpp', 
+    'MassStream.cpp', 
+    'FCComp.cpp', 
+    'Enrichment.cpp', 
+    'Reprocess.cpp', 
+    'Storage.cpp', 
+    'Reactor1G.cpp', 
+    'LightWaterReactor1G.cpp', 
+    'FastReactor1G.cpp', 
+    'FuelFabrication.cpp', 
+    ]
+bright_ext['sources'] = [os.path.join(cpp_dir, s) for s in bright_ext['sources']] + \
+                        [os.path.join(src_dir, 'bright', 'bright.pyx')]
+                  
+bright_ext['include_dirs'] = [os.path.join(src_dir, 'bright', ''),
+                              os.path.join(src_dir, 'mass_stream', ''),
+                              os.path.join(src_dir, 'isoname', ''), 
+                              src_dir, cpp_dir, numpy_include]
+bright_ext['language'] = "c++"
+
 
 if os.name == 'posix':
-    bright_ext_kwargs["libraries"].extend( [
-        "hdf5", 
+    bright_ext["libraries"] = [
         "z", 
         "m", 
+        "hdf5", 
         "hdf5_hl", 
         "hdf5_cpp", 
         "hdf5_hl_cpp", 
-        ] )
+        ] 
+
 elif os.name == 'nt':
-#    bright_ext_kwargs["extra_link_args"] = [
-    bright_ext_kwargs["libraries"] = [
+    bright_ext["libraries"] = [
         "/DEFAULTLIB:szip.lib",
         "/DEFAULTLIB:zlib1.lib",
 
-        # For Static Libs (lib)
-        #"/DEFAULTLIB:szlib.lib",
-        #"/DEFAULTLIB:hdf5.lib",
-        #"/DEFAULTLIB:hdf5_hl.lib",
-        #"/DEFAULTLIB:hdf5_cpp.lib",
-        #"/DEFAULTLIB:hdf5_hl_cpp.lib",
-
         # For Dynamic Libs (dll)
-        #"/DEFAULTLIB:szlibdll.lib",
         "/DEFAULTLIB:hdf5dll.lib",
         "/DEFAULTLIB:hdf5_hldll.lib",
         "/DEFAULTLIB:hdf5_cppdll.lib",
         "/DEFAULTLIB:hdf5_hl_cppdll.lib"
         ] 
 
-    bright_ext_kwargs["define_macros"].extend([
+    bright_ext["extra_compile_args"] = ["/EHsc"]
+
+    bright_ext["define_macros"] = [
+        ("_WIN32", None),
         ("_HDF5USEDLL_", None),
         ("HDF5CPP_USEDLL", None),        
-        ])
+        ]
+
 
 ##########################
 ### Setup Package Data ###
 ##########################
-pack_dir = {
-    'isoname': os.path.join('src', 'isoname'),
-    'mass_stream': os.path.join('src', 'mass_stream'), 
-    'bright': os.path.join('src', 'bright'), 
-    'bright_data': os.path.join('src', 'bright_data'),
-    }
-    
-pack_data = {'bright': []}
-
 bright_data_files = [
-#    os.path.join(dat_dir, 'decay.h5'), 
-#    os.path.join(dat_dir, 'KaeriData.h5'), 
-#    os.path.join(dat_dir, 'FR.h5'), 
-#    os.path.join(dat_dir, 'LWR.h5'),
-
     'decay.h5', 
     'KaeriData.h5', 
     'FR.h5', 
     'LWR.h5',
     ]
         
-pack_dlls_boost= ["boost_python-vc90-mt-1_44.dll"]
-
 pack_dlls_hdf5  = [
     "szip.dll",
     "zlib1.dll",
@@ -153,19 +208,28 @@ pack_dlls_hdf5  = [
     "hdf5_hl_cppdll.dll",
     ]
 
+
+pack_dir = {
+    'isoname': os.path.join('src', 'isoname'),
+    'mass_stream': os.path.join('src', 'mass_stream'), 
+    'bright': os.path.join('src', 'bright'), 
+    'bright_data': os.path.join('src', 'bright_data'),
+    }
+    
+pack_data = {'bright': [], 'mass_stream': []}
+
+
 if os.name == 'posix':
     pack_data['bright'].extend(bright_data_files)
 elif os.name == "nt":
-    pack_data['isoname'] = []
-    pack_data['isoname'].extend(pack_dlls_boost)
-
-    pack_data['mass_stream'] = []
     pack_data['mass_stream'].extend(pack_dlls_boost)
     pack_data['mass_stream'].extend(pack_dlls_hdf5)
 
     pack_data['bright'].extend(bright_data_files)
     pack_data['bright'].extend(pack_dlls_boost)
     pack_data['bright'].extend(pack_dlls_hdf5)
+
+
 
 
 ###################
@@ -182,54 +246,10 @@ setup(name="bright",
     package_data = {'bright_data': bright_data_files},
     cmdclass = {'build_ext': build_ext}, 
     ext_modules=[
-        Extension("stlconverters", 
-                  [os.path.join('src', 'stlconverters.pyx'),
-                   ],
-                  include_dirs=[os.path.join('src', ''), numpy_include],
-                  libraries=[],
-                  language="c++",
-                  ), 
-        Extension("isoname", 
-                  ['src/bright.cpp', 
-                   'src/isoname.cpp', 
-                   'src/isoname/isoname.pyx',
-                   ],
-                  include_dirs=['src/isoname/', 'src/', numpy_include],
-                  libraries=[],
-                  language="c++",
-                  ), 
-        Extension("mass_stream", 
-                  ['src/bright.cpp', 
-                   'src/isoname.cpp', 
-                   'src/MassStream.cpp',
-                   'src/mass_stream/mass_stream.pyx',
-                   ],
-                  include_dirs=['src/mass_stream/', 'src/isoname/', 'src/', numpy_include],
-                  libraries=mass_stream_ext_kwargs["libraries"], 
-                  language="c++",
-                  ), 
-        Extension("bright", 
-                  ['src/bright.cpp', 
-                   'src/isoname.cpp', 
-                   'src/MassStream.cpp', 
-                   'src/FCComp.cpp', 
-                   'src/Enrichment.cpp', 
-                   'src/Reprocess.cpp', 
-                   'src/Storage.cpp', 
-                   'src/Reactor1G.cpp', 
-                   'src/LightWaterReactor1G.cpp', 
-                   'src/FastReactor1G.cpp', 
-                   'src/FuelFabrication.cpp', 
-                   'src/bright/bright.pyx',
-                   ],
-                  include_dirs=['src/bright/', 'src/mass_stream/', 'src/', numpy_include],
-                  libraries=bright_ext_kwargs["libraries"], 
-                  language="c++",
-                  ), 
+        Extension(**stlconv_ext), 
+        Extension(**isoname_ext), 
+        Extension(**mass_stream_ext),
+        Extension(**bright_ext), 
         ],
     )
 
-if os.name == 'posix':
-    pass
-elif os.name == "nt":
-    print "Cleaning Windows specific files."
