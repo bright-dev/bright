@@ -4,7 +4,7 @@
 #if !defined(_Bright_Reactor1G_)
 #define _Bright_Reactor1G_
 
-//C++ stdlib
+// C++ stdlib
 #include <map>
 #include <set>
 #include <vector>
@@ -12,14 +12,14 @@
 #include <exception>
 #include <iostream>
 
-//HDF5
+// HDF5
 #include "hdf5.h"
 #include "hdf5_hl.h"
 
-//Boost
-#include <boost/math/special_functions/bessel.hpp>
+// Boost
+#include "boost/math/special_functions/bessel.hpp"
 
-//Bright Libs
+// Bright Libs
 #include "FCComp.h"
 #include "MassStream.h"
 #include "isoname.h"

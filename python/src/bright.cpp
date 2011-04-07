@@ -1,1 +1,0 @@
-../../cpp/bright.cpp

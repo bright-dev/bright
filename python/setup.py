@@ -39,7 +39,9 @@ dat_dir = os.path.abspath(os.path.join('..', '/data/'))
 if os.name == 'posix':
 #    src_dir = 'src/'
 #    dat_dir = 'src/bright/'
-    ext_kwargs["libraries"] = ["boost_python"]
+#    ext_kwargs["libraries"] = ["boost_python"]
+    ext_kwargs["libraries"] = []
+    pass
 elif os.name == 'nt':
     ext_kwargs["extra_compile_args"] = ["/EHsc"]
     ext_kwargs["define_macros"] = [("_WIN32", None)]
