@@ -31,10 +31,8 @@ from metasci.colortext import failure
 #################
 ### CHAR Libs ###
 #################
-defchar = None
-import glbchar
+import envchar
 
-import runchar
 from n_code_serpent import NCodeSerpent
 
 def main():
