@@ -33,7 +33,25 @@ from metasci.colortext import failure
 #################
 import envchar
 
+from run.pbs import Pbs
+from run.bash import Bash
+
+run_switch = {'': Bash, 
+              'BASH': Bash,
+              'bash': Bash,
+              'PBS': Pbs,
+              'pbs': Pbs,
+              'Torque': Pbs,
+              'torque': Pbs,
+              }
+
 from n_code_serpent import NCodeSerpent
+
+n_code_switch = {'': NCodeSerpent, 
+                 'sss': NCodeSerpent, 
+                 'Serpent': NCodeSerpent, 
+                 'serpent': NCodeSerpent, 
+                 }
 
 def main():
     global defchar
@@ -119,19 +137,17 @@ def main():
         print(failure("Please specify a configuration file for CHAR."))
         raise SystemExit
 
-    # Load the CHAR definition file early, into its own namespace
+    # Load the CHAR definition file into its own env namespace
+    env = {}
     absolute_path = os.path.abspath(args[0])
-    dir, file = os.path.split(absolute_path)
-    sys.path.append(dir)
-    mod_name = file.rpartition('.')[0]
-    defchar = __import__(mod_name)
+    execfile(absolute_path, {}, env)
 
-    # Add command line arguments to defchar
-    defchar.options = options
-    defchar.args = args
+    # Add command line arguments to env
+    env['options'] = options
+    env['args'] = args
 
     # Update defchar adding more useful values.
-    defchar = glbchar.defchar_update(defchar)
+    env = envchar.update_env(env)
 
     #intial command-line options protocol.
     if options.KILL_TRANSPORT:
@@ -154,13 +170,13 @@ def main():
 
     # Prep work
     if not options.CWD:
-        if defchar.options.CLEAN:
-            metasci.safe_remove(defchar.reactor, True)
+        if env['options'].CLEAN:
+            metasci.safe_remove(env['reactor'], True)
 
-        if defchar.reactor not in os.listdir('.'):
-            os.mkdir(defchar.reactor)
+        if env['reactor'] not in os.listdir('.'):
+            os.mkdir(env['reactor'])
 
-        os.chdir(defchar.reactor)
+        os.chdir(env['reactor'])
         shutil.copyfile(absolute_path, 'defchar.py')
 
     # Start up logger
@@ -170,58 +186,62 @@ def main():
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)
     logger.setLevel(logging.INFO)
-    defchar.logger = logger
+    env['logger'] = logger
 
     # Set the transport code
-    n_transporter = NCodeSerpent()
-    defchar.n_transporter = n_transporter
+    n_coder = n_code_switch[env['transporter']]
+    env['n_code'] = n_coder(env)
+
+    # Get the run controller
+    runner = run_switch[env['scheduler']]
+    runchar = runner(n_code, env)
 
     # Make the input file unless otherwise specified.
     if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
-        n_transporter.make_input()
+        n_code.make_input()
 
     # Check a bunch of run conditions
     if options.RUN_TRANSPORT:
         # Run Transport code
-        runchar.make_run_script(n_transporter)
+        runchar.make_run_script(n_code)
 
         if options.LOCAL:
-            runchar.run_transport_local()
+            runchar.run_locally()
         else:
-            runchar.run_transport_remote()
+            runchar.run_remotely()
 
     elif options.RUN_ANALYSIS:
-        n_transporter.analyze_deltam()
+        n_code.analyze_deltam()
 
     elif options.RUN_BURNUP or options.RUN_XS_GEN or options.RUN_DELTAM:
         # Make tranumatrion libraries by executing the as a separate step from 
         # the cross-section generation
         if options.RUN_BURNUP:
-            n_transporter.run_burnup()
+            n_code.run_burnup()
 
         # Make Cross-sections as a separate step from the burnup calculation
         if options.RUN_XS_GEN:
-            n_transporter.run_xs_gen()
+            n_code.run_xs_gen()
 
         # Run initial isotope sensitivity calculation
         if options.RUN_DELTAM:
-            n_transporter.run_deltam()
+            n_code.run_deltam()
 
     elif options.FETCH_FILES:
-        #Fetches files from remote server
-        runchar.fetch_remote_files()
+        # Fetches files from remote server
+        runchar.fetch()
     elif options.PID:
-        #Finds (and kills?) the Transport Run Process
-        if options.LOCAL:
-            runchar.find_pid_local()
-        else:
-            runchar.find_pid_remote()
+        # Finds and prints the PID of CHAR
+        runchar.pid()
+    elif options.KILL_TRANSPORT:
+        # Finds and kills CHAR
+        runchar.kill()
 
-    #Clean up
+    # Clean up
     if not options.CWD:
         os.chdir('..')
 
 
-#Run CHAR
+# Run CHAR
 if __name__ == '__main__':
     main()

@@ -302,6 +302,9 @@ def update_env(env):
     if 'tallies' in env:
         env['tallies_reversed'] = metasci.ReverseDic(env['tallies'])
 
+    if 'transporter' not in env:
+        env['transporter'] = ''
+
     if 'scheduler' not in env:
         env['scheduler'] = ''
 
