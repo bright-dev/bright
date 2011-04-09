@@ -429,16 +429,16 @@ class NCodeSerpent(object):
         self.serpent_fill.update(self.make_burnup(n))
 
         # Fill the burnup template
-        with open(self.env['reactor'] + "_burnup", 'w') as f:
-            f.write(self.env['burnup_template.format(**self.serpent_fill))
+        with open(self.env['reactor'] + "_burnup_{0}".format(n), 'w') as f:
+            f.write(self.env['burnup_template'].format(**self.serpent_fill))
 
 
-    def make_xs_gen_input(self, iso="U235"):
+    def make_xs_gen_input(self, iso="U235", n):
         self.serpent_fill.update(self.make_detector(iso))
 
         # Fill the XS template
-        with open(self.env['reactor'] + "_xs_gen", 'w') as f:
-            f.write(self.env['xs_gen_template.format(**self.serpent_fill))
+        with open(self.env['reactor'] + "_xs_gen_{0}_{1}".format(iso, n), 'w') as f:
+            f.write(self.env['xs_gen_template'].format(**self.serpent_fill))
 
 
     def make_flux_g_input(self, iso="U235", group_structure=None):
@@ -553,6 +553,23 @@ class NCodeSerpent(object):
         return rsfv
 
 
+    def run_burnup_pert(self, n):
+        """Runs a burnup perturbation step."""
+        self.env['logger'].info('Running burnup calculation at perturbation step {0}.'.format(n))
+
+        self.make_common_input(n)
+
+        # Make new input file
+        self.make_burnup_input(n)
+
+        # Run serpent on this input file as a subprocess
+        rtn = subprocess.call(run_command, shell=True)
+
+        # Parse & write this output to HDF5
+        res, dep = self.parse_burnup(n)
+        return res, dep
+
+
     def run_burnup(self):
         """Runs the burnup portion of CHAR."""
         # Initializa the common serpent_fill values
@@ -578,19 +595,65 @@ class NCodeSerpent(object):
             if 0 != n%ntimes:
                 continue
 
-            self.env['logger'].info('Running burnup calculation at perturbation step {0}.'.format(n))
+            res, dep = self.run_burnup_pert(n)
+            self.write_burnup(n, res, dep)
 
-            self.make_common_input(n)
 
-            # Make new input file
-            self.make_burnup_input(n)
 
-            # Run serpent on this input file as a subprocess
-            rtn = subprocess.call(run_command, shell=True)
+    def run_xs_gen_pert(self, iso, n, ms_n):
+        """Runs the perturbation for an isotope that is in serpent.
 
-            # Parse & write this output to HDF5
-            self.parse_burnup()
-            self.write_burnup(n)
+        iso : isotope identifier
+        n : perterbation step number.
+        ms_n : Mass stream of isotopes in serpent at this step.
+
+        NOTE: This method adds filler fision products.
+        If iso is not zirconium, add Zr-90. If is zirconium, add Sr-90
+        These two isotopes have almost the same mass and neutronic profile:
+            http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Zr-90&n=2
+            http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Sr-90&n=2
+        We need to do this to preseve the atom density of the fuel, 
+        while not inducing errors through self-shielding and strong absorbers.
+        Basically, Zr-90 and Sr-90 become representative fision product pairs.
+        
+        WARNING: This is only suppossed to be a first order correction!
+        Make sure that you include enough fission products in core_transmute.
+        """
+        iso_zz = isoname.mixed_2_zzaaam(iso)
+        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+
+        info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
+        self.env['logger'].info(info_str.format(iso_LL, n))
+
+        # Add filler fision product
+        top_up_mass = 1.0 - ms_n.mass
+        if top_up_mass == 0.0:
+            top_up = 0.0
+        elif isoname.zzLL[iso_zz//10000] == 'ZR':
+            top_up = MassStream({380900: 90.0, 621480: 148.0}, top_up_mass)
+        elif isoname.zzLL[iso_zz//10000] == 'SM':
+            top_up = MassStream({400900: 90.0, 601480: 148.0}, top_up_mass)
+        else:
+            top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
+
+        ms = ms_n + top_up
+        isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
+        ms = MassStream(isovec)
+
+        # Update fuel in serpent_fill
+        self.serpent_fill['fuel'] = self.make_input_fuel(ms)
+
+        # Make new input file
+        self.make_xs_gen_input(iso_LL, n)
+
+        # Run serpent on this input file as a subprocess
+        rtn = subprocess.call(run_command_xs_gen, shell=True)
+
+        # Parse this run 
+        res, det = self.parse_xs_gen(iso_LL, n)
+
+        return res, det
+
 
 
     def run_xs_gen(self):
@@ -637,48 +700,8 @@ class NCodeSerpent(object):
             # Loop over all output isotopes that are valid in serpent
             #
             for iso in self.env['core_transmute_in_serpent']['zzaaam']:
-                info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
-                self.env['logger'].info(info_str.format(iso, n))
-
-                # Add filler fision product
-                # If iso is not zirconium, add Zr-90
-                # If is zirconium, add Sr-90
-                # These two isotopes have almost the same mass
-                # and neutronic profile:
-                #     http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Zr-90&n=2
-                #     http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Sr-90&n=2
-                # We need to do this to preseve the atom density of the fuel, 
-                # while not inducing errors through self-shielding and strong absorbers.
-                # Basically, Zr-90 and Sr-90 become representative fision product pairs.
-                #
-                # WARNING: This is only suppossed to be a first order correction!
-                # Make sure that you include enough FP in core_transmute.
-                top_up_mass = 1.0 - ms_n_in_serpent.mass
-                if top_up_mass == 0.0:
-                    top_up = 0.0
-                elif isoname.zzLL[iso//10000] == 'ZR':
-                    top_up = MassStream({380900: 90.0, 621480: 148.0}, top_up_mass)
-                elif isoname.zzLL[iso//10000] == 'SM':
-                    top_up = MassStream({400900: 90.0, 601480: 148.0}, top_up_mass)
-                else:
-                    top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
-
-                ms = ms_n_in_serpent + top_up
-                isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
-                ms = MassStream(isovec)
-
-                # Update fuel in serpent_fill
-                self.serpent_fill['fuel'] = self.make_input_fuel(ms)
-
-                # Make new input file
-                self.make_xs_gen_input(iso)
-
-                # Run serpent on this input file as a subprocess
-                rtn = subprocess.call(run_command_xs_gen, shell=True)
-
-                # Parse & write this output to HDF5
-                self.parse_xs_gen()
-                self.write_xs_gen(iso, n)
+                res, det = self.run_xs_gen_pert(iso, n, ms_n_in_serpent)
+                self.write_xs_gen(iso, n, res, det)
 
             #
             # Prep for isotopes not in serpent
@@ -726,7 +749,7 @@ class NCodeSerpent(object):
             #
             # Loop over all output isotopes that are NOT valid in serpent
             #
-            for iso in self.env['core_transmute_not_in_serpent['zzaaam']:
+            for iso in self.env['core_transmute_not_in_serpent']['zzaaam']:
                 info_str = 'Generating cross-sections for {0} at perturbation step {1} using models.'
                 self.env['logger'].info(info_str.format(iso, n))
 
@@ -818,18 +841,40 @@ class NCodeSerpent(object):
         self.env['logger'].info('Parsed burnup calculation.')
 
 
-    def parse_burnup(self):
+    def parse_burnup(self, n):
         """Parse the burnup/depletion files into an equivelent python modules."""
+        res_file = self.env['reactor'] + "_burnup_{0}_res.m".format(n)
+        dep_file = self.env['reactor'] + "_burnup_{0}_dep.m".format(n)
+
         # Convert files
-        convert_res(self.env['reactor'] + "_burnup_res.m")
-        convert_dep(self.env['reactor'] + "_burnup_dep.m")
+        convert_res(res_file)
+        convert_dep(dep_file)
+
+        # Get data
+        res = {}
+        dep = {}
+        execfile(res_file, {}, res)
+        execfile(dep_file, {}, dep)
+
+        return res, dep
 
 
-    def parse_xs_gen(self):
+    def parse_xs_gen(self, iso, n):
         """Parse the cross-section generation files into an equivelent python modules."""
+        res_file = self.env['reactor'] + "_xs_gen_{0}_{1}_res.m".format(iso, n)
+        det_file = self.env['reactor'] + "_xs_gen_{0}_{1}_det0.m".format(iso, n)
+
         # Convert files
-        convert_res(self.env['reactor'] + "_xs_gen_res.m")
-        convert_det(self.env['reactor'] + "_xs_gen_det0.m")
+        convert_res(res_file)
+        convert_det(det_file)
+
+        # Get data
+        res = {}
+        det = {}
+        execfile(res_file, {}, res)
+        execfile(det_file, {}, det)
+
+        return res, det
 
 
     def parse_flux_g(self):
@@ -1070,26 +1115,16 @@ class NCodeSerpent(object):
     # Writing functions
     #
 
-    def write_burnup(self, n):
+    def write_burnup(self, n, res, dep):
         """Writes the results of the burnup calculation to an hdf5 file.
 
         n : Perturbation index of first time step for this burnup calculation.
+        res : A dictionary containing the results of the res file. 
+        dep : A dictionary containing the results of the dep file. 
         """
 
-        # Add current working directory to path
-        if sys.path[0] != os.getcwd():
-            sys.path.insert(0, os.getcwd())
-
-        # Import data
-        rx_res = __import__(self.env['reactor'] + "_burnup_res")
-        rx_dep = __import__(self.env['reactor'] + "_burnup_dep")
-
-        # Ensure that the right file is imported and not just the cached version
-        clean_reload(rx_res)
-        clean_reload(rx_dep)
-
         # Find end index 
-        t = n + len(rx_dep.DAYS)
+        t = n + len(dep['DAYS'])
 
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
@@ -1099,39 +1134,40 @@ class NCodeSerpent(object):
         pert_cols = rx_h5.root.perturbations.cols
 
         # Add basic BU information
-        base_group.BU0[n:t] =  rx_dep.BU
-        base_group.time0[n:t] = rx_dep.DAYS
+        base_group.BU0[n:t] =  dep['BU']
+        base_group.time0[n:t] = dep['DAYS']
 
-        phi = rx_res.TOT_FLUX[:, ::2].flatten()
+        phi = res['TOT_FLUX'][:, ::2].flatten()
         base_group.phi[n:t] = phi
-        base_group.phi_g[n:t] = rx_res.FLUX[:,::2][:, 1:]
+        base_group.phi_g[n:t] = res['FLUX'][:,::2][:, 1:]
 
         # Create Fluence array
         Phi = np.zeros(len(phi))
-        Phi[1:] = cumtrapz(phi * (10.0**-21), rx_dep.DAYS * (3600.0 * 24.0))
+        Phi[1:] = cumtrapz(phi * (10.0**-21), dep['DAYS'] * (3600.0 * 24.0))
         base_group.Phi[n:t] = Phi
 
         # Energy Group bounds 
-        base_group.energy[n:t] = rx_res.GC_BOUNDS
+        base_group.energy[n:t] = res['GC_BOUNDS']
 
         # Calculate and store weight percents per kg fuel form (ie not per IHM)
         # Serepent masses somehow unnormalize themselves in all of these conversions, which is annoying.
         # This effect is of order 1E-5, which is large enough to be noticable.
         # Thus we have to go through two bouts of normalization here.
-        mw_conversion = self.fuel_weight / (self.IHM_weight * rx_dep.TOT_VOLUME * pert_cols.fuel_density[n])
-        mw = rx_dep.TOT_MASS * mw_conversion 
+        mw_conversion = self.fuel_weight / (self.IHM_weight * dep['TOT_VOLUME'] * pert_cols.fuel_density[n])
+        mw = dep['TOT_MASS'] * mw_conversion 
 
         iso_LL = {}
         iso_index = {}
-        for iso_zz in rx_dep.ZAI:
+        for iso_zz in dep['ZAI']:
             # Find valid isotope indeces
             try: 
                 iso_LL[iso_zz] = isoname.mixed_2_LLAAAM(int(iso_zz))
             except:
                 continue
-            iso_index[iso_zz] = getattr(rx_dep, 'i{0}'.format(iso_zz)) - 1
+            iso_index[iso_zz] = dep['i{0}'.format(iso_zz)] - 1
 
-        mass = mw[iso_index.values()].sum(axis=0)   # Caclulate actual mass of isotopes present
+        # Caclulate actual mass of isotopes present
+        mass = mw[iso_index.values()].sum(axis=0)   
 
         # Store normalized mass vector for each isotope
         for iso_zz in iso_index:
@@ -1148,7 +1184,7 @@ class NCodeSerpent(object):
         rx_h5.close()
 
 
-    def write_xs_gen(self, iso, n):
+    def write_xs_gen(self, iso, n, res, det):
         # Convert isoname
         iso_zz = isoname.mixed_2_zzaaam(iso)
         iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
@@ -1157,13 +1193,7 @@ class NCodeSerpent(object):
         if sys.path[0] != os.getcwd():
             sys.path.insert(0, os.getcwd())
 
-        # Import data
-        rx_res = __import__(self.env['reactor'] + "_xs_gen_res")
-        rx_det = __import__(self.env['reactor'] + "_xs_gen_det0")
-
-        # Ensure that the right file is imported and not just the cached version
-        clean_reload(rx_res)
-        clean_reload(rx_det)
+FIXME
 
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
