@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 
 ############################
 #### Standard Libraries ####
@@ -16,16 +16,11 @@ from optparse import OptionParser
 ###########################
 ### Extension Libraries ###
 ###########################
-import tables as tb
 
 ##########################
 #### Custom Libraries ####
 ##########################
-import isoname
 import metasci
-import metasci.nuke as msn
-import metasci.graph as msg
-
 from metasci.colortext import failure
 
 #################

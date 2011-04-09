@@ -17,7 +17,6 @@ from metasci.colortext import message, failure
 from scipy.integrate import cumtrapz
 
 import tally_types
-from char import defchar
 from m2py import convert_res, convert_dep, convert_det
 
 
@@ -38,12 +37,9 @@ def zzaaam_2_serpent(iso):
 class NCodeSerpent(object):
     """A Serpent neutronics code wrapper class."""
 
-    def __init__(self):
-        # Reload defchar, just in case.
-        global defchar
-        from char import defchar
-
-        self.name    = "Serpent"
+    def __init__(self, env):
+        self.env = env
+        self.name = "Serpent"
         self.run_str = "sss-dev"
 
         # Remote file lists
@@ -63,7 +59,7 @@ class NCodeSerpent(object):
             iso_serp = isoname.mixed_2_zzaaam(iso)
             iso_serp = zzaaam_2_serpent(iso_serp)
 
-            comp_str += "{0:>11}".format("{0}.{1}".format(iso_serp, defchar.temp_flag))
+            comp_str += "{0:>11}".format("{0}.{1}".format(iso_serp, self.env['temp_flag))
 
             if mass_weighted:
                 comp_str += "  -{0:.5G}\n".format(comp[iso])
@@ -74,19 +70,19 @@ class NCodeSerpent(object):
 
     def update_initial_fuel(self, n):
         """Required to allow for initial fuel isotopic concentration perturbations."""
-        if len(defchar.initial_iso_vars) == 0:
+        if len(self.env['initial_iso_keys']) == 0:
             # Don't bother readin the perturbation table if there 
             # is nothing there to read!
-            ihm_stream = 1.0 * defchar.IHM_stream
+            ihm_stream = 1.0 * self.env['IHM_stream']
         else:
             # Read the perturbations from the file
             pert_isos = set()
             init_iso_conc = {} 
 
-            with tb.openFile(defchar.reactor + ".h5", 'r') as rx_h5:
+            with tb.openFile(self.env['reactor'] + ".h5", 'r') as rx_h5:
                 pert_cols = rx_h5.root.perturbations.cols
 
-                for iiv in defchar.initial_iso_vars:
+                for iiv in self.env['initial_iso_keys']:
                     iiv_col = getattr(pert_cols, iiv)
 
                     iso_zz = isoname.mixed_2_zzaaam(iiv.partition('_')[2])
@@ -98,9 +94,9 @@ class NCodeSerpent(object):
             pert_stream = MassStream(init_iso_conc)
 
             # generate a non-pertubed stream
-            all_isos = set(defchar.IHM_stream.comp.keys())
+            all_isos = set(self.env['IHM_stream'].comp.keys())
             non_pert_isos = all_isos - pert_isos
-            non_pert_stream = defchar.IHM_stream.get_sub_stream(non_pert_isos)
+            non_pert_stream = self.env['IHM_stream'].get_sub_stream(non_pert_isos)
             non_pert_stream.mass = 1.0 - pert_stream.mass
 
             # generate an initial heavy metal stream
@@ -109,7 +105,7 @@ class NCodeSerpent(object):
         self.ihm_stream = ihm_stream
 
         # Convolve the streams
-        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, defchar.fuel_chemical_form)
+        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, self.env['fuel_chemical_form'])
 
         # Set the most recent values on the instance
         self.initial_fuel_stream = MassStream(isovec)
@@ -118,8 +114,8 @@ class NCodeSerpent(object):
     
 
     def make_input_fuel(self, ms=None):
-        if hasattr(defchar, 'fuel_form_mass_weighted'):
-            mass_weighted = defchar.fuel_form_mass_weighted
+        if 'fuel_form_mass_weighted' in self.env:
+            mass_weighted = self.env['fuel_form_mass_weighted']
         else:
             mass_weighted = True
 
@@ -133,10 +129,10 @@ class NCodeSerpent(object):
 
     def make_input_cladding(self):
         # Try to load cladding stream
-        if hasattr(defchar, 'clad_form'):
-            clad_stream = MassStream(defchar.clad_form)
+        if 'clad_form' in self.env:
+            clad_stream = MassStream(self.env['clad_form'])
         else:
-            if 0 < defchar.verbosity:
+            if 0 < self.env['verbosity']:
                 print(message("Cladding not found.  Proceeding with standard zircaloy mixture."))
                 print()
             clad_form = {
@@ -179,8 +175,8 @@ class NCodeSerpent(object):
             clad_stream = MassStream(clad_form)
 
         # Try to find if the cladding form is mass or atomic weighted
-        if hasattr(defchar, 'clad_form_mass_weighted'):
-            mass_weighted = defchar.clad_form_mass_weighted
+        if 'clad_form_mass_weighted' in self.env:
+            mass_weighted = self.env['clad_form_mass_weighted']
         else:
             mass_weighted = True
         
@@ -188,10 +184,10 @@ class NCodeSerpent(object):
 
     def make_input_coolant(self):
         # Try to load coolant stream
-        if hasattr(defchar, 'cool_form'):
-            cool_stream = MassStream(defchar.cool_form)
+        if 'cool_form' in self.env:
+            cool_stream = MassStream(self.env['cool_form'])
         else:
-            if 0 < defchar.verbosity:
+            if 0 < self.env['verbosity']:
                 print(message("Coolant not found.  Proceeding with borated light water."))
                 print()
             MW = (2 * 1.0) + (1 * 16.0) + (0.199 * 550 * 10.0**-6 * 10.0) + (0.801 * 550 * 10.0**-6 * 11.0)
@@ -204,8 +200,8 @@ class NCodeSerpent(object):
             cool_stream = MassStream(cool_form)
 
         # Try to find if the coolant form is mass or atomic weighted
-        if hasattr(defchar, 'cool_form_mass_weighted'):
-            mass_weighted = defchar.cool_form_mass_weighted
+        if 'cool_form_mass_weighted' in self.env:
+            mass_weighted = self.env['cool_form_mass_weighted']
         else:
             mass_weighted = True
         
@@ -213,7 +209,7 @@ class NCodeSerpent(object):
 
     def make_input_geometry(self, n):
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
         pert_cols = rx_h5.root.perturbations.cols
 
         # Require
@@ -229,11 +225,11 @@ class NCodeSerpent(object):
 
         # Tries to get the lattice specification
         # If it isn't present, use a default 17x17 PWR lattice
-        if hasattr(defchar, 'lattice') and hasattr(defchar, 'lattice_xy'):
-            geom['lattice']    = defchar.lattice
-            geom['lattice_xy'] = defchar.lattice_xy
+        if ('lattice' in self.env) and ('lattice_xy' in self.env):
+            geom['lattice']    = self.env['lattice']
+            geom['lattice_xy'] = self.env['lattice_xy']
         else:
-            if 0 < defchar.verbosity:
+            if 0 < self.env['verbosity']:
                 print(message("Lattice specification not found."))
                 print(message("Using a default 17x17 PWR lattice."))
                 print()
@@ -283,7 +279,7 @@ class NCodeSerpent(object):
         thus covers 0.0 MeV <= Group G < Bound[1].
         """
         if group_structure is None:
-            group_structure = defchar.group_structure
+            group_structure = self.env['group_structure']
 
         e = {}
         gs = ["{0:.6G}".format(float(gb)) for gb in group_structure]
@@ -301,12 +297,12 @@ class NCodeSerpent(object):
     def make_burnup(self, n):
         """Generates a dictionary of values that fill the burnup portion of the serpent template."""
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
         pert_cols = rx_h5.root.perturbations.cols
 
         # make burnup dictionary
-        bu = {'decay_lib': defchar.serpent_decay_lib,
-              'fission_yield_lib': defchar.serpent_fission_yield_lib,
+        bu = {'decay_lib': self.env['serpent_decay_lib'],
+              'fission_yield_lib': self.env['serpent_fission_yield_lib'],
               'num_burn_regions':  int(pert_cols.burn_regions[n]), 
               'fuel_specific_power': pert_cols.fuel_specific_power[n],
               }
@@ -315,11 +311,11 @@ class NCodeSerpent(object):
         rx_h5.close()
 
         bu['depletion_times'] = ''
-        for bt in defchar.burn_times[1:]:
+        for bt in self.env['burn_times[1:]:
             bu['depletion_times'] += '{0:>8.4G}\n'.format(bt)
 
         bu['transmute_inventory'] = ''
-        for iso in defchar.core_transmute['zzaaam']:
+        for iso in self.env['core_transmute']['zzaaam']:
             bu['transmute_inventory'] += '{0:>8}\n'.format(iso)
 
         return bu
@@ -334,21 +330,21 @@ class NCodeSerpent(object):
         iso_serp = zzaaam_2_serpent(iso_zz)
 
         # Set the isotope to calculate XS for
-        det['xsiso'] = "{0}.{1}".format(iso_serp, defchar.temp_flag)
+        det['xsiso'] = "{0}.{1}".format(iso_serp, self.env['temp_flag'])
 
         # Setup detectors to calculate XS for
         det['xsdet'] = ''
         det_format = "det {tally_name} de energies dm fuel dr {tally_type} xsmat dt 3 phi\n"
 
         # Get tallies
-        if not hasattr(defchar, 'tallies'):
-            defchar.tallies = tally_types.serpent_default
+        if 'tallies' not in self.env:
+            self.env['tallies'] = tally_types.serpent_default
 
-        tallies = defchar.tallies
+        tallies = self.env['tallies']
 
         # Add tally line if MT number is valid
         for tally in tallies:
-            if tallies[tally] in defchar.iso_mts[iso_zz]:
+            if tallies[tally] in self.env['iso_mts'][iso_zz]:
                 det['xsdet'] += det_format.format(tally_name=tally, tally_type=tallies[tally])
 
         return det
@@ -378,7 +374,7 @@ class NCodeSerpent(object):
         self.ihm_stream = ihm_stream
 
         # Convolve the streams
-        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, defchar.fuel_chemical_form)
+        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, self.env['fuel_chemical_form'])
 
         # Set the most recent values on the instance
         self.initial_fuel_stream = MassStream(isovec)
@@ -393,21 +389,21 @@ class NCodeSerpent(object):
 
     def make_common_input(self, n):
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
         pert_cols = rx_h5.root.perturbations.cols
 
         # Initial serpent fill dictionary
         serpent_fill = {
-            'reactor': defchar.reactor,
-            'xsdata':  defchar.serpent_xsdata,
+            'reactor': self.env['reactor'],
+            'xsdata':  self.env['serpent_xsdata'],
 
             'fuel_density': '{0:.5G}'.format(pert_cols.fuel_density[n]),
             'clad_density': '{0:.5G}'.format(pert_cols.clad_density[n]),
             'cool_density': '{0:.5G}'.format(pert_cols.cool_density[n]),
 
-            'k_particles':  defchar.k_particles,
-            'k_cycles':     defchar.k_cycles,
-            'k_cycles_skip': defchar.k_cycles_skip,
+            'k_particles':   self.env['k_particles'],
+            'k_cycles':      self.env['k_cycles'],
+            'k_cycles_skip': self.env['k_cycles_skip'],
             }
 
         # Close hdf5 file.
@@ -433,16 +429,16 @@ class NCodeSerpent(object):
         self.serpent_fill.update(self.make_burnup(n))
 
         # Fill the burnup template
-        with open(defchar.reactor + "_burnup", 'w') as f:
-            f.write(defchar.burnup_template.format(**self.serpent_fill))
+        with open(self.env['reactor'] + "_burnup", 'w') as f:
+            f.write(self.env['burnup_template.format(**self.serpent_fill))
 
 
     def make_xs_gen_input(self, iso="U235"):
         self.serpent_fill.update(self.make_detector(iso))
 
         # Fill the XS template
-        with open(defchar.reactor + "_xs_gen", 'w') as f:
-            f.write(defchar.xs_gen_template.format(**self.serpent_fill))
+        with open(self.env['reactor'] + "_xs_gen", 'w') as f:
+            f.write(self.env['xs_gen_template.format(**self.serpent_fill))
 
 
     def make_flux_g_input(self, iso="U235", group_structure=None):
@@ -455,8 +451,8 @@ class NCodeSerpent(object):
         self.serpent_fill['xsdet'] = "% Only calculating the flux here!"
 
         # Fill the XS template
-        with open(defchar.reactor + "_flux_g", 'w') as f:
-            f.write(defchar.xs_gen_template.format(**self.serpent_fill))
+        with open(self.env['reactor'] + "_flux_g", 'w') as f:
+            f.write(self.env['xs_gen_template'].format(**self.serpent_fill))
 
         # Restore the detectors and energy groups to their default values
         self.serpent_fill.update(self.make_detector(iso))
@@ -470,8 +466,8 @@ class NCodeSerpent(object):
         self.serpent_fill.update(self.make_deltam(iso, frac))
 
         # Fill the burnup template
-        with open(defchar.reactor + "_deltam", 'w') as f:
-            f.write(defchar.burnup_template.format(**self.serpent_fill))
+        with open(self.env['reactor'] + "_deltam", 'w') as f:
+            f.write(self.env['burnup_template'].format(**self.serpent_fill))
 
 
     def make_input(self):
@@ -491,22 +487,19 @@ class NCodeSerpent(object):
         mpi_flag = ''
 
         if hasattr(defchar, 'run_parallel'):
-            run_flag = defchar.run_parallel.upper()
+            run_flag = self.env['run_parallel'].upper()
         else:
             run_flag = ''
 
-        #if defchar.scheduler == 'PBS':
-        #    run_flag = 'PBS'
-
         if run_flag in ["MPI", "PBS"]:
-            if hasattr(defchar, 'number_cpus'):
-                num_cpus = defchar.number_cpus
+            if 'number_cpus' in self.env:
+                num_cpus = self.env['number_cpus']
             else:
                 print(message("The number of cpus was not specified even though a multicore calculation was requested.\n"
                               "Setting the number of cpus to 1 for this calculation."))
                 num_cpus = 1
 
-            mpi_flag = '-mpi {0}'.format(defchar.number_cpus)
+            mpi_flag = '-mpi {0}'.format(self.env['number_cpus'])
 
         return mpi_flag
 
@@ -517,11 +510,11 @@ class NCodeSerpent(object):
 
     def run_script_walltime(self):
         # Set PBS_Walltime
-        if hasattr(defchar, 'walltime'):
-            return defchar.walltime
+        if 'walltime' in self.env:
+            return self.env['walltime']
         else:
             # Get the number of perturbatiosn from the reactor file.
-            rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+            rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
             nperturbations = len(rx_h5.root.perturbations)
             rx_h5.close()
 
@@ -538,23 +531,23 @@ class NCodeSerpent(object):
         rsfv['transport_job_context'] = self.run_str + " -version"
 
         # Set Run_Commands 
-        if defchar.options.LOCAL:
+        if self.env['options.LOCAL:
             rsfv['run_commands'] = ''
         else:
             rsfv['run_commands'] = ''
             #rsfv['run_commands'] = 'lamboot\n'
 
         # Add burnup information
-        if defchar.options.RUN_BURNUP:
-            #rsfv['run_commands'] += "{0} {1}_burnup {2}\n".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+        if self.env['options.RUN_BURNUP:
+            #rsfv['run_commands'] += "{0} {1}_burnup {2}\n".format(self.run_str, self.env['reactor'], self.get_mpi_flag())
             rsfv['run_commands'] += "char --cwd -b defchar.py\n"
 
         # Add cross section information
-        if defchar.options.RUN_XS_GEN:
+        if self.env['options.RUN_XS_GEN:
             rsfv['run_commands'] += "char --cwd -x defchar.py\n"
 
         # Add isotopic sensitivity analysis
-        if defchar.options.RUN_DELTAM:
+        if self.env['options.RUN_DELTAM:
             rsfv['run_commands'] += "char --cwd -m defchar.py\n"
 
         return rsfv
@@ -564,10 +557,10 @@ class NCodeSerpent(object):
         """Runs the burnup portion of CHAR."""
         # Initializa the common serpent_fill values
         self.make_common_input(0)
-        run_command = "{0} {1}_burnup {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+        run_command = "{0} {1}_burnup {2}".format(self.run_str, self.env['reactor'], self.get_mpi_flag())
 
         # Open the hdf5 library
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
 
         # Get the number of time points from the file
         nperturbations = len(rx_h5.root.perturbations)
@@ -579,13 +572,13 @@ class NCodeSerpent(object):
         self.init_h5_burnup(nperturbations)
 
         # Loop over all non-burnup perturbations.
-        ntimes = len(defchar.burn_times)
+        ntimes = len(self.env['burn_times'])
         for n in range(nperturbations):
             # Ensure that the burnup times are at t = 0
             if 0 != n%ntimes:
                 continue
 
-            defchar.logger.info('Running burnup calculation at perturbation step {0}.'.format(n))
+            self.env['logger'].info('Running burnup calculation at perturbation step {0}.'.format(n))
 
             self.make_common_input(n)
 
@@ -605,11 +598,11 @@ class NCodeSerpent(object):
         # Initializa the common serpent_fill values
         self.make_common_input(0)
         mpi_flag = self.get_mpi_flag()
-        run_command_xs_gen = "{0} {1}_xs_gen {2}".format(self.run_str, defchar.reactor, mpi_flag)
-        run_command_flux_g = "{0} {1}_flux_g {2}".format(self.run_str, defchar.reactor, mpi_flag)
+        run_command_xs_gen = "{0} {1}_xs_gen {2}".format(self.run_str, self.env['reactor'], mpi_flag)
+        run_command_flux_g = "{0} {1}_flux_g {2}".format(self.run_str, self.env['reactor'], mpi_flag)
 
         # Open the hdf5 library
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
 
         # Get the number of time points from the file
         nperturbations = len(rx_h5.root.perturbations)
@@ -621,7 +614,7 @@ class NCodeSerpent(object):
         self.init_h5_xs_gen(nperturbations)
 
         # Initialize run if non-seprent isotopes are present
-        if 0 < len(defchar.core_transmute_not_in_serpent['zzaaam']):
+        if 0 < len(self.env['core_transmute_not_in_serpent']['zzaaam']):
             # Grab stock high-resolution group structure
             with tb.openFile(msn.nuc_data, 'r') as f:
                 hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
@@ -634,18 +627,18 @@ class NCodeSerpent(object):
             # Grab the MassStream at this time.
             self.make_common_input(n)
             ms_n = MassStream()
-            ms_n.load_from_hdf5(defchar.reactor + ".h5", "/Ti0", 2)
+            ms_n.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", 2)
 
             # Calc restricted mass streams
-            ms_n_in_serpent = ms_n.get_sub_stream(defchar.core_transmute_in_serpent['zzaaam'])
-            ms_n_not_in_serpent = ms_n.get_sub_stream(defchar.core_transmute_not_in_serpent['zzaaam'])
+            ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent']['zzaaam'])
+            ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent']['zzaaam'])
 
             #
             # Loop over all output isotopes that are valid in serpent
             #
-            for iso in defchar.core_transmute_in_serpent['zzaaam']:
+            for iso in self.env['core_transmute_in_serpent']['zzaaam']:
                 info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
-                defchar.logger.info(info_str.format(iso, n))
+                self.env['logger'].info(info_str.format(iso, n))
 
                 # Add filler fision product
                 # If iso is not zirconium, add Zr-90
@@ -671,7 +664,7 @@ class NCodeSerpent(object):
                     top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
 
                 ms = ms_n_in_serpent + top_up
-                isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
+                isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
                 ms = MassStream(isovec)
 
                 # Update fuel in serpent_fill
@@ -690,10 +683,10 @@ class NCodeSerpent(object):
             #
             # Prep for isotopes not in serpent
             #
-            if 0 == len(defchar.core_transmute_not_in_serpent['zzaaam']):
+            if 0 == len(self.env['core_transmute_not_in_serpent']['zzaaam']):
                 continue
 
-            defchar.logger.info("Generating high resolution flux for use with non-serpent models.")
+            self.env['logger'].info("Generating high resolution flux for use with non-serpent models.")
 
             # Make mass stream 
             top_up_mass = 1.0 - ms_n_in_serpent.mass
@@ -703,7 +696,7 @@ class NCodeSerpent(object):
                 top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
 
             ms = ms_n_in_serpent + top_up
-            isovec, AW, MW = msn.convolve_initial_fuel_form(ms, defchar.fuel_chemical_form)
+            isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
             ms = MassStream(isovec)
 
             # Update fuel in serpent_fill
@@ -720,7 +713,7 @@ class NCodeSerpent(object):
             self.write_flux_g(n)
 
             # Read in some common parameters from the data file
-            with tb.openFile(defchar.reactor + ".h5", 'r') as  rx_h5:
+            with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
                 E_g = np.array(rx_h5.root.energy[n][::-1])
                 E_n = np.array(rx_h5.root.hi_res.energy.read()[::-1])
                 phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
@@ -733,17 +726,17 @@ class NCodeSerpent(object):
             #
             # Loop over all output isotopes that are NOT valid in serpent
             #
-            for iso in defchar.core_transmute_not_in_serpent['zzaaam']:
+            for iso in self.env['core_transmute_not_in_serpent['zzaaam']:
                 info_str = 'Generating cross-sections for {0} at perturbation step {1} using models.'
-                defchar.logger.info(info_str.format(iso, n))
+                self.env['logger'].info(info_str.format(iso, n))
 
                 xs_dict = {}
 
                 # Add the cross-section data from models
                 xs_dict['sigma_f'] = msnxs.sigma_f(iso)
                 xs_dict['sigma_a'] = msnxs.sigma_a(iso)
-                xs_dict['sigma_s_gh'] = msnxs.sigma_s_gh(iso, defchar.temperature)
-                xs_dict['sigma_s'] = msnxs.sigma_s(iso, defchar.temperature)
+                xs_dict['sigma_s_gh'] = msnxs.sigma_s_gh(iso, self.env['temperature'])
+                xs_dict['sigma_s'] = msnxs.sigma_s(iso, self.env['temperature'])
 
                 # Write out these cross-sections to the data file
                 self.write_xs_mod(iso, n, xs_dict)
@@ -753,10 +746,10 @@ class NCodeSerpent(object):
         """Runs the isotopic sensitivity study."""
         # Initializa the common serpent_fill values
         self.make_common_input(0)
-        run_command = "{0} {1}_deltam {2}".format(self.run_str, defchar.reactor, self.get_mpi_flag())
+        run_command = "{0} {1}_deltam {2}".format(self.run_str, self.env['reactor'], self.get_mpi_flag())
 
         # Open the hdf5 library
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'r')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
 
         # Get the number of time points from the file
         nperturbations = len(rx_h5.root.perturbations)
@@ -767,8 +760,8 @@ class NCodeSerpent(object):
         # Initialize the hdf5 file to take sensitivity data
         self.init_h5_deltam()
 
-        nsense = len(defchar.deltam)
-        ntimes = len(defchar.burn_times)
+        nsense = len(self.env['deltam'])
+        ntimes = len(self.env['burn_times'])
 
         # Loop over all non-burnup perturbations.
         for n in range(nperturbations):
@@ -776,17 +769,17 @@ class NCodeSerpent(object):
             if 0 != n%ntimes:
                 continue
 
-            defchar.logger.info('Starting isotopic sensitivity study at perturbation step {0}.'.format(n))
+            self.env['logger'].info('Starting isotopic sensitivity study at perturbation step {0}.'.format(n))
 
             # Loop over all isotopes
-            for iso_zz in defchar.IHM_stream.comp.keys():
+            for iso_zz in self.env['IHM_stream'].comp.keys():
                 iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
                 # Load this perturbations IHM stream
                 self.update_initial_fuel(n)
 
                 # Calulate this isotopes new values of IHM concentration
-                iso_fracs = defchar.deltam * self.ihm_stream.comp[iso_zz]
+                iso_fracs = self.env['deltam'] * self.ihm_stream.comp[iso_zz]
 
                 # Skip isotopes that would be pertubed over 1 kgIHM
                 if (1.0 < iso_fracs).any():
@@ -795,7 +788,7 @@ class NCodeSerpent(object):
                 # Loop over all isotopic sesnitivities
                 for s in range(nsense):
                     info_str = 'Running {0} sensitivity study at mass fraction {1} at perturbation step {2}.'.format(iso_zz, iso_fracs[s], n)
-                    defchar.logger.info(info_str)
+                    self.env['logger'].info(info_str)
 
                     # Ensure we are where we think we are by remaking the common input
                     self.make_common_input(n)
@@ -822,35 +815,35 @@ class NCodeSerpent(object):
         """Convienence function to parse results."""
         self.parse_burnup()
         self.write_burnup()
-        defchar.logger.info('Parsed burnup calculation.')
+        self.env['logger'].info('Parsed burnup calculation.')
 
 
     def parse_burnup(self):
         """Parse the burnup/depletion files into an equivelent python modules."""
         # Convert files
-        convert_res(defchar.reactor + "_burnup_res.m")
-        convert_dep(defchar.reactor + "_burnup_dep.m")
+        convert_res(self.env['reactor'] + "_burnup_res.m")
+        convert_dep(self.env['reactor'] + "_burnup_dep.m")
 
 
     def parse_xs_gen(self):
         """Parse the cross-section generation files into an equivelent python modules."""
         # Convert files
-        convert_res(defchar.reactor + "_xs_gen_res.m")
-        convert_det(defchar.reactor + "_xs_gen_det0.m")
+        convert_res(self.env['reactor'] + "_xs_gen_res.m")
+        convert_det(self.env['reactor'] + "_xs_gen_det0.m")
 
 
     def parse_flux_g(self):
         """Parse the group flux only generation files into an equivelent python modules."""
         # Convert files
-        convert_res(defchar.reactor + "_flux_g_res.m")
-        convert_det(defchar.reactor + "_flux_g_det0.m")
+        convert_res(self.env['reactor'] + "_flux_g_res.m")
+        convert_det(self.env['reactor'] + "_flux_g_det0.m")
 
 
     def parse_deltam(self):
         """Parse the sensitivity study files into an equivelent python modules."""
         # Convert files
-        convert_res(defchar.reactor + "_deltam_res.m")
-        convert_dep(defchar.reactor + "_deltam_dep.m")
+        convert_res(self.env['reactor'] + "_deltam_res.m")
+        convert_dep(self.env['reactor'] + "_deltam_dep.m")
 
 
     #
@@ -861,33 +854,33 @@ class NCodeSerpent(object):
         """Initialize a new HDF5 file in preparation for burnup and XS runs."""
         # Setup tables 
         desc = {}
-        for n, param in enumerate(defchar.perturbation_params):
+        for n, param in enumerate(self.env['perturbation_params']):
             desc[param] = tb.Float64Col(pos=n)
 
         # Open HDF5 file
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'w')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'w')
         base_group = "/"
 
         # Add pertubation table index
         p = rx_h5.createTable(base_group, 'perturbations', desc)
 
         # Add rows to table
-        data = [getattr(defchar, a) for a in defchar.perturbation_params]
+        data = [getattr(defchar, a) for a in self.env['perturbation_params']]
         rows = [r for r in product(*data)]
         p.append(rows)
 
         # Add the isotope tracking arrays.  
-        rx_h5.createArray(base_group, 'isostrack', np.array(defchar.core_transmute['zzaaam']), 
+        rx_h5.createArray(base_group, 'isostrack', np.array(self.env['core_transmute']['zzaaam']), 
                           "Isotopes to track, copy of transmute_isos_zz")
 
-        rx_h5.createArray(base_group, 'load_isos_zz', np.array(defchar.core_load['zzaaam']), 
+        rx_h5.createArray(base_group, 'load_isos_zz', np.array(self.env['core_load']['zzaaam']), 
                           "Core loading isotopes [zzaaam]")
-        rx_h5.createArray(base_group, 'load_isos_LL', np.array(defchar.core_load['LLAAAM']), 
+        rx_h5.createArray(base_group, 'load_isos_LL', np.array(self.env['core_load']['LLAAAM']), 
                           "Core loading isotopes [LLAAAM]")
 
-        rx_h5.createArray(base_group, 'transmute_isos_zz', np.array(defchar.core_transmute['zzaaam']), 
+        rx_h5.createArray(base_group, 'transmute_isos_zz', np.array(self.env['core_transmute']['zzaaam']), 
                           "Core transmute isotopes [zzaaam]")
-        rx_h5.createArray(base_group, 'transmute_isos_LL', np.array(defchar.core_transmute['LLAAAM']), 
+        rx_h5.createArray(base_group, 'transmute_isos_LL', np.array(self.env['core_transmute']['LLAAAM']), 
                           "Core transmute isotopes [LLAAAM]")
 
         # Close HDF5 file
@@ -915,14 +908,14 @@ class NCodeSerpent(object):
         tally_group = rx_h5.createGroup(base_group, tally, gstring.format(tally=tally))
 
         # Add isotopic arrays for this tally to this group.
-        for iso_LL in defchar.core_transmute['LLAAAM']: 
+        for iso_LL in self.env['core_transmute']['LLAAAM']: 
             rx_h5.createArray(tally_group, iso_LL, init_array, astring.format(tally=tally, iso=iso_LL))
 
 
     def init_h5_burnup(self, nperturbations=1):
         """Initialize the hdf5 file for a set of burnup calculations based on the its input params."""
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
         # Number of energy groups
@@ -963,17 +956,18 @@ class NCodeSerpent(object):
         """Initialize the hdf5 file for writing for the XS Gen stage.
         The shape of these arrays is dependent on the number of time steps."""
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
         # Number of energy groups
         G = self.serpent_fill['n_groups']
 
         # Grab the tallies
-        if hasattr(defchar, 'tallies'):
-            tallies = defchar.tallies
+        if 'tallies' in self.env:
+            tallies = self.env['tallies']
         else:
             tallies = tally_types.serpent_default
+
         # Init the raw tally arrays
         neg1 = -1.0 * np.ones( (nperturbations, G) )
         negG = -1.0 * np.ones( (nperturbations, G, G) )
@@ -1014,7 +1008,7 @@ class NCodeSerpent(object):
     def init_h5_flux_g(self, nperturbations=1, group_structure=None):
         """Initialize the hdf5 file for a set of high-resoultion flux calculations."""
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
         # Remove existing group, create new group of same name.
@@ -1024,7 +1018,7 @@ class NCodeSerpent(object):
 
         # Get default group structure
         if group_structure is None:
-            group_structure = defchar.group_structure
+            group_structure = self.env['group_structure']
 
         # Number of energy groups
         G = len(group_structure) - 1
@@ -1047,7 +1041,7 @@ class NCodeSerpent(object):
 
     def init_h5_deltam(self):
         """Initialize the hdf5 file for isotopic sensitivity study."""
-        ntimes = len(defchar.burn_times)
+        ntimes = len(self.env['burn_times'])
 
         deltam_desc = {
             'iso_LL': tb.StringCol(6, pos=0),
@@ -1060,7 +1054,7 @@ class NCodeSerpent(object):
             }
 
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
         # Remove existing group, create new group of same name.
@@ -1087,8 +1081,8 @@ class NCodeSerpent(object):
             sys.path.insert(0, os.getcwd())
 
         # Import data
-        rx_res = __import__(defchar.reactor + "_burnup_res")
-        rx_dep = __import__(defchar.reactor + "_burnup_dep")
+        rx_res = __import__(self.env['reactor'] + "_burnup_res")
+        rx_dep = __import__(self.env['reactor'] + "_burnup_dep")
 
         # Ensure that the right file is imported and not just the cached version
         clean_reload(rx_res)
@@ -1098,7 +1092,7 @@ class NCodeSerpent(object):
         t = n + len(rx_dep.DAYS)
 
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
         # Grab pertubation columns
@@ -1164,22 +1158,22 @@ class NCodeSerpent(object):
             sys.path.insert(0, os.getcwd())
 
         # Import data
-        rx_res = __import__(defchar.reactor + "_xs_gen_res")
-        rx_det = __import__(defchar.reactor + "_xs_gen_det0")
+        rx_res = __import__(self.env['reactor'] + "_xs_gen_res")
+        rx_det = __import__(self.env['reactor'] + "_xs_gen_det0")
 
         # Ensure that the right file is imported and not just the cached version
         clean_reload(rx_res)
         clean_reload(rx_det)
 
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
         # Grab the tallies
-        if not hasattr(defchar, 'tallies'):
-           defchar.tallies = tally_types.serpent_default
+        if 'tallies' not in self.env:
+           self.env['tallies'] = tally_types.serpent_default
 
-        tallies = defchar.tallies
+        tallies = self.env['tallies']
 
         # Write the raw tally arrays for this time and this iso        
         for tally in tallies:
@@ -1188,7 +1182,7 @@ class NCodeSerpent(object):
 
             # Make sure the detector was calculated, 
             # Or replace the tally with zeros
-            if tallies[tally] in defchar.iso_mts[iso_zz]:
+            if tallies[tally] in self.env['iso_mts'][iso_zz]:
                 tally_serp_array = getattr(rx_det, 'DET{0}'.format(tally))
                 tally_serp_array = tally_serp_array[::-1, 10]
             else:
@@ -1230,7 +1224,7 @@ class NCodeSerpent(object):
                 if 'sigma_i' not in tally:
                     continue
 
-                if tallies[tally] not in defchar.iso_mts[iso_zz]:
+                if tallies[tally] not in self.env['iso_mts'][iso_zz]:
                     continue
 
                 # Grab a sigma_iN array
@@ -1292,15 +1286,15 @@ class NCodeSerpent(object):
             sys.path.insert(0, os.getcwd())
 
         # Import data
-        rx_res = __import__(defchar.reactor + "_flux_g_res")
-        rx_det = __import__(defchar.reactor + "_flux_g_det0")
+        rx_res = __import__(self.env['reactor'] + "_flux_g_res")
+        rx_det = __import__(self.env['reactor'] + "_flux_g_det0")
 
         # Ensure that the right file is imported and not just the cached version
         clean_reload(rx_res)
         clean_reload(rx_det)
 
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor + ".h5", 'a')
         base_group = rx_h5.root.hi_res
 
         # Grab the HDF5 arrays
@@ -1329,14 +1323,14 @@ class NCodeSerpent(object):
         iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
         # Grab the tallies
-        if not hasattr(defchar, 'tallies'):
-           defchar.tallies = tally_types.serpent_default
+        if 'tallies' not in self.env:
+           self.env['tallies'] = tally_types.serpent_default
 
-        tallies = defchar.tallies
+        tallies = self.env['tallies']
 
         # Write the raw tally arrays for this time and this iso        
         for tally in xs_dict:
@@ -1420,15 +1414,15 @@ class NCodeSerpent(object):
             sys.path.insert(0, os.getcwd())
 
         # Import data
-        rx_res = __import__(defchar.reactor + "_deltam_res")
-        rx_dep = __import__(defchar.reactor + "_deltam_dep")
+        rx_res = __import__(self.env['reactor'] + "_deltam_res")
+        rx_dep = __import__(self.env['reactor'] + "_deltam_dep")
 
         # Ensure that the right file is imported and not just the cached version
         clean_reload(rx_res)
         clean_reload(rx_dep)
 
         # Open the hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
         # Calculate the effectiv ereactivity
@@ -1463,7 +1457,7 @@ class NCodeSerpent(object):
         """Analyzes the results of the isotopic sensitivity study, producing a report to stdout."""
 
         # Open the hdf5 file 
-        rx_h5 = tb.openFile(defchar.reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
         # Grab the appropriate table
