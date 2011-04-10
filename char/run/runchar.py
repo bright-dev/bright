@@ -24,7 +24,7 @@ class RunChar(object):
     # Controleer functions
     # 
 
-    def run_init(self):
+    def init_h5(self):
         """Inits the char library."""
 
         # Make a new HDF5 file.
@@ -47,7 +47,7 @@ class RunChar(object):
             self.n_code.init_h5_deltam()
 
 
-    def run_burnup(self, idx):
+    def burnup(self, idx):
         """Runs the burnup portion of char.
 
         idx : a list of indeces that could be supplied 
@@ -62,7 +62,7 @@ class RunChar(object):
             self.n_code.write_burnup(n, res, dep)
 
 
-    def run_xs_gen(self, idx):
+    def xs_gen(self, idx, isos):
         """Runs the cross-section generation portion of char.
 
         idx : a list of indeces that could be supplied 

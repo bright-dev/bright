@@ -23,6 +23,10 @@ from optparse import OptionParser
 import metasci
 from metasci.colortext import failure
 
+import isoname
+LLzz = isoname.LLzz
+zzLL = isoname.zzLL
+
 #################
 ### CHAR Libs ###
 #################
@@ -50,7 +54,7 @@ n_code_switch = {'': NCodeSerpent,
 
 
 def parse_slice(s, size):
-    """Parses a string into a list of indeces."""
+    """Parses a string into a list of indices."""
     l = [int(i) for i in s.split(':')]
 
     # Handle negative indices
@@ -65,6 +69,51 @@ def parse_slice(s, size):
         l.append(l[0] + 1)
 
     return l
+
+
+def cast_iso_zzaaam(s):
+    """Obtain a zzaaam representation of the isotope."""
+    s = s.upper()
+    iso_zz = 0
+
+    try:
+        iso_zz = isoname.mixed_2_zzaaam(s)
+    except RuntimeError:
+        iso_zz = LLzz[s] * 10000
+
+    if iso_zz < 10000:
+        iso_zz = iso_zz * 10000
+    
+    return iso_zz
+
+
+def parse_isos(s):
+    """Parses a string into a set of isotopes."""
+    iset = set()
+    isos = s.split(',')
+
+    for iso in isos:
+        if '-' in iso:
+            isplit = iso.split()
+            ilower = cast_iso_zzaaam(isplit[0])
+            iupper = cast_iso_zzaaam(isplit[1])
+            if 0 == iupper%10000:
+                iupper += 10000
+            else:
+                iupper += 1
+            tmpset = set(range(ilower, iupper))
+        else:
+            i = cast_iso_zzaaam(iso)
+            if 0 == iupper%10000:
+                irange = range(i, i + 10000)
+            else:
+                irange = [i]
+            tmpset = set(irange)
+
+        # Add the union 
+        iset = (iset | tmpset)
+        
+    return iset
 
 
 def main():
@@ -99,7 +148,10 @@ def main():
         default=False, help="Run the initial isotope sensitivity calculation.")
 
     parser.add_option("-n", "--npert",  action="store", dest="NPERT", 
-        default="", help="Give indices to run in Python slice syntax.")
+        default='', help="Pertubation indices to calculate, in Python slice syntax.")
+
+    parser.add_option("-I", "--isos",  action="store", dest="ISOS", 
+        default='', help="Isotopes to calculate.")
 
     parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
         help="Cleans the reactor direactory of current files.")
@@ -212,8 +264,12 @@ def main():
     runner = run_switch[env['scheduler']]
     runchar = runner(n_code, env)
 
-    # Get the slice indeces
+    # Get the inputs indeces
     idx = parse_slice(options.NPERT, n_code.nperturbations)
+    isos = parse_isos(options.ISOS)
+    if len(isos) == 0:
+FIXME
+        isos = set()
 
     # Make the input file unless otherwise specified.
     if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
