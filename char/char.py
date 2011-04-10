@@ -217,7 +217,7 @@ def main():
 
     # Make the input file unless otherwise specified.
     if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
-        runchar.make_input()
+        runchar.run_init()
 
     # Check a bunch of run conditions
     if options.RUN_TRANSPORT:
