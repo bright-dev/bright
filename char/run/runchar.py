@@ -5,6 +5,7 @@ import time
 import subprocess
 
 from metasci.colortext import message, failure
+from mass_stream import MassStream
 
 
 class RunChar(object):
@@ -37,7 +38,9 @@ class RunChar(object):
         # Make Cross-sections as a separate step from the burnup calculation
         if self.env['options'].RUN_XS_GEN:
             self.n_code.init_h5_xs_gen()
-            self.n_code.init_h5_flux_g()
+
+            if self.env['xs_models_needed']:
+                self.n_code.init_h5_flux_g()
 
         # Run initial isotope sensitivity calculation
         if self.env['options'].RUN_DELTAM:
@@ -57,4 +60,54 @@ class RunChar(object):
         for n in range(*ridx):
             res, dep = self.n_code.run_burnup_pert(n)
             self.n_code.write_burnup(n, res, dep)
+
+
+    def run_xs_gen(self, idx):
+        """Runs the cross-section generation portion of char.
+
+        idx : a list of indeces that could be supplied 
+              to range() or slice().
+        """
+        # Loop over the perturbation steps
+        for n in range(*idx):
+            # Grab the MassStream at this time.
+            ms_n = MassStream()
+            ms_n.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", n)
+
+            # Calc restricted mass streams
+            ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent']['zzaaam'])
+            ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent']['zzaaam'])
+
+FIXME
+
+            #
+            # Loop over all output isotopes that are valid in serpent
+            #
+            for iso in self.env['core_transmute_in_serpent']['zzaaam']:
+                res, det = self.run_xs_gen_pert(iso, n, ms_n_in_serpent)
+                self.write_xs_gen(iso, n, res, det)
+
+            #
+            # Prep for isotopes not in serpent
+            #
+            if 0 == len(self.env['core_transmute_not_in_serpent']['zzaaam']):
+                continue
+
+            # Run and write the high resolution flux
+            res, det = self.run_flux_g_pert(n, ms_n_in_serpent)
+            self.write_flux_g(n, res, det)
+
+            # Read in some common parameters from the data file
+            with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
+                E_g = np.array(rx_h5.root.energy[n][::-1])
+                E_n = np.array(rx_h5.root.hi_res.energy.read()[::-1])
+                phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
+
+            #
+            # Loop over all output isotopes that are NOT valid in serpent
+            #
+            for iso in self.env['core_transmute_not_in_serpent']['zzaaam']:
+                # Run and write out these cross-sections to the data file
+                xsd = self.run_xs_mod_pert(iso, n, E_n, E_g, phi_g)
+                self.write_xs_mod(iso, n, xsd)
 

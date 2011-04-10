@@ -76,12 +76,17 @@ class NCodeSerpent(object):
         self.ntimes = len(self.env['burn_times'])
         self.G = len(self.env['group_structure']) - 1
 
+        # Grab stock high-resolution group structure
+        if self.env['xs_models_needed']:
+            with tb.openFile(msn.nuc_data, 'r') as f:
+                self.hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
+
         # Make perturbation table
         data = [self.env[a] for a in self.env['perturbation_params']]
         self.perturbations = [p for p in product(*data)]
         self.nperturbations = len(self.perturbations)
-        self.pert_cols = {p: [row[i] for row in self.perturbations] 
-                                     for i, p in enumerate(self.env['perturbation_params'])}
+        self.pert_cols = {p: np.array([row[i] for row in self.perturbations])
+                                              for i, p in enumerate(self.env['perturbation_params'])}
 
     #
     # Serpent input file generation methods
@@ -457,13 +462,13 @@ class NCodeSerpent(object):
             f.write(self.env['xs_gen_template'].format(**self.serpent_fill))
 
 
-    def make_flux_g_input(self, iso="U235", n=0, group_structure=None):
+    def make_flux_g_input(self, n):
         # Make the flux only calculation with this energy group structure
-        self.serpent_fill.update(self.make_input_energy_groups(group_structure))
+        self.serpent_fill.update(self.make_input_energy_groups(self.hi_res_group_structure))
 
         # Load the detectors to ensure valid entries,
         # Then wash out mutlipliers that are not just the flux
-        self.serpent_fill.update(self.make_detector(iso))
+        self.serpent_fill.update(self.make_detector("U235"))
         self.serpent_fill['xsdet'] = "% Only calculating the flux here!"
 
         # Fill the XS template
@@ -471,7 +476,7 @@ class NCodeSerpent(object):
             f.write(self.env['xs_gen_template'].format(**self.serpent_fill))
 
         # Restore the detectors and energy groups to their default values
-        self.serpent_fill.update(self.make_detector(iso))
+        self.serpent_fill.update(self.make_detector("U235"))
         self.serpent_fill.update(self.make_input_energy_groups())
 
 
@@ -611,6 +616,8 @@ class NCodeSerpent(object):
         iso_zz = isoname.mixed_2_zzaaam(iso)
         iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
+        args_xs_gen = "{0}_xs_gen_{1}_{2} {3}".format(self.env['reactor'], iso_LL, n, self.mpi_flag)
+
         info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
         self.env['logger'].info(info_str.format(iso_LL, n))
 
@@ -629,14 +636,13 @@ class NCodeSerpent(object):
         isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
         ms = MassStream(isovec)
 
-        # Update fuel in serpent_fill
-        self.serpent_fill['fuel'] = self.make_input_fuel(ms)
-
         # Make new input file
+        self.make_common_input(n)
+        self.serpent_fill['fuel'] = self.make_input_fuel(ms)
         self.make_xs_gen_input(iso_LL, n)
 
         # Run serpent on this input file as a subprocess
-        rtn = subprocess.call(run_command_xs_gen, shell=True)
+        rtn = self.run_serpent(args_xs_gen)
 
         # Parse this run 
         res, det = self.parse_xs_gen(iso_LL, n)
@@ -654,6 +660,8 @@ class NCodeSerpent(object):
         """
         self.env['logger'].info("Generating high resolution flux for use with non-serpent models.")
 
+        args_flux_g = "{0}_flux_g_{1} {2}".format(self.env['reactor'], n, self.mpi_flag)
+
         # Make mass stream 
         top_up_mass = 1.0 - ms_n.mass
         if top_up_mass == 0.0:
@@ -665,14 +673,13 @@ class NCodeSerpent(object):
         isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
         ms = MassStream(isovec)
 
-        # Update fuel in serpent_fill
-        self.serpent_fill['fuel'] = self.make_input_fuel(ms)
-
         # Make new input file
-        self.make_flux_g_input(group_structure=hi_res_group_structure)
+        self.make_common_input(n)
+        self.serpent_fill['fuel'] = self.make_input_fuel(ms)
+        self.make_flux_g_input(n)
 
         # Run serpent on this input file as a subprocess
-        rtn = subprocess.call(run_command_flux_g, shell=True)
+        rtn = self.run_serpent(args_flux_g)
 
         # Parse & write this output to HDF5
         res, det = self.parse_flux_g(n)
@@ -709,43 +716,10 @@ class NCodeSerpent(object):
 
     def run_xs_gen(self):
         """Runs the cross-section generation portion of CHAR."""
-        # Initializa the common serpent_fill values
-        self.make_common_input(0)
-        mpi_flag = self.get_mpi_flag()
-        run_command_xs_gen = "{0} {1}_xs_gen {2}".format(self.run_str, self.env['reactor'], mpi_flag)
-        run_command_flux_g = "{0} {1}_flux_g {2}".format(self.run_str, self.env['reactor'], mpi_flag)
-
-        # Open the hdf5 library
-        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
-
-        # Get the number of time points from the file
-        nperturbations = len(rx_h5.root.perturbations)
-
-        # close the file before returning
-        rx_h5.close()
-
-        # Initialize the hdf5 file to take XS data
-        self.init_h5_xs_gen(nperturbations)
-
-        # Initialize run if non-seprent isotopes are present
-        if 0 < len(self.env['core_transmute_not_in_serpent']['zzaaam']):
-            # Grab stock high-resolution group structure
-            with tb.openFile(msn.nuc_data, 'r') as f:
-                hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
-
-            # Initialize the hdf5 file for the high-res structure
-            self.init_h5_flux_g(nperturbations, hi_res_group_structure)
-
         # Loop over all times
         for n in range(nperturbations):
-            # Grab the MassStream at this time.
-            self.make_common_input(n)
-            ms_n = MassStream()
-            ms_n.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", 2)
 
-            # Calc restricted mass streams
-            ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent']['zzaaam'])
-            ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent']['zzaaam'])
+FIXME
 
             #
             # Loop over all output isotopes that are valid in serpent
@@ -866,18 +840,18 @@ class NCodeSerpent(object):
 
     def parse_burnup(self, n):
         """Parse the burnup/depletion files into an equivelent python modules."""
-        res_file = self.env['reactor'] + "_burnup_{0}_res.m".format(n)
-        dep_file = self.env['reactor'] + "_burnup_{0}_dep.m".format(n)
+        res_file = self.env['reactor'] + "_burnup_{0}_res".format(n)
+        dep_file = self.env['reactor'] + "_burnup_{0}_dep".format(n)
 
         # Convert files
-        convert_res(res_file)
-        convert_dep(dep_file)
+        convert_res(res_file + ".m")
+        convert_dep(dep_file + ".m")
 
         # Get data
         res = {}
         dep = {}
-        execfile(res_file, {}, res)
-        execfile(dep_file, {}, dep)
+        execfile(res_file + ".py", {}, res)
+        execfile(dep_file + ".py", {}, dep)
 
         return res, dep
 
@@ -1091,7 +1065,7 @@ class NCodeSerpent(object):
         rx_h5.close()
 
 
-    def init_h5_flux_g(self, group_structure=None):
+    def init_h5_flux_g(self):
         """Initialize the hdf5 file for a set of high-resoultion flux calculations."""
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
@@ -1102,11 +1076,8 @@ class NCodeSerpent(object):
             rx_h5.removeNode(base_group, "hi_res", recursive=True)
         hi_res_group = rx_h5.createGroup(base_group, "hi_res", "High Resolution Group Fluxes")
 
-        # Get default group structure
-        if group_structure is None:
-            group_structure = self.env['group_structure']
-
-        # Number of energy groups
+        # Get default group structure and number of energy groups
+        group_structure = self.hi_res_group_structure
         G = len(group_structure) - 1
 
         # Init the raw tally arrays
