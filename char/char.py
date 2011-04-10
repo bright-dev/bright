@@ -268,12 +268,13 @@ def main():
     idx = parse_slice(options.NPERT, n_code.nperturbations)
     isos = parse_isos(options.ISOS)
     if len(isos) == 0:
-FIXME
-        isos = set()
+        isos = set(env['core_transmute']['zzaaam'])
+    else:
+        isos = (isos & set(env['core_transmute']['zzaaam']))
 
     # Make the input file unless otherwise specified.
     if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
-        runchar.run_init()
+        runchar.init_h5()
 
     # Check a bunch of run conditions
     if options.RUN_TRANSPORT:
@@ -292,11 +293,11 @@ FIXME
         # Make tranumatrion libraries by executing the as a separate step from 
         # the cross-section generation
         if options.RUN_BURNUP:
-            runchar.run_burnup(idx)
+            runchar.burnup(idx)
 
         # Make Cross-sections as a separate step from the burnup calculation
         if options.RUN_XS_GEN:
-            n_code.run_xs_gen()
+            runchar.xs_gen(idx, isos)
 
         # Run initial isotope sensitivity calculation
         if options.RUN_DELTAM:

@@ -67,7 +67,11 @@ class RunChar(object):
 
         idx : a list of indeces that could be supplied 
               to range() or slice().
+        isos : a set of isotopes to run (zzaaaam-form).
         """
+        isos_in_serpent = (isos & set(self.env['core_transmute_in_serpent']['zzaaam']))
+        isos_not_in_serpent = (isos & set(self.env['core_transmute_in_serpent']['zzaaam']))
+
         # Loop over the perturbation steps
         for n in range(*idx):
             # Grab the MassStream at this time.
@@ -78,24 +82,13 @@ class RunChar(object):
             ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent']['zzaaam'])
             ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent']['zzaaam'])
 
-FIXME
-
             #
-            # Loop over all output isotopes that are valid in serpent
+            # Loop over all output isotopes...
             #
-            for iso in self.env['core_transmute_in_serpent']['zzaaam']:
-                res, det = self.run_xs_gen_pert(iso, n, ms_n_in_serpent)
-                self.write_xs_gen(iso, n, res, det)
-
-            #
-            # Prep for isotopes not in serpent
-            #
-            if 0 == len(self.env['core_transmute_not_in_serpent']['zzaaam']):
-                continue
-
-            # Run and write the high resolution flux
-            res, det = self.run_flux_g_pert(n, ms_n_in_serpent)
-            self.write_flux_g(n, res, det)
+            # ...that are valid in serpent
+            for iso in isos_in_serpent:
+                res, det = self.n_code.run_xs_gen_pert(iso, n, ms_n_in_serpent)
+                self.n_code.write_xs_gen(iso, n, res, det)
 
             # Read in some common parameters from the data file
             with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
@@ -103,11 +96,15 @@ FIXME
                 E_n = np.array(rx_h5.root.hi_res.energy.read()[::-1])
                 phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
 
-            #
-            # Loop over all output isotopes that are NOT valid in serpent
-            #
-            for iso in self.env['core_transmute_not_in_serpent']['zzaaam']:
-                # Run and write out these cross-sections to the data file
-                xsd = self.run_xs_mod_pert(iso, n, E_n, E_g, phi_g)
-                self.write_xs_mod(iso, n, xsd)
+            # Run and write the high resolution flux
+            if (phi_n < 0.0).all():
+                res, det = self.n_code.run_flux_g_pert(n, ms_n_in_serpent)
+                self.n_code.write_flux_g(n, res, det)
+                with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
+                    phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
+
+            # ...that are NOT valid in serpent
+            for iso in isos_not_in_serpent:
+                xsd = self.n_code.run_xs_mod_pert(iso, n, E_n, E_g, phi_g)
+                self.n_code.write_xs_mod(iso, n, xsd)
 

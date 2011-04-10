@@ -491,17 +491,6 @@ class NCodeSerpent(object):
             f.write(self.env['burnup_template'].format(**self.serpent_fill))
 
 
-    def make_input(self):
-        # Initilaize a new HDF5 file with this defchar info. 
-        self.make_common_input(0)
-
-        self.make_burnup_input(0)
-
-        self.make_xs_gen_input()
-
-        self.make_flux_g_input(group_structure=[0.1, 0.25, 1.0, 10.0, 25.0])
-
-
     def get_mpi_flag(self):
         mpi_flag = ''
 
@@ -714,59 +703,23 @@ class NCodeSerpent(object):
 
 
 
-    def run_xs_gen(self):
-        """Runs the cross-section generation portion of CHAR."""
-        # Loop over all times
-        for n in range(nperturbations):
-
-FIXME
-
-            #
-            # Loop over all output isotopes that are valid in serpent
-            #
-            for iso in self.env['core_transmute_in_serpent']['zzaaam']:
-                res, det = self.run_xs_gen_pert(iso, n, ms_n_in_serpent)
-                self.write_xs_gen(iso, n, res, det)
-
-            #
-            # Prep for isotopes not in serpent
-            #
-            if 0 == len(self.env['core_transmute_not_in_serpent']['zzaaam']):
-                continue
-
-            # Run and write the high resolution flux
-            res, det = self.run_flux_g_pert(n, ms_n_in_serpent)
-            self.write_flux_g(n, res, det)
-
-            # Read in some common parameters from the data file
-            with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
-                E_g = np.array(rx_h5.root.energy[n][::-1])
-                E_n = np.array(rx_h5.root.hi_res.energy.read()[::-1])
-                phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
-
-            #
-            # Loop over all output isotopes that are NOT valid in serpent
-            #
-            for iso in self.env['core_transmute_not_in_serpent']['zzaaam']:
-                # Run and write out these cross-sections to the data file
-                xsd = self.run_xs_mod_pert(iso, n, E_n, E_g, phi_g)
-                self.write_xs_mod(iso, n, xsd)
-
-
-
     def run_deltam_pert(self, iso, n, s, iso_fracs):
-        """Runs a pertutbation."""
-        info_str = 'Running {0} sensitivity study at mass fraction {1} at perturbation step {2}.'.format(iso_zz, iso_fracs[s], n)
+        """Runs a sensitivity pertutbation."""
+        # Ensure that pertubrations are at time t = 0
+        if 0 != n%self.ntimes:
+            raise IndexError("Sensitivities must be started at t = 0 perturbations.")
+
+        argstr = "{0}_deltam_{1}_{2}_{3} {4}".format(self.env['reactor'], iso, n, s, self.mpi_flag)
+
+        info_str = 'Running {0} sensitivity study at mass fraction {1} at perturbation step {2}.'.format(iso, iso_fracs[s], n)
         self.env['logger'].info(info_str)
 
-        # Ensure we are where we think we are by remaking the common input
-        self.make_common_input(n)
-
         # Make new input file
+        self.make_common_input(n)
         self.make_deltam_input(iso, n, s, iso_fracs)
 
         # Run serpent on this input file as a subprocess
-        rtn = subprocess.call(run_command, shell=True)
+        rtn = self.run_serpent(argstr)
 
         # Parse & write this output to HDF5
         res, dep = self.parse_deltam(iso, n, s)
@@ -777,30 +730,12 @@ FIXME
 
     def run_deltam(self):
         """Runs the isotopic sensitivity study."""
-        # Initializa the common serpent_fill values
-        self.make_common_input(0)
-        run_command = "{0} {1}_deltam {2}".format(self.run_str, self.env['reactor'], self.get_mpi_flag())
-
-        # Open the hdf5 library
-        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'r')
-
-        # Get the number of time points from the file
-        nperturbations = len(rx_h5.root.perturbations)
-
-        # close the file before returning
-        rx_h5.close()
-
-        # Initialize the hdf5 file to take sensitivity data
-        self.init_h5_deltam()
 
         nsense = len(self.env['deltam'])
         ntimes = len(self.env['burn_times'])
 
         # Loop over all non-burnup perturbations.
         for n in range(nperturbations):
-            # Ensure that the burnup times are at t = 0
-            if 0 != n%ntimes:
-                continue
 
             self.env['logger'].info('Starting isotopic sensitivity study at perturbation step {0}.'.format(n))
 
@@ -830,13 +765,6 @@ FIXME
     #
     # Parsing functions
     #
-
-    def parse(self):
-        """Convienence function to parse results."""
-        self.parse_burnup()
-        self.write_burnup()
-        self.env['logger'].info('Parsed burnup calculation.')
-
 
     def parse_burnup(self, n):
         """Parse the burnup/depletion files into an equivelent python modules."""
