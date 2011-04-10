@@ -74,6 +74,7 @@ class NCodeSerpent(object):
         # Set some helpful attributes 
         self.mpi_flag = self.get_mpi_flag()
         self.ntimes = len(self.env['burn_times'])
+        self.G = len(self.env['group_structure']) - 1
 
         # Make perturbation table
         data = [self.env[a] for a in self.env['perturbation_params']]
@@ -116,7 +117,7 @@ class NCodeSerpent(object):
             init_iso_conc = {} 
 
             for iiv in self.env['initial_iso_keys']:
-                iiv_col = self.pert_cols['iiv']
+                iiv_col = self.pert_cols[iiv]
 
                 iso_zz = isoname.mixed_2_zzaaam(iiv.partition('_')[2])
                 pert_isos.add(iso_zz)
@@ -1004,7 +1005,7 @@ class NCodeSerpent(object):
         base_group = "/"
 
         # Number of energy groups
-        G = self.serpent_fill['n_groups']
+        G = self.G
 
         # Init the raw tally arrays
         neg1 = -1.0 * np.ones( (self.nperturbations, ) )
@@ -1045,7 +1046,7 @@ class NCodeSerpent(object):
         base_group = "/"
 
         # Number of energy groups
-        G = self.serpent_fill['n_groups']
+        G = self.G
 
         # Grab the tallies
         if 'tallies' in self.env:
