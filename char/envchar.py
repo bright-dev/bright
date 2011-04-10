@@ -193,7 +193,7 @@ class RemoteConnection(object):
 
 
 
-def update_env_for_execution(env[:
+def update_env_for_execution(env):
     """Updates the env namespace for runs where an execution is going to occur."""
     # Make isotopic lists
     if isinstance(env['core_load_isos'], basestring):
@@ -205,7 +205,7 @@ def update_env_for_execution(env[:
 
     if isinstance(env['core_transmute_isos'], basestring):
         env['core_transmute'] = iso_file_conversions(env['core_transmute_isos'])
-    elif isinstance(env['core_transmute_isos, list):
+    elif isinstance(env['core_transmute_isos'], list):
         env['core_transmute'] = iso_list_conversions(env['core_transmute_isos'])
     else:
         raise TypeError("The core_transmute_isos type was not correct.")

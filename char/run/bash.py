@@ -67,18 +67,18 @@ class Bash(RunChar):
 
         # Report times
         time_msg = "{0:.3G}".format((t2-t1)/60.0)
-        self.env.logger.info("Transport executed in {0} minutes.".format(time_msg))
-        if 0 < defchar.verbosity:
+        self.env['logger'].info("Transport executed in {0} minutes.".format(time_msg))
+        if 0 < self.env['verbosity']:
             print(message("\nTransport executed in {0:time} minutes.\n", time_msg ))
 
 
     def run_remotely(self):
         """Runs the transport calculation on a remote machine"""
-         if 0 < self.env.verbosity:
+        if 0 < self.env['verbosity']:
             print(message("Copying files to remote server."))
 
-        rs = self.env.run_script
-        rc = self.env.remote_connection
+        rs = self.env['run_script']
+        rc = self.env['remote_connection']
 
         try:
             # Make remote directory, if it isn't already there
@@ -95,11 +95,11 @@ class Bash(RunChar):
 
             # Run char
             rc.run("source /etc/profile; cd {rc.dir}; ./{rs} > run.log 2>&1 &".format(rc=rc, rs=rs))
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(message("Running transport code remotely."))
 
         except NameError:
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(failure(remote_err_msg))
 
         # My work here is done
@@ -113,14 +113,14 @@ class Bash(RunChar):
 
     def fetch(self):
         """Fetches files from remote server."""
-        if 0 < self.env.verbosity:
+        if 0 < self.env['verbosity']:
             print(message("Fetching files from remote server."))
 
         try:
             for outputfile in self.n_code.fetch_remote_files:
-                self.env.remote_connection.get(self.env.remote_connection.dir + outputfile, ".")
+                self.env['remote_connection'].get(self.env.remote_connection.dir + outputfile, ".")
         except NameError:
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(failure(remote_err_msg))
 
         raise SystemExit
@@ -128,7 +128,7 @@ class Bash(RunChar):
 
     def pid(self):
         """Finds the process id for a currently running char instance."""
-        if self.env.options.LOCAL:
+        if self.env['options'].LOCAL:
             rflag = ''
             spout = subprocess.check_output("ps ux | grep {0}".format(self.n_code.run_str), shell=True) 
         else:
@@ -138,19 +138,19 @@ class Bash(RunChar):
                                                 self.n_code.run_str, rc=self.env.remote_connection), 
                                                 shell=True) 
             except NameError:
-                if 0 < self.env.verbosity:
+                if 0 < self.env['verbosity']:
                     print(failure(remote_err_msg))
 
         spout = spout.split('\n')[:-1]
         if len(spout) < 1:
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(message("{0}Process Not Running.".format(rflag)))
             raise SystemExit
 
         self.pid = spout[0].split()[1]
         self.prt = spout[0].split()[9]
 
-        if 0 < defchar.verbosity:
+        if 0 < self.env['verbosity']:
             print(message("{0}Process ID: {1}".format(rflag, self.pid)))
             print(message("{0}Process Runtime: {1:time} min.", rflag, self.prt))
 
@@ -166,17 +166,17 @@ class Bash(RunChar):
             pass
 
         # Kill the process
-        if self.env.options.LOCAL:
+        if self.env['options'].LOCAL:
             rflag = ''
             spout = subprocess.check_output("kill {0}".format(self.pid), shell=True)
         else:
             rflag = 'Remote '
             spout = '\n'
-            self.env.remote_connection.run("kill {0}".format(self.pid))
+            self.env['remote_connection'].run("kill {0}".format(self.pid))
 
         spout = spout.split('\n')[:-1]
 
-        if 0 < self.env.verbosity:
+        if 0 < self.env['verbosity']:
             print(spout)
             print(message("{0}Process Killed.".format(rflag)))
 

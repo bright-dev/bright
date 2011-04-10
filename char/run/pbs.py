@@ -43,15 +43,14 @@ class Pbs(RunChar):
         run_fill["PBS_general_settings"] += "#PBS -M {0}\n".format(defchar.email)
         run_fill["PBS_general_settings"] += "#PBS -m abe\n".format(defchar.email)
 
-
-        run_fill['PBS_job_context']  = "echo \"The master node of this job is: $PBS_O_HOST\"\n"
-        run_fill['PBS_job_context'] += "NPROCS=`wc -l < $PBS_NODEFILE`\n"
-        run_fill['PBS_job_context'] += "NNODES=`uniq $PBS_NODEFILE | wc -l`\n"
-        run_fill['PBS_job_context'] += "echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\$
-        run_fill['PBS_job_context'] += "echo \"-----------------------\"\n"
-        run_fill['PBS_job_context'] += "uniq $PBS_NODEFILE | sort\n"
-        run_fill['PBS_job_context'] += "echo \"-----------------------\"\n"
-        run_fill['PBS_job_context'] += "echo \"\"\n"
+        run_fill['PBS_job_context']  = 'echo \"The master node of this job is: $PBS_O_HOST\"\n'
+        run_fill['PBS_job_context'] += 'NPROCS=`wc -l < $PBS_NODEFILE`\n'
+        run_fill['PBS_job_context'] += 'NNODES=`uniq $PBS_NODEFILE | wc -l`\n'
+        run_fill['PBS_job_context'] += 'echo \"This job is using $NPROCS CPU(s) on the following $NNODES node(s):\"\$'
+        run_fill['PBS_job_context'] += 'echo \"-----------------------\"\n'
+        run_fill['PBS_job_context'] += 'uniq $PBS_NODEFILE | sort\n'
+        run_fill['PBS_job_context'] += 'echo \"-----------------------\"\n'
+        run_fill['PBS_job_context'] += 'echo \"\"\n'
 
 
         # Remote copy commands
@@ -72,10 +71,10 @@ class Pbs(RunChar):
         run_fill.update(self.n_code.run_script_fill_values())
 
         # Fill the template
-        with open(self.env.run_script, 'w') as f:
+        with open(self.env['run_script'], 'w') as f:
             f.write(run_script_template.format(**run_fill))
 
-        os.chmod(self.env.run_script, 0o755)
+        os.chmod(self.env['run_script'], 0o755)
 
 
     def run_locally(self):
@@ -86,18 +85,18 @@ class Pbs(RunChar):
 
         # Report times
         time_msg = "{0:.3G}".format((t2-t1)/60.0)
-        self.env.logger.info("Transport executed in {0} minutes.".format(time_msg))
-        if 0 < defchar.verbosity:
+        self.env['logger'].info("Transport executed in {0} minutes.".format(time_msg))
+        if 0 < self.env['verbosity']:
             print(message("\nTransport executed in {0:time} minutes.\n", time_msg ))
 
 
     def run_remotely(self):
         """Runs the transport calculation on a remote machine"""
-         if 0 < self.env.verbosity:
+        if 0 < self.env['verbosity']:
             print(message("Copying files to remote server."))
 
-        rs = self.env.run_script
-        rc = self.env.remote_connection
+        rs = self.env['run_script']
+        rc = self.env['remote_connection']
 
         try:
             # Make remote directory, if it isn't already there
@@ -114,11 +113,11 @@ class Pbs(RunChar):
 
             # Run char
             rc.run("source /etc/profile; cd {rc.dir}; qsub {rs} > run.log 2>&1 &".format(rc=rc, rs=rs))
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(message("Running transport code remotely."))
 
         except NameError:
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(failure(remote_err_msg))
 
         # My work here is done
@@ -127,14 +126,14 @@ class Pbs(RunChar):
 
     def fetch(self):
         """Fetches files from remote server."""
-        if 0 < self.env.verbosity:
+        if 0 < self.env['verbosity']:
             print(message("Fetching files from remote server."))
 
         try:
             for outputfile in self.n_code.fetch_remote_files:
                 self.env.remote_connection.get(self.env.remote_connection.dir + outputfile, ".")
         except NameError:
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(failure(remote_err_msg))
 
         raise SystemExit
@@ -142,7 +141,7 @@ class Pbs(RunChar):
 
     def pid(self):
         """Finds the process id for a currently running char instance."""
-        if self.env.options.LOCAL:
+        if self.env['options'].LOCAL:
             rflag = ''
             spout = subprocess.check_output("qstat -u {0}| grep {1}".format(os.getlogin(), self.n_code.run_str), shell=True) 
         else:
@@ -150,20 +149,20 @@ class Pbs(RunChar):
             try:
                 spout = subprocess.check_output("ssh {rc.user}@{rc.url} 'qstat -u {rc.user}'".format(rc=rc), shell=True)
             except NameError:
-                if 0 < self.env.verbosity:
+                if 0 < self.env['verbosity']:
                     print(failure(remote_err_msg))
 
         spout = spout.split('\n')
         if len(spout) < 2:
-            if 0 < self.env.verbosity:
+            if 0 < self.env['verbosity']:
                 print(message("{0}Process Not Running.".format(rflag)))
             raise SystemExit
 
         spout = spout[-2].split()
         self.pid = spout[0].partition('.')[0]
-        self.prt = spout[-1
+        self.prt = spout[-1]
 
-        if 0 < defchar.verbosity:
+        if 0 < self.env['verbosity']:
             print(message("{0}Process ID: {1}".format(rflag, self.pid)))
             print(message("{0}Process Runtime: {1:time} min.", rflag, self.prt))
 
@@ -179,18 +178,18 @@ class Pbs(RunChar):
             pass
 
         # Kill the process
-        if self.env.options.LOCAL:
+        if self.env['options'].LOCAL:
             rflag = ''
             spout = subprocess.check_output("qdel {0}".format(self.pid), shell=True)
         else:
             rflag = 'Remote '
             spout = '\n'
-            self.env.remote_connection.run("qdel {0}".format(self.pid))
-            self.env.remote_connection.run("cluster-kill sss-dev")
+            self.env['remote_connection'].run("qdel {0}".format(self.pid))
+            self.env['remote_connection'].run("cluster-kill sss-dev")
 
         spout = spout.split('\n')[:-1]
 
-        if 0 < self.env.verbosity:
+        if 0 < self.env['verbosity']:
             print(spout)
             print(message("{0}Process Killed.".format(rflag)))
 

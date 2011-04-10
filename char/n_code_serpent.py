@@ -95,7 +95,7 @@ class NCodeSerpent(object):
             iso_serp = isoname.mixed_2_zzaaam(iso)
             iso_serp = zzaaam_2_serpent(iso_serp)
 
-            comp_str += "{0:>11}".format("{0}.{1}".format(iso_serp, self.env['temp_flag))
+            comp_str += "{0:>11}".format("{0}.{1}".format(iso_serp, self.env['temp_flag']))
 
             if mass_weighted:
                 comp_str += "  -{0:.5G}\n".format(comp[iso])
@@ -544,7 +544,7 @@ class NCodeSerpent(object):
         rsfv['transport_job_context'] = self.run_str + " -version"
 
         # Set Run_Commands 
-        if self.env['options.LOCAL:
+        if self.env['options'].LOCAL:
             rsfv['run_commands'] = ''
         else:
             rsfv['run_commands'] = ''
@@ -774,7 +774,7 @@ class NCodeSerpent(object):
             #
             for iso in self.env['core_transmute_not_in_serpent']['zzaaam']:
                 # Run and write out these cross-sections to the data file
-                xsd = self.run_xs_mod_pert(iso, n, E_n, E_g, phi_g):
+                xsd = self.run_xs_mod_pert(iso, n, E_n, E_g, phi_g)
                 self.write_xs_mod(iso, n, xsd)
 
 
@@ -1348,7 +1348,7 @@ class NCodeSerpent(object):
 
     def write_flux_g(self, n, res, det):
         # Open a new hdf5 file 
-        rx_h5 = tb.openFile(self.env['reactor + ".h5", 'a')
+        rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root.hi_res
 
         # Grab the HDF5 arrays
