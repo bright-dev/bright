@@ -7,10 +7,11 @@ import subprocess
 from metasci.colortext import message, failure
 
 # Char Libraries
+from runchar import RunChar
 from ..templates.run_script import template as run_script_template
 
 
-class Bash(object):
+class Bash(RunChar):
     """A controller to run char in the Bourne-Again Shell."""
 
     def __init__(self, n_code, env):
@@ -18,8 +19,7 @@ class Bash(object):
             * n_code: a neutron transport model
             * env: the environment to execute the model in.
         """
-        self.n_code = n_code
-        self.env = env
+        super(Bash, self).__init__(n_code, env)
 
 
     def make_run_script(self):
@@ -54,6 +54,10 @@ class Bash(object):
 
         os.chmod(self.env.run_script, 0o755)
 
+
+    #
+    # Where to run methods
+    # 
 
     def run_locally(self):
         """Runs the transport calculation on the local machine."""
@@ -101,6 +105,11 @@ class Bash(object):
         # My work here is done
         raise SystemExit
 
+
+
+    #
+    # Process and file helper methods
+    #
 
     def fetch(self):
         """Fetches files from remote server."""

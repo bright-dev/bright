@@ -8,10 +8,11 @@ from math import ceil
 from metasci.colortext import message, failure
 
 # Char Libraries
+from runchar import RunChar
 from ..templates.run_script import template as run_script_template
 
 
-class Pbs(object):
+class Pbs(RunChar):
     """A controller to run char in the PBS/Torque scheduler."""
 
     def __init__(self, n_code, env):
@@ -19,8 +20,7 @@ class Pbs(object):
             * n_code: a neutron transport model
             * env: the environment to execute the model in.
         """
-        self.n_code = n_code
-        self.env = env
+        super(Pbs, self).__init__(n_code, env)
 
 
     def make_run_script(self):

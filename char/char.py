@@ -48,9 +48,26 @@ n_code_switch = {'': NCodeSerpent,
                  'serpent': NCodeSerpent, 
                  }
 
-def main():
-    global defchar
 
+def parse_slice(s, size):
+    """Parses a string into a list of indeces."""
+    l = [int(i) for i in s.split(':')]
+
+    # Handle negative indices
+    for n in range(len(l)):
+        if l[n] < 0:
+            l[n] = size + l[n]
+
+    if len(l) == 0:
+        l = [0, size]
+
+    if len(i) == 1:
+        l.append(l[0] + 1)
+
+    return l
+
+
+def main():
     ###########################
     ### Command Line Parser ###
     ###########################
@@ -80,6 +97,9 @@ def main():
 
     parser.add_option("-m", "--delta-mass",  action="store_true", dest="RUN_DELTAM", 
         default=False, help="Run the initial isotope sensitivity calculation.")
+
+    parser.add_option("-n", "--npert",  action="store", dest="NPERT", 
+        default="", help="Give indices to run in Python slice syntax.")
 
     parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
         help="Cleans the reactor direactory of current files.")
@@ -185,15 +205,19 @@ def main():
 
     # Set the transport code
     n_coder = n_code_switch[env['transporter']]
-    env['n_code'] = n_coder(env)
+    n_code = n_coder(env)
+    env['n_code'] = n_code
 
     # Get the run controller
     runner = run_switch[env['scheduler']]
     runchar = runner(n_code, env)
 
+    # Get the slice indeces
+    idx = parse_slice(options.NPERT, n_code.nperturbations)
+
     # Make the input file unless otherwise specified.
     if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
-        n_code.make_input()
+        runchar.make_input()
 
     # Check a bunch of run conditions
     if options.RUN_TRANSPORT:
@@ -212,7 +236,7 @@ def main():
         # Make tranumatrion libraries by executing the as a separate step from 
         # the cross-section generation
         if options.RUN_BURNUP:
-            n_code.run_burnup()
+            runchar.run_burnup(idx)
 
         # Make Cross-sections as a separate step from the burnup calculation
         if options.RUN_XS_GEN:
