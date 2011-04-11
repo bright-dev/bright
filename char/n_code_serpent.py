@@ -483,11 +483,12 @@ class NCodeSerpent(object):
     def make_deltam_input(self, iso, n, s, frac):
         """While n indexs the perturbations, iso is the isotope (zzaaam) to perturb and 
         frac is the new mass fraction of this isotope."""
+        iso_LL = isoname.mixed_2_LLAAAM(iso)
         self.serpent_fill.update(self.make_burnup(n))
         self.serpent_fill.update(self.make_deltam(iso, frac[s]))
 
         # Fill the burnup template
-        with open(self.env['reactor'] + "_deltam_{0}_{1}_{2}".format(iso, n, s), 'w') as f:
+        with open(self.env['reactor'] + "_deltam_{0}_{1}_{2}".format(iso_LL, n, s), 'w') as f:
             f.write(self.env['burnup_template'].format(**self.serpent_fill))
 
 
@@ -709,7 +710,8 @@ class NCodeSerpent(object):
         if 0 != n%self.ntimes:
             raise IndexError("Sensitivities must be started at t = 0 perturbations.")
 
-        argstr = "{0}_deltam_{1}_{2}_{3} {4}".format(self.env['reactor'], iso, n, s, self.mpi_flag)
+        iso_LL = isoname.mixed_2_LLAAAM(iso)
+        argstr = "{0}_deltam_{1}_{2}_{3} {4}".format(self.env['reactor'], iso_LL, n, s, self.mpi_flag)
 
         info_str = 'Running {0} sensitivity study at mass fraction {1} at perturbation step {2}.'.format(iso, iso_fracs[s], n)
         self.env['logger'].info(info_str)
@@ -725,41 +727,6 @@ class NCodeSerpent(object):
         res, dep = self.parse_deltam(iso, n, s)
 
         return res, dep
-
-
-
-    def run_deltam(self):
-        """Runs the isotopic sensitivity study."""
-
-        nsense = len(self.env['deltam'])
-        ntimes = len(self.env['burn_times'])
-
-        # Loop over all non-burnup perturbations.
-        for n in range(nperturbations):
-
-            self.env['logger'].info('Starting isotopic sensitivity study at perturbation step {0}.'.format(n))
-
-            # Loop over all isotopes
-            for iso_zz in self.env['IHM_stream'].comp.keys():
-                iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
-
-                # Load this perturbations IHM stream
-                self.update_initial_fuel(n)
-
-                # Calulate this isotopes new values of IHM concentration
-                iso_fracs = self.env['deltam'] * self.ihm_stream.comp[iso_zz]
-
-                # Skip isotopes that would be pertubed over 1 kgIHM
-                if (1.0 < iso_fracs).any():
-                    continue
-
-                # Loop over all isotopic sesnitivities
-                for s in range(nsense):
-                    res, dep = self.run_deltam_pert(iso_zz, n, s, iso_fracs)
-                    self.write_deltam(iso_zz, n, s, iso_fracs, res, dep)
-
-        # Analyze these runs
-        self.analyze_deltam()
 
 
     #

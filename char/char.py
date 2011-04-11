@@ -153,6 +153,9 @@ def main():
     parser.add_option("-I", "--isos",  action="store", dest="ISOS", 
         default='', help="Isotopes to calculate.")
 
+    parser.add_option("-S", "--nsens",  action="store", dest="NSENS", 
+        default='', help="Sensitivity indices to calculate, in Python slice syntax.")
+
     parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
         help="Cleans the reactor direactory of current files.")
 
@@ -266,11 +269,16 @@ def main():
 
     # Get the inputs indeces
     idx = parse_slice(options.NPERT, n_code.nperturbations)
+
     isos = parse_isos(options.ISOS)
     if len(isos) == 0:
         isos = set(env['core_transmute']['zzaaam'])
     else:
         isos = (isos & set(env['core_transmute']['zzaaam']))
+    ihm_isos = (isos & set(env['IHM_stream'].comp.keys()))
+
+    if 'deltam' in env:
+        sidx = parse_slice(options.NSENS, len(env['deltam']))
 
     # Make the input file unless otherwise specified.
     if (options.MAKE_INPUT) and (not options.FETCH_FILES) and (not options.PID):
@@ -301,7 +309,7 @@ def main():
 
         # Run initial isotope sensitivity calculation
         if options.RUN_DELTAM:
-            n_code.run_deltam()
+            n_code.run_deltam(idx, ihm_isos, sidx)
 
     elif options.FETCH_FILES:
         # Fetches files from remote server

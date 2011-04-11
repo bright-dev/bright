@@ -50,8 +50,8 @@ class RunChar(object):
     def burnup(self, idx):
         """Runs the burnup portion of char.
 
-        idx : a list of indeces that could be supplied 
-              to range() or slice().
+        idx : a list of perturbation indices that 
+              could be supplied to range() or slice().
         """
         # Make sure we only run with the right strides
         ridx = idx[:2] + [self.n_code.ntimes]
@@ -65,8 +65,8 @@ class RunChar(object):
     def xs_gen(self, idx, isos):
         """Runs the cross-section generation portion of char.
 
-        idx : a list of indeces that could be supplied 
-              to range() or slice().
+        idx : a list of perturbation indices that 
+              could be supplied to range() or slice().
         isos : a set of isotopes to run (zzaaaam-form).
         """
         isos_in_serpent = (isos & set(self.env['core_transmute_in_serpent']['zzaaam']))
@@ -107,4 +107,33 @@ class RunChar(object):
             for iso in isos_not_in_serpent:
                 xsd = self.n_code.run_xs_mod_pert(iso, n, E_n, E_g, phi_g)
                 self.n_code.write_xs_mod(iso, n, xsd)
+
+
+    def deltam(self, idx, isos, sidx):
+        """Runs the isotopic sensitivity study.
+
+        idx : a list of perturbation indices that 
+              could be supplied to range() or slice().
+        isos : a set of isotopes to run (zzaaaam-form).
+        sidx : a list of sensitivity indices that 
+              could be supplied to range() or slice().
+        """
+        # Make sure we only run with the right strides
+        ridx = idx[:2] + [self.n_code.ntimes]
+
+        # Loop over all perturbations.
+        for n in range(*ridx):
+            # Loop over all isotopes
+            for iso_zz in isos:
+                # Calulate this isotopes new values of IHM concentration
+                iso_fracs = self.env['deltam'] * self.ihm_stream.comp[iso_zz]
+
+                # Skip isotopes that would be pertubed over 1 kgIHM
+                if (1.0 < iso_fracs).any():
+                    continue
+
+                # Loop over all isotopic sesnitivities
+                for s in range(*sidx):
+                    res, dep = self.n_code.run_deltam_pert(iso_zz, n, s, iso_fracs)
+                    self.n_code.write_deltam(iso_zz, n, s, iso_fracs, res, dep)
 
