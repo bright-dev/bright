@@ -301,9 +301,6 @@ def update_env_for_execution(env):
 
 def update_env(env):
     """Takes the env[' namespace, updates it, and returns it."""
-    if 'tallies' in env:
-        env['tallies_reversed'] = metasci.ReverseDic(env['tallies'])
-
     if 'transporter' not in env:
         env['transporter'] = ''
 

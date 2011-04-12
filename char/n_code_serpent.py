@@ -81,6 +81,11 @@ class NCodeSerpent(object):
             with tb.openFile(msn.nuc_data, 'r') as f:
                 self.hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
 
+        # Set Stock tallies for serpent
+        if 'tallies' not in env:
+            self.env['tallies'] = tally_types.serpent_default
+        self.env['tallies'] = {t: tally_types.serpent_tallies[t] for t in self.env['tallies']}
+
         # Make perturbation table
         data = [self.env[a] for a in self.env['perturbation_params']]
         self.perturbations = [p for p in product(*data)]
@@ -365,9 +370,6 @@ class NCodeSerpent(object):
         det_format = "det {tally_name} de energies dm fuel dr {tally_type} xsmat dt 3 phi\n"
 
         # Get tallies
-        if 'tallies' not in self.env:
-            self.env['tallies'] = tally_types.serpent_default
-
         tallies = self.env['tallies']
 
         # Add tally line if MT number is valid
@@ -687,6 +689,8 @@ class NCodeSerpent(object):
         info_str = 'Generating cross-sections for {0} at perturbation step {1} using models.'
         self.env['logger'].info(info_str.format(iso, n))
 
+        tallies = self.env['tallies']
+
         # Load cross-section cahce with proper values
         msnxs.xs_cache['E_n'] = E_n
         msnxs.xs_cache['E_g'] = E_g
@@ -695,10 +699,20 @@ class NCodeSerpent(object):
         xs_dict = {}
 
         # Add the cross-section data from models
-        xs_dict['sigma_f'] = msnxs.sigma_f(iso)
-        xs_dict['sigma_a'] = msnxs.sigma_a(iso)
-        xs_dict['sigma_s_gh'] = msnxs.sigma_s_gh(iso, self.env['temperature'])
-        xs_dict['sigma_s'] = msnxs.sigma_s(iso, self.env['temperature'])
+        if 'sigma_f' in tallies:
+            xs_dict['sigma_f'] = msnxs.sigma_f(iso)
+
+        if 'sigma_a' in tallies:
+            xs_dict['sigma_a'] = msnxs.sigma_a(iso)
+
+        if 'sigma_s_gh' in tallies:
+            xs_dict['sigma_s_gh'] = msnxs.sigma_s_gh(iso, self.env['temperature'])
+
+        if 'sigma_s' in tallies:
+            xs_dict['sigma_s'] = msnxs.sigma_s(iso, self.env['temperature'])
+
+        if 'chi' in tallies:
+            xs_dict['chi'] = msnxs.chi(iso)
 
         return xs_dict
 
@@ -918,19 +932,17 @@ class NCodeSerpent(object):
         G = self.G
 
         # Grab the tallies
-        if 'tallies' in self.env:
-            tallies = self.env['tallies']
-        else:
-            tallies = tally_types.serpent_default
+        tallies = self.env['tallies']
 
         # Init the raw tally arrays
         neg1 = -1.0 * np.ones( (self.nperturbations, G) )
         negG = -1.0 * np.ones( (self.nperturbations, G, G) )
 
         for tally in tallies:
-            self.init_tally_group(rx_h5, base_group, tally, neg1, 
-                                  "Microscopic Cross Section {tally} [barns]", 
-                                  "Microscopic Cross Section {tally} for {iso} [barns]")
+            if tally is not None:
+                self.init_tally_group(rx_h5, base_group, tally, neg1, 
+                                      "Microscopic Cross Section {tally} [barns]", 
+                                      "Microscopic Cross Section {tally} for {iso} [barns]")
 
         # Init aggregate tallies
 
@@ -955,6 +967,13 @@ class NCodeSerpent(object):
         self.init_tally_group(rx_h5, base_group, 'sigma_s_gh', negG, 
                               "Microscopic Scattering Kernel {tally} [barns]", 
                               "Microscopic Scattering Kernel {tally} for {iso} [barns]")
+
+        # Chi
+        if 'chi' in tallies:
+            self.init_tally_group(rx_h5, base_group, 'chi', neg1, 
+                                  "Fission neutron energy spectrum {tally} [n/MeV]", 
+                                  "Fission neutron energy spectrum {tally} for {iso} [n/MeV]")
+
 
         # close the file before returning
         rx_h5.close()
@@ -1103,9 +1122,6 @@ class NCodeSerpent(object):
         base_group = rx_h5.root
 
         # Grab the tallies
-        if 'tallies' not in self.env:
-           self.env['tallies'] = tally_types.serpent_default
-
         tallies = self.env['tallies']
 
         # Write the raw tally arrays for this time and this iso        
@@ -1123,8 +1139,9 @@ class NCodeSerpent(object):
                 
             tally_hdf5_array[n] = tally_serp_array
 
-        # Write aggregate tallies
-
+        #
+        # Write aggregate or otherwise special tallies
+        #
         # nubar
         if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies) and ('nubar' not in tallies):
             tally_hdf5_group = getattr(base_group, 'nubar')
@@ -1209,6 +1226,15 @@ class NCodeSerpent(object):
 
             tally_hdf5_array[n] = sigma_s_gh
 
+        # chi
+        if ('chi' in tallies):
+            tally_hdf5_group = getattr(base_group, 'chi')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            chi = res['CHI'][res['idx']][::2]
+
+            tally_hdf5_array[n] = chi
+
         # close the file before returning
         rx_h5.close()
 
@@ -1248,9 +1274,6 @@ class NCodeSerpent(object):
         base_group = rx_h5.root
 
         # Grab the tallies
-        if 'tallies' not in self.env:
-           self.env['tallies'] = tally_types.serpent_default
-
         tallies = self.env['tallies']
 
         # Write the raw tally arrays for this time and this iso        
@@ -1265,8 +1288,9 @@ class NCodeSerpent(object):
 
             tally_hdf5_array[n] = tally_model_array
 
+        #
         # Write special tallies
-
+        #
         # nubar
         if ('sigma_f' in tallies) and ('sigma_f' in xs_dict) and  ('nubar_sigma_f' in tallies):
             # set the value of the number of neutrons per fission, based on 
