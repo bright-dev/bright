@@ -1,4 +1,4 @@
-#include "../genlib.h"
+#include "../h5wrap.h"
 #include <iostream>
 
 using namespace std;
