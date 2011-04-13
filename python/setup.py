@@ -52,7 +52,9 @@ stlconv_ext['sources'] = [os.path.join(src_dir, 'stlconverters.pyx')]
 stlconv_ext['include_dirs'] = [src_dir, cpp_dir, numpy_include]
 stlconv_ext['language'] = "c++"
 
-if os.name == 'nt':
+if os.name == 'posix':
+    stlconv_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+elif os.name == 'nt':
     stlconv_ext["extra_compile_args"] = ["/EHsc"]
     stlconv_ext["define_macros"] = [("_WIN32", None)]
 
@@ -75,7 +77,9 @@ isoname_ext['include_dirs'] = [os.path.join(src_dir, 'isoname', ''),
 isoname_ext['language'] = "c++"
 
 
-if os.name == 'nt':
+if os.name == 'posix':
+    isoname_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+elif os.name == 'nt':
     isoname_ext["extra_compile_args"] = ["/EHsc"]
     isoname_ext["define_macros"] = [("_WIN32", None)]
 
@@ -101,6 +105,7 @@ mass_stream_ext['language'] = "c++"
 
 
 if os.name == 'posix':
+    mass_stream_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
     mass_stream_ext["libraries"] = [
         "z", 
         "m", 
@@ -159,6 +164,7 @@ bright_ext['language'] = "c++"
 
 
 if os.name == 'posix':
+    bright_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
     bright_ext["libraries"] = [
         "z", 
         "m", 
