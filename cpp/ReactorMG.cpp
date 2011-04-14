@@ -150,6 +150,7 @@ void ReactorMG::loadlib(std::string libfile)
     Ti0.clear();
     sigma_t_pg.clear();
     nubar_sigma_f_pg.clear();
+    chi_pg.clear();
     sigma_s_pgh.clear();
     //sigma_a_pg.clear();
     //sigma_s_pg.clear();
@@ -170,6 +171,7 @@ void ReactorMG::loadlib(std::string libfile)
         // Add cross sections
         sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
         nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
+        chi_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/chi/" + iso_LL);
         sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
         //sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
         //sigma_s_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_s/" + iso_LL);
@@ -471,8 +473,9 @@ void ReactorMG::interpolate_cross_sections()
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         // Interpolate the cross-sections
-        sigma_t_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
+        sigma_t_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_t_pg[*iso][a1], sigma_t_pg[*iso][a0]);
         nubar_sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f_pg[*iso][a1], nubar_sigma_f_pg[*iso][a0]);
+        chi_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, chi_pg[*iso][a1], chi_pg[*iso][a0]);
         //sigma_a_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
         //sigma_s_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_s_pg[*iso][a1], sigma_s_pg[*iso][a0]);
         //sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
@@ -631,20 +634,27 @@ void ReactorMG::fold_mass_weights()
     double V_frac_clad = V_clad / V_total;
     double V_frac_cool = V_cool / V_total;
 
+    double n_i = 0.0;
     double N_i_cm2pb = 0.0;
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         // Calculate the core-average number density for this isotope.
+        n_i = ((n_fuel_it[*iso][bt_s] * V_frac_fuel) \
+            +  (n_clad_it[*iso][bt_s] * V_frac_clad) \
+            +  (n_cool_it[*iso][bt_s] * V_frac_cool));
+
         N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
                                          +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool));
-
         // Loop over all groups
         for (int g = 0; g < G; g++)
         {
-            Sigma_t_tg[bt_s][g] += N_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
+            Sigma_t_tg[bt_s][g] += N_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
             nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
+// TESTME FIXME  I possibly neede to think more about the 
+// Normalization factor here for chi
+            chi_tg[bt_s][g] += n_i * chi_itg[*iso][bt_s][g];
             //Sigma_a_tg[bt_s][g] += N_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             //Sigma_s_tg[bt_s][g] += N_i_cm2pb * sigma_s_itg[*iso][bt_s][g];
             //Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
@@ -678,10 +688,10 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
     // Assemble the F matrix
-    F_tgh[bt_s] = bright::vector_outer_product(chi, nubar_Sigma_f_tg[bt_s]);
+    F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_tg[bt_s]);
 
     // Grab the inverse of the A matrix
-    A_inv_tgh[bt_s] = bright::inverse_matrix(A_tgh[bt_s]);
+    A_inv_tgh[bt_s] = bright::matrix_inverse(A_tgh[bt_s]);
 
     // Multiply the inverse of A by F
     A_inv_F_tgh[bt_s] = bright::matrix_multiplication(A_inv_tgh[bt_s], F_tgh[bt_s]);
@@ -702,6 +712,7 @@ void ReactorMG::burnup_core()
     // Also initialize the cross-section matrices as a function of time.
     sigma_t_itg.clear();
     nubar_sigma_f_itg.clear();
+    chi_itg.clear();
     sigma_s_itgh.clear();
     //sigma_a_itg.clear();
     //sigma_s_itg.clear();
@@ -734,8 +745,9 @@ void ReactorMG::burnup_core()
             T_it[*iso][0] = 0.0;
 
         // Init the cross-sections
-        sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_t_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         nubar_sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        chi_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         sigma_s_itgh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
         //sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         //sigma_s_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
@@ -757,6 +769,7 @@ void ReactorMG::burnup_core()
     // Init the macroscopic cross sections
     Sigma_t_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     nubar_Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    chi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     //Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     //Sigma_s_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
