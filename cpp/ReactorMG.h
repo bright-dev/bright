@@ -98,8 +98,8 @@ public:
     double specific_power;  // The specific power of the fuel
     int burn_regions;       // Number of burn regions for this reactor 
     int S;                  // Number of burnup time steps.
-    double burn_time;       // Cuurent burnup time.
-    int bt_s;               // Cuurent burnup time index.  burn_time == burn_times[bt_s]
+    double burn_time;       // Curent burnup time.
+    int bt_s;               // Curent burnup time index.  burn_time == burn_times[bt_s]
     time_data burn_times;   // A non-negative, monotonically increasing vector of burnup steps
 
     bool use_zeta;              // Boolean value on whether or not the disadvantage factor should be used
@@ -166,6 +166,8 @@ public:
 
 
     // Attributes caluclated from burnup_core()
+    time_g phi_tg;      // Group fluxes as a function of time
+    time_data phi_t;      // Group fluxes as a function of time
     time_data Phi_t;    // Fluence in [n/kb]
     time_data BU_t;		// Burnup [MWd/kgIHM]
     time_data pF_t;     // Production rate of the fuel [n/s]
@@ -258,6 +260,7 @@ public:
     void calc_mass_weights();
     void fold_mass_weights();
     void assemble_multigroup_matrices();
+    void calc_criticality();
 
     void burnup_core();
     void old_burnup_core();

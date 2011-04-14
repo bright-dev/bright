@@ -5675,6 +5675,24 @@ cdef class ReactorMG(FCComp):
 
 
 
+
+
+    property phi_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.phi_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.phi_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property phi_t:
+        def __get__(self):
+            return conv.vector_to_array_1d_dbl(self.rmg_pointer.phi_t)
+
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
+            self.rmg_pointer.phi_t = conv.array_to_vector_1d_dbl(value)
+
+
     property Phi_t:
         def __get__(self):
             return conv.vector_to_array_1d_dbl(self.rmg_pointer.Phi_t)
@@ -6234,6 +6252,14 @@ cdef class ReactorMG(FCComp):
         self.rmg_pointer.loadlib(std.string(libfile))
 
 
+    def interpolate_cross_sections(self):
+        """This method iterpolates the isotopic, time-dependent cross-sections based on the current 
+        state of the burn_time, bt_s, and nearest_neighbors attributes.  It is prudent to call 
+        the calc_nearest_neighbors() method before this one.
+        """
+        self.rmg_pointer.interpolate_cross_sections()
+
+
     def calc_mass_weights(self):
         """Calculates the mass weights for this time step.  Needed for fold_mass_weights() method.
         """
@@ -6255,12 +6281,23 @@ cdef class ReactorMG(FCComp):
         self.rmg_pointer.fold_mass_weights()
 
 
-    def interpolate_cross_sections(self):
-        """This method iterpolates the isotopic, time-dependent cross-sections based on the current 
-        state of the burn_time, bt_s, and nearest_neighbors attributes.  It is prudent to call 
-        the calc_nearest_neighbors() method before this one.
+    def assemble_multigroup_matrices(self):
+        """Folds mass weight in with cross-sections for current time step.
         """
-        self.rmg_pointer.interpolate_cross_sections()
+        self.rmg_pointer.assemble_multigroup_matrices()
+
+
+    def calc_criticality(self):
+        """Assembles the cross section matrices needed for 
+        multigroup burnup-criticality calculations.
+        """
+        self.rmg_pointer.calc_criticality()
+
+
+
+
+
+
 
 
     def burnup_core(self):

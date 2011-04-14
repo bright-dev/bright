@@ -701,6 +701,80 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
 
+
+void ReactorMG::calc_criticality()
+{
+    // Init values
+    int n = 0;
+    int N = 100;
+
+    float epsik = 1.0;
+    float tmp_epsiphi; 
+    float epsiphi = 1.0;
+    float epsilon = 0.005;
+
+    double k0 = 1.0;
+    std::vector<double> phi0 (1.0, G);
+    double k1;
+    std::vector<double> phi1;
+
+    int g = 0;
+    double invPk;
+    double nu_Sigma_f_phi0;
+    double nu_Sigma_f_phi1;
+
+    // Solve for k and phi simeltaneoulsy
+    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
+    {
+        // Calculate the next eigen-flux
+        invPk = 1.0 / (P_NL * k0);
+        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
+
+        // Calculate the next eigen-k
+        nu_Sigma_f_phi0 = 0.0;
+        nu_Sigma_f_phi1 = 0.0;
+        for (g = 0; g < G; g++)
+        {
+            nu_Sigma_f_phi0 += nubar_Sigma_f_tg[bt_s][g] * phi0[g]; 
+            nu_Sigma_f_phi1 += nubar_Sigma_f_tg[bt_s][g] * phi1[g]; 
+        };
+        k1 = k0 * nu_Sigma_f_phi1 / nu_Sigma_f_phi0;
+
+        // Calculate the epsilon value of k 
+        epsik = fabs(1.0 - (k0/k1));
+
+        // Calulate the maximum epsilon of phi over all groups
+        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
+        for (g = 1; g < G; g++)
+        {
+            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
+            if (epsiphi < tmp_epsiphi)
+                epsiphi = tmp_epsiphi;
+        };
+
+        // Set the next eigens to the previous values befor looping
+        k0 = k1;
+        phi0 = phi1;
+    };
+
+    // Set the final values to the class members
+    k_t[bt_s] = k1;
+    phi_tg[bt_s] = phi1;
+
+    phi_t[bt_s] = 0.0;
+    for (g = 0; g < G; g++)
+        phi_t[bt_s] += phi1[0];
+
+    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+};
+
+
+
+
+
+
+
+
 void ReactorMG::burnup_core()
 {
     // Burns up the core and fills in parameter values as we go.
@@ -804,6 +878,7 @@ void ReactorMG::burnup_core()
 
         // Make the cross-section matrices before the criticality calulation
         assemble_multigroup_matrices();
+        calc_criticality();
     };
 
 };

@@ -495,6 +495,8 @@ cdef extern from "../../../cpp/ReactorMG.h":
         map[int, vector[double]] N_clad_it
         map[int, vector[double]] N_cool_it
 
+        vector[vector[double]] phi_tg
+        vector[double] phi_t
         vector[double] Phi_t
         vector[double] BU_t
         vector[double] pF_t
@@ -558,9 +560,12 @@ cdef extern from "../../../cpp/ReactorMG.h":
         # Methods
         void initialize(ReactorParameters)
         void loadlib(std.string)
+        void interpolate_cross_sections()
         void calc_mass_weights()
         void fold_mass_weights()
-        void interpolate_cross_sections()
+        void assemble_multigroup_matrices()
+        void calc_criticality()
+
         void burnup_core()
 
         void calc_nearest_neighbors()
