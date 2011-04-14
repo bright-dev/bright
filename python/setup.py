@@ -53,7 +53,8 @@ stlconv_ext['include_dirs'] = [src_dir, cpp_dir, numpy_include]
 stlconv_ext['language'] = "c++"
 
 if os.name == 'posix':
-    stlconv_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    #stlconv_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    stlconv_ext["undef_macros"] = ["NDEBUG"]
 elif os.name == 'nt':
     stlconv_ext["extra_compile_args"] = ["/EHsc"]
     stlconv_ext["define_macros"] = [("_WIN32", None)]
@@ -78,7 +79,8 @@ isoname_ext['language'] = "c++"
 
 
 if os.name == 'posix':
-    isoname_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    #isoname_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    isoname_ext["undef_macros"] = ["NDEBUG"]
 elif os.name == 'nt':
     isoname_ext["extra_compile_args"] = ["/EHsc"]
     isoname_ext["define_macros"] = [("_WIN32", None)]
@@ -105,7 +107,8 @@ mass_stream_ext['language'] = "c++"
 
 
 if os.name == 'posix':
-    mass_stream_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    #mass_stream_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    mass_stream_ext["undef_macros"] = ["NDEBUG"]
     mass_stream_ext["libraries"] = [
         "z", 
         "m", 
@@ -164,7 +167,8 @@ bright_ext['language'] = "c++"
 
 
 if os.name == 'posix':
-    bright_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    #bright_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
+    bright_ext["undef_macros"] = ["NDEBUG"]
     bright_ext["libraries"] = [
         "z", 
         "m", 
