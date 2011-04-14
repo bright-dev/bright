@@ -5498,30 +5498,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.Ti0 = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
-    property sigma_a_pg:
+    property sigma_t_pg:
         def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_pg)
-
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_t_pg)
+    
         def __set__(self, dict value):
-            self.rmg_pointer.sigma_a_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
-
-
-    property sigma_s_pg:
-        def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_s_pg)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.sigma_s_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
-
-
-    property sigma_f_pg:
-        def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_f_pg)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.sigma_f_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
-
-
+            self.rmg_pointer.sigma_t_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+    
+    
     property nubar_sigma_f_pg:
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_sigma_f_pg)
@@ -5530,12 +5514,12 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.nubar_sigma_f_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
-    property nubar_pg:
+    property chi_pg:
         def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_pg)
-
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.chi_pg)
+    
         def __set__(self, dict value):
-            self.rmg_pointer.nubar_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+            self.rmg_pointer.chi_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property sigma_s_pgh:
@@ -5545,6 +5529,37 @@ cdef class ReactorMG(FCComp):
         def __set__(self, dict value):
             self.rmg_pointer.sigma_s_pgh = conv.dict_to_map_int_array_to_vector_3d_dbl(value)
 
+
+    #property sigma_a_pg:
+    #    def __get__(self):
+    #        return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_pg)
+    #
+    #    def __set__(self, dict value):
+    #        self.rmg_pointer.sigma_a_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+    #
+    #
+    #property sigma_s_pg:
+    #    def __get__(self):
+    #        return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_s_pg)
+    #
+    #    def __set__(self, dict value):
+    #        self.rmg_pointer.sigma_s_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+    #
+    #
+    #property sigma_f_pg:
+    #    def __get__(self):
+    #        return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_f_pg)
+    #
+    #    def __set__(self, dict value):
+    #        self.rmg_pointer.sigma_f_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+    #
+    #
+    #property nubar_pg:
+    #    def __get__(self):
+    #        return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_pg)
+    #
+    #    def __set__(self, dict value):
+    #        self.rmg_pointer.nubar_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
     
 
 
@@ -5713,28 +5728,12 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.T_it = conv.dict_to_map_int_array_to_vector_1d_dbl(value)
 
 
-    property sigma_a_itg:
+    property sigma_t_itg:
         def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_itg)
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_t_itg)
 
         def __set__(self, dict value):
-            self.rmg_pointer.sigma_a_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
-
-
-    property sigma_s_itg:
-        def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_s_itg)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.sigma_s_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
-
-
-    property sigma_f_itg:
-        def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_f_itg)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.sigma_f_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+            self.rmg_pointer.sigma_t_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property nubar_sigma_f_itg:
@@ -5745,12 +5744,12 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.nubar_sigma_f_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
-    property nubar_itg:
+    property chi_itg:
         def __get__(self):
-            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_itg)
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.chi_itg)
 
         def __set__(self, dict value):
-            self.rmg_pointer.nubar_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+            self.rmg_pointer.chi_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
     property sigma_s_itgh:
@@ -5761,34 +5760,51 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.sigma_s_itgh = conv.dict_to_map_int_array_to_vector_3d_dbl(value)
 
 
+#    property sigma_a_itg:
+#        def __get__(self):
+#            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_itg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.sigma_a_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+#
+#
+#    property sigma_s_itg:
+#        def __get__(self):
+#            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_s_itg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.sigma_s_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+#
+#
+#    property sigma_f_itg:
+#        def __get__(self):
+#            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_f_itg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.sigma_f_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+#
+#
+#    property nubar_itg:
+#        def __get__(self):
+#            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_itg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.nubar_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
 
 
 
 
-    property Sigma_a_tg:
+
+
+
+    property Sigma_t_tg:
         def __get__(self):
-            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_a_tg)
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_t_tg)
 
         def __set__(self, dict value):
-            self.rmg_pointer.Sigma_a_tg = conv.array_to_vector_2d_dbl(value)
-
-
-    property Sigma_s_tg:
-        def __get__(self):
-            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_s_tg)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.Sigma_s_tg = conv.array_to_vector_2d_dbl(value)
-
-
-    property Sigma_f_tg:
-        def __get__(self):
-            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_f_tg)
-
-        def __set__(self, dict value):
-            self.rmg_pointer.Sigma_f_tg = conv.array_to_vector_2d_dbl(value)
+            self.rmg_pointer.Sigma_t_tg = conv.array_to_vector_2d_dbl(value)
 
 
     property nubar_Sigma_f_tg:
@@ -5799,12 +5815,12 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.nubar_Sigma_f_tg = conv.array_to_vector_2d_dbl(value)
 
 
-    property nubar_tg:
+    property chi_tg:
         def __get__(self):
-            return conv.vector_to_array_2d_dbl(self.rmg_pointer.nubar_tg)
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.chi_tg)
 
         def __set__(self, dict value):
-            self.rmg_pointer.nubar_tg = conv.array_to_vector_2d_dbl(value)
+            self.rmg_pointer.chi_tg = conv.array_to_vector_2d_dbl(value)
 
 
     property Sigma_s_tgh:
@@ -5813,6 +5829,38 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, dict value):
             self.rmg_pointer.Sigma_s_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+#    property Sigma_a_tg:
+#        def __get__(self):
+#            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_a_tg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.Sigma_a_tg = conv.array_to_vector_2d_dbl(value)
+#
+#
+#    property Sigma_s_tg:
+#        def __get__(self):
+#            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_s_tg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.Sigma_s_tg = conv.array_to_vector_2d_dbl(value)
+#
+#
+#    property Sigma_f_tg:
+#        def __get__(self):
+#            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_f_tg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.Sigma_f_tg = conv.array_to_vector_2d_dbl(value)
+#
+#
+#    property nubar_tg:
+#        def __get__(self):
+#            return conv.vector_to_array_2d_dbl(self.rmg_pointer.nubar_tg)
+#
+#        def __set__(self, dict value):
+#            self.rmg_pointer.nubar_tg = conv.array_to_vector_2d_dbl(value)
 
 
 

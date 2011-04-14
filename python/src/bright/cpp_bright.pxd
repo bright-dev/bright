@@ -472,12 +472,14 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[double] BU0
 
         map[int, vector[double]] Ti0
-        map[int, vector[vector[double]]] sigma_a_pg
-        map[int, vector[vector[double]]] sigma_s_pg
-        map[int, vector[vector[double]]] sigma_f_pg
+        map[int, vector[vector[double]]] sigma_t_pg
         map[int, vector[vector[double]]] nubar_sigma_f_pg
-        map[int, vector[vector[double]]] nubar_pg
+        map[int, vector[vector[double]]] chi_pg
         map[int, vector[vector[vector[double]]]] sigma_s_pgh
+        #map[int, vector[vector[double]]] sigma_a_pg
+        #map[int, vector[vector[double]]] sigma_s_pg
+        #map[int, vector[vector[double]]] sigma_f_pg
+        #map[int, vector[vector[double]]] nubar_pg
 
         vector[double] A_HM_t
         vector[double] MW_fuel_t
@@ -500,19 +502,23 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[double] dC_t
 
         map[int, vector[double]] T_it
-        map[int, vector[vector[double]]] sigma_a_itg
-        map[int, vector[vector[double]]] sigma_s_itg
-        map[int, vector[vector[double]]] sigma_f_itg
+        map[int, vector[vector[double]]] sigma_t_itg
         map[int, vector[vector[double]]] nubar_sigma_f_itg
-        map[int, vector[vector[double]]] nubar_itg
+        map[int, vector[vector[double]]] chi_itg
         map[int, vector[vector[vector[double]]]] sigma_s_itgh
+        #map[int, vector[vector[double]]] sigma_a_itg
+        #map[int, vector[vector[double]]] sigma_s_itg
+        #map[int, vector[vector[double]]] sigma_f_itg
+        #map[int, vector[vector[double]]] nubar_itg
 
-        vector[vector[double]] Sigma_a_tg
-        vector[vector[double]] Sigma_s_tg
-        vector[vector[double]] Sigma_f_tg
+        vector[vector[double]] Sigma_t_tg
         vector[vector[double]] nubar_Sigma_f_tg
-        vector[vector[double]] nubar_tg
+        vector[vector[double]] chi_tg
         vector[vector[vector[double]]] Sigma_s_tgh
+        #vector[vector[double]] Sigma_a_tg
+        #vector[vector[double]] Sigma_s_tg
+        #vector[vector[double]] Sigma_f_tg
+        #vector[vector[double]] nubar_tg
 
         vector[int] nearest_neighbors
 
