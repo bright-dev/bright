@@ -142,6 +142,7 @@ bright_ext['sources'] = [
     'h5wrap.cpp',
     'isoname.cpp', 
     'MassStream.cpp', 
+    'FCComps.cpp', 
     'FCComp.cpp', 
     'Enrichment.cpp', 
     'FuelFabrication.cpp', 

@@ -13,7 +13,7 @@ cdef extern from "../../../cpp/bright.h" namespace "bright":
     void bright_start()
 
 
-cdef extern from "../../../cpp/FCComp.h" namespace "FCComps":
+cdef extern from "../../../cpp/FCComps.h" namespace "FCComps":
     set[int] track_isos
     vector[int] track_isos_order
 
