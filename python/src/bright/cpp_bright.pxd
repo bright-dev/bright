@@ -15,8 +15,12 @@ cdef extern from "../../../cpp/bright.h" namespace "bright":
 
 cdef extern from "../../../cpp/FCComp.h" namespace "FCComps":
     set[int] track_isos
+    vector[int] track_isos_order
+
     void load_track_isos_hdf5(std.string, std.string, bint)
     void load_track_isos_text(std.string, bint)
+
+    void sort_track_isos()
 
     int verbosity
     bint write_hdf5

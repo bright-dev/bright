@@ -9,9 +9,11 @@
 #ifdef _WIN32
     int null_set [1] = {922350};
     std::set<int> FCComps::track_isos (null_set, null_set+1);
+    std::vector<int> FCComps::track_isos_order (null_set, null_set+1);
 #else
     int null_set [0] = {};
     std::set<int> FCComps::track_isos (null_set, null_set+0);
+    std::vector<int> FCComps::track_isos_order (null_set, null_set+0);
 #endif
 
 int FCComps::verbosity  = 0;
@@ -19,6 +21,15 @@ int FCComps::write_text = 1;
 int FCComps::write_hdf5 = 0;
 
 std::string FCComps::output_filename = "fuel_cycle.h5";
+
+
+void FCComps::sort_track_isos()
+{
+    track_isos_order = std::vector<int> (track_isos.begin(), track_isos.end());
+    std::sort(track_isos_order.begin(), track_isos_order.end());
+};
+
+
 
 void FCComps::load_track_isos_hdf5(std::string filename, std::string datasetname, bool clear_prev)
 {
@@ -101,7 +112,9 @@ void FCComps::load_track_isos_hdf5(std::string filename, std::string datasetname
     {
         track_isos.insert(isoname::mixed_2_zzaaam(iso_out_int[n]));
     };
-    
+
+    // Sort the results
+    sort_track_isos();
 };
 
 void FCComps::load_track_isos_text(std::string filename, bool clear_prev)
@@ -131,6 +144,9 @@ void FCComps::load_track_isos_text(std::string filename, bool clear_prev)
 
     //close file
     isofile.close();
+
+    // Sort the results
+    sort_track_isos();
 };
 
 /**************************************************/

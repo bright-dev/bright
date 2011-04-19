@@ -75,6 +75,19 @@ cdef class BrightConfig:
         def __set__(self, value):
             s = set([isoname.mixed_2_zzaaam(v) for v in value])
             cpp_bright.track_isos = conv.py_to_cpp_set_int(s)
+            cpp_bright.sort_track_isos()
+
+
+    property track_isos_order:
+        def __get__(self):
+            return conv.vector_to_array_1d_int(cpp_bright.track_isos_order)
+
+        def __set__(self, value):
+            s = set([isoname.mixed_2_zzaaam(v) for v in value])
+            a = np.array(s)
+            a.sort()
+            cpp_bright.track_isos = conv.py_to_cpp_set_int(s)
+            cpp_bright.track_isos_order = conv.array_to_vector_1d_int(a)
 
 
     property verbosity:
@@ -159,6 +172,12 @@ def load_track_isos_text(char * filename, bint clear=False):
           from track_isos prior to loading in new values.
     """
     cpp_bright.load_track_isos_text(std.string(filename), clear)
+
+
+
+def sort_track_isos():
+    """This function sorts the track_isos and places the results in track_isos_order."""
+    cpp_bright.sort_track_isos()
 
 
 
