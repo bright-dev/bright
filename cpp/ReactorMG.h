@@ -11,6 +11,7 @@
 #include <string>
 #include <exception>
 #include <iostream>
+#include <algorithm>
 
 //HDF5
 //#include "hdf5.h"
@@ -55,6 +56,9 @@ typedef std::vector< std::vector< std::vector<double> > > pert_data_gh;
 typedef std::set<int> iso_set;
 typedef iso_set::iterator iso_iter;
 
+typedef std::vector<int> iso_vec;
+typedef std::map<int, int> iso_map;
+
 
 class ReactorMG : public FCComp
 {
@@ -62,13 +66,6 @@ class ReactorMG : public FCComp
  *  Basic One-Group Reactor Model.  Computes one Burnup Calculationn with the option of computing output isotopics.
  *  Specific reactor types inherit this class and change base parameters.
  */
-protected:
-    //Protected data
-
-    //Thermal XS data is read in from static KAERI Data
-    //Only read in if the disadvantage factor will be used.
-    std::map<int, double> sigma_a_therm;			//Microscopic Thermal Absorption XS 
-    std::map<int, double> sigma_s_therm;			//Microscopic Thermal Scattering XS 
 
 public:
     // ReactorMG Constructors
@@ -125,6 +122,14 @@ public:
     // Attributes read in from data library
     iso_set I;   // Set of isotopes that may be in ms_feed.
     iso_set J;   // Set of isotopes that may be in ms_prod.
+
+    int J_size;
+    iso_vec J_order; // Lowest-to-highest order of J.
+    iso_map J_index; // Lowest-to-highest map of J into matrix position.
+
+
+    std::vector< std::vector<double> > decay_matrix;
+
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
     int nperturbations; // number of rows in the pertubtaion table

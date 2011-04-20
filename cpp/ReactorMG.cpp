@@ -114,6 +114,12 @@ void ReactorMG::loadlib(std::string libfile)
     I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/load_isos_zz", H5::PredType::NATIVE_INT);
     J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
 
+    J_size = J.size();
+    J_order = std::vector<int> (J.begin(), J.end());
+    std::sort(J_order.begin(), J_order.end());
+    for (int j = 0; j < J_size; j++)
+        J_index[J_order[j]] = j;
+
     // Load perturbation table
     perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
     nperturbations = perturbations.shape[0];
@@ -182,88 +188,59 @@ void ReactorMG::loadlib(std::string libfile)
     // close the reactor library
     rmglib.close();
 
-    //Now get microscopic XS data from KAERI...
-    //...But only if the disadvantage factor is used.
-    if (!use_zeta)
-        return;
 
+    //
+    // Create a decay matrix from a file based off of the J isotopes
+    //
+    std::string decay_data_file = bright::BRIGHT_DATA + "/nuc_data.h5";
+    decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
 
-    //HDF5 types
-    hid_t  kdblib;			//KaeriData.h5 file reference
-    herr_t kdbstat;			//File status
+    //Check to see if the file is in HDF5 format.
+    if (!bright::FileExists(decay_data_file))
+        throw bright::FileNotFound(decay_data_file);
 
-    hsize_t xs_nfields, xs_nrows; 	//Number of rows and fields (named columns) in XS table
-
-    //open the file
-    kdblib = H5Fopen ( (bright::BRIGHT_DATA + "/KaeriData.h5").c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);	//KAERI Data Library
-
-    //Get Thermal Mawell Average Table & Field Data Dimensions 
-    kdbstat = H5TBget_table_info(kdblib, "/XS/ThermalMaxwellAve", &xs_nfields, &xs_nrows);
-
-    //Creating an empy array of character strings is tricky,
-    //because character strings are arrays themselves!
-    char ** xs_field_names = new char * [xs_nfields];
-    for (int n = 0; n < xs_nfields; n++)
-        xs_field_names[n] = new char [50]; 
-
-    #ifdef _WIN32
-        size_t * xs_field_sizes;
-        size_t * xs_field_offsets;
-
-        xs_field_sizes   = new size_t [xs_nfields];
-        xs_field_offsets = new size_t [xs_nfields];
-    #else
-        size_t xs_field_sizes   [xs_nfields];
-        size_t xs_field_offsets [xs_nfields];
-    #endif
-
-    size_t xs_type_size;
-    kdbstat = H5TBget_field_info(kdblib, "/XS/ThermalMaxwellAve", xs_field_names, xs_field_sizes, xs_field_offsets, &xs_type_size);
-
-    //Read the "isozz" column so that we can inteligently pick out our data
-    int isozz_n = bright::find_index_char( (char *) "isozz", xs_field_names, xs_nfields);
-    int * isozz = new int [xs_nrows];
-    #ifdef _WIN32
-        const size_t temp_xs_field_sizes_isozz_n [1] = {xs_field_sizes[isozz_n]};
-        kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, temp_xs_field_sizes_isozz_n, isozz);
-    #else
-        kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, (const size_t [1]) {xs_field_sizes[isozz_n]}, isozz);
-    #endif
-
-    //Now, load the XS that we need.
-    //NOTE: This maps metastable isotopes to their stable versions if they can't be found!
-    int sigma_a_n = bright::find_index_char( (char *) "sigma_a", xs_field_names, xs_nfields);
-    int sigma_s_n = bright::find_index_char( (char *) "sigma_s", xs_field_names, xs_nfields);
-
-    for (std::set<int>::iterator i = FCComps::track_isos.begin(); i != FCComps::track_isos.end(); i++)
+    bool isH5 = H5::H5File::isHdf5(decay_data_file);
+    if (!isH5)
     {
-        int iso_n = bright::find_index<int>(*i, isozz, xs_nrows);
-        if (iso_n < 0)		
-            iso_n = bright::find_index<int>(10*((*i)/10), isozz);
-        if (iso_n < 0)
-        {
-            sigma_a_therm[*i] = 0.0;
-            sigma_s_therm[*i] = 0.0;
-            continue;
-        };
-
-        double * iso_sig_a = new double [1];
-        double * iso_sig_s = new double [1];
-        #ifdef _WIN32
-            const size_t temp_xs_field_sizes_sigma_a_n [1] = {xs_field_sizes[sigma_a_n]};
-            const size_t temp_xs_field_sizes_sigma_s_n [1] = {xs_field_sizes[sigma_s_n]};
-
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_a_n, iso_sig_a);
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_s_n, iso_sig_s);
-        #else
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_a_n]}, iso_sig_a);
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_s_n]}, iso_sig_s);
-        #endif
-        sigma_a_therm[*i] = iso_sig_a[0];
-        sigma_s_therm[*i] = iso_sig_s[0];
+        std::cout << "!!!Warning!!! " << decay_data_file << " is not a valid HDF5 file!\n";
+        return;
     };
 
-    kdbstat = H5Fclose(kdblib);
+    // Read in the decay data table as an array of FCComps::decay_iso_desc
+    H5::H5File decay_data_h5 (decay_data_file.c_str(), H5F_ACC_RDONLY );
+    H5::DataSet decay_data_set = decay_data_h5.openDataSet("/decay");
+    H5::DataSpace decay_data_space = decay_data_set.getSpace();
+    int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
+
+    FCComps::decay_iso_stuct * decay_data_array = new FCComps::decay_iso_stuct [decay_data_length];
+    decay_data_set.read(decay_data_array, FCComps::decay_iso_desc);
+
+    // Make decay_martrix from this data.
+    int i, j, ind, jnd;
+    for (int l = 0; l < decay_data_length; l++)
+    {
+        i = decay_data_array[l].from_iso_zz;
+        j = decay_data_array[l].to_iso_zz;
+
+        // skip non-element from-isos
+        if (J.count(i) < 1)
+            continue;
+
+        // skip non-element to-isos
+        if (J.count(j) < 1)
+            continue;
+
+        // Get the indexes for these nulcides into the matrix
+        ind = J_index[i];
+        jnd = J_index[j];
+
+        // Add diagonal elements
+        decay_matrix[ind][ind] = -decay_data_array[l].decay_const;
+
+        // Add i,j element to matrix
+        if (i != j)
+            decay_matrix[ind][jnd] = decay_data_array[l].branch_ratio * decay_data_array[l].decay_const;
+    };
 
     return;
 };

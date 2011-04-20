@@ -462,6 +462,9 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         set[int] I
         set[int] J
+        vector[int] J_order
+        map[int, int] J_index
+
 
         # Perturbation table goes here
         int nperturbations

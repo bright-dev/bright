@@ -5422,6 +5422,23 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.J = conv.py_to_cpp_set_int(value)
 
 
+    property J_order:
+        def __get__(self):
+            return conv.vector_to_array_1d_int(self.rmg_pointer.J_order)
+
+        def __set__(self, set value):
+            self.rmg_pointer.J_order = conv.array_to_vector_1d_int(value)
+
+
+    property J_index:
+        def __get__(self):
+            return conv.map_to_dict_int_int(self.rmg_pointer.J_index)
+
+        def __set__(self, set value):
+            self.rmg_pointer.J_index = conv.dict_to_map_int_int(value)
+
+
+
 
 
     # Perturbation table goes here
