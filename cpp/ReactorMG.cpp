@@ -192,30 +192,37 @@ void ReactorMG::loadlib(std::string libfile)
     //
     // Create a decay matrix from a file based off of the J isotopes
     //
-    std::string decay_data_file = bright::BRIGHT_DATA + "/nuc_data.h5";
-    decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+    std::string nuc_data_file = bright::BRIGHT_DATA + "/nuc_data.h5";
 
     //Check to see if the file is in HDF5 format.
-    if (!bright::FileExists(decay_data_file))
-        throw bright::FileNotFound(decay_data_file);
+    if (!bright::FileExists(nuc_data_file))
+        throw bright::FileNotFound(nuc_data_file);
 
-    isH5 = H5::H5File::isHdf5(decay_data_file);
+    isH5 = H5::H5File::isHdf5(nuc_data_file);
     if (!isH5)
     {
-        std::cout << "!!!Warning!!! " << decay_data_file << " is not a valid HDF5 file!\n";
+        std::cout << "!!!Warning!!! " << nuc_data_file << " is not a valid HDF5 file!\n";
         return;
     };
 
+    // Open the HDF5 file
+    H5::H5File nuc_data_h5 (nuc_data_file.c_str(), H5F_ACC_RDONLY );
+
+
+    //
     // Read in the decay data table as an array of FCComps::decay_iso_desc
-    H5::H5File decay_data_h5 (decay_data_file.c_str(), H5F_ACC_RDONLY );
-    H5::DataSet decay_data_set = decay_data_h5.openDataSet("/decay");
+    //
+    H5::DataSet decay_data_set = nuc_data_h5.openDataSet("/decay");
     H5::DataSpace decay_data_space = decay_data_set.getSpace();
     int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
+
 
     FCComps::decay_iso_stuct * decay_data_array = new FCComps::decay_iso_stuct [decay_data_length];
     decay_data_set.read(decay_data_array, FCComps::decay_iso_desc);
 
     // Make decay_martrix from this data.
+    decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+
     int i, j, ind, jnd;
     for (int l = 0; l < decay_data_length; l++)
     {
@@ -241,6 +248,53 @@ void ReactorMG::loadlib(std::string libfile)
         if (i != j)
             decay_matrix[ind][jnd] = decay_data_array[l].branch_ratio * decay_data_array[l].decay_const;
     };
+
+
+    //
+    // Read in the fission table
+    //
+    H5::DataSet fission_set = nuc_data_h5.openDataSet("/neutron/xs_mg/fission");
+    H5::DataSpace fission_space = fission_set.getSpace();
+    int fission_length = fission_space.getSimpleExtentNpoints(); 
+
+    FCComps::fission_stuct * fission_array = new FCComps::fission_stuct [fission_length];
+    fission_set.read(fission_array, FCComps::fission_desc);
+
+    // Run through the array and make join maps
+    //  key = fission index
+    //  value = vector of J_indexs
+    std::map<int, std::vector<int> > thermal_join;
+    std::map<int, std::vector<int> > fast_join;
+
+    int ty, fy;
+    for (int l = 0; l < fission_length; l++)
+    {
+        i = fission_array[l].iso_zz;
+
+        // skip non-element from-isos
+        if (J.count(i) < 1)
+            continue;
+
+        // make thermal join
+        ty = fission_array[l].thermal_yield;
+
+        if (thermal_join.count(ty) < 1)
+            thermal_join[ty] = std::vector<int>();
+
+        thermal_join[ty].push_back(J_index[i]);
+
+        // make fast join
+        fy = fission_array[l].fast_yield;
+
+        if (fast_join.count(fy) < 1)
+            fast_join[fy] = std::vector<int>();
+
+        fast_join[ty].push_back(J_index[i]);
+    };
+
+
+    // close the nuc_data library
+    nuc_data_h5.close();
 
     return;
 };
