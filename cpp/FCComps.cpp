@@ -170,4 +170,4 @@ H5::CompType FCComps::make_decay_iso_desc()
     return didesc;
 };
 
-decay_iso_desc = make_decay_iso_desc();
+H5::CompType FCComps::decay_iso_desc = FCComps::make_decay_iso_desc();

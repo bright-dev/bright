@@ -199,7 +199,7 @@ void ReactorMG::loadlib(std::string libfile)
     if (!bright::FileExists(decay_data_file))
         throw bright::FileNotFound(decay_data_file);
 
-    bool isH5 = H5::H5File::isHdf5(decay_data_file);
+    isH5 = H5::H5File::isHdf5(decay_data_file);
     if (!isH5)
     {
         std::cout << "!!!Warning!!! " << decay_data_file << " is not a valid HDF5 file!\n";
