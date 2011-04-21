@@ -215,3 +215,23 @@ H5::CompType FCComps::make_fission_desc()
 H5::CompType FCComps::fission_desc = FCComps::make_fission_desc();
 
 
+
+H5::CompType FCComps::make_fission_product_yields_desc()
+{
+    //  Makes a decay isotope compound datatype
+    H5::CompType fpydesc( sizeof(fission_product_yields_struct) );
+
+    fpydesc.insertMember( "index", HOFFSET(fission_product_yields_struct, index), H5::PredType::NATIVE_INT16);
+
+    fpydesc.insertMember( "from_iso_LL", HOFFSET(fission_product_yields_struct, from_iso_LL), FCComps::iso_LL_type);
+    fpydesc.insertMember( "from_iso_zz", HOFFSET(fission_product_yields_struct, from_iso_zz), H5::PredType::NATIVE_INT);
+
+    fpydesc.insertMember( "to_iso_LL", HOFFSET(fission_product_yields_struct, to_iso_LL), FCComps::iso_LL_type);
+    fpydesc.insertMember( "to_iso_zz", HOFFSET(fission_product_yields_struct, to_iso_zz), H5::PredType::NATIVE_INT);
+
+    fpydesc.insertMember( "mass_frac", HOFFSET(fission_product_yields_struct, mass_frac), H5::PredType::NATIVE_DOUBLE);
+ 
+    return fpydesc;
+};
+
+H5::CompType FCComps::fission_product_yields_desc = FCComps::make_fission_product_yields_desc();

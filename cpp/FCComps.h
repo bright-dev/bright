@@ -84,6 +84,24 @@ namespace FCComps {
     extern H5::CompType fission_desc;
 
 
+    typedef struct fission_product_yields_struct {
+        int16_t index;
+
+        char from_iso_LL[6];
+        int from_iso_zz;
+
+        char to_iso_LL[6];
+        int to_iso_zz;
+
+        double mass_frac;
+    } fission_product_yields_struct;
+
+    H5::CompType make_fission_product_yields_desc();
+    extern H5::CompType fission_product_yields_desc;
+
+
+
+
 };
 
 #endif
