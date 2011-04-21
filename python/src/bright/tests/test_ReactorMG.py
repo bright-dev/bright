@@ -246,7 +246,7 @@ class TestReactorMGBasicDataAttributes(TestCase):
 
     @classmethod
     def setup_class(cls):
-        libfile = os.getenv("BRIGHT_DATA") + '/lwr_mg.h5'
+        libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.rmg = ReactorMG()
         cls.rmg.loadlib(libfile)
@@ -457,7 +457,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
 
     @classmethod
     def setup_class(cls):
-        libfile = os.getenv("BRIGHT_DATA") + '/lwr_mg.h5'
+        libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
         bright.load_track_isos_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)

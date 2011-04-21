@@ -13,6 +13,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <stdint.h>
 
 #include "hdf5.h"
 #include "hdf5_hl.h"
@@ -40,6 +41,16 @@ namespace FCComps {
 
     extern std::string output_filename;
 
+
+    // Some HDF5 helpers
+    extern hsize_t iso_LL_dims [1];
+    extern H5::ArrayType iso_LL_type;
+
+    extern hsize_t cinder_g_dims [1];
+    extern H5::ArrayType cinder_g_type;
+
+
+    // Isotopic decay HDF5 interface
     typedef struct decay_iso_struct {
         char from_iso_LL[6];
         int from_iso_zz;
@@ -55,6 +66,23 @@ namespace FCComps {
 
     H5::CompType make_decay_iso_desc();
     extern H5::CompType decay_iso_desc;
+
+
+    // Fission Product HDF5 interface
+    typedef struct fission_struct {
+        char iso_LL[6];
+        int iso_zz;
+
+        int8_t thermal_yield;
+        int8_t fast_yield;
+        int8_t high_energy_yield;
+
+        double xs [63];
+    } fission_struct;
+
+    H5::CompType make_fission_desc();
+    extern H5::CompType fission_desc;
+
 
 };
 

@@ -151,18 +151,35 @@ void FCComps::load_track_isos_text(std::string filename, bool clear_prev)
 
 
 
+
+//
+// Some HDF5 helpera
+//
+
+hsize_t FCComps::iso_LL_dims [1] = {6};
+H5::ArrayType FCComps::iso_LL_type = H5::ArrayType(H5::PredType::NATIVE_CHAR, 1, FCComps::iso_LL_dims);
+
+hsize_t FCComps::cinder_g_dims [1] = {63};
+H5::ArrayType FCComps::cinder_g_type = H5::ArrayType(H5::PredType::NATIVE_DOUBLE, 1, FCComps::cinder_g_dims);
+
+
+
+//
+// Isotopic decay HDF5 interface
+//
+
 H5::CompType FCComps::make_decay_iso_desc()
 {
     //  Makes a decay isotope compound datatype
     H5::CompType didesc( sizeof(decay_iso_struct) );
 
-    didesc.insertMember( "from_iso_LL", HOFFSET(decay_iso_struct, from_iso_LL), H5::PredType::NATIVE_CHAR);
+    didesc.insertMember( "from_iso_LL", HOFFSET(decay_iso_struct, from_iso_LL), FCComps::iso_LL_type);
     didesc.insertMember( "from_iso_zz", HOFFSET(decay_iso_struct, from_iso_zz), H5::PredType::NATIVE_INT);
 
     didesc.insertMember( "half_life", HOFFSET(decay_iso_struct, half_life), H5::PredType::NATIVE_DOUBLE);
     didesc.insertMember( "decay_const", HOFFSET(decay_iso_struct, decay_const), H5::PredType::NATIVE_DOUBLE);
 
-    didesc.insertMember( "to_iso_LL", HOFFSET(decay_iso_struct, to_iso_LL), H5::PredType::NATIVE_CHAR);
+    didesc.insertMember( "to_iso_LL", HOFFSET(decay_iso_struct, to_iso_LL), FCComps::iso_LL_type);
     didesc.insertMember( "to_iso_zz", HOFFSET(decay_iso_struct, to_iso_zz), H5::PredType::NATIVE_INT);
 
     didesc.insertMember( "branch_ratio", HOFFSET(decay_iso_struct, branch_ratio), H5::PredType::NATIVE_DOUBLE);
@@ -171,3 +188,30 @@ H5::CompType FCComps::make_decay_iso_desc()
 };
 
 H5::CompType FCComps::decay_iso_desc = FCComps::make_decay_iso_desc();
+
+
+
+//
+// Fission Product HDF5 interface
+//
+
+H5::CompType FCComps::make_fission_desc()
+{
+    //  Makes a fission compound datatype
+    H5::CompType fdesc( sizeof(fission_struct) );
+
+    fdesc.insertMember( "iso_LL", HOFFSET(fission_struct, iso_LL), FCComps::iso_LL_type);
+    fdesc.insertMember( "iso_zz", HOFFSET(fission_struct, iso_zz), H5::PredType::NATIVE_INT);
+
+    fdesc.insertMember( "thermal_yield", HOFFSET(fission_struct, thermal_yield), H5::PredType::NATIVE_INT8);
+    fdesc.insertMember( "fast_yield", HOFFSET(fission_struct, fast_yield), H5::PredType::NATIVE_INT8);
+    fdesc.insertMember( "high_energy_yield", HOFFSET(fission_struct, high_energy_yield), H5::PredType::NATIVE_INT8);
+
+    fdesc.insertMember( "xs", HOFFSET(fission_struct, xs), FCComps::cinder_g_type);
+ 
+    return fdesc;
+};
+
+H5::CompType FCComps::fission_desc = FCComps::make_fission_desc();
+
+
