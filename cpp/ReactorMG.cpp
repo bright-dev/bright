@@ -257,7 +257,7 @@ void ReactorMG::loadlib(std::string libfile)
     H5::DataSpace fission_space = fission_set.getSpace();
     int fission_length = fission_space.getSimpleExtentNpoints(); 
 
-    FCComps::fission_stuct * fission_array = new FCComps::fission_stuct [fission_length];
+    FCComps::fission_struct * fission_array = new FCComps::fission_struct [fission_length];
     fission_set.read(fission_array, FCComps::fission_desc);
 
     // Run through the array and make join maps
@@ -275,6 +275,7 @@ void ReactorMG::loadlib(std::string libfile)
         if (J.count(i) < 1)
             continue;
 
+
         // make thermal join
         ty = fission_array[l].thermal_yield;
 
@@ -282,6 +283,7 @@ void ReactorMG::loadlib(std::string libfile)
             thermal_join[ty] = std::vector<int>();
 
         thermal_join[ty].push_back(J_index[i]);
+
 
         // make fast join
         fy = fission_array[l].fast_yield;
@@ -291,6 +293,54 @@ void ReactorMG::loadlib(std::string libfile)
 
         fast_join[ty].push_back(J_index[i]);
     };
+
+
+    // Read in fission product yeilds
+    H5::DataSet fp_yields_set = nuc_data_h5.openDataSet("/neutron/fission_products/yields");
+    H5::DataSpace fp_yields_space = fp_yields_set.getSpace();
+    int fp_yields_length = fp_yields_space.getSimpleExtentNpoints(); 
+
+    FCComps::fission_product_yields_struct * fp_yields_array = new FCComps::fission_product_yields_struct [fp_yields_length];
+    fp_yields_set.read(fp_yields_array, FCComps::fission_product_yields_desc);
+
+
+    // Run through the array and make yield matrices
+    thermal_yield_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+    fast_yield_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+
+    int index, tj, fj, TJ, FJ;
+    double mf;
+    for (int l = 0; l < fp_yields_length; l++)
+    {
+        // Get important data from struct
+        index = fp_yields_array[l].index;
+        j = fp_yields_array[l].to_iso_zz;
+        jnd = J_index[j];
+        mf = fp_yields_array[l].mass_frac;
+
+        // Add to thermal yields
+        if (0 < thermal_join.count(index))
+        {
+            TJ = thermal_join[index].size();
+            for (tj = 0; tj < TJ; tj++)
+            {
+                ind = thermal_join[index][tj];
+                thermal_yield_matrix[ind][jnd] = mf;
+            };
+        };
+
+        // Add to fast yields.
+        if (0 < fast_join.count(index))
+        {
+            FJ = fast_join[index].size();
+            for (fj = 0; fj < FJ; fj++)
+            {
+                ind = fast_join[index][tj];
+                fast_yield_matrix[ind][jnd] = mf;
+            };
+        };
+    };
+
 
 
     // close the nuc_data library

@@ -129,6 +129,8 @@ public:
 
 
     std::vector< std::vector<double> > decay_matrix;
+    std::vector< std::vector<double> > thermal_yield_matrix;
+    std::vector< std::vector<double> > fast_yield_matrix;
 
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
