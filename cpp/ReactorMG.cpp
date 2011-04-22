@@ -341,8 +341,6 @@ void ReactorMG::loadlib(std::string libfile)
         };
     };
 
-
-
     // close the nuc_data library
     nuc_data_h5.close();
 
