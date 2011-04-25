@@ -41,6 +41,8 @@ serpent_tallies.update({
     "sigma_f": -6, 
     "nubar_sigma_f": -7,  
     "chi": None,
+    "sigma_gammax": None,
+    "sigma_2nx": None,
     })
 
 serpent_no_scattering = set(["sigma_t", "sigma_f", "nubar_sigma_f", "sigma_a"])
@@ -51,7 +53,7 @@ serpent_advanced = set(["sigma_t", "sigma_f", "nubar_sigma_f", "sigma_a", "sigma
 serpent_default = set([
     "sigma_t", 
     "sigma_f", 
-    "nubar_sigma_f",  
+    "nubar_sigma_f",
 #   "sigma_a", 
     "sigma_e", 
     "sigma_i1", 
@@ -60,4 +62,11 @@ serpent_default = set([
     "sigma_i4", 
     "sigma_i5",
     "chi",
+    "sigma_gamma", 
+    "sigma_2n", 
+    "sigma_3n", 
+    "sigma_alpha", 
+    "sigma_proton", 
+    "sigma_gamma_x",
+    "sigma_2n_x",
     ]) 
