@@ -349,6 +349,23 @@ void ReactorMG::loadlib(std::string libfile)
         };
     };
 
+    // Make fission product yield matrix
+    fission_product_yield_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
+    for (ind = 0; ind < J_size; ind++)
+    {
+        for (jnd = 0; jnd < J_size; jnd++)
+        {
+            for (int g = 0; g < G; g++)
+            {
+                // Test which regime we are in
+                if (0.1 < E_g[g])
+                    fission_product_yield_matrix[ind][jnd][g] = fast_yield_matrix[ind][jnd];
+                else
+                    fission_product_yield_matrix[ind][jnd][g] = thermal_yield_matrix[ind][jnd];
+            };
+        };
+    };
+
     // close the nuc_data library
     nuc_data_h5.close();
 
@@ -791,6 +808,28 @@ void ReactorMG::assemble_multigroup_matrices()
 
     // Multiply the inverse of A by F
     A_inv_F_tgh[bt_s] = bright::matrix_multiplication(A_inv_tgh[bt_s], F_tgh[bt_s]);
+
+    //
+    // Assemble the energy integral of transmutation matrix
+    //
+    int g, i, j, ind, jnd;
+    std::vector< std::vector< std::vector<double> > T_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
+    
+    // Add the fission yields first
+    for (ind = 0; ind < J_size; ind++)
+    {
+        for (jnd = 0; jnd < J_size; jnd++)
+        {
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] = fission_product_yield_matrix[ind][jnd][g] * sigma_f_itg[J_order[ind]][bt_s][g];
+        };
+    };
+
+    // Add the other cross sections
+    for (ind = 0; ind < J_size; ind++)
+    {
+        // Add the capture cross-section next
+    };
 };
 
 
@@ -964,6 +1003,8 @@ void ReactorMG::burnup_core()
     F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    T_int_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
+    M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
 
 
     // Loop through all time steps

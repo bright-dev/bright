@@ -131,6 +131,7 @@ public:
     std::vector< std::vector<double> > decay_matrix;
     std::vector< std::vector<double> > thermal_yield_matrix;
     std::vector< std::vector<double> > fast_yield_matrix;
+    std::vector< std::vector< std::vector<double> > > fission_product_yield_matrix;
 
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
@@ -213,10 +214,12 @@ public:
     time_g Sigma_gamma_x_tg;    // Core-average Macroscopic capture cross-section (excited) as a function of time and energy group
     time_g Sigma_2n_x_tg;       // Core-average Macroscopic (n, 2n *) cross-section as a function of time and energy group
 
-    time_gh A_tgh;  // Absorprion Matrix, as a function of time
-    time_gh F_tgh;  // Fission Matrix, as a function of time
-    time_gh A_inv_tgh;  // Inverse of Absorprion Matrix, as a function of time
-    time_gh A_inv_F_tgh;  // Inverse of Absorprion Matrix mult by the Fission Matrix, as a function of time
+    time_gh A_tgh;       // Absorprion Matrix, as a function of time
+    time_gh F_tgh;       // Fission Matrix, as a function of time
+    time_gh A_inv_tgh;   // Inverse of Absorprion Matrix, as a function of time
+    time_gh A_inv_F_tgh; // Inverse of Absorprion Matrix mult by the Fission Matrix, as a function of time
+    time_gh T_int_tij;   // Energy Integral of the Transmutation Matrix, as a function of time
+    time_gh M_tij;       // Burnup Matrix, T_int Matrix plus the Decay Matrix, as a function of time
 
 
 
