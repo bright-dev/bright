@@ -813,7 +813,7 @@ void ReactorMG::assemble_multigroup_matrices()
     // Assemble the energy integral of transmutation matrix
     //
     int g, i, j, ind, jnd;
-    std::vector< std::vector< std::vector<double> > T_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
+    std::vector< std::vector< std::vector<double> > > T_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
     
     // Add the fission yields first
     for (ind = 0; ind < J_size; ind++)
@@ -826,10 +826,90 @@ void ReactorMG::assemble_multigroup_matrices()
     };
 
     // Add the other cross sections
+    int j_gamma, j_2n, j_3n, j_alpha, j_proton, j_gamma_x, j_2n_x; 
     for (ind = 0; ind < J_size; ind++)
     {
-        // Add the capture cross-section next
+        i = J_order[ind];
+
+        // Get from isos
+        j_gamma = ((i/10) + 1) * 10;
+        j_2n = j_gamma - 20;
+        j_3n = j_2n - 10;
+        j_alpha = j_3n - 20010;
+        j_proton = j_gamma - 10010;
+        j_gamma_x = j_gamma + 1;
+        j_2n_x = j_2n + 1;
+
+        // Add the capture cross-section
+        if (0 < J.count(j_gamma))
+        {
+            jnd = J_index[j_gamma];
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += sigma_gamma_itg[ind][bt_s][g];
+        };
+
+        // Add the (n, 2n) cross-section
+        if (0 < J.count(j_2n))
+        {
+            jnd = J_index[j_2n];
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += sigma_2n_itg[ind][bt_s][g];
+        };
+
+        // Add the (n, 3n) cross-section
+        if (0 < J.count(j_3n))
+        {
+            jnd = J_index[j_3n];
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += sigma_3n_itg[ind][bt_s][g];
+        };
+
+        // Add the (n, alpha) cross-section
+        if (0 < J.count(j_2n))
+        {
+            jnd = J_index[j_alpha];
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += sigma_alpha_itg[ind][bt_s][g];
+        };
+
+        // Add the (n, proton) cross-section
+        if (0 < J.count(j_proton))
+        {
+            jnd = J_index[j_2n];
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += sigma_proton_itg[ind][bt_s][g];
+        };
+
+
+        // Add the capture (excited) cross-section
+        if (0 < J.count(j_gamma_x))
+        {
+            jnd = J_index[j_gamma_x];
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += sigma_gamma_x_itg[ind][bt_s][g];
+        };
+
+        // Add the (n, 2n *) cross-section
+        if (0 < J.count(j_2n_x))
+        {
+            jnd = J_index[j_2n_x];
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += sigma_2n_x_itg[ind][bt_s][g];
+        };
     };
+
+    // Multiply by flux and integrate over energy
+    for (ind = 0; ind < J_size; ind++)
+    {
+        for (jnd = 0; jnd < J_size; jnd++)
+        {
+            for (g = 0; g < G; g++)
+                T_int_tij[bt_s][ind][jnd] += T_matrix[ind][jnd][g] * phi_tg[bt_s][g];
+        };
+    };
+
+    // Make the transmutation matrix for this time step
+    M_tij[bt_s] = bright::matrix_addition(T_int_tij[bt_s], decay_matrix);
 };
 
 
@@ -901,6 +981,78 @@ void ReactorMG::calc_criticality()
         phi_t[bt_s] += phi1[0];
 
     Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+};
+
+
+
+
+
+
+void ReactorMG::calc_transmutation()
+{
+    // Get the transmutation matrix for this time delta
+    double dt = burn_times[bt_s] - burn_times[bt_s - 1];
+    std::vector< std::vector<double> > Mt = bright::scalar_matrix_product(dt, M_tij[bt_s]);
+
+    // Set Pade coefficients, for p = q = 6
+    double N_coef_n [7] = {1.00000000e+00,   5.00000000e-01,   1.13636364e-01, \
+                           1.51515152e-02,   1.26262626e-03,   6.31313131e-05, \
+                           1.50312650e-06};
+    double D_coef_n [7] = {1.00000000e+00,   5.00000000e-01,   1.13636364e-01, \
+                           1.51515152e-02,   1.26262626e-03,   6.31313131e-05, \
+                           1.50312650e-06};
+
+    // Init the new matrices
+    std::vector< std::vector< std::vector<double> > > Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) ) );
+    std::vector< std::vector< std::vector<double> > > neg_Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) ) );
+    std::vector< std::vector<double> > N_pq = std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) );
+    std::vector< std::vector<double> > D_pq = std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) );
+
+    int n, i, j, ind, jnd;
+    for (ind = 0; ind < J_size; ind++)
+    {
+        Mt_n[0][ind][ind] = 1.0;
+        neg_Mt_n[0][ind][ind] = 1.0;
+    };
+
+    // Calculate the exponential matrices
+    for (n = 1; n < 7; n++)
+    {
+        Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], Mt);
+        neg_Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], bright::scalar_matrix_product(-1.0, Mt));
+    };
+
+    // Calculate the pade numerator and denom matrices
+    for (n = 0; n < 7; n++)
+    {
+        N_pq = bright::matrix_addition(N_pq, bright::scalar_matrix_product(N_coef_n[n], Mt_n[n]));
+        D_pq = bright::matrix_addition(D_pq, bright::scalar_matrix_product(D_coef_n[n], neg_Mt_n[n]));
+    };
+
+    // Invert the denominator
+    std::vector< std::vector<double> > inv_D_pq = bright::matrix_inverse(D_pq);
+
+    // Approximate the exponential e^(Mt) = D^-1 * N
+    std::vector< std::vector<double> > exp_Mt = bright::matrix_multiplication(inv_D_pq, N_pq);
+
+    // Make mass vectors
+    std::vector<double> comp_prev (J_size, 0.0);
+    for (ind = 0; ind < J_size; ind++)
+    {
+        i = J_order[ind];
+        comp_prev[ind] = T_it[i][bt_s-1];
+    };
+
+    // Get the composition for the next time step
+    std::vector<double> comp_next = bright::scalar_matrix_vector_product(1.0, exp_Mt, comp_old);
+
+    // Copy this composition back to the tranmutuation matrix
+    for (ind = 0; ind < J_size; ind++)
+    {
+        i = J_order[ind];
+        T_it[i][bt_s] = comp_next[ind];
+    };
+    
 };
 
 
@@ -1025,9 +1177,10 @@ void ReactorMG::burnup_core()
         calc_mass_weights();
         fold_mass_weights();
 
-        // Make the cross-section matrices before the criticality calulation
+        // Preform the criticality and burnup calulations
         assemble_multigroup_matrices();
         calc_criticality();
+        calc_transmutation();
     };
 
 };

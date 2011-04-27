@@ -283,6 +283,7 @@ public:
     void fold_mass_weights();
     void assemble_multigroup_matrices();
     void calc_criticality();
+    void calc_transmutation();
 
     void burnup_core();
     void old_burnup_core();
