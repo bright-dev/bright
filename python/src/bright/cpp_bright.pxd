@@ -483,10 +483,14 @@ cdef extern from "../../../cpp/ReactorMG.h":
         map[int, vector[vector[double]]] nubar_sigma_f_pg
         map[int, vector[vector[double]]] chi_pg
         map[int, vector[vector[vector[double]]]] sigma_s_pgh
-        #map[int, vector[vector[double]]] sigma_a_pg
-        #map[int, vector[vector[double]]] sigma_s_pg
-        #map[int, vector[vector[double]]] sigma_f_pg
-        #map[int, vector[vector[double]]] nubar_pg
+        map[int, vector[vector[double]]] sigma_f_pg
+        map[int, vector[vector[double]]] sigma_gamma_pg
+        map[int, vector[vector[double]]] sigma_2n_pg
+        map[int, vector[vector[double]]] sigma_3n_pg
+        map[int, vector[vector[double]]] sigma_alpha_pg
+        map[int, vector[vector[double]]] sigma_proton_pg
+        map[int, vector[vector[double]]] sigma_gamma_x_pg
+        map[int, vector[vector[double]]] sigma_2n_x_pg
 
         vector[double] A_HM_t
         vector[double] MW_fuel_t
@@ -515,19 +519,27 @@ cdef extern from "../../../cpp/ReactorMG.h":
         map[int, vector[vector[double]]] nubar_sigma_f_itg
         map[int, vector[vector[double]]] chi_itg
         map[int, vector[vector[vector[double]]]] sigma_s_itgh
-        #map[int, vector[vector[double]]] sigma_a_itg
-        #map[int, vector[vector[double]]] sigma_s_itg
-        #map[int, vector[vector[double]]] sigma_f_itg
-        #map[int, vector[vector[double]]] nubar_itg
+        map[int, vector[vector[double]]] sigma_f_itg
+        map[int, vector[vector[double]]] sigma_gamma_itg
+        map[int, vector[vector[double]]] sigma_2n_itg
+        map[int, vector[vector[double]]] sigma_3n_itg
+        map[int, vector[vector[double]]] sigma_alpha_itg
+        map[int, vector[vector[double]]] sigma_proton_itg
+        map[int, vector[vector[double]]] sigma_gamma_x_itg
+        map[int, vector[vector[double]]] sigma_2n_x_itg
 
         vector[vector[double]] Sigma_t_tg
         vector[vector[double]] nubar_Sigma_f_tg
         vector[vector[double]] chi_tg
         vector[vector[vector[double]]] Sigma_s_tgh
-        #vector[vector[double]] Sigma_a_tg
-        #vector[vector[double]] Sigma_s_tg
-        #vector[vector[double]] Sigma_f_tg
-        #vector[vector[double]] nubar_tg
+        vector[vector[double]] Sigma_f_tg
+        vector[vector[double]] Sigma_gamma_tg
+        vector[vector[double]] Sigma_2n_tg
+        vector[vector[double]] Sigma_3n_tg
+        vector[vector[double]] Sigma_alpha_tg
+        vector[vector[double]] Sigma_proton_tg
+        vector[vector[double]] Sigma_gamma_x_tg
+        vector[vector[double]] Sigma_2n_x_tg
 
         vector[int] nearest_neighbors
 

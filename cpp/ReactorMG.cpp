@@ -158,10 +158,14 @@ void ReactorMG::loadlib(std::string libfile)
     nubar_sigma_f_pg.clear();
     chi_pg.clear();
     sigma_s_pgh.clear();
-    //sigma_a_pg.clear();
-    //sigma_s_pg.clear();
-    //sigma_f_pg.clear();
-    //nubar_pg.clear();
+    sigma_f_pg.clear();
+    sigma_gamma_pg.clear();
+    sigma_2n_pg.clear();
+    sigma_3n_pg.clear();
+    sigma_alpha_pg.clear();
+    sigma_proton_pg.clear();
+    sigma_gamma_x_pg.clear();
+    sigma_2n_x_pg.clear();
 
     // Load transmutation vectors and cross sections that are based off of isotope
     int iso_zz;
@@ -179,10 +183,14 @@ void ReactorMG::loadlib(std::string libfile)
         nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
         chi_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/chi/" + iso_LL);
         sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
-        //sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
-        //sigma_s_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_s/" + iso_LL);
-        //sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
-        //nubar_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar/" + iso_LL);
+        sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
+        sigma_gamma_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_gamma/" + iso_LL);
+        sigma_2n_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_2n/" + iso_LL);
+        sigma_3n_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_3n/" + iso_LL);
+        sigma_alpha_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_alpha/" + iso_LL);
+        sigma_proton_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_proton/" + iso_LL);
+        sigma_gamma_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_gamma_x/" + iso_LL);
+        sigma_2n_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_2n_x/" + iso_LL);
     };
 
     // close the reactor library
@@ -555,10 +563,14 @@ void ReactorMG::interpolate_cross_sections()
         sigma_t_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_t_pg[*iso][a1], sigma_t_pg[*iso][a0]);
         nubar_sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f_pg[*iso][a1], nubar_sigma_f_pg[*iso][a0]);
         chi_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, chi_pg[*iso][a1], chi_pg[*iso][a0]);
-        //sigma_a_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
-        //sigma_s_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_s_pg[*iso][a1], sigma_s_pg[*iso][a0]);
-        //sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
-        //nubar_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_pg[*iso][a1], nubar_pg[*iso][a0]);
+        sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
+        sigma_gamma_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_gamma_pg[*iso][a1], sigma_gamma_pg[*iso][a0]);
+        sigma_2n_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_2n_pg[*iso][a1], sigma_2n_pg[*iso][a0]);
+        sigma_3n_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_3n_pg[*iso][a1], sigma_3n_pg[*iso][a0]);
+        sigma_alpha_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_alpha_pg[*iso][a1], sigma_alpha_pg[*iso][a0]);
+        sigma_proton_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_proton_pg[*iso][a1], sigma_proton_pg[*iso][a0]);
+        sigma_gamma_x_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_gamma_x_pg[*iso][a1], sigma_gamma_x_pg[*iso][a0]);
+        sigma_2n_x_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_2n_x_pg[*iso][a1], sigma_2n_x_pg[*iso][a0]);
 
         for (int g = 0; g < G; g++)
             sigma_s_itgh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_pgh[*iso][a1][g], sigma_s_pgh[*iso][a0][g]);
@@ -734,10 +746,15 @@ void ReactorMG::fold_mass_weights()
 // TESTME FIXME  I possibly neede to think more about the 
 // Normalization factor here for chi
             chi_tg[bt_s][g] += n_i * chi_itg[*iso][bt_s][g];
-            //Sigma_a_tg[bt_s][g] += N_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
-            //Sigma_s_tg[bt_s][g] += N_i_cm2pb * sigma_s_itg[*iso][bt_s][g];
-            //Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
-            //nubar_tg[bt_s][g] += N_i_cm2pb * nubar_itg[*iso][bt_s][g];
+// OK back to normal
+            Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            Sigma_gamma_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
+            Sigma_2n_tg[bt_s][g] += N_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
+            Sigma_3n_tg[bt_s][g] += N_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
+            Sigma_alpha_tg[bt_s][g] += N_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
+            Sigma_proton_tg[bt_s][g] += N_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
+            Sigma_gamma_x_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
+            Sigma_2n_x_tg[bt_s][g] += N_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             for (int h =0; h < G; h++)
                 Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
@@ -867,10 +884,14 @@ void ReactorMG::burnup_core()
     nubar_sigma_f_itg.clear();
     chi_itg.clear();
     sigma_s_itgh.clear();
-    //sigma_a_itg.clear();
-    //sigma_s_itg.clear();
-    //sigma_f_itg.clear();
-    //nubar_itg.clear();
+    sigma_f_itg.clear();
+    sigma_gamma_itg.clear();
+    sigma_2n_itg.clear();
+    sigma_3n_itg.clear();
+    sigma_alpha_itg.clear();
+    sigma_proton_itg.clear();
+    sigma_gamma_x_itg.clear();
+    sigma_2n_x_itg.clear();
 
     // Also initilaize the mass weights
     A_HM_t = std::vector<double>(S, 0.0);
@@ -902,10 +923,14 @@ void ReactorMG::burnup_core()
         nubar_sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         chi_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         sigma_s_itgh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
-        //sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        //sigma_s_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        //sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
-        //nubar_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_gamma_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_2n_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_3n_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_alpha_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_proton_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_gamma_x_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_2n_x_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
 
         // Init the mass weights
         n_fuel_it[*iso] = std::vector<double>(S, 0.0);
@@ -924,10 +949,14 @@ void ReactorMG::burnup_core()
     nubar_Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     chi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
-    //Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
-    //Sigma_s_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
-    //Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
-    //nubar_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_3n_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_alpha_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_proton_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_x_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_x_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
 
     // Init the criticality matrices

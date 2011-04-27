@@ -150,10 +150,14 @@ public:
     std::map<int, pert_data_g> nubar_sigma_f_pg;   // Neutrons per fission times Fission cross section from data library
     std::map<int, pert_data_g> chi_pg;             // Fission energy spectrum from data library
     std::map<int, pert_data_gh> sigma_s_pgh;       // Group to group scattering cross section from data library
-    //std::map<int, pert_data_g> sigma_a_pg;         // Absorption cross section from data library
-    //std::map<int, pert_data_g> sigma_s_pg;         // Scattering cross section from data library
-    //std::map<int, pert_data_g> sigma_f_pg;         // Fission cross section from data library
-    //std::map<int, pert_data_g> nubar_pg;           // Neutrons per fission from data library
+    std::map<int, pert_data_g> sigma_f_pg;         // Fission cross section from data library
+    std::map<int, pert_data_g> sigma_gamma_pg;     // Capture cross section from data library
+    std::map<int, pert_data_g> sigma_2n_pg;        // (n, 2n) cross section from data library
+    std::map<int, pert_data_g> sigma_3n_pg;        // (n, 3n) cross section from data library
+    std::map<int, pert_data_g> sigma_alpha_pg;     // (n, alpha) cross section from data library
+    std::map<int, pert_data_g> sigma_proton_pg;    // (n, proton) cross section from data library
+    std::map<int, pert_data_g> sigma_gamma_x_pg;   // Capture cross section (excited) from data library
+    std::map<int, pert_data_g> sigma_2n_x_pg;      // (n, 2n *) cross section from data library
 
 
     // Attributes calculated from fold_mass_weights()
@@ -186,20 +190,28 @@ public:
     iso_time_g nubar_sigma_f_itg;    // Neutrons per fission times Fission cross section as a function of isotope and burn_time
     iso_time_g chi_itg;              // Fission neutron energy spectrum as a function of isotope and burn_time
     iso_time_gh sigma_s_itgh;        // Group to group scattering cross section as a function of isotope and burn_time
-    //iso_time_g sigma_a_itg;          // Absorption cross section as a function of isotope and burn_time
-    //iso_time_g sigma_s_itg;          // Scattering cross section as a function of isotope and burn_time
-    //iso_time_g sigma_f_itg;          // Fission cross section  as a function of isotope and burn_time
-    //iso_time_g nubar_itg;            // Neutrons per fission from data library
+    iso_time_g sigma_f_itg;          // Fission cross section as a function of isotope and burn_time
+    iso_time_g sigma_gamma_itg;      // Capture cross section as a function of isotope and burn_time
+    iso_time_g sigma_2n_itg;         // (n, 2n) cross section as a function of isotope and burn_time
+    iso_time_g sigma_3n_itg;         // (n, 3n) cross section as a function of isotope and burn_time
+    iso_time_g sigma_alpha_itg;      // (n, alpha) cross section as a function of isotope and burn_time
+    iso_time_g sigma_proton_itg;     // (n, proton) cross section as a function of isotope and burn_time
+    iso_time_g sigma_gamma_x_itg;    // Capture cross section (excited) as a function of isotope and burn_time
+    iso_time_g sigma_2n_x_itg;       // (n, 2n *) cross section as a function of isotope and burn_time
 
 
     time_g Sigma_t_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
     time_g nubar_Sigma_f_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
     time_g chi_tg;              // Core-average Fission neutron energy spectrum as a function of time and energy group
     time_gh Sigma_s_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
-    //time_g Sigma_a_tg;          // Core-average Macroscopic absorption cross-section as a function of time and energy group
-    //time_g Sigma_s_tg;          // Core-average Macroscopic scattering cross-section as a function of time and energy group
-    //time_g Sigma_f_tg;          // Core-average Macroscopic the fission cross-section as a function of time and energy group
-    //time_g nubar_tg;            // Core-average nubar as a function of time and energy group
+    time_g Sigma_f_tg;          // Core-average Macroscopic fission cross-section as a function of time and energy group
+    time_g Sigma_gamma_tg;      // Core-average Macroscopic capture cross-section as a function of time and energy group
+    time_g Sigma_2n_tg;         // Core-average Macroscopic (n, 2n) cross-section as a function of time and energy group
+    time_g Sigma_3n_tg;         // Core-average Macroscopic (n, 3n) cross-section as a function of time and energy group
+    time_g Sigma_alpha_tg;      // Core-average Macroscopic (n, alpha) cross-section as a function of time and energy group
+    time_g Sigma_proton_tg;     // Core-average Macroscopic (n, proton) cross-section as a function of time and energy group
+    time_g Sigma_gamma_x_tg;    // Core-average Macroscopic capture cross-section (excited) as a function of time and energy group
+    time_g Sigma_2n_x_tg;       // Core-average Macroscopic (n, 2n *) cross-section as a function of time and energy group
 
     time_gh A_tgh;  // Absorprion Matrix, as a function of time
     time_gh F_tgh;  // Fission Matrix, as a function of time
