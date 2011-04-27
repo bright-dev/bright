@@ -41,8 +41,8 @@ serpent_tallies.update({
     "sigma_f": -6, 
     "nubar_sigma_f": -7,  
     "chi": None,
-    "sigma_gammax": None,
-    "sigma_2nx": None,
+    "sigma_gamma_x": None,
+    "sigma_2n_x": None,
     })
 
 serpent_no_scattering = set(["sigma_t", "sigma_f", "nubar_sigma_f", "sigma_a"])

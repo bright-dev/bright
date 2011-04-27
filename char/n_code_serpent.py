@@ -586,7 +586,7 @@ class NCodeSerpent(object):
 
 
 
-    def run_xs_gen_pert(self, iso, n, ms_n):
+    def run_xs_gen_pert(self, iso, n, ms_n, E_n=None, E_g=None, phi_n=None):
         """Runs the perturbation for an isotope that is in serpent.
 
         iso : isotope identifier
@@ -639,6 +639,31 @@ class NCodeSerpent(object):
         # Parse this run 
         res, det = self.parse_xs_gen(iso_LL, n)
 
+        # Prep for metastable tallies
+        tallies = self.env['tallies']
+
+        # Get (n, g *)
+        if 'sigma_gamma_x' in tallies:
+            if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in self.env['iso_mts'][iso_zz]):
+                sig_g = det['DETsigma_gamma']
+                sig_g = tally_serp_array[::-1, 10]
+                ms_rat = msnxs.metastable_ratio(iso_zz, 'gamma', E_g=E_g, E_n=E_n, phi_n=phi_n)
+                sig_g_x = ms_rat * sig_g
+                det['_sigma_gamma_x'] = sig_g_x
+            else:
+                det['_sigma_gamma_x'] = msnxs.sigma_reaction(iso_zz, 'gamma_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
+
+        # Get (n, 2n *)
+        if 'sigma_2n_x' in tallies:
+            if ('sigma_2n' in tallies) and (tallies['sigma_2n'] in self.env['iso_mts'][iso_zz]):
+                sig_g = det['DETsigma_2n']
+                sig_g = tally_serp_array[::-1, 10]
+                ms_rat = msnxs.metastable_ratio(iso_zz, '2n', E_g=E_g, E_n=E_n, phi_n=phi_n)
+                sig_g_x = ms_rat * sig_g
+                det['_sigma_2n_x'] = sig_g_x
+            else:
+                det['_sigma_2n_x'] = msnxs.sigma_reaction(iso_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
+
         return res, det
 
 
@@ -680,7 +705,7 @@ class NCodeSerpent(object):
 
 
 
-    def run_xs_mod_pert(self, iso, n, E_n, E_g, phi_g):
+    def run_xs_mod_pert(self, iso, n, E_n, E_g, phi_n):
         """Generates crosss sections for isotopes not in serpent.
 
         iso : isotope identifier
@@ -713,6 +738,27 @@ class NCodeSerpent(object):
 
         if 'chi' in tallies:
             xs_dict['chi'] = msnxs.chi(iso)
+
+        if 'sigma_gamma' in tallies:
+            xs_dict['sigma_gamma'] = msnxs.sigma_reaction(iso, 'gamma')
+
+        if 'sigma_2n' in tallies:
+            xs_dict['sigma_2n'] = msnxs.sigma_reaction(iso, '2n')
+
+        if 'sigma_3n' in tallies:
+            xs_dict['sigma_3n'] = msnxs.sigma_reaction(iso, '3n')
+
+        if 'sigma_alpha' in tallies:
+            xs_dict['sigma_alpha'] = msnxs.sigma_reaction(iso, 'alpha')
+
+        if 'sigma_proton' in tallies:
+            xs_dict['sigma_proton'] = msnxs.sigma_reaction(iso, 'proton')
+
+        if 'sigma_gamma_x' in tallies:
+            xs_dict['sigma_gamma_x'] = msnxs.sigma_reaction(iso, 'gamma_x')
+
+        if 'sigma_2n_x' in tallies:
+            xs_dict['sigma_2n_x'] = msnxs.sigma_reaction(iso, '2n_x')
 
         return xs_dict
 
@@ -973,6 +1019,18 @@ class NCodeSerpent(object):
             self.init_tally_group(rx_h5, base_group, 'chi', neg1, 
                                   "Fission neutron energy spectrum {tally} [n/MeV]", 
                                   "Fission neutron energy spectrum {tally} for {iso} [n/MeV]")
+
+        # (n, gamma *)
+        if 'sigma_gamma_x' in tallies:
+            self.init_tally_group(rx_h5, base_group, 'sigma_gamma_x', neg1, 
+                                  "Microscopic Cross Section (n, gamma *) [barns]", 
+                                  "Microscopic Cross Section (n, gamma *) for {iso} [barns]")
+
+        # (n, 2n *)
+        if 'sigma_2n_x' in tallies:
+            self.init_tally_group(rx_h5, base_group, 'sigma_2n_x', neg1, 
+                                  "Microscopic Cross Section (n, 2n *) [barns]", 
+                                  "Microscopic Cross Section (n, 2n *) for {iso} [barns]")
 
 
         # close the file before returning
@@ -1235,6 +1293,18 @@ class NCodeSerpent(object):
 
             tally_hdf5_array[n] = chi
 
+        # sigma_gamma_x
+        if ('sigma_gamma_x' in tallies):
+            tally_hdf5_group = getattr(base_group, 'sigma_gamma_x')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+            tally_hdf5_array[n] = det['_sigma_gamma_x'][::-1]
+            
+        # sigma_2n_x
+        if ('sigma_2n_x' in tallies):
+            tally_hdf5_group = getattr(base_group, 'sigma_2n_x')
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+            tally_hdf5_array[n] = det['_sigma_2n_x'][::-1]            
+
         # close the file before returning
         rx_h5.close()
 
@@ -1291,6 +1361,7 @@ class NCodeSerpent(object):
         #
         # Write special tallies
         #
+
         # nubar
         if ('sigma_f' in tallies) and ('sigma_f' in xs_dict) and  ('nubar_sigma_f' in tallies):
             # set the value of the number of neutrons per fission, based on 

@@ -82,14 +82,6 @@ class RunChar(object):
             ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent']['zzaaam'])
             ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent']['zzaaam'])
 
-            #
-            # Loop over all output isotopes...
-            #
-            # ...that are valid in serpent
-            for iso in isos_in_serpent:
-                res, det = self.n_code.run_xs_gen_pert(iso, n, ms_n_in_serpent)
-                self.n_code.write_xs_gen(iso, n, res, det)
-
             # Read in some common parameters from the data file
             with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
                 E_g = np.array(rx_h5.root.energy[n][::-1])
@@ -103,9 +95,17 @@ class RunChar(object):
                 with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
                     phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
 
+            #
+            # Loop over all output isotopes...
+            #
+            # ...that are valid in serpent
+            for iso in isos_in_serpent:
+                res, det = self.n_code.run_xs_gen_pert(iso, n, ms_n_in_serpent, E_n, E_g, phi_n)
+                self.n_code.write_xs_gen(iso, n, res, det)
+
             # ...that are NOT valid in serpent
             for iso in isos_not_in_serpent:
-                xsd = self.n_code.run_xs_mod_pert(iso, n, E_n, E_g, phi_g)
+                xsd = self.n_code.run_xs_mod_pert(iso, n, E_n, E_g, phi_n)
                 self.n_code.write_xs_mod(iso, n, xsd)
 
 
