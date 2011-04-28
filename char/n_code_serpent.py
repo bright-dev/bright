@@ -84,7 +84,7 @@ class NCodeSerpent(object):
         # Set Stock tallies for serpent
         if 'tallies' not in env:
             self.env['tallies'] = tally_types.serpent_default
-        self.env['tallies'] = dict([(t, tally_types.serpent_tallies[t]) for t in self.env['tallies']])
+        self.env['tallies'] = {t: tally_types.serpent_tallies[t] for t in self.env['tallies']}
 
         # Make perturbation table
         data = [self.env[a] for a in self.env['perturbation_params']]
