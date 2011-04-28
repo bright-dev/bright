@@ -179,12 +179,9 @@ public:
 
     // Attributes caluclated from burnup_core()
     time_g phi_tg;      // Group fluxes as a function of time
-    time_data phi_t;      // Group fluxes as a function of time
+    time_data phi_t;    // Group fluxes as a function of time
     time_data Phi_t;    // Fluence in [n/kb]
     time_data BU_t;		// Burnup [MWd/kgIHM]
-    time_data pF_t;     // Production rate of the fuel [n/s]
-    time_data dF_t;     // Destruction rate of the fuel [n/s]
-    time_data dC_t;     // Destruction rate of the coolant [n/s]
 
     iso_time_map T_it;               // Transformation Matrix [kg_i/kgIHM]
     iso_time_g sigma_t_itg;          // Total cross section as a function of isotope and burn_time
@@ -286,7 +283,6 @@ public:
     void calc_transmutation();
 
     void burnup_core();
-    void old_burnup_core();
 
     void calc_nearest_neighbors();
 

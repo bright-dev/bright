@@ -1054,7 +1054,25 @@ void ReactorMG::calc_transmutation()
         i = J_order[ind];
         T_it[i][bt_s] = comp_next[ind];
     };
-    
+
+    // Calculate the burnup 
+    CompDict cd_prev, cd_next;
+    for (ind = 0; ind < J_size; ind++)
+    {
+        i = J_order[ind];
+        cd_prev[i] = comp_prev[ind];
+        cd_next[i] = comp_next[ind];
+    };
+
+    MassStream ms_prev (cd_prev);
+    MassStream act_prev = ms_prev.get_act();
+
+    MassStream ms_next (cd_next);
+    MassStream act_next = ms_next.get_act();
+
+    double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
+
+    BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
 };
 
 
@@ -1100,6 +1118,12 @@ void ReactorMG::burnup_core()
     N_fuel_it.clear();
     N_clad_it.clear();
     N_cool_it.clear();
+
+    // Also init attributes caluclated from burnup
+    phi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0) );
+    phi_t = std::vector<double>(S, -1.0);
+    Phi_t = std::vector<double>(S, -1.0);
+    BU_t = std::vector<double>(S, -1.0);
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
@@ -1182,7 +1206,11 @@ void ReactorMG::burnup_core()
         // Preform the criticality and burnup calulations
         assemble_multigroup_matrices();
         calc_criticality();
-        calc_transmutation();
+
+        if (s == 0)
+            BU_t[0] = 0.0;
+        else        
+            calc_transmutation();
     };
 
 };
@@ -1190,98 +1218,6 @@ void ReactorMG::burnup_core()
 
 
 
-
-
-void ReactorMG::old_burnup_core()
-{
-};
-/*
-    //BU(F)
-    BU_F_.clear();
-    BU_F_.assign( F.size(), 0.0 ); //re-initialize BU(F)
-    for (CompIter i = miF.begin(); i != miF.end(); i++)
-    {
-        for (int f = 0; f < BU_F_.size(); f++)
-        {
-            BU_F_[f] = BU_F_[f] + (miF[i->first] * BUi_F_[i->first][f]);
-        };
-    };
-
-    //P(F)
-    P_F_.clear();
-    P_F_.assign( F.size(), 0.0 );
-    for (CompIter i = miF.begin(); i != miF.end(); i++)
-    {
-        for (int f = 0; f < P_F_.size(); f++)
-        {
-            P_F_[f] = P_F_[f] + (P_NL * miF[i->first] * pi_F_[i->first][f]);
-        };
-    };
-
-    //d^F(F)
-    dF_F_.clear();
-    dF_F_.assign( F.size(), 0.0 );
-    for (CompIter i = miF.begin(); i != miF.end(); i++)
-    {
-        for (int f = 0; f < dF_F_.size(); f++)
-        {
-            dF_F_[f] = dF_F_[f] + (miF[i->first] * di_F_[i->first][f]);
-        };
-    };
-
-    //d^C(F)
-    dC_F_.clear();
-    dC_F_.assign( F.size(), 0.0 );
-    for (CompIter i = miC.begin(); i != miC.end(); i++)
-    {
-        if (rescale_hydrogen_xs && (i->first) == 10010)
-        {
-            for (int f = 0; f < dC_F_.size(); f++)
-            {
-                dC_F_[f] = dC_F_[f] + (miC[i->first] * di_F_[i->first][f] * (1.36927 - (0.01119 * BU_F_[f])));
-            };
-        }
-        else
-        {
-            for (int f = 0; f < dC_F_.size(); f++)
-            {
-                dC_F_[f] = dC_F_[f] + (miC[i->first] * di_F_[i->first][f]);
-            };
-        };
-    };
-
-    //Implement the disadvantage factor, if needed.
-    if (use_zeta)
-    {
-        calc_zeta();
-        for (int f = 0; f < F.size(); f++)
-        {
-            dC_F_[f] = zeta_F_[f] * dC_F_[f];
-        };
-    }
-    else
-    {
-        zeta_F_.clear();
-        zeta_F_.assign( F.size(), 0.0 );
-    };
-
-    //D(F)
-    D_F_.clear();
-    D_F_.assign( F.size(), 0.0 );
-    for (int f = 0; f < D_F_.size(); f++)
-    {
-        D_F_[f] = dF_F_[f] + dC_F_[f];
-    };
-
-    //k(F) -- almost meaningless
-    k_F_.clear();
-    k_F_.assign( F.size(), 0.0 );
-    for (int f = 0; f < k_F_.size(); f++)
-    {
-        k_F_[f] = P_F_[f] / D_F_[f];
-    };
-};
-*/
 
 
 
