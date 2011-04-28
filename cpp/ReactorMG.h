@@ -296,7 +296,6 @@ public:
     double       calc_deltaR(MassStream);
 
     FluencePoint fluence_at_BU(double);
-    double       batch_average(double, std::string = "K");
     double       batch_average_k(double);
     void         BUd_bisection_method();
     void         run_P_NL(double);

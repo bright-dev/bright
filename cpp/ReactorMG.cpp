@@ -1350,7 +1350,6 @@ double ReactorMG::calc_deltaR(MassStream ms)
 
 FluencePoint ReactorMG::fluence_at_BU(double BU)
 {
-};
     /** Gives the fluence at which the burnup BU occurs.
      *  Data returned as FluenceIndex stucture:
      *  	FI.f: index imeadiately lower than where BU achieved (int),
@@ -1358,12 +1357,11 @@ FluencePoint ReactorMG::fluence_at_BU(double BU)
      *  	FI.m: slope dBU/dF bewteen points f and f+1 (double)
      */
 
-/*
     FluencePoint fp;
 
     //Finds the lower index
     fp.f = 0;
-    while ( (fp.f < BU_F_.size()) && (BU_F_[fp.f] < BU) )
+    while ( (fp.f < S) && (BU_t[fp.f] < BU) )
     {
         fp.f = fp.f + 1;
     };
@@ -1372,25 +1370,20 @@ FluencePoint ReactorMG::fluence_at_BU(double BU)
     if (fp.f < 0)
         fp.f = 0;
     
-    if ( (fp.f + 1) == F.size() )
-        fp.m = bright::slope(F[fp.f], BU_F_[fp.f], F[fp.f-1], BU_F_[fp.f-1]);
+    if ( (fp.f + 1) == S )
+        fp.m = bright::slope(Phi_t[fp.f], BU_t[fp.f], Phi_t[fp.f-1], BU_t[fp.f-1]);
     else
-        fp.m = bright::slope(F[fp.f+1], BU_F_[fp.f+1], F[fp.f], BU_F_[fp.f]);
+        fp.m = bright::slope(Phi_t[fp.f+1], BU_t[fp.f+1], Phi_t[fp.f], BU_t[fp.f]);
 
-    fp.F = ((BU - BU_F_[fp.f])/fp.m) + F[fp.f];
+    fp.F = ((BU - BU_t[fp.f])/fp.m) + Phi_t[fp.f];
 
     return fp;
 };
-*/
 
 
-double ReactorMG::batch_average(double BUd, std::string PDk_flag)
+
+double ReactorMG::batch_average_k(double BUd)
 {
-};
-/*
-    //Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
-    std::string PDk = bright::ToUpper(PDk_flag); 
-
     //For B batches (indexed from 0 -> B-1) calculate BU of each batch.
     std::vector<double> bu (B, 0.0);
     for (int b = 0; b < B; b++)
@@ -1406,59 +1399,38 @@ double ReactorMG::batch_average(double BUd, std::string PDk_flag)
         fps[b] = fluence_at_BU(bu[b]);
     };
 
-    std::vector<double> PDks (B, 0.0);
+    // Get the multiplication factot and flux for each batch.
+    std::vector<double> k_b (B, 0.0);
+    std::vector<double> phi_b (B, 0.0);
     for (int b = 0; b < B; b++)
     {
-        double p;
-        double d;
-
-        if ( (fps[b].f + 1) == F.size() )
+        if ( (fps[b].f + 1) == S )
         {
-            p = bright::SolveLine(fps[b].F, F[fps[b].f], P_F_[fps[b].f], F[fps[b].f-1], P_F_[fps[b].f-1]);
-            d = bright::SolveLine(fps[b].F, F[fps[b].f], D_F_[fps[b].f], F[fps[b].f-1], D_F_[fps[b].f-1]);
-        }
-        else
-        {
-            p = bright::SolveLine(fps[b].F, F[fps[b].f+1], P_F_[fps[b].f+1], F[fps[b].f], P_F_[fps[b].f]);
-            d = bright::SolveLine(fps[b].F, F[fps[b].f+1], D_F_[fps[b].f+1], F[fps[b].f], D_F_[fps[b].f]);
+            k_b[b] = bright::SolveLine(fps[b].F, Phi_t[fps[b].f], k_t[fps[b].f], Phi_t[fps[b].f-1], k_t[fps[b].f-1]);
+            phi_b[b] = bright::SolveLine(fps[b].F, Phi_t[fps[b].f], phi_t[fps[b].f], Phi_t[fps[b].f-1], phi_t[fps[b].f-1]);
         };
-
-        if (PDk == "K")
-            PDks[b] = (p/d);
-        else if (PDk == "P")
-            PDks[b] = p;
-        else if (PDk == "D")
-            PDks[b] = d;
         else
         {
-            if (1 < FCComps::verbosity) 
-            {
-                std::cout << "PDk flag is wrong: " << PDk << "\n";
-                std::cout << "Using default of k.\n";
-            };
-            PDks[b] = (p/d);
+            k_b[b] = bright::SolveLine(fps[b].F, Phi_t[fps[b].f+1], k_t[fps[b].f+1], Phi_t[fps[b].f], k_t[fps[b].f]);
+            phi_b[b] = bright::SolveLine(fps[b].F, Phi_t[fps[b].f+1], phi_t[fps[b].f+1], Phi_t[fps[b].f], phi_t[fps[b].f]);
         };
     };
 
+    // Calculate the flux weighted avearge
     double numerator = 0.0;
     double denominator = 0.0;
     for (int b = 0; b < B; b++)
     {
-        numerator   = numerator   + (PDks[b] / fps[b].m);
-        denominator = denominator + (1.0 / fps[b].m);
+        numerator   += (k_b[b] * phi_b[b]);
+        denominator += phi_b[b];
     };
 
-    return numerator/denominator;
-};
-*/
+    double batch_ave_k = numerator/denominator;
 
-double ReactorMG::batch_average_k(double BUd) 
-{
+    return batch_ave_k;
 };
-/*
-        return batch_average(BUd, "K");
-};
-*/
+
+
 
 
 void ReactorMG::BUd_bisection_method()
