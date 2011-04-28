@@ -990,6 +990,8 @@ void ReactorMG::calc_criticality()
 
 void ReactorMG::calc_transmutation()
 {
+    // Calculates a tranmutation step via the Pade method
+
     // Get the transmutation matrix for this time delta
     double dt = burn_times[bt_s] - burn_times[bt_s - 1];
     std::vector< std::vector<double> > Mt = bright::scalar_matrix_product(dt, M_tij[bt_s]);
@@ -1044,7 +1046,7 @@ void ReactorMG::calc_transmutation()
     };
 
     // Get the composition for the next time step
-    std::vector<double> comp_next = bright::scalar_matrix_vector_product(1.0, exp_Mt, comp_old);
+    std::vector<double> comp_next = bright::scalar_matrix_vector_product(1.0, exp_Mt, comp_prev);
 
     // Copy this composition back to the tranmutuation matrix
     for (ind = 0; ind < J_size; ind++)
