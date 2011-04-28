@@ -227,10 +227,7 @@ public:
 
 
     // applying mass weights to burnup core    
-    time_data P_t;      // Full-core Production Rate P(t)
-    time_data D_t;      // Full-Core Destruction Rate D(t)
     time_data k_t;      // k(t) --- P(t) / D(t)
-    time_data zeta_t;   // Disadvantage Factor zeta(t)
 
 
     // Attributes that are results of BUd_bisection_method() 

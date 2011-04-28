@@ -510,9 +510,6 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[double] phi_t
         vector[double] Phi_t
         vector[double] BU_t
-        vector[double] pF_t
-        vector[double] dF_t
-        vector[double] dC_t
 
         map[int, vector[double]] T_it
         map[int, vector[vector[double]]] sigma_t_itg
@@ -543,14 +540,12 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         vector[int] nearest_neighbors
 
-        vector[double] P_t
-        vector[double] D_t
         vector[double] k_t
-        vector[double] zeta_t
 
         int td_n
         double td
         double BUd
+        double Phid
         double k
 
         cpp_mass_stream.MassStream ms_feed_u
@@ -564,17 +559,6 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         double deltaR
         double tru_cr
-
-        vector[double] SigmaF_at
-        vector[double] SigmaF_trt
-        vector[double] kappaF_t
-
-        vector[double] SigmaC_at
-        vector[double] SigmaC_trt
-        vector[double] kappaC_t
-
-        vector[double] lattice_E_t
-        vector[double] lattice_F_t
 
         # Methods
         void initialize(ReactorParameters)
@@ -595,12 +579,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
         void calcSubStreams()
         double calc_tru_cr()
 
-        double calc_deltaR()
-        double calc_deltaR(map[int, double])
-        double calc_deltaR(cpp_mass_stream.MassStream)
-
         FluencePoint fluence_at_BU(double)
-        double batch_average(double, std.string)
         double batch_average_k(double)
         void BUd_bisection_method()
         void run_P_NL(double)
@@ -609,16 +588,3 @@ cdef extern from "../../../cpp/ReactorMG.h":
         cpp_mass_stream.MassStream calc()
         cpp_mass_stream.MassStream calc(map[int, double])
         cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
-
-        void lattice_E_planar(double, double)
-        void lattice_F_planar(double, double)
-        void lattice_E_spherical(double, double)
-        void lattice_F_spherical(double, double)
-        void lattice_E_cylindrical(double, double)
-        void lattice_F_cylindrical(double, double)
-
-        void calc_zeta()
-        void calc_zeta_planar()
-        void calc_zeta_spherical()
-        void calc_zeta_cylindrical()
-

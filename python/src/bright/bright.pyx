@@ -5777,30 +5777,6 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.BU_t = conv.array_to_vector_1d_dbl(value)
 
 
-    property pF_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.pF_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.pF_t = conv.array_to_vector_1d_dbl(value)
-
-
-    property dF_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.dF_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.dF_t = conv.array_to_vector_1d_dbl(value)
-
-
-    property dC_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.dC_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.dC_t = conv.array_to_vector_1d_dbl(value)
-
-
 
 
 
@@ -6034,37 +6010,12 @@ cdef class ReactorMG(FCComp):
 
 
 
-    property P_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.P_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.P_t = conv.array_to_vector_1d_dbl(value)
-
-
-    property D_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.D_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.D_t = conv.array_to_vector_1d_dbl(value)
-
-
     property k_t:
         def __get__(self):
             return conv.vector_to_array_1d_dbl(self.rmg_pointer.k_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
             self.rmg_pointer.k_t = conv.array_to_vector_1d_dbl(value)
-
-
-    property zeta_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.zeta_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.zeta_t = conv.array_to_vector_1d_dbl(value)
-
 
 
 
@@ -6092,6 +6043,14 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, double value):
             self.rmg_pointer.BUd = value
+
+
+    property Phid:
+        def __get__(self):
+            return self.rmg_pointer.Phid
+
+        def __set__(self, double value):
+            self.rmg_pointer.Phid = value
 
 
     property k:
@@ -6209,75 +6168,6 @@ cdef class ReactorMG(FCComp):
 
 
 
-    property SigmaF_at:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaF_at)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaF_at = conv.array_to_vector_1d_dbl(value)
-
-
-    property SigmaF_trt:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaF_trt)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaF_trt = conv.array_to_vector_1d_dbl(value)
-
-
-    property kappaF_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.kappaF_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.kappaF_t = conv.array_to_vector_1d_dbl(value)
-
-
-
-
-
-
-    property SigmaC_at:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaC_at)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaC_at = conv.array_to_vector_1d_dbl(value)
-
-
-    property SigmaC_trt:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.SigmaC_trt)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.SigmaC_trt = conv.array_to_vector_1d_dbl(value)
-
-
-    property kappaC_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.kappaC_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.kappaC_t = conv.array_to_vector_1d_dbl(value)
-
-
-
-
-
-    property lattice_E_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.lattice_E_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.lattice_E_t = conv.array_to_vector_1d_dbl(value)
-
-
-    property lattice_F_t:
-        def __get__(self):
-            return conv.vector_to_array_1d_dbl(self.rmg_pointer.lattice_F_t)
-
-        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
-            self.rmg_pointer.lattice_F_t = conv.array_to_vector_1d_dbl(value)
 
 
 
@@ -6472,12 +6362,6 @@ cdef class ReactorMG(FCComp):
 
     def calc_ms_prod(self):
         """This is a convenience function that wraps the transmutation matrix methods.  
-        It is equivalent to::
-
-            #Wrapper to calculate discharge isotopics.
-            calc_Mj_F_()
-            calc_Mj_Fd_()
-
         """
         self.rmg_pointer.calc_ms_prod()
 
@@ -6563,26 +6447,9 @@ cdef class ReactorMG(FCComp):
         return fp
 
 
-    def batch_average(self, double BUd, char * PDk_flag="K"):
-        """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
-        This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
-
-        Args:
-            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
-
-        Keyword Args:
-            * PDk_flag (string): Flag that determines whether the neutron production rate "P" [n/s], 
-              the neutron destruction rate "D" [n/s], or the multiplication factor "K" is reported in the output.
-
-        Returns:
-            * PDk (float): the batch averaged neutron production rate,
-        """
-        cdef double PDk = self.rmg_pointer.batch_average(BUd, std.string(PDk_flag))
-        return PDk
-
-
     def batch_average_k(self, double BUd):
-        """Convenience function that calls batch_average(BUd, "K").
+        """Finds the batch average k(F) when at discharge burnup BUd.
+        This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
 
         Args:
             * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
@@ -6590,8 +6457,8 @@ cdef class ReactorMG(FCComp):
         Returns:
             * k (float): the batch averaged multiplication factor.
         """
-        cdef double PDk = self.rmg_pointer.batch_average_k(BUd)
-        return PDk
+        cdef double k = self.rmg_pointer.batch_average_k(BUd)
+        return k
 
 
     def BUd_bisection_method(self):
@@ -6665,100 +6532,3 @@ cdef class ReactorMG(FCComp):
             output.ms_pointer[0] = self.rmg_pointer.calc(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
 
         return output
-
-
-
-
-
-
-    def lattice_E_planar(self, double a, double b):
-        """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
-
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
-        """
-        self.rmg_pointer.lattice_E_planar(a, b)
-
-
-    def lattice_F_planar(self, double a, double b):
-        """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
-
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
-        """
-        self.rmg_pointer.lattice_F_planar(a, b)
-
-
-    def lattice_E_spherical(self, double a, double b):
-        """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
-
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
-        """
-        self.rmg_pointer.lattice_E_spherical(a, b)
-
-
-    def lattice_F_spherical(self, double a, double b):
-        """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
-
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
-        """
-        self.rmg_pointer.lattice_F_spherical(a, b)
-
-
-    def lattice_E_cylindrical(self, double a, double b):
-        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
-
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
-        """
-        self.rmg_pointer.lattice_E_cylindrical(a, b)
-
-
-    def lattice_F_cylindrical(self, double a, double b):
-        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
-
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
-        """
-        self.rmg_pointer.lattice_F_cylindrical(a, b)
-
-
-
-
-
-    def calc_zeta(self):
-        """This calculates the thermal disadvantage factor for the geometry specified by Lattice.  The results
-        are set to zeta_F_.
-        """
-        self.rmg_pointer.calc_zeta()
-
-
-    def calc_zeta_planar(self):
-        """This calculates the thermal disadvantage factor for a planar geometry.  The results
-        are set to zeta_F_.
-        """
-        self.rmg_pointer.calc_zeta_planar()
-
-
-    def calc_zeta_spherical(self):
-        """This calculates the thermal disadvantage factor for a spherical geometry.  The results
-        are set to zeta_F_.
-        """
-        self.rmg_pointer.calc_zeta_spherical()
-
-
-    def calc_zeta_cylindrical(self):
-        """This calculates the thermal disadvantage factor for a clyindrical geometry.  The results
-        are set to zeta_F_.
-        """
-        self.rmg_pointer.calc_zeta_cylindrical()
-
-
