@@ -6396,35 +6396,6 @@ cdef class ReactorMG(FCComp):
 
 
 
-    def calc_deltaR(self, input=None):
-        """Calculates and sets the deltaR value of the reactor.  
-        This is equal to the production rate minus the destruction rate at the target burnup::
-
-            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
-
-        Args:
-            * input (dict or MassStream): If input is present, it set as the component's 
-              ms_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as ms_feed.
-
-        Returns:
-            * deltaR (float): deltaR.
-        """
-        cdef mass_stream.MassStream in_ms 
-        cdef double deltaR 
-
-        if input is None:
-            deltaR = self.rmg_pointer.calc_deltaR()
-        elif isinstance(input, dict):
-            deltaR = self.rmg_pointer.calc_deltaR(conv.dict_to_map_int_dbl(input))
-        elif isinstance(input, mass_stream.MassStream):
-            in_ms = input
-            deltaR = self.rmg_pointer.calc_deltaR(<cpp_mass_stream.MassStream> in_ms.ms_pointer[0])
-
-        return deltaR
-
-
-
 
 
     def fluence_at_BU(self, double burnup):
