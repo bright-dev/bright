@@ -1225,30 +1225,29 @@ void ReactorMG::burnup_core()
 
 void ReactorMG::calc_T_itd()
 {
-};
     /** Calculates the output isotopics of Mj(Fd).
      *  NOTE: Mj(Fd) is effectively the same variable as ms_prod before normalization!
      */
 
-/*
     CompDict tempOut;
 
     //Checks to see if the discharge index in at the end of the fluence table
-    bool fdLast = false;
-    if ( (fd+1) == F.size() )
-        fdLast = true;			
+    bool td_nLast = false;
+    if ( (td_n+1) == S )
+        td_nLast = true;			
 
     for (IsoIter j = J.begin(); j != J.end(); j++ )
     {
-        if (fdLast)
-            tempOut[*j] = bright::SolveLine(Fd, F[fd], Mj_F_[*j][fd], F[fd-1], Mj_F_[*j][fd-1]);
+        if (td_nLast)
+            tempOut[*j] = bright::SolveLine(Phid, Phi_t[td_n], T_it[*j][td_n], Phi_t[fd-1], T_it[*j][td_n-1]);
         else
-            tempOut[*j] = bright::SolveLine(Fd, F[fd+1], Mj_F_[*j][fd+1], F[fd], Mj_F_[*j][fd]);
+            tempOut[*j] = bright::SolveLine(Phid, Phi_t[td_n+1], T_it[*j][td_n+1], Phi_t[fd], T_it[*j][td_n]);
     };
 
     ms_prod = MassStream(tempOut);	
 };
-*/
+
+
 
 void ReactorMG::calc_ms_prod()
 {
@@ -1316,37 +1315,6 @@ double ReactorMG::calc_tru_cr()
 
 
 
-double ReactorMG::calc_deltaR()
-{
-};
-/*
-    //Calculates the deltaR of the reactor with the current ms_feed
-    fold_mass_weights();
-    deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D");
-    return deltaR;
-};
-*/
-
-double ReactorMG::calc_deltaR(CompDict cd)
-{
-};
-/*
-    //Calculates the deltaR of the reactor with the current ms_feed
-    ms_feed = MassStream (cd);
-    return calc_deltaR();
-};
-*/
-
-double ReactorMG::calc_deltaR(MassStream ms)
-{
-};
-/*
-    //Calculates the deltaR of the reactor with the current ms_feed
-    ms_feed = ms;
-    return calc_deltaR();
-};
-*/
-
 
 FluencePoint ReactorMG::fluence_at_BU(double BU)
 {
@@ -1379,6 +1347,9 @@ FluencePoint ReactorMG::fluence_at_BU(double BU)
 
     return fp;
 };
+
+
+
 
 
 
@@ -1435,8 +1406,6 @@ double ReactorMG::batch_average_k(double BUd)
 
 void ReactorMG::BUd_bisection_method()
 {
-};
-/*
     //Calculates the maximum discharge burnup via the Bisection Method.
     int tempk = 1;
     double BUd_a, k_a, sign_a;
@@ -1444,13 +1413,13 @@ void ReactorMG::BUd_bisection_method()
     double BUd_c, k_c, sign_c;
     
     //First Find a BUd that serves as an initial first guess
-    while ( (tempk < k_F_.size()) && (1.0 < k_F_[tempk]) )
+    while ( (tempk < S) && (1.0 < k_t[tempk]) )
         tempk = tempk + 1;
     tempk = tempk - 1;
     if (tempk < 0)
         tempk = 0;
 
-    BUd_a = BU_F_[tempk] * 2.0 * ((double) B) / ((double) B + 1.0);
+    BUd_a = BU_t[tempk] * 2.0 * ((double) B) / ((double) B + 1.0);
     k_a = batch_average_k( BUd_a );
     if (k_a == 1.0)
     {
@@ -1477,6 +1446,7 @@ void ReactorMG::BUd_bisection_method()
         std::cout << "BUd_b = " << BUd_b << "\tk_b = " << k_b << "\tsign_b = " << sign_b << "\n";
         std::cout << "\n";
     };
+
     while (sign_a == sign_b)
     {
         BUd_b = BUd_b + sign_a * 5.0;
@@ -1616,35 +1586,41 @@ void ReactorMG::BUd_bisection_method()
     };
 
     FluencePoint fp = fluence_at_BU(BUd);
-    fd = fp.f;				//lower index of fluence at discharge
-    Fd = fp.F;				//Fluence at discharge
+    td_n = fp.f;    // lower index of discharge time
+    Phid = fp.F;    // Discharge fluence
+
+    // time at discharge
+    if ( (fp.f + 1) == S )
+        td = bright::SolveLine(fp.F, Phi_t[fp.f], burn_times[fp.f], Phi_t[fps.f-1], burn_times[fps.f-1]);
+    else
+        td = bright::SolveLine(fp.F, Phi_t[fp.f+1], burn_times[fp.f+1], Phi_t[fps.f], burn_times[fps.f]);
+
     return;
 };
-*/
+
+
+
 
 void ReactorMG::run_P_NL(double temp_pnl)
 {
-};
     /** Does a reactor run for a specific P_NL.
      *  Requires that ms_feed be (meaningfully) set.
      *  For use with calibrate_P_NL_to_BUd
      */
 
-/*
     P_NL = temp_pnl;
-    fold_mass_weights();
+    burnup_core();
     BUd_bisection_method();
 };
-*/
+
+
 
 
 void ReactorMG::calibrate_P_NL_to_BUd()
 {
-};
     /** Calibrates the non-leakage probability of a reactors to hit a target burnup.
      *  Calibration proceeds by bisection method...
      */
-/*
     double pnl_a, bud_a, sign_a;
     double pnl_b, bud_b, sign_b;
     double pnl_c, bud_c, sign_c;
@@ -1745,16 +1721,13 @@ void ReactorMG::calibrate_P_NL_to_BUd()
 
     return;	
 };
-*/
 
 
 
 MassStream ReactorMG::calc()
 {
-};
-/*
-    //Finds BUd and output isotopics.
-    fold_mass_weights();
+    // Finds BUd and output isotopics.
+    burnup_core();
 
     BUd_bisection_method();
 
@@ -1762,371 +1735,21 @@ MassStream ReactorMG::calc()
 
     return ms_prod;
 };
-*/
 
 
 MassStream ReactorMG::calc (CompDict incomp)
 {
-};
-/*
-    //Finds BUd and output isotopics.
+    // Finds BUd and output isotopics.
     ms_feed = MassStream (incomp);
 
     return calc();
 };
-*/
 
 
 MassStream ReactorMG::calc (MassStream instream)
 {
-};
-/*
-    //Finds BUd and output isotopics.
+    // Finds BUd and output isotopics.
     ms_feed = instream;
 
     return calc();
 };
-*/
-
-
-void ReactorMG::lattice_E_planar(double a, double b)
-{
-};
-/*
-    lattice_E_F_.clear();
-        lattice_E_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        if (0.0 == kappaC_F_[f])
-            lattice_E_F_[f] = 0.0;
-        else
-            lattice_E_F_[f] = kappaC_F_[f] * (b - a) * bright::COTH(kappaC_F_[f]*(b-a));
-    };
-    return;
-};
-*/
-
-
-
-void ReactorMG::lattice_F_planar(double a, double b)
-{
-};
-/*
-    lattice_F_F_.clear();
-        lattice_F_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        if (0.0 == kappaF_F_[f])
-            lattice_F_F_[f] = 0.0;
-        else
-            lattice_F_F_[f] = lattice_F_F_[f] * a * bright::COTH(lattice_F_F_[f]*a) ;
-    };
-    return; 
-};
-*/
-
-
-void ReactorMG::lattice_E_spherical(double a, double b)
-{
-};
-/*
-    lattice_E_F_.clear();
-        lattice_E_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        if (0.0 == kappaC_F_[f])
-            lattice_E_F_[f] = 0.0;
-        else
-        {
-            double coef = pow(kappaC_F_[f], 3) * (pow(b,3) - pow(a,3)) / (3*kappaC_F_[f]*a);
-            double num = 1.0 - ( kappaC_F_[f] * b * bright::COTH(kappaC_F_[f]*(b-a)) );
-            double den = 1.0 - (pow(kappaC_F_[f], 2)*a*b) - ( kappaC_F_[f]*(b-a) * bright::COTH(kappaC_F_[f]*(b-a)) );
-            lattice_E_F_[f] = coef * num / den;
-        };
-    };
-    return;
-};
-*/
-  
-  
-void ReactorMG::lattice_F_spherical(double a, double b)
-{
-};
-/*
-    lattice_F_F_.clear();
-        lattice_F_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        double coef = pow(kappaF_F_[f], 2) * pow(a, 2) / 3.0;
-        double num = bright::TANH(kappaF_F_[f]*a); 
-        double den = (kappaF_F_[f]*a) - bright::TANH(kappaF_F_[f]*a); 
-        lattice_F_F_[f] = coef * num / den;
-    };
-    return; 
-};
-*/
-
-void ReactorMG::lattice_E_cylindrical(double a, double b)
-{
-};
-/*
-    namespace bm = boost::math;
-
-    lattice_E_F_.clear();
-        lattice_E_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        if (0.0 == kappaC_F_[f])
-            lattice_E_F_[f] = 0.0;
-        else
-        {
-            double coef = kappaC_F_[f] * (pow(b,2) - pow(a,2)) / (2.0*a);
-            double num = ( bm::cyl_bessel_i(0, kappaC_F_[f]*a) * bm::cyl_bessel_k(1, kappaC_F_[f]*b) ) + \
-                ( bm::cyl_bessel_k(0, kappaC_F_[f]*a) * bm::cyl_bessel_i(1, kappaC_F_[f]*b) );
-            double den = ( bm::cyl_bessel_i(1, kappaC_F_[f]*b) * bm::cyl_bessel_k(1, kappaC_F_[f]*a) ) - \
-                ( bm::cyl_bessel_k(1, kappaC_F_[f]*b) * bm::cyl_bessel_i(1, kappaC_F_[f]*a) );
-            lattice_E_F_[f] = coef * num / den;
-        };
-    };
-    return;
-};
-*/  
-  
-void ReactorMG::lattice_F_cylindrical(double a, double b)
-{
-};
-/*
-    namespace bm = boost::math;
-
-    lattice_F_F_.clear();
-        lattice_F_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        if (0.0 == kappaF_F_[f])
-            lattice_E_F_[f] = 0.0;
-        else
-        {
-            double num =  kappaF_F_[f] * a * bm::cyl_bessel_i(0, kappaF_F_[f]*a);
-            double den = 2.0 * bm::cyl_bessel_i(1, kappaF_F_[f]*a);
-            lattice_F_F_[f] = num / den;
-        };
-    };
-    return;
-};
-*/
-
-void ReactorMG::calc_zeta()
-{
-};
-/*
-    // Computes the thermal disadvantage factor
-
-    //Prepare data sets to calculate the disadvantage factor
-    //For Fuel...
-    SigmaFa_F_.clear();
-    SigmaFtr_F_.clear();
-    kappaF_F_.clear();
-
-    SigmaFa_F_.assign( F.size(), 0.0 );
-    SigmaFtr_F_.assign( F.size(), 0.0 );
-    kappaF_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        //Calculate the following...
-        //	* Macroscopic abspobtion XS in Fuel
-        //	* Macroscopic transport XS in Fuel
-        for(CompIter iso = niF.begin(); iso != niF.end(); iso++)
-        {
-            //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
-            //Else use KAERI Data for sigma_a
-            if (570000 < iso->first < 720000 || 890000 < iso->first)
-            {
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
-
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            }
-            else
-            {
-                //renormalize sigma_a for this fluenece
-                double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
-
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::cm2_per_barn);
-
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (sig_a + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            };
-        };
-
-        //Calculate kappa
-        kappaF_F_[f]   = sqrt( 3.0 * SigmaFtr_F_[f] * SigmaFa_F_[f] );
-    };
-
-
-    //For Coolant...
-    SigmaCa_F_.clear();
-    SigmaCtr_F_.clear();
-    kappaC_F_.clear();
-
-    SigmaCa_F_.assign( F.size(), 0.0 );
-    SigmaCtr_F_.assign( F.size(), 0.0 );
-    kappaC_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        //Calculate the following...
-        //	* Macroscopic abspobtion XS in Coolant
-        //	* Macroscopic transport XS in Coolant
-        for(CompIter iso = niC.begin(); iso != niC.end(); iso++)
-        {
-            //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
-            //Else use KAERI Data for sigma_a
-            if (570000 < iso->first < 720000 || 890000 < iso->first)
-            {
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
-
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            }
-            else
-            {
-                //renormalize sigma_a for this fluenece
-                double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
-
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::cm2_per_barn);
-
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (sig_a + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            };
-        };
-
-        //Calculate kappa
-        kappaC_F_[f]   = sqrt( 3.0 * SigmaCtr_F_[f] * SigmaCa_F_[f] );
-    };
-
-    //Calculate the lattice_flag Functions
-    double a, b;
-    if (lattice_flag == "Planar")
-    {
-        a = r_fuel;
-        b = pitch / 2.0;
-    
-        lattice_E_planar(a, b);
-        lattice_F_planar(a, b);
-    }
-    else if (lattice_flag == "Spherical")
-    {
-        a = r_fuel;
-        b = pitch / 2.0;
-    
-        lattice_E_spherical(a, b);
-        lattice_F_spherical(a, b);
-    }
-    else if (lattice_flag == "Cylindrical")
-    {
-        a = r_fuel;
-        b = pitch / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
-
-        lattice_E_cylindrical(a, b);
-        lattice_F_cylindrical(a, b);
-    }
-    else
-    {
-        if (0 < FCComps::verbosity)
-            std::cout << "Did not specify use of planar or spheical or cylindrical lattice functions! Assuming cylindrical...\n";
-        
-        a = r_fuel;
-        b = pitch / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
-
-        lattice_E_cylindrical(a, b);
-        lattice_F_cylindrical(a, b);
-    };
-
-    //Finally, Calculate Zeta
-    zeta_F_.clear();
-    zeta_F_.assign( F.size(), 0.0);
-    for (int f = 0; f < F.size(); f++) 
-    {
-        if (0.0 == SigmaCa_F_[f])
-            zeta_F_[f] = 1.0;
-        else
-            zeta_F_[f] = lattice_F_F_[f] + ( SigmaFa_F_[f] * VF * (lattice_E_F_[f] - 1.0) / (SigmaCa_F_[f] * VC) );
-    };
-
-
-    //Unfortunately, the above formulation for the disadvantage factor is ONLY valid for a << b!!!
-    //Often times in modern (thermal) reactors, this is not the case.
-    //We have a 'thin moderator' situation.
-    //
-    //To fix this problem correctly requires going to a multi-region diffusion/transport calculation.
-    //Doing so is beyond the scope of this code.
-    //What is more in-line with current practice is to use the results of a more sophisticated method,
-    //interpolate over them, and use them here.
-    //
-    //That is what is done here when 0.1 < VF / VC, (ie the fuel is greater than 10% of the coolant)
-    //A baseline zeta is determined from data presented in "Thermal disadvantage factor calculation by 
-    //the multiregion collision probability method" by B. Ozgener,  and H. A. Ozgener, Institute of 
-    //Nuclear Energy, Istanbul Technical University 80626 Maslak, Istanbul, Turkey, Received 
-    //28 January 2003;  accepted 20 May 2003.  Available online 6 March 2004.
-    //This baseline is a function of (VF/VC).
-    // 
-    //The above calculation of zeta is then used as a scaling factor on the baseline function to 
-    //account for variations in fuel composition and fluenece.
-
-    //Check if we are in the proper Fuel-to-Coolant Regime
-
-    double f2c = VF / VC;
-    if (f2c < 0.1)
-        return;
-
-    double zetabase  = 1.30857959 - (0.10656299 * f2c);
-    double zetaratio = zetabase / zeta_F_[0];	
-
-    for (int f = 0; f < F.size(); f++) 
-    {
-        zeta_F_[f] = zeta_F_[f] * zetaratio;
-
-        if (zeta_F_[f] < 1.0)
-            zeta_F_[f] = 1.0;
-    };
-
-    return;
-};
-*/
-
-void ReactorMG::calc_zeta_planar()
-{
-};
-/*
-    lattice_flag = "Planar";
-    calc_zeta();
-    return;
-};
-*/
-
-void ReactorMG::calc_zeta_spherical()
-{
-};
-/*
-    lattice_flag = "Spherical";
-    calc_zeta();
-    return;
-};
-*/
-
-void ReactorMG::calc_zeta_cylindrical()
-{
-};
-/*
-    lattice_flag = "Cylindrical";
-    calc_zeta();
-    return;
-};
-*/

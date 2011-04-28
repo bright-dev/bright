@@ -237,6 +237,7 @@ public:
     int td_n;   // Lower index of discharge time
     double td;  // Discharge time
     double BUd; // Discharge Burnup
+    double Phid; // Discharge Fluence
     double k;   // Multiplication factor 
 
 
@@ -254,22 +255,8 @@ public:
     // The production rate subtracted by the destruction rate at target_BU
     double deltaR;
 
-
     // Transuranic Conversion Ratio
     double tru_cr;
-
-
-    // Attributes related to disadvantage factor calculation
-    time_data SigmaF_at;    // Fuel Macro Absorption XS, Sigma^F_a(F)
-    time_data SigmaF_trt;   // Fuel Macro Transport XS, Sigma^F_tr(F)
-    time_data kappaF_t;     // Fuel kappa, kappa^F(F)
-
-    time_data SigmaC_at;    // Coolant Macro Absorption XS, Sigma^C_a(F)
-    time_data SigmaC_trt;   // Coolant Macro Transport XS, Sigma^C_tr(F)
-    time_data kappaC_t;     // Coolant kappa, kappa^C(F)
-
-    time_data lattice_E_t;  // Values for lattice function E(F)
-    time_data lattice_F_t;  // Values for lattice function F(F)
 
 
     // Public access functions
@@ -291,10 +278,6 @@ public:
     void         calcSubStreams();
     double       calc_tru_cr();
 
-    double       calc_deltaR();
-    double       calc_deltaR(CompDict);
-    double       calc_deltaR(MassStream);
-
     FluencePoint fluence_at_BU(double);
     double       batch_average_k(double);
     void         BUd_bisection_method();
@@ -304,18 +287,6 @@ public:
     MassStream   calc ();
     MassStream   calc (CompDict);
     MassStream   calc (MassStream);	
-
-    void lattice_E_planar(double, double);
-    void lattice_F_planar(double, double);
-    void lattice_E_spherical(double, double);
-    void lattice_F_spherical(double, double);
-    void lattice_E_cylindrical(double, double);
-    void lattice_F_cylindrical(double, double);
-
-    void         calc_zeta();
-    void         calc_zeta_planar();
-    void         calc_zeta_spherical();
-    void         calc_zeta_cylindrical();
 
 };
 
