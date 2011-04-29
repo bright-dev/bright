@@ -1236,12 +1236,12 @@ void ReactorMG::calc_T_itd()
     if ( (td_n+1) == S )
         td_nLast = true;			
 
-    for (IsoIter j = J.begin(); j != J.end(); j++ )
+    for (iso_iter j = J.begin(); j != J.end(); j++ )
     {
         if (td_nLast)
-            tempOut[*j] = bright::SolveLine(Phid, Phi_t[td_n], T_it[*j][td_n], Phi_t[fd-1], T_it[*j][td_n-1]);
+            tempOut[*j] = bright::SolveLine(Phid, Phi_t[td_n], T_it[*j][td_n], Phi_t[td_n-1], T_it[*j][td_n-1]);
         else
-            tempOut[*j] = bright::SolveLine(Phid, Phi_t[td_n+1], T_it[*j][td_n+1], Phi_t[fd], T_it[*j][td_n]);
+            tempOut[*j] = bright::SolveLine(Phid, Phi_t[td_n+1], T_it[*j][td_n+1], Phi_t[td_n], T_it[*j][td_n]);
     };
 
     ms_prod = MassStream(tempOut);	
@@ -1379,7 +1379,7 @@ double ReactorMG::batch_average_k(double BUd)
         {
             k_b[b] = bright::SolveLine(fps[b].F, Phi_t[fps[b].f], k_t[fps[b].f], Phi_t[fps[b].f-1], k_t[fps[b].f-1]);
             phi_b[b] = bright::SolveLine(fps[b].F, Phi_t[fps[b].f], phi_t[fps[b].f], Phi_t[fps[b].f-1], phi_t[fps[b].f-1]);
-        };
+        }
         else
         {
             k_b[b] = bright::SolveLine(fps[b].F, Phi_t[fps[b].f+1], k_t[fps[b].f+1], Phi_t[fps[b].f], k_t[fps[b].f]);
@@ -1591,9 +1591,9 @@ void ReactorMG::BUd_bisection_method()
 
     // time at discharge
     if ( (fp.f + 1) == S )
-        td = bright::SolveLine(fp.F, Phi_t[fp.f], burn_times[fp.f], Phi_t[fps.f-1], burn_times[fps.f-1]);
+        td = bright::SolveLine(fp.F, Phi_t[fp.f], burn_times[fp.f], Phi_t[fp.f-1], burn_times[fp.f-1]);
     else
-        td = bright::SolveLine(fp.F, Phi_t[fp.f+1], burn_times[fp.f+1], Phi_t[fps.f], burn_times[fps.f]);
+        td = bright::SolveLine(fp.F, Phi_t[fp.f+1], burn_times[fp.f+1], Phi_t[fp.f], burn_times[fp.f]);
 
     return;
 };
