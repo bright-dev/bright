@@ -10,13 +10,13 @@ cimport mass_stream
 cdef extern from "../../../cpp/bright.h" namespace "bright":
     std.string BRIGHT_DATA
 
-    void bright_start()
+    void bright_start() except +
 
 
 cdef extern from "../../../cpp/FCComp.h" namespace "FCComps":
     set[int] track_isos
-    void load_track_isos_hdf5(std.string, std.string, bint)
-    void load_track_isos_text(std.string, bint)
+    void load_track_isos_hdf5(std.string, std.string, bint) except +
+    void load_track_isos_text(std.string, bint) except +
 
     int verbosity
     bint write_hdf5
@@ -28,9 +28,9 @@ cdef extern from "../../../cpp/FCComp.h" namespace "FCComps":
 cdef extern from "../../../cpp/FCComp.h":
     cdef cppclass FCComp:
         # Constructors
-        FCComp()
-        FCComp(std.string)
-        FCComp(set[std.string], std.string)
+        FCComp() except +
+        FCComp(std.string) except +
+        FCComp(set[std.string], std.string) except +
 
         # Attributes
         std.string name 
@@ -46,20 +46,20 @@ cdef extern from "../../../cpp/FCComp.h":
         set[std.string] track_params
 
         # Methods
-        void calc_params()
-        void write_ms_pass()
-        void write_params_pass()
-        void write_text()
-        void write_hdf5()
-        void write()
-        cpp_mass_stream.MassStream calc()
+        void calc_params() except +
+        void write_ms_pass() except +
+        void write_params_pass() except +
+        void write_text() except +
+        void write_hdf5() except +
+        void write() except +
+        cpp_mass_stream.MassStream calc() except +
 
 
 cdef extern from "../../../cpp/Enrichment.h":
 
     cdef cppclass EnrichmentParameters:
         # Constructors
-        EnrichmentParameters()
+        EnrichmentParameters() except +
 
         # Attributes
         double alpha_0
@@ -74,13 +74,13 @@ cdef extern from "../../../cpp/Enrichment.h":
         double xP_j
         double xW_j
 
-    EnrichmentParameters fillUraniumEnrichmentDefaults()
+    EnrichmentParameters fillUraniumEnrichmentDefaults() except +
 
     cdef cppclass Enrichment(FCComp): 
         # Constructors
-        Enrichment()
-        Enrichment(std.string)
-        Enrichment(EnrichmentParameters, std.string)
+        Enrichment() except +
+        Enrichment(std.string) except +
+        Enrichment(EnrichmentParameters, std.string) except +
 
         # Attributes
         double alpha_0
@@ -103,14 +103,14 @@ cdef extern from "../../../cpp/Enrichment.h":
         double SWUperProduct
 
         # Methods
-        void initialize(EnrichmentParameters)
-        void calc_params ()
-        cpp_mass_stream.MassStream calc ()
-        cpp_mass_stream.MassStream calc (map[int, double])
-        cpp_mass_stream.MassStream calc (cpp_mass_stream.MassStream)
+        void initialize(EnrichmentParameters) except +
+        void calc_params () except +
+        cpp_mass_stream.MassStream calc () except +
+        cpp_mass_stream.MassStream calc (map[int, double]) except +
+        cpp_mass_stream.MassStream calc (cpp_mass_stream.MassStream) except +
 
-        double PoverF (double, double, double)
-        double WoverF (double, double, double)
+        double PoverF (double, double, double) except +
+        double WoverF (double, double, double) except +
 
         # The following are methods I am too lazy to expose to Python
         # FIXME
@@ -135,38 +135,38 @@ cdef extern from "../../../cpp/Reprocess.h":
 
     cdef cppclass Reprocess(FCComp):
         # Constructors
-        Reprocess()
-        Reprocess(map[int, double], std.string)
+        Reprocess() except +
+        Reprocess(map[int, double], std.string) except +
 
         # Attributes
         map[int, double] sepeff
 
         # Methods
-        void initialize(map[int, double])
-        void calc_params()
-        cpp_mass_stream.MassStream calc()
-        cpp_mass_stream.MassStream calc(map[int, double])
-        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
+        void initialize(map[int, double]) except +
+        void calc_params() except +
+        cpp_mass_stream.MassStream calc() except +
+        cpp_mass_stream.MassStream calc(map[int, double]) except +
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream) except +
 
 
 cdef extern from "../../../cpp/Storage.h":
 
     cdef cppclass Storage(FCComp):
         # Constructors
-        Storage()
-        Storage(std.string)
+        Storage() except +
+        Storage(std.string) except +
 
         # Attributes
         double decay_time
 
         # Methods
-        void calc_params()
-        cpp_mass_stream.MassStream calc()
-        cpp_mass_stream.MassStream calc(map[int, double])
-        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
-        cpp_mass_stream.MassStream calc(double)
-        cpp_mass_stream.MassStream calc(map[int, double], double)
-        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream, double)
+        void calc_params() except +
+        cpp_mass_stream.MassStream calc() except +
+        cpp_mass_stream.MassStream calc(map[int, double]) except +
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream) except +
+        cpp_mass_stream.MassStream calc(double) except +
+        cpp_mass_stream.MassStream calc(map[int, double], double) except +
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream, double) except +
 
 
 
@@ -174,7 +174,7 @@ cdef extern from "../../../cpp/Reactor1G.h":
 
     cdef cppclass FluencePoint:
         # Constructors        
-        FluencePoint()
+        FluencePoint() except +
 
         # Attributes
         int f
@@ -184,7 +184,7 @@ cdef extern from "../../../cpp/Reactor1G.h":
 
     cdef cppclass ReactorParameters:
         # Constructors        
-        ReactorParameters()
+        ReactorParameters() except +
 
         # Attributes
         int batches
@@ -206,11 +206,11 @@ cdef extern from "../../../cpp/Reactor1G.h":
 
     cdef cppclass Reactor1G(FCComp):
         # Constructors        
-        Reactor1G()
-        Reactor1G(std.string)
-        Reactor1G(set[std.string], std.string)
-        Reactor1G(ReactorParameters, std.string)
-        Reactor1G(ReactorParameters, set[std.string], std.string)
+        Reactor1G() except +
+        Reactor1G(std.string) except +
+        Reactor1G(set[std.string], std.string) except +
+        Reactor1G(ReactorParameters, std.string) except +
+        Reactor1G(ReactorParameters, set[std.string], std.string) except +
 
         # Attributes
         int B
@@ -287,77 +287,77 @@ cdef extern from "../../../cpp/Reactor1G.h":
         vector[double] lattice_F_F_
 
         # Methods
-        void initialize(ReactorParameters)
-        void loadlib(std.string)
-        void fold_mass_weights()
+        void initialize(ReactorParameters) except +
+        void loadlib(std.string) except +
+        void fold_mass_weights() except +
 
-        void calc_Mj_F_()
-        void calc_Mj_Fd_()
+        void calc_Mj_F_() except +
+        void calc_Mj_Fd_() except +
 
-        void calc_ms_prod()
-        void calcSubStreams()
-        double calc_tru_cr()
+        void calc_ms_prod() except +
+        void calcSubStreams() except +
+        double calc_tru_cr() except +
 
-        double calc_deltaR()
-        double calc_deltaR(map[int, double])
-        double calc_deltaR(cpp_mass_stream.MassStream)
+        double calc_deltaR() except +
+        double calc_deltaR(map[int, double]) except +
+        double calc_deltaR(cpp_mass_stream.MassStream) except +
 
-        FluencePoint fluence_at_BU(double)
-        double batch_average(double, std.string)
-        double batch_average_k(double)
-        void BUd_bisection_method()
-        void run_P_NL(double)
-        void calibrate_P_NL_to_BUd()
+        FluencePoint fluence_at_BU(double) except +
+        double batch_average(double, std.string) except +
+        double batch_average_k(double) except +
+        void BUd_bisection_method() except +
+        void run_P_NL(double) except +
+        void calibrate_P_NL_to_BUd() except +
 
-        cpp_mass_stream.MassStream calc()
-        cpp_mass_stream.MassStream calc(map[int, double])
-        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream)
+        cpp_mass_stream.MassStream calc() except +
+        cpp_mass_stream.MassStream calc(map[int, double]) except +
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream) except +
 
-        void lattice_E_planar(double, double)
-        void lattice_F_planar(double, double)
-        void lattice_E_spherical(double, double)
-        void lattice_F_spherical(double, double)
-        void lattice_E_cylindrical(double, double)
-        void lattice_F_cylindrical(double, double)
+        void lattice_E_planar(double, double) except +
+        void lattice_F_planar(double, double) except +
+        void lattice_E_spherical(double, double) except +
+        void lattice_F_spherical(double, double) except +
+        void lattice_E_cylindrical(double, double) except +
+        void lattice_F_cylindrical(double, double) except +
 
-        void calc_zeta()
-        void calc_zeta_planar()
-        void calc_zeta_spherical()
-        void calc_zeta_cylindrical()
+        void calc_zeta() except +
+        void calc_zeta_planar() except +
+        void calc_zeta_spherical() except +
+        void calc_zeta_cylindrical() except +
 
 
 
 
 cdef extern from "../../../cpp/LightWaterReactor1G.h":
 
-    ReactorParameters filllwr_defaults()
+    ReactorParameters filllwr_defaults() except +
 
     cdef cppclass LightWaterReactor1G(Reactor1G):
         # Constructors        
-        LightWaterReactor1G()
-        LightWaterReactor1G(std.string, std.string)
-        LightWaterReactor1G(ReactorParameters, std.string)
-        LightWaterReactor1G(std.string, ReactorParameters, std.string)
+        LightWaterReactor1G() except +
+        LightWaterReactor1G(std.string, std.string) except +
+        LightWaterReactor1G(ReactorParameters, std.string) except +
+        LightWaterReactor1G(std.string, ReactorParameters, std.string) except +
 
         # Methods
-        void calc_params()
+        void calc_params() except +
 
 
 
 
 cdef extern from "../../../cpp/FastReactor1G.h":
 
-    ReactorParameters fillfr_defaults()
+    ReactorParameters fillfr_defaults() except +
 
     cdef cppclass FastReactor1G(Reactor1G):
         # Constructors        
-        FastReactor1G()
-        FastReactor1G(std.string, std.string)
-        FastReactor1G(ReactorParameters, std.string)
-        FastReactor1G(std.string, ReactorParameters, std.string)
+        FastReactor1G() except +
+        FastReactor1G(std.string, std.string) except +
+        FastReactor1G(ReactorParameters, std.string) except +
+        FastReactor1G(std.string, ReactorParameters, std.string) except +
 
         # Methods
-        void calc_params()
+        void calc_params() except +
 
 
 
@@ -365,11 +365,11 @@ cdef extern from "../../../cpp/FuelFabrication.h":
 
     cdef cppclass FuelFabrication(FCComp):
         # Constructors        
-        FuelFabrication()
-        FuelFabrication(std.string)
-        FuelFabrication(set[std.string], std.string)
-        FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, std.string)
-        FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, set[std.string], std.string)
+        FuelFabrication() except +
+        FuelFabrication(std.string) except +
+        FuelFabrication(set[std.string], std.string) except +
+        FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, std.string) except +
+        FuelFabrication(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G, set[std.string], std.string) except +
 
         # Attributes
         map[std.string, mass_stream.msp] mass_streams
@@ -380,12 +380,12 @@ cdef extern from "../../../cpp/FuelFabrication.h":
         Reactor1G reactor
 
         # Methods
-        void initialize(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)
-        void calc_params()
+        void initialize(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G) except +
+        void calc_params() except +
 
-        void calc_deltaRs()
-        cpp_mass_stream.MassStream calc_core_input()
-        void calc_mass_ratios()
+        void calc_deltaRs() except +
+        cpp_mass_stream.MassStream calc_core_input() except +
+        void calc_mass_ratios() except +
 
-        cpp_mass_stream.MassStream calc()
-        cpp_mass_stream.MassStream calc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G)
+        cpp_mass_stream.MassStream calc() except +
+        cpp_mass_stream.MassStream calc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G) except +
