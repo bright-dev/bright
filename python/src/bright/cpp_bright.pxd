@@ -13,10 +13,14 @@ cdef extern from "../../../cpp/bright.h" namespace "bright":
     void bright_start() except +
 
 
-cdef extern from "../../../cpp/FCComp.h" namespace "FCComps":
+cdef extern from "../../../cpp/FCComps.h" namespace "FCComps":
     set[int] track_isos
+    vector[int] track_isos_order
+
     void load_track_isos_hdf5(std.string, std.string, bint) except +
     void load_track_isos_text(std.string, bint) except +
+
+    void sort_track_isos()
 
     int verbosity
     bint write_hdf5
@@ -170,7 +174,7 @@ cdef extern from "../../../cpp/Storage.h":
 
 
 
-cdef extern from "../../../cpp/Reactor1G.h":
+cdef extern from "../FluencePoint.h":
 
     cdef cppclass FluencePoint:
         # Constructors        
@@ -182,6 +186,8 @@ cdef extern from "../../../cpp/Reactor1G.h":
         double m
 
 
+cdef extern from "../../../cpp/ReactorParameters.h":
+
     cdef cppclass ReactorParameters:
         # Constructors        
         ReactorParameters() except +
@@ -189,20 +195,38 @@ cdef extern from "../../../cpp/Reactor1G.h":
         # Attributes
         int batches
         double flux
+
         map[std.string, double] fuel_form
         map[std.string, double] coolant_form
+
         double fuel_density
+        double cladding_density
         double coolant_density
+
         double pnl
         double BUt
+        double specific_power
+        int burn_regions
+        vector[double] burn_times
+
         bint use_disadvantage_factor
         std.string lattice_type
         bint rescale_hydrogen
-        double radius
-        double pitch
+
+        double fuel_radius
+        double void_radius
+        double clad_radius
+        double unit_cell_pitch
+
         double open_slots
         double total_slots
 
+    ReactorParameters fill_lwr_defaults() except +
+
+    ReactorParameters fill_fr_defaults() except +
+
+
+cdef extern from "../../../cpp/Reactor1G.h":
 
     cdef cppclass Reactor1G(FCComp):
         # Constructors        
@@ -330,8 +354,6 @@ cdef extern from "../../../cpp/Reactor1G.h":
 
 cdef extern from "../../../cpp/LightWaterReactor1G.h":
 
-    ReactorParameters filllwr_defaults() except +
-
     cdef cppclass LightWaterReactor1G(Reactor1G):
         # Constructors        
         LightWaterReactor1G() except +
@@ -346,8 +368,6 @@ cdef extern from "../../../cpp/LightWaterReactor1G.h":
 
 
 cdef extern from "../../../cpp/FastReactor1G.h":
-
-    ReactorParameters fillfr_defaults() except +
 
     cdef cppclass FastReactor1G(Reactor1G):
         # Constructors        
@@ -389,3 +409,182 @@ cdef extern from "../../../cpp/FuelFabrication.h":
 
         cpp_mass_stream.MassStream calc() except +
         cpp_mass_stream.MassStream calc(map[std.string, mass_stream.msp], map[std.string, double], Reactor1G) except +
+
+
+
+cdef extern from "../../../cpp/ReactorMG.h":
+
+    cdef cppclass ReactorMG(FCComp):
+        # Constructors        
+        ReactorMG() except +
+        ReactorMG(std.string) except +
+        ReactorMG(set[std.string], std.string) except +
+        ReactorMG(ReactorParameters, std.string) except +
+        ReactorMG(ReactorParameters, set[std.string], std.string) except +
+
+        # Attributes
+        int B
+        double flux
+
+        map[std.string, double] chemical_form_fuel
+        map[std.string, double] chemical_form_clad
+        map[std.string, double] chemical_form_cool
+
+        double rho_fuel
+        double rho_clad
+        double rho_cool
+
+        double P_NL
+        double target_BU
+        double specific_power
+        int burn_regions
+        int S
+        double burn_time
+        int bt_s
+        vector[double] burn_times
+
+        bint use_zeta
+        std.string lattice_flag
+        bint rescale_hydrogen_xs
+
+        double r_fuel
+        double r_void
+        double r_clad
+        double pitch
+
+        double S_O
+        double S_T
+        double V_fuel
+        double V_clad
+        double V_cool
+
+        std.string libfile
+
+        set[int] I
+        set[int] J
+        vector[int] J_order
+        map[int, int] J_index
+
+
+        # Perturbation table goes here
+        int nperturbations
+        map[std.string, vector[double]] perturbed_fields
+
+        int G
+        vector[double] E_g
+        vector[vector[double]] phi_g
+        vector[double] phi
+        vector[double] Phi
+        vector[double] time0
+        vector[double] BU0
+
+        map[int, vector[double]] Ti0
+        map[int, vector[vector[double]]] sigma_t_pg
+        map[int, vector[vector[double]]] nubar_sigma_f_pg
+        map[int, vector[vector[double]]] chi_pg
+        map[int, vector[vector[vector[double]]]] sigma_s_pgh
+        map[int, vector[vector[double]]] sigma_f_pg
+        map[int, vector[vector[double]]] sigma_gamma_pg
+        map[int, vector[vector[double]]] sigma_2n_pg
+        map[int, vector[vector[double]]] sigma_3n_pg
+        map[int, vector[vector[double]]] sigma_alpha_pg
+        map[int, vector[vector[double]]] sigma_proton_pg
+        map[int, vector[vector[double]]] sigma_gamma_x_pg
+        map[int, vector[vector[double]]] sigma_2n_x_pg
+
+        vector[double] A_HM_t
+        vector[double] MW_fuel_t
+        vector[double] MW_clad_t
+        vector[double] MW_cool_t
+        map[int, vector[double]] n_fuel_it
+        map[int, vector[double]] n_clad_it
+        map[int, vector[double]] n_cool_it
+        map[int, vector[double]] m_fuel_it
+        map[int, vector[double]] m_clad_it
+        map[int, vector[double]] m_cool_it
+        map[int, vector[double]] N_fuel_it
+        map[int, vector[double]] N_clad_it
+        map[int, vector[double]] N_cool_it
+
+        vector[vector[double]] phi_tg
+        vector[double] phi_t
+        vector[double] Phi_t
+        vector[double] BU_t
+
+        map[int, vector[double]] T_it
+        map[int, vector[vector[double]]] sigma_t_itg
+        map[int, vector[vector[double]]] nubar_sigma_f_itg
+        map[int, vector[vector[double]]] chi_itg
+        map[int, vector[vector[vector[double]]]] sigma_s_itgh
+        map[int, vector[vector[double]]] sigma_f_itg
+        map[int, vector[vector[double]]] sigma_gamma_itg
+        map[int, vector[vector[double]]] sigma_2n_itg
+        map[int, vector[vector[double]]] sigma_3n_itg
+        map[int, vector[vector[double]]] sigma_alpha_itg
+        map[int, vector[vector[double]]] sigma_proton_itg
+        map[int, vector[vector[double]]] sigma_gamma_x_itg
+        map[int, vector[vector[double]]] sigma_2n_x_itg
+
+        vector[vector[double]] Sigma_t_tg
+        vector[vector[double]] nubar_Sigma_f_tg
+        vector[vector[double]] chi_tg
+        vector[vector[vector[double]]] Sigma_s_tgh
+        vector[vector[double]] Sigma_f_tg
+        vector[vector[double]] Sigma_gamma_tg
+        vector[vector[double]] Sigma_2n_tg
+        vector[vector[double]] Sigma_3n_tg
+        vector[vector[double]] Sigma_alpha_tg
+        vector[vector[double]] Sigma_proton_tg
+        vector[vector[double]] Sigma_gamma_x_tg
+        vector[vector[double]] Sigma_2n_x_tg
+
+        vector[int] nearest_neighbors
+
+        vector[double] k_t
+
+        int td_n
+        double td
+        double BUd
+        double Phid
+        double k
+
+        cpp_mass_stream.MassStream ms_feed_u
+        cpp_mass_stream.MassStream ms_feed_tru
+        cpp_mass_stream.MassStream ms_feed_lan
+        cpp_mass_stream.MassStream ms_feed_act
+        cpp_mass_stream.MassStream ms_prod_u
+        cpp_mass_stream.MassStream ms_prod_tru
+        cpp_mass_stream.MassStream ms_prod_lan
+        cpp_mass_stream.MassStream ms_prod_act
+
+        double deltaR
+        double tru_cr
+
+        # Methods
+        void initialize(ReactorParameters) except +
+        void loadlib(std.string) except +
+        void interpolate_cross_sections() except +
+        void calc_mass_weights() except +
+        void fold_mass_weights() except +
+        void assemble_multigroup_matrices() except +
+        void calc_criticality() except +
+
+        void burnup_core() except +
+
+        void calc_nearest_neighbors() except +
+
+        void calc_T_itd() except +
+
+        void calc_ms_prod() except +
+        void calcSubStreams() except +
+        double calc_tru_cr() except +
+
+        FluencePoint fluence_at_BU(double) except +
+        double batch_average_k(double) except +
+        void BUd_bisection_method() except +
+        void run_P_NL(double) except +
+        void calibrate_P_NL_to_BUd() except +
+
+        cpp_mass_stream.MassStream calc() except +
+        cpp_mass_stream.MassStream calc(map[int, double]) except +
+        cpp_mass_stream.MassStream calc(cpp_mass_stream.MassStream) except +

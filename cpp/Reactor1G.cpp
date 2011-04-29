@@ -2,51 +2,6 @@
 
 #include "Reactor1G.h"
 
-/**************************/
-/*** FulencePoint Class ***/
-/**************************/
-
-FluencePoint::FluencePoint()
-{
-    f = 0;
-    F = 0.0;
-    m = 0.0;
-};
-
-
-FluencePoint::~FluencePoint()
-{
-};
-
-
-/*******************************/
-/*** ReactorParameters Class ***/
-/*******************************/
-
-ReactorParameters::ReactorParameters()
-{
-    batches = 0;
-    flux = 0.0;
-    fuel_form = std::map<std::string, double>();
-    coolant_form = std::map<std::string, double>();
-    fuel_density = 0.0;
-    coolant_density = 0.0;
-    pnl = 0.0;
-    BUt = 0.0;
-    use_disadvantage_factor = false;
-    lattice_type = std::string();
-    rescale_hydrogen = false;
-    radius = 0.0;
-    pitch = 0.0;
-    open_slots = 0.0;
-    total_slots = 0.0;
-};
-
-
-ReactorParameters::~ReactorParameters()
-{
-};
-
 /***********************************************/
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/
@@ -96,8 +51,9 @@ void Reactor1G::initialize(ReactorParameters rp)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
 
     //Calculates Volumes
-    r = rp.radius;			//Fuel region radius
-    l = rp.pitch;			//Unit cell side length
+    r = rp.fuel_radius;			//Fuel region radius
+    l = rp.unit_cell_pitch;			//Unit cell side length
+
     S_O = rp.open_slots;		//Number of open slots in fuel assembly
     S_T = rp.total_slots;		//Total number of Fuel assembly slots.
     //Fuel Volume
@@ -105,6 +61,7 @@ void Reactor1G::initialize(ReactorParameters rp)
     //Coolant Volume
     VC = ((l*l - bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T) + (S_O/S_T);
 };
+
 
 void Reactor1G::loadlib(std::string libfile)
 {
@@ -775,7 +732,7 @@ void Reactor1G::BUd_bisection_method()
         };
 
         if ( (BUd_b < 0.0) || (1000.0 < BUd_b) )
-            throw Badfuel_form ();
+            throw bright::BadFuelForm ();
     };
 
     BUd_c = 0.0;
@@ -838,7 +795,7 @@ void Reactor1G::BUd_bisection_method()
             std::cout << "BUd_c = " << BUd_c << "\tk_c = " << k_c << "\tsign_c = " << sign_c << "\n";
             std::cout << "\n";
         };
-        throw BisectionMethodNotPerformed ("Burnup");
+        throw bright::BisectionMethodNotPerformed ("Burnup");
     };
 
     //print results, if desired.
@@ -933,11 +890,11 @@ void Reactor1G::calibrate_P_NL_to_BUd()
             sign_a = (bud_a - target_BU) / fabs(bud_a - target_BU);
             FoundA = true;
         }
-        catch (Badfuel_form e)
+        catch (bright::BadFuelForm e)
         {
             pnl_a = pnl_a + 0.05;
         }
-        catch (BisectionMethodNotPerformed e)
+        catch (bright::BisectionMethodNotPerformed e)
         {
             pnl_a = pnl_a + 0.05;
         };
@@ -955,11 +912,11 @@ void Reactor1G::calibrate_P_NL_to_BUd()
             sign_b = (bud_b - target_BU) / fabs(bud_b - target_BU);
             FoundB = true;
         }
-        catch (Badfuel_form e)
+        catch (bright::BadFuelForm e)
         {
             pnl_b = pnl_b - 0.05;
         }
-        catch (BisectionMethodNotPerformed e)
+        catch (bright::BisectionMethodNotPerformed e)
         {
             pnl_b = pnl_b - 0.05;
         };
@@ -1184,9 +1141,9 @@ void Reactor1G::calc_zeta()
             //Else use KAERI Data for sigma_a
             if (570000 < iso->first < 720000 || 890000 < iso->first)
             {
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::bpcm2);
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::bpcm2 * (di_F_[iso->first][f] + \
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             }
             else
@@ -1194,9 +1151,9 @@ void Reactor1G::calc_zeta()
                 //renormalize sigma_a for this fluenece
                 double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
 
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::bpcm2);
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::cm2_per_barn);
 
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::bpcm2 * (sig_a + \
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (sig_a + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             };
         };
@@ -1226,9 +1183,9 @@ void Reactor1G::calc_zeta()
             //Else use KAERI Data for sigma_a
             if (570000 < iso->first < 720000 || 890000 < iso->first)
             {
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::bpcm2);
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::bpcm2 * (di_F_[iso->first][f] + \
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             }
             else
@@ -1236,9 +1193,9 @@ void Reactor1G::calc_zeta()
                 //renormalize sigma_a for this fluenece
                 double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
 
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::bpcm2);
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::cm2_per_barn);
 
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::bpcm2 * (sig_a + \
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (sig_a + \
                     sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
             };
         };

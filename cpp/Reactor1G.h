@@ -24,6 +24,9 @@
 #include "MassStream.h"
 #include "isoname.h"
 
+#include "FluencePoint.h"
+#include "ReactorParameters.h"
+
 /***********************************************/
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/
@@ -35,48 +38,6 @@ typedef std::vector<double> Data_F_;
 
 typedef std::set<int> IsoSet;
 typedef IsoSet::iterator IsoIter;
-
-class FluencePoint
-{
-public:
-    // Constructors
-    FluencePoint();
-    ~FluencePoint();
-
-    // Attributes
-    int f;
-    double F;
-    double m;
-};
-
-
-//struct ReactorParameters
-class ReactorParameters
-{
-public:
-    // Constructors
-    ReactorParameters();
-    ~ReactorParameters();
-
-    // Attributes
-    int batches;
-    double flux;
-    std::map<std::string, double> fuel_form;
-    std::map<std::string, double> coolant_form;
-    double fuel_density;
-    double coolant_density;
-    double pnl;
-    double BUt;
-    bool use_disadvantage_factor;
-    std::string lattice_type;
-    bool rescale_hydrogen;
-    double radius;
-    double pitch;
-    double open_slots;
-    double total_slots;
-
-};
-
 
 class Reactor1G : public FCComp
 {
@@ -216,74 +177,6 @@ public:
     void         calc_zeta_planar();
     void         calc_zeta_spherical();
     void         calc_zeta_cylindrical();
-};
-
-/******************/
-/*** Exceptions ***/
-/******************/
-
-class Badfuel_form : public std::exception
-{
-//Exception for valid fuel form.
-public:
-    Badfuel_form () {};
-    ~Badfuel_form () throw () {};
-
-    static char * name ()
-    {
-        return (char *) "Badfuel_form";
-    };
-
-    virtual const char* what() const throw()
-    {
-        if (1 < FCComps::verbosity)
-        {
-            std::cout << "\n";
-            std::cout << "***********************************************\n";
-            std::cout << "* WARNING: FUEL COMPOSITION NOT COMPUTABLE!!! *\n";
-            std::cout << "***********************************************\n";
-            std::cout << "\n";
-        };
-        std::string BFFstr ("FUEL COMPOSITION NOT COMPUTABLE!");
-        return (const char *) BFFstr.c_str();
-    };
-};
-
-class BisectionMethodNotPerformed : public std::exception
-{
-//Exception for when the bisection method is not calculated.
-public:
-    BisectionMethodNotPerformed ()
-    {
-        errstr = "Bisection method was not performed.";
-    };
-    BisectionMethodNotPerformed (std::string calctype)
-    {
-        errstr = "Bisection method durring " + calctype + " calculation was not performed.";
-    };
-    ~BisectionMethodNotPerformed () throw () {};
-
-    static char * name ()
-    {
-        return (char *) "BisectionMethodNotPerformed";
-    };
-
-    virtual const char* what() const throw()
-    {
-        if (1 < FCComps::verbosity)
-        {
-            std::cout << "\n";
-            std::cout << "**************\n";
-            std::cout << "* WARNING!!! *\n";
-            std::cout << "**************\n";
-            std::cout << "\n";
-            std::cout << errstr << "\n";
-            std::cout << "\n";
-        };
-        return (const char *) errstr.c_str();
-    };
-private:
-    std::string errstr;
 };
 
 #endif

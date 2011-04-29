@@ -1,37 +1,6 @@
 // One-Group Fast Reactor Component Class
 
 #include "FastReactor1G.h"
-
-ReactorParameters fillfr_defaults ()
-{
-    //Default FR physical parameters
-    ReactorParameters frd;
-
-    frd.batches = 3;
-    frd.flux = 2.0 * pow(10.0, 15);
-
-    frd.fuel_form["IHM"] = 1.0;
-    frd.coolant_form["NA23"] = 1.0;
-
-    frd.fuel_density = 18.0;
-    frd.coolant_density = 0.927;
-
-    frd.pnl = 0.65;
-    frd.BUt = 0.0;
-
-    frd.use_disadvantage_factor = false;
-    frd.lattice_type = "Cylindrical";
-    frd.rescale_hydrogen = false;
-    
-    frd.radius = 0.3115;
-    frd.pitch = 0.956;
-    frd.open_slots = 19.0;
-    frd.total_slots = 163.0;
-
-    return frd;
-};
-ReactorParameters fr_defaults (fillfr_defaults());
-
 FastReactor1G::FastReactor1G() : Reactor1G(fr_defaults, fr_p2track)
 {
 };

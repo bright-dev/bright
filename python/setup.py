@@ -94,6 +94,7 @@ mass_stream_ext = {'name': "mass_stream"}
 
 mass_stream_ext['sources'] = [
     'bright.cpp', 
+    'h5wrap.cpp',
     'isoname.cpp', 
     'MassStream.cpp',
     ]
@@ -145,16 +146,21 @@ bright_ext = {'name': "bright"}
 
 bright_ext['sources'] = [
     'bright.cpp', 
+    'h5wrap.cpp',
     'isoname.cpp', 
     'MassStream.cpp', 
+    'FCComps.cpp', 
     'FCComp.cpp', 
     'Enrichment.cpp', 
+    'FuelFabrication.cpp', 
     'Reprocess.cpp', 
     'Storage.cpp', 
+    'FluencePoint.cpp', 
+    'ReactorParameters.cpp', 
     'Reactor1G.cpp', 
     'LightWaterReactor1G.cpp', 
     'FastReactor1G.cpp', 
-    'FuelFabrication.cpp', 
+    'ReactorMG.cpp', 
     ]
 bright_ext['sources'] = [os.path.join(cpp_dir, s) for s in bright_ext['sources']] + \
                         [os.path.join(src_dir, 'bright', 'bright.pyx')]

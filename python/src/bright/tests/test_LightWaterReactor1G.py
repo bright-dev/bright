@@ -52,8 +52,8 @@ class TestLightWaterReactorConstructors(TestCase):
         assert_true(lwrd.use_disadvantage_factor)
         assert_equal(lwrd.lattice_type, "Cylindrical")
         assert_true(lwrd.rescale_hydrogen)
-        assert_equal(lwrd.radius, 0.412)
-        assert_equal(lwrd.pitch, 1.33)
+        assert_equal(lwrd.fuel_radius, 0.412)
+        assert_equal(lwrd.unit_cell_pitch, 1.33)
         assert_equal(lwrd.open_slots, 25.0)
         assert_equal(lwrd.total_slots, 289.0)
 

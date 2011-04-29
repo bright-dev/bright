@@ -34,8 +34,8 @@ default_rp.BUt = 50.0
 default_rp.use_disadvantage_factor = True
 default_rp.lattice_type = 'Cylindrical'
 default_rp.rescale_hydrogen = True
-default_rp.radius = 0.411
-default_rp.pitch = 0.7
+default_rp.fuel_radius = 0.411
+default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
 
@@ -91,8 +91,8 @@ class TestReactorParameters(TestCase):
         assert_false(rp.use_disadvantage_factor)
         assert_equal(rp.lattice_type, '')
         assert_false(rp.rescale_hydrogen)
-        assert_almost_equal(rp.radius, 0.0)
-        assert_almost_equal(rp.pitch, 0.0)
+        assert_almost_equal(rp.fuel_radius, 0.0)
+        assert_almost_equal(rp.unit_cell_pitch, 0.0)
         assert_almost_equal(rp.open_slots, 0.0)
         assert_almost_equal(rp.total_slots, 0.0)
 
@@ -155,15 +155,15 @@ class TestReactorParameters(TestCase):
         rp.rescale_hydrogen = True
         assert_true(rp.rescale_hydrogen)
 
-    def test_radius(self):
+    def test_fuel_radius(self):
         rp = ReactorParameters()
-        rp.radius = 0.411
-        assert_equal(rp.radius, 0.411)
+        rp.fuel_radius = 0.411
+        assert_equal(rp.fuel_radius, 0.411)
 
-    def test_pitch(self):
+    def test_unit_cell_pitch(self):
         rp = ReactorParameters()
-        rp.pitch = 0.7
-        assert_equal(rp.pitch, 0.7)
+        rp.unit_cell_pitch = 0.7
+        assert_equal(rp.unit_cell_pitch, 0.7)
 
     def test_open_slots(self):
         rp = ReactorParameters()
@@ -335,8 +335,8 @@ class TestReactor1GParameterAttributes(TestCase):
 
     def test_VF(self):
         rp = ReactorParameters()
-        rp.radius = 0.5
-        rp.pitch = 1.0
+        rp.fuel_radius = 0.5
+        rp.unit_cell_pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         r1g = Reactor1G(reactor_parameters=rp, name='r1g')
@@ -344,8 +344,8 @@ class TestReactor1GParameterAttributes(TestCase):
 
     def test_VC(self):
         rp = ReactorParameters()
-        rp.radius = 0.5
-        rp.pitch = 1.0
+        rp.fuel_radius = 0.5
+        rp.unit_cell_pitch = 1.0
         rp.open_slots = 0
         rp.total_slots = 1
         r1g = Reactor1G(reactor_parameters=rp, name='r1g')
