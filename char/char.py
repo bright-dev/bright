@@ -93,7 +93,9 @@ def parse_isos(s):
     isos = s.split(',')
 
     for iso in isos:
-        if '-' in iso:
+        if len(iso) == 0:
+            continue
+        elif '-' in iso:
             isplit = iso.split()
             ilower = cast_iso_zzaaam(isplit[0])
             iupper = cast_iso_zzaaam(isplit[1])
@@ -287,7 +289,7 @@ def main():
     # Check a bunch of run conditions
     if options.RUN_TRANSPORT:
         # Run Transport code
-        runchar.make_run_script(n_code)
+        runchar.make_run_script()
 
         if options.LOCAL:
             runchar.run_locally()

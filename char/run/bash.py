@@ -37,13 +37,13 @@ class Bash(RunChar):
             run_fill['remote_get'] = ''
         else:
             run_fill['remote_put'] = ("scp -r {rc.user}@{rg}:{rc.dir} ~/tmpchar/\n"
-                                      "cd ~/tmpchar/\n").format(rc=defchar.remote_connection, 
-                                                            rg=defchar.remote_gateway)
+                                      "cd ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                                            rg=self.env['remote_gateway'])
             run_fill['remote_get'] = ("cd ~\n"
                                       "mv ~/CHAR_*.o* ~/tmpchar/\n"
                                       "scp -r ~/tmpchar/* {rc.user}@{rg}:{rc.dir}\n"
-                                      "rm -r ~/tmpchar/\n").format(rc=defchar.remote_connection, 
-                                                                   rg=defchar.remote_gateway)
+                                      "rm -r ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                                                   rg=self.env['remote_gateway'])
 
         # Get transport specific values
         run_fill.update(self.n_code.run_script_fill_values())

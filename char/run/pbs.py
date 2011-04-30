@@ -26,7 +26,7 @@ class Pbs(RunChar):
     def make_run_script(self):
         """Makes a shell script that will execute char."""
         run_fill = {}
-        nodes = int(ceil( float(self.env.number_cpus) / self.env.cpus_per_node))
+        nodes = int(ceil( float(self.env['number_cpus']) / self.env['cpus_per_node']))
 
         run_fill["run_shell"] = "#!/bin/sh"
 
@@ -35,7 +35,7 @@ class Pbs(RunChar):
         run_fill["PBS_general_settings"] += "#PBS -N CHAR_{0}\n".format(defchar.reactor)
         run_fill["PBS_general_settings"] += "#PBS -l ncpus={0}".format(defchar.number_cpus)
         run_fill["PBS_general_settings"] += ",nodes={0}".format(nodes)
-        run_fill["PBS_general_settings"] += ":ppn={0}".format(self.env.cpus_per_node)
+        run_fill["PBS_general_settings"] += ":ppn={0}".format(self.env['cpus_per_node'])
         run_fill["PBS_general_settings"] += ",walltime={0:02G}:00:00,pmem=1gb\n".format(
                                              self.n_code.run_script_walltime())
         run_fill["PBS_general_settings"] += "#PBS -k oe\n"
@@ -59,13 +59,13 @@ class Pbs(RunChar):
             run_fill['remote_get'] = ''
         else:
             run_fill['remote_put'] = ("scp -r {rc.user}@{rg}:{rc.dir} ~/tmpchar/\n"
-                                      "cd ~/tmpchar/\n").format(rc=defchar.remote_connection, 
-                                                            rg=defchar.remote_gateway)
+                                      "cd ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                                            rg=self.env['remote_gateway'])
             run_fill['remote_get'] = ("cd ~\n"
                                       "mv ~/CHAR_*.o* ~/tmpchar/\n"
                                       "scp -r ~/tmpchar/* {rc.user}@{rg}:{rc.dir}\n"
-                                      "rm -r ~/tmpchar/\n").format(rc=defchar.remote_connection, 
-                                                                   rg=defchar.remote_gateway)
+                                      "rm -r ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                                                   rg=self.env['remote_gateway'])
 
         # Get transport specific values
         run_fill.update(self.n_code.run_script_fill_values())
