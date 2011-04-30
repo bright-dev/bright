@@ -52,7 +52,7 @@ class Bash(RunChar):
         with open(self.env['run_script'], 'w') as f:
             f.write(run_script_template.format(**run_fill))
 
-        os.chmod(self.env.run_script, 0o755)
+        os.chmod(self.env['run_script'], 0o755)
 
 
     #
