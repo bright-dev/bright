@@ -55,7 +55,7 @@ n_code_switch = {'': NCodeSerpent,
 
 def parse_slice(s, size):
     """Parses a string into a list of indices."""
-    l = [int(i) for i in s.split(':')]
+    l = [int(i) for i in s.split(':') if 0 < len(i)]
 
     # Handle negative indices
     for n in range(len(l)):
