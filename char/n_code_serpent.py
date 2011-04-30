@@ -77,9 +77,11 @@ class NCodeSerpent(object):
         self.G = len(self.env['group_structure']) - 1
 
         # Grab stock high-resolution group structure
-        if self.env['xs_models_needed']:
-            with tb.openFile(msn.nuc_data, 'r') as f:
-                self.hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
+        #if self.env['xs_models_needed']:
+        #    with tb.openFile(msn.nuc_data, 'r') as f:
+        #        self.hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
+        with tb.openFile(msn.nuc_data, 'r') as f:
+            self.hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
 
         # Set Stock tallies for serpent
         if 'tallies' not in env:

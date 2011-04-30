@@ -39,8 +39,9 @@ class RunChar(object):
         if self.env['options'].RUN_XS_GEN:
             self.n_code.init_h5_xs_gen()
 
-            if self.env['xs_models_needed']:
-                self.n_code.init_h5_flux_g()
+            #if self.env['xs_models_needed']:
+            #    self.n_code.init_h5_flux_g()
+            self.n_code.init_h5_flux_g()
 
         # Run initial isotope sensitivity calculation
         if self.env['options'].RUN_DELTAM:

@@ -221,7 +221,7 @@ def update_env_for_execution(env):
     env['core_transmute_in_serpent'] = iso_list_conversions(core_transmute_in_serpent)
     env['core_transmute_not_in_serpent'] = iso_list_conversions(core_transmute_not_in_serpent)
 
-    env['xs_models_needed'] = (0 < len(env['core_transmute_not_in_serpent']))
+    #env['xs_models_needed'] = (0 < len(env['core_transmute_not_in_serpent']))
 
     # Make temperature flag
     if 'temperature' not in env:
