@@ -13,7 +13,7 @@ mt_tallies = {"sigma_t": 1,
               "sigma_He3": 106,
               "sigma_alpha": 107,
               }
-mt_map.update({"sigma_i{0}".format(i): i+50 for i in range(1, 41)})
+mt_tallies.update({"sigma_i{0}".format(i): i+50 for i in range(1, 41)})
 
 
 # MCNP sets
