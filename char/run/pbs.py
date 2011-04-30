@@ -32,16 +32,16 @@ class Pbs(RunChar):
 
         run_fill["PBS_general_settings"]  = ""
         run_fill["PBS_general_settings"] += "### PBS Settings\n"
-        run_fill["PBS_general_settings"] += "#PBS -N CHAR_{0}\n".format(defchar.reactor)
-        run_fill["PBS_general_settings"] += "#PBS -l ncpus={0}".format(defchar.number_cpus)
+        run_fill["PBS_general_settings"] += "#PBS -N CHAR_{0}\n".format(self.env['reactor'])
+        run_fill["PBS_general_settings"] += "#PBS -l ncpus={0}".format(self.env['number_cpus'])
         run_fill["PBS_general_settings"] += ",nodes={0}".format(nodes)
         run_fill["PBS_general_settings"] += ":ppn={0}".format(self.env['cpus_per_node'])
         run_fill["PBS_general_settings"] += ",walltime={0:02G}:00:00,pmem=1gb\n".format(
                                              self.n_code.run_script_walltime())
         run_fill["PBS_general_settings"] += "#PBS -k oe\n"
         run_fill["PBS_general_settings"] += "#PBS -j oe\n"
-        run_fill["PBS_general_settings"] += "#PBS -M {0}\n".format(defchar.email)
-        run_fill["PBS_general_settings"] += "#PBS -m abe\n".format(defchar.email)
+        run_fill["PBS_general_settings"] += "#PBS -M {0}\n".format(self.env['email'])
+        run_fill["PBS_general_settings"] += "#PBS -m abe\n".format(self.env['email'])
 
         run_fill['PBS_job_context']  = 'echo \"The master node of this job is: $PBS_O_HOST\"\n'
         run_fill['PBS_job_context'] += 'NPROCS=`wc -l < $PBS_NODEFILE`\n'
