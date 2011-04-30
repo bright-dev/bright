@@ -49,7 +49,7 @@ class Bash(RunChar):
         run_fill.update(self.n_code.run_script_fill_values())
 
         # Fill the template
-        with open(self.env.run_script, 'w') as f:
+        with open(self.env['run_script'], 'w') as f:
             f.write(run_script_template.format(**run_fill))
 
         os.chmod(self.env.run_script, 0o755)
@@ -62,7 +62,7 @@ class Bash(RunChar):
     def run_locally(self):
         """Runs the transport calculation on the local machine."""
         t1 = time.time()
-        subprocess.call("./{0}".format(self.env.run_script), shell=True)
+        subprocess.call("./{0}".format(self.env['run_script']), shell=True)
         t2 = time.time()
 
         # Report times
