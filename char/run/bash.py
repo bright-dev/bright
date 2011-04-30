@@ -32,7 +32,7 @@ class Bash(RunChar):
         run_fill['PBS_job_context']  = ''
 
         # Remote copy commands
-        if self.env.options.LOCAL:
+        if self.env['options'].LOCAL:
             run_fill['remote_put'] = ''
             run_fill['remote_get'] = ''
         else:

@@ -54,7 +54,7 @@ class Pbs(RunChar):
 
 
         # Remote copy commands
-        if self.env.options.LOCAL:
+        if self.env['options'].LOCAL:
             run_fill['remote_put'] = ''
             run_fill['remote_get'] = ''
         else:
@@ -80,7 +80,7 @@ class Pbs(RunChar):
     def run_locally(self):
         """Runs the transport calculation on the local machine."""
         t1 = time.time()
-        subprocess.call("qsub {0}".format(self.env.run_script), shell=True)
+        subprocess.call("qsub {0}".format(self.env['run_script']), shell=True)
         t2 = time.time()
 
         # Report times
