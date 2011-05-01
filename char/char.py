@@ -106,7 +106,7 @@ def parse_isos(s):
             tmpset = set(range(ilower, iupper))
         else:
             i = cast_iso_zzaaam(iso)
-            if 0 == iupper%10000:
+            if 0 == i%10000:
                 irange = range(i, i + 10000)
             else:
                 irange = [i]
