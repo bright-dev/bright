@@ -114,7 +114,7 @@ def parse_isos(s):
 
         # Add the union 
         iset = (iset | tmpset)
-        
+
     return iset
 
 

@@ -714,7 +714,7 @@ class NCodeSerpent(object):
         n : perterbation step number.
         """
         info_str = 'Generating cross-sections for {0} at perturbation step {1} using models.'
-        self.env['logger'].info(info_str.format(iso, n))
+        self.env['logger'].info(info_str.format(isoname.mixed_2_LLAAAM(iso), n))
 
         tallies = self.env['tallies']
 
