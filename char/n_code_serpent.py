@@ -815,54 +815,54 @@ class NCodeSerpent(object):
 
     def parse_xs_gen(self, iso, n):
         """Parse the cross-section generation files into an equivelent python modules."""
-        res_file = self.env['reactor'] + "_xs_gen_{0}_{1}_res.m".format(iso, n)
-        det_file = self.env['reactor'] + "_xs_gen_{0}_{1}_det0.m".format(iso, n)
+        res_file = self.env['reactor'] + "_xs_gen_{0}_{1}_res".format(iso, n)
+        det_file = self.env['reactor'] + "_xs_gen_{0}_{1}_det0".format(iso, n)
 
         # Convert files
-        convert_res(res_file)
-        convert_det(det_file)
+        convert_res(res_file + '.m')
+        convert_det(det_file + '.m')
 
         # Get data
         res = {}
         det = {}
-        execfile(res_file, {}, res)
-        execfile(det_file, {}, det)
+        execfile(res_file + '.py', {}, res)
+        execfile(det_file + '.py', {}, det)
 
         return res, det
 
 
     def parse_flux_g(self, n):
         """Parse the group flux only generation files into an equivelent python modules."""
-        res_file = self.env['reactor'] + "_flux_g_{0}_res.m".format(n)
-        det_file = self.env['reactor'] + "_flux_g_{0}_det0.m".format(n)
+        res_file = self.env['reactor'] + "_flux_g_{0}_res".format(n)
+        det_file = self.env['reactor'] + "_flux_g_{0}_det0".format(n)
 
         # Convert files
-        convert_res(res_file)
-        convert_det(det_file)
+        convert_res(res_file + '.m')
+        convert_det(det_file + '.m')
 
         # Get data
         res = {}
         det = {}
-        execfile(res_file, {}, res)
-        execfile(det_file, {}, det)
+        execfile(res_file + '.py', {}, res)
+        execfile(det_file + '.py', {}, det)
 
         return res, det
 
 
     def parse_deltam(self, iso, n, s):
         """Parse the sensitivity study files into an equivelent python modules."""
-        res_file = self.env['reactor'] + "_deltam_{0}_{1}_{2}_res.m".format(iso, n, s)
-        dep_file = self.env['reactor'] + "_deltam_{0}_{1}_{2}_dep.m".format(iso, n, s)
+        res_file = self.env['reactor'] + "_deltam_{0}_{1}_{2}_res".format(iso, n, s)
+        dep_file = self.env['reactor'] + "_deltam_{0}_{1}_{2}_dep".format(iso, n, s)
 
         # Convert files
-        convert_res(res_file)
-        convert_dep(dep_file)
+        convert_res(res_file + '.m')
+        convert_dep(dep_file + '.m')
 
         # Get data
         res = {}
         dep = {}
-        execfile(res_file, {}, res)
-        execfile(dep_file, {}, dep)
+        execfile(res_file + '.py', {}, res)
+        execfile(dep_file + '.py', {}, dep)
 
         return res, dep
 
