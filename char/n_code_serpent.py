@@ -648,7 +648,7 @@ class NCodeSerpent(object):
         if 'sigma_gamma_x' in tallies:
             if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in self.env['iso_mts'][iso_zz]):
                 sig_g = det['DETsigma_gamma']
-                sig_g = tally_serp_array[::-1, 10]
+                sig_g = sig_g[::-1, 10]
                 ms_rat = msnxs.metastable_ratio(iso_zz, 'gamma', E_g=E_g, E_n=E_n, phi_n=phi_n)
                 sig_g_x = ms_rat * sig_g
                 det['_sigma_gamma_x'] = sig_g_x
@@ -658,11 +658,11 @@ class NCodeSerpent(object):
         # Get (n, 2n *)
         if 'sigma_2n_x' in tallies:
             if ('sigma_2n' in tallies) and (tallies['sigma_2n'] in self.env['iso_mts'][iso_zz]):
-                sig_g = det['DETsigma_2n']
-                sig_g = tally_serp_array[::-1, 10]
+                sig_2n = det['DETsigma_2n']
+                sig_2n = sig_2n[::-1, 10]
                 ms_rat = msnxs.metastable_ratio(iso_zz, '2n', E_g=E_g, E_n=E_n, phi_n=phi_n)
-                sig_g_x = ms_rat * sig_g
-                det['_sigma_2n_x'] = sig_g_x
+                sig_2n_x = ms_rat * sig_2n
+                det['_sigma_2n_x'] = sig_2n_x
             else:
                 det['_sigma_2n_x'] = msnxs.sigma_reaction(iso_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
 
