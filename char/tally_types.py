@@ -79,4 +79,5 @@ serpent_default = set([
 #   value = set(mt)
 restricted_tallies = {
     (501250, '06c'): set([17]), 
+    (932360, '06c'): set([17]), 
     }
