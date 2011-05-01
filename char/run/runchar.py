@@ -4,6 +4,7 @@ import os
 import time
 import subprocess
 
+import numpy as np
 import tables as tb
 
 from metasci.colortext import message, failure
