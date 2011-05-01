@@ -4,9 +4,10 @@ import os
 import time
 import subprocess
 
+import tables as tb
+
 from metasci.colortext import message, failure
 from mass_stream import MassStream
-
 
 class RunChar(object):
     """A controller to run char very generally."""
