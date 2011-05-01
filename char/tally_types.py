@@ -70,3 +70,13 @@ serpent_default = set([
     "sigma_gamma_x",
     "sigma_2n_x",
     ]) 
+
+
+
+# The following defines tallies that are not valid (in serpent)
+# even thought they appear as proper MT numbers in the ACE file.
+#   key = (zzaaam, temp_flag)
+#   value = set(mt)
+restricted_tallies = {
+    (501250, '06c'): set([17]), 
+    }

@@ -22,6 +22,7 @@ from metasci.colortext import message, failure
 ### CHAR Libraries ###
 ######################
 from n_code_serpent import zzaaam_2_serpent
+from tally_types import restricted_tallies
 
 ########################
 ### Global Functions ###
@@ -132,6 +133,8 @@ def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
         # Get the MT numbers
         mts = ace.mt(*xsdata_dict[iso_serp_flag])
         iso_mt = (mts | serpent_mt_always)
+        if (iso_zz, temp_flag) in restricted_tallies:
+            iso_mt = iso_mt - restricted_tallies[(iso_zz, temp_flag)]
 
         # Add this iso to the dict
         iso_mts[iso_zz] = iso_mt
@@ -234,6 +237,7 @@ def update_env_for_execution(env):
                                           env['core_transmute_in_serpent']['zzaaam'], 
                                           env['temp_flag'], 
                                           env['verbosity'])
+    #print(env['iso_mts'][501250]); raise SystemExit
 
     # Make fuel stream
     env['IHM_stream'] = MassStream(env['initial_heavy_metal'])
