@@ -73,7 +73,12 @@ class RunChar(object):
         isos : a set of isotopes to run (zzaaaam-form).
         """
         isos_in_serpent = (isos & set(self.env['core_transmute_in_serpent']['zzaaam']))
-        isos_not_in_serpent = (isos & set(self.env['core_transmute_in_serpent']['zzaaam']))
+        isos_not_in_serpent = (isos & set(self.env['core_transmute_not_in_serpent']['zzaaam']))
+
+        print(isos_in_serpent)
+        print(isos_not_in_serpent)
+        raise SystemExit
+
 
         # Loop over the perturbation steps
         for n in range(*idx):
