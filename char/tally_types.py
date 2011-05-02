@@ -78,9 +78,12 @@ serpent_default = set([
 #   key = (zzaaam, temp_flag)
 #   value = set(mt)
 restricted_tallies = {
+    (400930, '06c'): set([17]), 
     (501250, '06c'): set([17]), 
     (501260, '06c'): set([17]), 
     (932360, '06c'): set([17]), 
     (932370, '06c'): set([17]), 
     (932380, '06c'): set([17]), 
+    (952410, '06c'): set([17]), 
+    (982490, '06c'): set([17]), 
     }
