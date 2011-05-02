@@ -644,6 +644,20 @@ class NCodeSerpent(object):
         # Prep for metastable tallies
         tallies = self.env['tallies']
 
+
+        #
+        # Use models, if serpent is not available
+        #
+
+        # Get absorption reaction tallies
+        for tally in tallies:
+            if tallies[tally] not in self.env['iso_mts'][iso_zz]:
+                tally_rx = tally.partition('_')[2]
+                try:
+                    det['_'+tally] = msnxs.sigma_reaction(iso_zz, tally_rx, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                except IndexError:
+                    pass
+
         # Get (n, g *)
         if 'sigma_gamma_x' in tallies:
             if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in self.env['iso_mts'][iso_zz]):
@@ -1194,6 +1208,8 @@ class NCodeSerpent(object):
             if tallies[tally] in self.env['iso_mts'][iso_zz]:
                 tally_serp_array = det['DET{0}'.format(tally)]
                 tally_serp_array = tally_serp_array[::-1, 10]
+            elif ('_'+tally in det):
+                tally_serp_array = det['_'+tally][::-1]            
             else:
                 tally_serp_array = np.zeros(len(tally_hdf5_array[n]), dtype=float)
                 
@@ -1296,16 +1312,16 @@ class NCodeSerpent(object):
             tally_hdf5_array[n] = chi
 
         # sigma_gamma_x
-        if ('sigma_gamma_x' in tallies):
-            tally_hdf5_group = getattr(base_group, 'sigma_gamma_x')
-            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
-            tally_hdf5_array[n] = det['_sigma_gamma_x'][::-1]
+        #if ('sigma_gamma_x' in tallies):
+        #    tally_hdf5_group = getattr(base_group, 'sigma_gamma_x')
+        #    tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+        #    tally_hdf5_array[n] = det['_sigma_gamma_x'][::-1]
             
         # sigma_2n_x
-        if ('sigma_2n_x' in tallies):
-            tally_hdf5_group = getattr(base_group, 'sigma_2n_x')
-            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
-            tally_hdf5_array[n] = det['_sigma_2n_x'][::-1]            
+        #if ('sigma_2n_x' in tallies):
+        #    tally_hdf5_group = getattr(base_group, 'sigma_2n_x')
+        #    tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+        #    tally_hdf5_array[n] = det['_sigma_2n_x'][::-1]            
 
         # close the file before returning
         rx_h5.close()
