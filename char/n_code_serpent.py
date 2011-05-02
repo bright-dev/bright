@@ -651,12 +651,21 @@ class NCodeSerpent(object):
 
         # Get absorption reaction tallies
         for tally in tallies:
-            if tallies[tally] not in self.env['iso_mts'][iso_zz]:
-                tally_rx = tally.partition('_')[2]
-                try:
-                    det['_'+tally] = msnxs.sigma_reaction(iso_zz, tally_rx, E_n=E_n, E_g=E_g, phi_n=phi_n)
-                except IndexError:
-                    pass
+            if (tallies[tally] not in self.env['iso_mts'][iso_zz]) and (tallies[tally] is not None):
+                if tally == 'sigma_f':
+                    det['_sigma_f'] = msnxs.sigma_f(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                elif tally == 'sigma_a':
+                    det['_sigma_a'] = msnxs.sigma_a(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                elif tally == 'sigma_s_gh':
+                    det['_sigma_s_gh'] = msnxs.sigma_s_gh(iso, self.env['temperature'], E_n=E_n, E_g=E_g, phi_n=phi_n)
+                elif tally == 'sigma_s':
+                    det['_sigma_s'] = msnxs.sigma_s(iso, self.env['temperature'], E_n=E_n, E_g=E_g, phi_n=phi_n)
+                else:
+                    tally_rx = tally.partition('_')[2]
+                    try:
+                        det['_'+tally] = msnxs.sigma_reaction(iso_zz, tally_rx, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                    except IndexError:
+                        pass
 
         # Get (n, g *)
         if 'sigma_gamma_x' in tallies:
