@@ -213,6 +213,7 @@ bright_data_files = [
     'KaeriData.h5', 
     'FR.h5', 
     'LWR.h5',
+    'lwr_mg.h5',
     ]
         
 pack_dlls_hdf5  = [
@@ -229,7 +230,8 @@ pack_dir = {
     'isoname': os.path.join('src', 'isoname'),
     'mass_stream': os.path.join('src', 'mass_stream'), 
     'bright': os.path.join('src', 'bright'), 
-    'bright_data': os.path.join('src', 'bright_data'),
+#    'bright_data': os.path.join('src', 'bright_data'),
+    'bright_data': os.path.join('..', 'data'),
     }
     
 pack_data = {'bright': [], 'mass_stream': []}
