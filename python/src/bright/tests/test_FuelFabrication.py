@@ -34,8 +34,8 @@ default_rp.BUt = 50.0
 default_rp.use_disadvantage_factor = True
 default_rp.lattice_type = 'Cylindrical'
 default_rp.rescale_hydrogen = True
-default_rp.radius = 0.411
-default_rp.pitch = 0.7
+default_rp.fuel_radius = 0.411
+default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
 
