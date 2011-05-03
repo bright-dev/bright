@@ -13,3 +13,4 @@ python/src/bright/bright.cpp
 cpp/test/particle.def
 cpp/test/test_h5wrap.cpp
 
+data/lwr_mg.h5
