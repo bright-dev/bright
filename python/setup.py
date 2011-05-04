@@ -209,6 +209,7 @@ elif os.name == 'nt':
 ### Setup Package Data ###
 ##########################
 bright_data_files = [
+    'nuc_data.h5', 
     'decay.h5', 
     'KaeriData.h5', 
     'FR.h5', 

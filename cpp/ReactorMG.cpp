@@ -107,6 +107,8 @@ void ReactorMG::loadlib(std::string libfile)
     // Turn off the exceptions
     H5::Exception::dontPrint();
 
+    std::cout << "Found libfile and it is an HDF5 one!\n";
+
     // Open file
     H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
 
@@ -196,6 +198,8 @@ void ReactorMG::loadlib(std::string libfile)
     // close the reactor library
     rmglib.close();
 
+    std::cout << "Read in libfile\n";
+
 
     //
     // Create a decay matrix from a file based off of the J isotopes
@@ -216,6 +220,7 @@ void ReactorMG::loadlib(std::string libfile)
     // Open the HDF5 file
     H5::H5File nuc_data_h5 (nuc_data_file.c_str(), H5F_ACC_RDONLY );
 
+    std::cout << "Found nuc_data\n\n";
 
     //
     // Read in the decay data table as an array of FCComps::decay_iso_desc
