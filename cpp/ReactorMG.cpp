@@ -107,8 +107,6 @@ void ReactorMG::loadlib(std::string libfile)
     // Turn off the exceptions
     H5::Exception::dontPrint();
 
-    std::cout << "Found libfile and it is an HDF5 one!\n";
-
     // Open file
     H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
 
@@ -153,7 +151,6 @@ void ReactorMG::loadlib(std::string libfile)
     time0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/time0");
     BU0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/BU0");
 
-
     // Clear transmutation vectors and cross sections before reading in
     Ti0.clear();
     sigma_t_pg.clear();
@@ -169,6 +166,8 @@ void ReactorMG::loadlib(std::string libfile)
     sigma_gamma_x_pg.clear();
     sigma_2n_x_pg.clear();
 
+    std::cout << "Cleared XS!\n";
+
     // Load transmutation vectors and cross sections that are based off of isotope
     int iso_zz;
     std::string iso_LL;
@@ -177,11 +176,13 @@ void ReactorMG::loadlib(std::string libfile)
         iso_zz = *iso_iter;
         iso_LL = isoname::zzaaam_2_LLAAAM(iso_zz);
 
+        std::cout << iso_LL << "\n";
+
         // Add transmutation vector
         Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
 
         // Add cross sections
-        sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
+        sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_t/" + iso_LL);
         nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
         chi_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/chi/" + iso_LL);
         sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
@@ -194,6 +195,8 @@ void ReactorMG::loadlib(std::string libfile)
         sigma_gamma_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_gamma_x/" + iso_LL);
         sigma_2n_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_2n_x/" + iso_LL);
     };
+
+    std::cout << "Ready to close libfile!\n";
 
     // close the reactor library
     rmglib.close();
