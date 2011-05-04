@@ -44,7 +44,7 @@ default_rp.clad_radius = 0.475
 default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
-default_rp.burn_times = np.linspace(0.0, 4200.0, 21)
+default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
 
 
 
@@ -462,36 +462,26 @@ class TestReactorMGMutliGroupMethods(TestCase):
         G = self.rmg.G
         J = self.rmg.J
         S = self.rmg.S
-        s_a_itg = self.rmg.sigma_a_itg
-        s_s_itg = self.rmg.sigma_s_itg
         s_f_itg = self.rmg.sigma_f_itg
         ns_f_itg = self.rmg.nubar_sigma_f_itg
-        n_itg = self.rmg.nubar_itg
         s_s_itgh = self.rmg.sigma_s_itgh
 
         # Test Data
-        assert_equal(len(s_a_itg), len(J))
-        assert_equal(len(s_s_itg), len(J))
         assert_equal(len(s_f_itg), len(J))        
         assert_equal(len(ns_f_itg), len(J))
-        assert_equal(len(n_itg), len(J))
         assert_equal(len(s_s_itgh), len(J))
 
         for j in J:
             # Assert shapes
-            assert_equal(s_a_itg[j].shape, (S, G))
-            assert_equal(s_s_itg[j].shape, (S, G))
             assert_equal(s_f_itg[j].shape, (S, G))
             assert_equal(ns_f_itg[j].shape, (S, G))
-            assert_equal(n_itg[j].shape, (S, G))
             assert_equal(s_s_itgh[j].shape, (S, G, G))
 
             # Assert Values
-            assert (0.0 <= s_a_itg[j]).all()
-            assert (0.0 <= s_s_itg[j]).all()
             assert (0.0 <= s_f_itg[j]).all()
             assert (0.0 <= ns_f_itg[j]).all()
-            assert (0.0 <= n_itg[j]).all()
+            print j
+            print s_s_itgh[j]
             assert (0.0 <= s_s_itgh[j]).all()
 
 
