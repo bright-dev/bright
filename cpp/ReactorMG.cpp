@@ -852,7 +852,7 @@ void ReactorMG::assemble_multigroup_matrices()
         {
             jnd = J_index[j_gamma];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_gamma_itg[ind][bt_s][g];
+                T_matrix[ind][jnd][g] += sigma_gamma_itg[i][bt_s][g];
         };
 
         // Add the (n, 2n) cross-section
@@ -860,7 +860,7 @@ void ReactorMG::assemble_multigroup_matrices()
         {
             jnd = J_index[j_2n];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_2n_itg[ind][bt_s][g];
+                T_matrix[ind][jnd][g] += sigma_2n_itg[i][bt_s][g];
         };
 
         // Add the (n, 3n) cross-section
@@ -868,7 +868,7 @@ void ReactorMG::assemble_multigroup_matrices()
         {
             jnd = J_index[j_3n];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_3n_itg[ind][bt_s][g];
+                T_matrix[ind][jnd][g] += sigma_3n_itg[i][bt_s][g];
         };
 
         // Add the (n, alpha) cross-section
@@ -876,7 +876,7 @@ void ReactorMG::assemble_multigroup_matrices()
         {
             jnd = J_index[j_alpha];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_alpha_itg[ind][bt_s][g];
+                T_matrix[ind][jnd][g] += sigma_alpha_itg[i][bt_s][g];
         };
 
         // Add the (n, proton) cross-section
@@ -884,16 +884,15 @@ void ReactorMG::assemble_multigroup_matrices()
         {
             jnd = J_index[j_2n];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_proton_itg[ind][bt_s][g];
+                T_matrix[ind][jnd][g] += sigma_proton_itg[i][bt_s][g];
         };
-
 
         // Add the capture (excited) cross-section
         if (0 < J.count(j_gamma_x))
         {
             jnd = J_index[j_gamma_x];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_gamma_x_itg[ind][bt_s][g];
+                T_matrix[ind][jnd][g] += sigma_gamma_x_itg[i][bt_s][g];
         };
 
         // Add the (n, 2n *) cross-section
@@ -901,7 +900,7 @@ void ReactorMG::assemble_multigroup_matrices()
         {
             jnd = J_index[j_2n_x];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_2n_x_itg[ind][bt_s][g];
+                T_matrix[ind][jnd][g] += sigma_2n_x_itg[i][bt_s][g];
         };
     };
 
