@@ -308,8 +308,11 @@ void ReactorMG::loadlib(std::string libfile)
     H5::DataSpace fp_yields_space = fp_yields_set.getSpace();
     int fp_yields_length = fp_yields_space.getSimpleExtentNpoints(); 
 
+    std::cout << "Allocating yields space\n";
     FCComps::fission_product_yields_struct * fp_yields_array = new FCComps::fission_product_yields_struct [fp_yields_length];
+    std::cout << "Reading yields space\n";
     fp_yields_set.read(fp_yields_array, FCComps::fission_product_yields_desc);
+    std::cout << "Read yields space\n";
 
 
     // Run through the array and make yield matrices
