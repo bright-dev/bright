@@ -552,12 +552,15 @@ void ReactorMG::interpolate_cross_sections()
     {
         int iso_zz;
         std::string iso_LL;
+        std::string iso_col;
         double iso_mass;
 
         for (int p = 9; p < perturbations.shape[1] - 1; p++)
         {
             // Grab some names
+            iso_col = perturbations.cols[p];
             iso_LL = perturbations.cols[p];
+            iso_LL.replace(0, 8, "");
             iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
 
             // Determine the mass of the isotope in the feed
@@ -567,8 +570,8 @@ void ReactorMG::interpolate_cross_sections()
                 iso_mass = 0.0;
 
             // Calculate the x-factor if appropriate.
-            if (nn0[iso_LL] != nn1[iso_LL])
-                x_factor = x_factor + ((iso_mass - nn0[iso_LL])/(nn1[iso_LL] - nn0[iso_LL]));
+            if (nn0[iso_col] != nn1[iso_col])
+                x_factor = x_factor + ((iso_mass - nn0[iso_col])/(nn1[iso_col] - nn0[iso_col]));
         };
     };
 
@@ -1198,23 +1201,30 @@ void ReactorMG::burnup_core()
 
         // Find the nearest neightbors for this time.
         calc_nearest_neighbors();
+std::cout << "Calc'd nearest neighbor\n";
 
         // Interpolate cross section in preparation for 
         // criticality calculation.
         interpolate_cross_sections();
+std::cout << "Interp'd XS\n";
 
         // Fold the mass weights for this time step
         calc_mass_weights();
+std::cout << "Calc'd Mass Weights\n";
         fold_mass_weights();
+std::cout << "Fold'd Mass Weights\n";
 
         // Preform the criticality and burnup calulations
         assemble_multigroup_matrices();
+std::cout << "Assmb'd multigroup matrices\n";
         calc_criticality();
+std::cout << "Calc'd crit.\n";
 
         if (s == 0)
             BU_t[0] = 0.0;
         else        
             calc_transmutation();
+std::cout << "Cal'd transmute.\n";
     };
 
 };
