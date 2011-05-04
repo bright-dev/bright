@@ -935,7 +935,7 @@ void ReactorMG::calc_criticality()
     float epsilon = 0.005;
 
     double k0 = 1.0;
-    std::vector<double> phi0 (1.0, G);
+    std::vector<double> phi0 (G, 1.0);
     double k1;
     std::vector<double> phi1;
 
