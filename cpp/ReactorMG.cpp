@@ -301,18 +301,14 @@ void ReactorMG::loadlib(std::string libfile)
         fast_join[ty].push_back(J_index[i]);
     };
 
-    std::cout << "Read fission table\n";
 
     // Read in fission product yeilds
     H5::DataSet fp_yields_set = nuc_data_h5.openDataSet("/neutron/fission_products/yields");
     H5::DataSpace fp_yields_space = fp_yields_set.getSpace();
     int fp_yields_length = fp_yields_space.getSimpleExtentNpoints(); 
 
-    std::cout << "Allocating yields space\n";
     FCComps::fission_product_yields_struct * fp_yields_array = new FCComps::fission_product_yields_struct [fp_yields_length];
-    std::cout << "Reading yields space\n";
     fp_yields_set.read(fp_yields_array, FCComps::fission_product_yields_desc);
-    std::cout << "Read yields space\n";
 
 
     // Run through the array and make yield matrices
@@ -346,13 +342,12 @@ void ReactorMG::loadlib(std::string libfile)
             FJ = fast_join[index].size();
             for (fj = 0; fj < FJ; fj++)
             {
-                ind = fast_join[index][tj];
+                ind = fast_join[index][fj];
                 fast_yield_matrix[ind][jnd] = mf;
             };
         };
     };
 
-    std::cout << "Read fission matrix\n";
 
     // Make fission product yield matrix
     fission_product_yield_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
@@ -371,7 +366,6 @@ void ReactorMG::loadlib(std::string libfile)
         };
     };
 
-    std::cout << "Made fission matrix\n";
 
     // close the nuc_data library
     nuc_data_h5.close();
