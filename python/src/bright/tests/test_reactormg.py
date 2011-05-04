@@ -331,26 +331,6 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert_equal(len(Ti0[iso]), nperturbations)
 
 
-    def test_sigma_a_pg(self):
-        J = self.rmg.J
-        G = self.rmg.G
-        sigma_a_pg = self.rmg.sigma_a_pg
-        nperturbations = self.rmg.nperturbations
-        for iso in sigma_a_pg.keys():
-            assert(iso in J)
-            assert_equal(sigma_a_pg[iso].shape, (nperturbations, G))
-
-
-    def test_sigma_s_pg(self):
-        J = self.rmg.J
-        G = self.rmg.G
-        sigma_s_pg = self.rmg.sigma_s_pg
-        nperturbations = self.rmg.nperturbations
-        for iso in sigma_s_pg.keys():
-            assert(iso in J)
-            assert_equal(sigma_s_pg[iso].shape, (nperturbations, G))
-
-
     def test_sigma_f_pg(self):
         J = self.rmg.J
         G = self.rmg.G
@@ -370,15 +350,6 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert(iso in J)
             assert_equal(nubar_sigma_f_pg[iso].shape, (nperturbations, G))
 
-
-    def test_nubar_pg(self):
-        J = self.rmg.J
-        G = self.rmg.G
-        nubar_pg = self.rmg.nubar_pg
-        nperturbations = self.rmg.nperturbations
-        for iso in nubar_pg.keys():
-            assert(iso in J)
-            assert_equal(nubar_pg[iso].shape, (nperturbations, G))
 
 
     def test_sigma_s_pgh(self):

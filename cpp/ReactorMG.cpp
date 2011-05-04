@@ -424,12 +424,15 @@ void ReactorMG::calc_nearest_neighbors()
     {
         int iso_zz;
         std::string iso_LL;
+        std::string iso_col;
         double iso_mass;
 
         for (int p = 9; p < perturbations.shape[1] - 1; p++)
         {
             // Grab some names
+            iso_col = perturbations.cols[p];
             iso_LL = perturbations.cols[p];
+            iso_LL.replace(0, 8, "");
             iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
 
             // Determine the mass of the isotope in the feed
@@ -439,8 +442,8 @@ void ReactorMG::calc_nearest_neighbors()
                 iso_mass = 0.0;
 
             // Calculate the delta if appropriate.
-            if (perturbed_fields[iso_LL][2] != 0.0)
-                deltas[iso_LL] = bright::delta_vector(iso_mass, perturbations[iso_LL]);                
+            if (perturbed_fields[iso_col][2] != 0.0)
+                deltas[iso_col] = bright::delta_vector(iso_mass, perturbations[iso_col]);                
         };
     };
 
