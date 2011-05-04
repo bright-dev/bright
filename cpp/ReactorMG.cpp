@@ -944,6 +944,7 @@ void ReactorMG::calc_criticality()
     double nu_Sigma_f_phi0;
     double nu_Sigma_f_phi1;
 
+
     // Solve for k and phi simeltaneoulsy
     while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
     {
@@ -1190,6 +1191,8 @@ void ReactorMG::burnup_core()
     T_int_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
     M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
 
+    // Init the multilplcation factpr
+    k_t = std::vector<double>(G, -1.0);
 
     // Loop through all time steps
     for (int s = 0; s < S; s++)
@@ -1200,30 +1203,23 @@ void ReactorMG::burnup_core()
 
         // Find the nearest neightbors for this time.
         calc_nearest_neighbors();
-std::cout << "Calc'd nearest neighbor\n";
 
         // Interpolate cross section in preparation for 
         // criticality calculation.
         interpolate_cross_sections();
-std::cout << "Interp'd XS\n";
 
         // Fold the mass weights for this time step
         calc_mass_weights();
-std::cout << "Calc'd Mass Weights\n";
         fold_mass_weights();
-std::cout << "Fold'd Mass Weights\n";
 
         // Preform the criticality and burnup calulations
         assemble_multigroup_matrices();
-std::cout << "Assmb'd multigroup matrices\n";
         calc_criticality();
-std::cout << "Calc'd crit.\n";
 
         if (s == 0)
             BU_t[0] = 0.0;
         else        
             calc_transmutation();
-std::cout << "Cal'd transmute.\n";
     };
 
 };
