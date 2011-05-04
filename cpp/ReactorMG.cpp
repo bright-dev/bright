@@ -166,8 +166,6 @@ void ReactorMG::loadlib(std::string libfile)
     sigma_gamma_x_pg.clear();
     sigma_2n_x_pg.clear();
 
-    std::cout << "Cleared XS!\n";
-
     // Load transmutation vectors and cross sections that are based off of isotope
     int iso_zz;
     std::string iso_LL;
@@ -175,8 +173,6 @@ void ReactorMG::loadlib(std::string libfile)
     {
         iso_zz = *iso_iter;
         iso_LL = isoname::zzaaam_2_LLAAAM(iso_zz);
-
-        std::cout << iso_LL << "\n";
 
         // Add transmutation vector
         Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
@@ -196,12 +192,8 @@ void ReactorMG::loadlib(std::string libfile)
         sigma_2n_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_2n_x/" + iso_LL);
     };
 
-    std::cout << "Ready to close libfile!\n";
-
     // close the reactor library
     rmglib.close();
-
-    std::cout << "Read in libfile\n";
 
 
     //
@@ -223,7 +215,6 @@ void ReactorMG::loadlib(std::string libfile)
     // Open the HDF5 file
     H5::H5File nuc_data_h5 (nuc_data_file.c_str(), H5F_ACC_RDONLY );
 
-    std::cout << "Found nuc_data\n\n";
 
     //
     // Read in the decay data table as an array of FCComps::decay_iso_desc
@@ -232,9 +223,9 @@ void ReactorMG::loadlib(std::string libfile)
     H5::DataSpace decay_data_space = decay_data_set.getSpace();
     int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
 
-
     FCComps::decay_iso_stuct * decay_data_array = new FCComps::decay_iso_stuct [decay_data_length];
     decay_data_set.read(decay_data_array, FCComps::decay_iso_desc);
+
 
     // Make decay_martrix from this data.
     decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
@@ -310,6 +301,7 @@ void ReactorMG::loadlib(std::string libfile)
         fast_join[ty].push_back(J_index[i]);
     };
 
+    std::cout << "Read fission table\n";
 
     // Read in fission product yeilds
     H5::DataSet fp_yields_set = nuc_data_h5.openDataSet("/neutron/fission_products/yields");
@@ -357,6 +349,8 @@ void ReactorMG::loadlib(std::string libfile)
         };
     };
 
+    std::cout << "Read fission matrix\n";
+
     // Make fission product yield matrix
     fission_product_yield_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
     for (ind = 0; ind < J_size; ind++)
@@ -373,6 +367,8 @@ void ReactorMG::loadlib(std::string libfile)
             };
         };
     };
+
+    std::cout << "Made fission matrix\n";
 
     // close the nuc_data library
     nuc_data_h5.close();

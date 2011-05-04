@@ -43,8 +43,7 @@ namespace FCComps {
 
 
     // Some HDF5 helpers
-    extern hsize_t iso_LL_dims [1];
-    extern H5::ArrayType iso_LL_type;
+    extern H5::StrType iso_LL_type;
 
     extern hsize_t cinder_g_dims [1];
     extern H5::ArrayType cinder_g_type;

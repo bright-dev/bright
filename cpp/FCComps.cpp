@@ -153,11 +153,9 @@ void FCComps::load_track_isos_text(std::string filename, bool clear_prev)
 
 
 //
-// Some HDF5 helpera
+// Some HDF5 helpers
 //
-
-hsize_t FCComps::iso_LL_dims [1] = {6};
-H5::ArrayType FCComps::iso_LL_type = H5::ArrayType(H5::PredType::NATIVE_CHAR, 1, FCComps::iso_LL_dims);
+H5::StrType FCComps::iso_LL_type = H5::StrType(0, 6);
 
 hsize_t FCComps::cinder_g_dims [1] = {63};
 H5::ArrayType FCComps::cinder_g_type = H5::ArrayType(H5::PredType::NATIVE_DOUBLE, 1, FCComps::cinder_g_dims);
