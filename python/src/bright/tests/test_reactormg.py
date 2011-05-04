@@ -480,8 +480,6 @@ class TestReactorMGMutliGroupMethods(TestCase):
             # Assert Values
             assert (0.0 <= s_f_itg[j]).all()
             assert (0.0 <= ns_f_itg[j]).all()
-            print j
-            print s_s_itgh[j]
             assert (0.0 <= s_s_itgh[j]).all()
 
 
