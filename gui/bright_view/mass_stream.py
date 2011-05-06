@@ -6,6 +6,7 @@ from enthought.traits.ui.table_column import ObjectColumn
 from enthought.traits.ui.table_filter import EvalFilterTemplate, MenuFilterTemplate, RuleFilterTemplate, EvalTableFilter, TableFilter
 
 import bright
+import mass_stream
 
 ###############################################################################
 # General MassStream View Helpers
@@ -70,10 +71,12 @@ mass_stream_editor = TableEditor(
     edit_on_first_click = False,
     )
 
+
+
 class _MassStreamView(HasTraits):
     """At last! A MassStream view."""
 
-    mass_stream = Instance(bright.MassStream)
+    mass_stream = Instance(mass_stream.MassStream)
 
     name = Str('')
 
@@ -246,7 +249,7 @@ def MassStream(ms_in):
 
 class _MassStream_view(HasTraits):
 
-    ms_out = Instance(bright.MassStream)
+    ms_out = Instance(mass_stream.MassStream)
 
     ms_out_view = Instance(_MassStreamView)
 
@@ -285,16 +288,16 @@ def NaturalUranium(nu_in):
     A natural uranium mass stream.
 
     """
-    if isinstance(nu_in, bright.MassStream):
+    if isinstance(nu_in, mass_stream.MassStream):
         nu_out = nu_in
     else:
-        nu_out = bright.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 1.0, "Natural Uranium")
+        nu_out = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 1.0, "Natural Uranium")
     return nu_out
 
 
 class _NaturalUranium_view(HasTraits):
 
-    nu_in = nu_out = Instance(bright.MassStream)
+    nu_in = nu_out = Instance(mass_stream.MassStream)
 
     nu_view = Instance(_MassStreamView)
 
@@ -333,16 +336,16 @@ def DepletedUranium(du_in):
     A depleted uranium mass stream.
 
     """
-    if isinstance(du_in, bright.MassStream):
+    if isinstance(du_in, mass_stream.MassStream):
         du_out = du_in
     else:
-        du_out = bright.MassStream({922350: 0.0025, 922380: 0.9975}, 1.0, "Depleted Uranium")
+        du_out = mass_stream.MassStream({922350: 0.0025, 922380: 0.9975}, 1.0, "Depleted Uranium")
     return du_out
 
 
 class _DepletedUranium_view(HasTraits):
 
-    du_in = du_out = Instance(bright.MassStream)
+    du_in = du_out = Instance(mass_stream.MassStream)
 
     du_view = Instance(_MassStreamView)
 
@@ -381,16 +384,16 @@ def LowEnrichedUranium(leu_in):
     A low enriched uranium mass stream.
 
     """
-    if isinstance(leu_in, bright.MassStream):
+    if isinstance(leu_in, mass_stream.MassStream):
         leu_out = leu_in
     else:
-        leu_out = bright.MassStream({922350: 0.05, 922380: 0.95}, 1.0, "Low Enriched Uranium")
+        leu_out = mass_stream.MassStream({922350: 0.05, 922380: 0.95}, 1.0, "Low Enriched Uranium")
     return leu_out
 
 
 class _LowEnrichedUranium_view(HasTraits):
 
-    leu_in = leu_out = Instance(bright.MassStream)
+    leu_in = leu_out = Instance(mass_stream.MassStream)
 
     leu_view = Instance(_MassStreamView)
 
@@ -422,7 +425,7 @@ class _LowEnrichedUranium_view(HasTraits):
 
 # A sample of how the view is suppossed to work
 if __name__ == "__main__":
-    nu = bright.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
 
     _msview = _MassStreamView(mass_stream=nu)
     _msview.configure_traits()
