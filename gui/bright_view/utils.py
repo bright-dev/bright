@@ -1,5 +1,5 @@
 import os
-import BriPy
+import bright
 import tables as tb
 
 def _get_lwr_data_path():
@@ -11,15 +11,15 @@ def _init_comp():
     """Initializes Bright for a fuel cycle component."""
     # Load isos2track
     lwr_data = _get_lwr_data_path()
-    BriPy.load_isos2track_hdf5(lwr_data)
+    bright.load_isos2track_hdf5(lwr_data)
 
     # Write to hdf5 only
-    BriPy.write_text(False)
-    BriPy.write_hdf5(True)
+    bright.write_text(False)
+    bright.write_hdf5(True)
 
 
 def _get_comp_pass_number(natural_name):
-    output_filename = BriPy.output_filename()
+    output_filename = bright.output_filename()
 
     if not os.path.isfile(output_filename):
         return 0

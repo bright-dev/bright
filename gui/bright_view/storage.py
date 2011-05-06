@@ -2,7 +2,7 @@ from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trai
 
 from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor
 
-import BriPy
+import bright
 
 from utils import _init_comp, _get_comp_pass_number
 from mass_stream import _MassStreamView
@@ -13,7 +13,7 @@ def Storage(IsosIn, decay_time, name):
     This is a storage object that runs a decay calculation on a mass stream.
     """
     _init_comp()
-    stor = BriPy.Storage(name)
+    stor = bright.Storage(name)
     stor.PassNum = _get_comp_pass_number(stor.natural_name)
     stor.doCalc(IsosIn, decay_time)
     stor.writeout()
@@ -23,8 +23,8 @@ def Storage(IsosIn, decay_time, name):
 
 class _Storage_view(HasTraits):
 
-    IsosIn  = Instance(BriPy.MassStream)
-    IsosOut = Instance(BriPy.MassStream)
+    IsosIn  = Instance(bright.MassStream)
+    IsosOut = Instance(bright.MassStream)
 
     IsosIn_view  = Instance(_MassStreamView)
     IsosOut_view = Instance(_MassStreamView)
@@ -64,7 +64,7 @@ class _Storage_view(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = BriPy.MassStream()
+        IsosIn = bright.MassStream()
         return IsosIn
 
     def _IsosIn_view_default(self):
@@ -78,7 +78,7 @@ class _Storage_view(HasTraits):
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = BriPy.MassStream()
+        IsosOut = bright.MassStream()
         return IsosOut
 
     def _IsosOut_view_default(self):

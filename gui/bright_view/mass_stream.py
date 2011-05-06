@@ -5,7 +5,7 @@ from enthought.traits.ui.api import View, Item, Group, VGroup, HGroup, TableEdit
 from enthought.traits.ui.table_column import ObjectColumn
 from enthought.traits.ui.table_filter import EvalFilterTemplate, MenuFilterTemplate, RuleFilterTemplate, EvalTableFilter, TableFilter
 
-import BriPy
+import bright
 
 ###############################################################################
 # General MassStream View Helpers
@@ -21,13 +21,13 @@ class _IsoEntry(HasTraits):
     mass_weight = Float(0.0)
 
 # Mass Stream isotopic filters
-UFilter   = TableFilter(allowed=lambda x: BriPy.mixed_2_zzaaam(str(x.isotope))/10000 == 92,        name='Uranium')
-PUFilter  = TableFilter(allowed=lambda x: BriPy.mixed_2_zzaaam(str(x.isotope))/10000 == 94,        name='Plutonium')
-LANFilter = TableFilter(allowed=lambda x: BriPy.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.lan, name='Lanthanides')
-ACTFilter = TableFilter(allowed=lambda x: BriPy.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.act, name='Actinides')
-TRUFilter = TableFilter(allowed=lambda x: BriPy.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.tru, name='Transuranics')
-MAFilter  = TableFilter(allowed=lambda x: BriPy.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.ma,  name='Minor Actinides')
-FPFilter  = TableFilter(allowed=lambda x: BriPy.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.fp,  name='Fission Products')
+UFilter   = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 == 92,        name='Uranium')
+PUFilter  = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 == 94,        name='Plutonium')
+LANFilter = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.lan, name='Lanthanides')
+ACTFilter = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.act, name='Actinides')
+TRUFilter = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.tru, name='Transuranics')
+MAFilter  = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.ma,  name='Minor Actinides')
+FPFilter  = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.fp,  name='Fission Products')
 
 
 mass_stream_editor = TableEditor(
@@ -73,7 +73,7 @@ mass_stream_editor = TableEditor(
 class _MassStreamView(HasTraits):
     """At last! A MassStream view."""
 
-    mass_stream = Instance(BriPy.MassStream)
+    mass_stream = Instance(bright.MassStream)
 
     name = Str('')
 
@@ -107,7 +107,7 @@ class _MassStreamView(HasTraits):
         if comp == None:
             comp = self.mass_stream.multByMass()
 
-        iso_entries = [ _IsoEntry(isotope=BriPy.zzaaam_2_LLAAAM(iso).capitalize(), mass_weight=comp[iso]) 
+        iso_entries = [ _IsoEntry(isotope=bright.zzaaam_2_LLAAAM(iso).capitalize(), mass_weight=comp[iso]) 
                         for iso in sorted(comp.keys()) ]
         return iso_entries
 
@@ -122,7 +122,7 @@ class _MassStreamView(HasTraits):
 
         for iso in self.iso_entries:
             try:
-                isozz = BriPy.mixed_2_zzaaam(str(iso.isotope))
+                isozz = bright.mixed_2_zzaaam(str(iso.isotope))
             except RuntimeError:
                 continue
 
@@ -139,7 +139,7 @@ class _MassStreamView(HasTraits):
     @on_trait_change('iso_entries.isotope')
     def update_mass_stream(self):
         comp = self.get_comp_from_iso_entries()
-        ms = BriPy.MassStream(comp, self.mass, str(self.name))
+        ms = bright.MassStream(comp, self.mass, str(self.name))
         self.mass_stream = ms
 
     def update_from_mass_stream(self, ms=None):
@@ -198,7 +198,7 @@ class _MassStreamView(HasTraits):
 
 
     def _file_changed(self):
-        ms = BriPy.MassStream()
+        ms = bright.MassStream()
 
         rpart = self.file.rpartition('.')
 
@@ -238,7 +238,7 @@ def MassStream(ms_in):
 
     """
 
-    if isinstance(ms_in, BriPy.MassStream):
+    if isinstance(ms_in, bright.MassStream):
         ms_out = ms_in
 
     return ms_out
@@ -246,7 +246,7 @@ def MassStream(ms_in):
 
 class _MassStream_view(HasTraits):
 
-    ms_out = Instance(BriPy.MassStream)
+    ms_out = Instance(bright.MassStream)
 
     ms_out_view = Instance(_MassStreamView)
 
@@ -263,7 +263,7 @@ class _MassStream_view(HasTraits):
         )
 
     def _ms_out_default(self):
-        ms_out = BriPy.MassStream()
+        ms_out = bright.MassStream()
         return ms_out
 
     def _ms_out_view_default(self):
@@ -285,16 +285,16 @@ def NaturalUranium(nu_in):
     A natural uranium mass stream.
 
     """
-    if isinstance(nu_in, BriPy.MassStream):
+    if isinstance(nu_in, bright.MassStream):
         nu_out = nu_in
     else:
-        nu_out = BriPy.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 1.0, "Natural Uranium")
+        nu_out = bright.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 1.0, "Natural Uranium")
     return nu_out
 
 
 class _NaturalUranium_view(HasTraits):
 
-    nu_in = nu_out = Instance(BriPy.MassStream)
+    nu_in = nu_out = Instance(bright.MassStream)
 
     nu_view = Instance(_MassStreamView)
 
@@ -333,16 +333,16 @@ def DepletedUranium(du_in):
     A depleted uranium mass stream.
 
     """
-    if isinstance(du_in, BriPy.MassStream):
+    if isinstance(du_in, bright.MassStream):
         du_out = du_in
     else:
-        du_out = BriPy.MassStream({922350: 0.0025, 922380: 0.9975}, 1.0, "Depleted Uranium")
+        du_out = bright.MassStream({922350: 0.0025, 922380: 0.9975}, 1.0, "Depleted Uranium")
     return du_out
 
 
 class _DepletedUranium_view(HasTraits):
 
-    du_in = du_out = Instance(BriPy.MassStream)
+    du_in = du_out = Instance(bright.MassStream)
 
     du_view = Instance(_MassStreamView)
 
@@ -381,16 +381,16 @@ def LowEnrichedUranium(leu_in):
     A low enriched uranium mass stream.
 
     """
-    if isinstance(leu_in, BriPy.MassStream):
+    if isinstance(leu_in, bright.MassStream):
         leu_out = leu_in
     else:
-        leu_out = BriPy.MassStream({922350: 0.05, 922380: 0.95}, 1.0, "Low Enriched Uranium")
+        leu_out = bright.MassStream({922350: 0.05, 922380: 0.95}, 1.0, "Low Enriched Uranium")
     return leu_out
 
 
 class _LowEnrichedUranium_view(HasTraits):
 
-    leu_in = leu_out = Instance(BriPy.MassStream)
+    leu_in = leu_out = Instance(bright.MassStream)
 
     leu_view = Instance(_MassStreamView)
 
@@ -422,7 +422,7 @@ class _LowEnrichedUranium_view(HasTraits):
 
 # A sample of how the view is suppossed to work
 if __name__ == "__main__":
-    nu = BriPy.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+    nu = bright.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
 
     _msview = _MassStreamView(mass_stream=nu)
     _msview.configure_traits()

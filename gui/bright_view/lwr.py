@@ -8,7 +8,7 @@ from enthought.chaco.tools.cursor_tool import CursorTool, BaseCursorTool
 from enthought.chaco.base import n_gon
 from numpy import linspace, sin, sqrt, transpose
 
-import BriPy
+import bright
 import numpy as np
 
 from utils import _init_comp, _get_comp_pass_number, _get_lwr_data_path
@@ -27,7 +27,7 @@ def LightWaterReactor(IsosIn, burnup, batches, radius, length, flux,
     _init_comp()
     lwr_data = _get_lwr_data_path()
 
-    params = BriPy.LWRDefaults()
+    params = bright.LWRDefaults()
     params.BUt = burnup
     params.batches = batches
     params.Radius = radius
@@ -42,7 +42,7 @@ def LightWaterReactor(IsosIn, burnup, batches, radius, length, flux,
     params.open_slots = open_slots
     params.total_slots = total_slots
 
-    lwr = BriPy.LightWaterReactor1G(lwr_data, params, name)
+    lwr = bright.LightWaterReactor1G(lwr_data, params, name)
     lwr.PassNum = _get_comp_pass_number(lwr.natural_name)
     lwr.doCalc(IsosIn)
     lwr.writeout()
@@ -72,8 +72,8 @@ def _make_pincell_plot(radius, length):
 
 class _LightWaterReactor_view(HasTraits):
 
-    IsosIn  = Instance(BriPy.MassStream)
-    IsosOut = Instance(BriPy.MassStream)
+    IsosIn  = Instance(bright.MassStream)
+    IsosOut = Instance(bright.MassStream)
 
     IsosIn_view  = Instance(_MassStreamView)
     IsosOut_view = Instance(_MassStreamView)
@@ -172,7 +172,7 @@ class _LightWaterReactor_view(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = BriPy.MassStream()
+        IsosIn = bright.MassStream()
         return IsosIn
 
     def _IsosIn_view_default(self):
@@ -186,7 +186,7 @@ class _LightWaterReactor_view(HasTraits):
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = BriPy.MassStream()
+        IsosOut = bright.MassStream()
         return IsosOut
 
     def _IsosOut_view_default(self):
@@ -201,11 +201,11 @@ class _LightWaterReactor_view(HasTraits):
         _init_comp()
         lwr_data = _get_lwr_data_path()
 
-        params = BriPy.LWRDefaults()
+        params = bright.LWRDefaults()
         params.BUt = self.burnup
         params.B = self.batches
 
-        lwr = BriPy.LightWaterReactor1G(lwr_data, params, self.name)
+        lwr = bright.LightWaterReactor1G(lwr_data, params, self.name)
         lwr.IsosIn = self.IsosIn
         lwr.foldMassWeights()
 

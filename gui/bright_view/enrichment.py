@@ -2,7 +2,7 @@ from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trai
 
 from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor
 
-import BriPy
+import bright
 
 from utils import _init_comp, _get_comp_pass_number
 from mass_stream import _MassStreamView
@@ -13,9 +13,9 @@ def Enrichment(IsosIn, enrichment, name):
     This is an enrichment object that enrichs a mass stream.
     """
     _init_comp()
-    params = BriPy.UraniumEnrichmentDefaults()
+    params = bright.UraniumEnrichmentDefaults()
     params.xP_j = enrichment
-    enr = BriPy.Enrichment(params, name)
+    enr = bright.Enrichment(params, name)
     enr.PassNum = _get_comp_pass_number(enr.natural_name)
     enr.doCalc(IsosIn)
     enr.writeout()
@@ -25,8 +25,8 @@ def Enrichment(IsosIn, enrichment, name):
 
 class _Enrichment_view(HasTraits):
 
-    IsosIn  = Instance(BriPy.MassStream)
-    IsosOut = Instance(BriPy.MassStream)
+    IsosIn  = Instance(bright.MassStream)
+    IsosOut = Instance(bright.MassStream)
 
     IsosIn_view  = Instance(_MassStreamView)
     IsosOut_view = Instance(_MassStreamView)
@@ -66,7 +66,7 @@ class _Enrichment_view(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = BriPy.MassStream()
+        IsosIn = bright.MassStream()
         return IsosIn
 
     def _IsosIn_view_default(self):
@@ -79,7 +79,7 @@ class _Enrichment_view(HasTraits):
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = BriPy.MassStream()
+        IsosOut = bright.MassStream()
         return IsosOut
 
     def _IsosOut_view_default(self):
