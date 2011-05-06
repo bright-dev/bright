@@ -394,16 +394,6 @@ class TestReactorMGBasicDataAttributes(TestCase):
         self.rmg.BUi_F_ = old_BU
 
 
-    def test_pi_F_(self):
-        pi_F_ = self.rmg.pi_F_
-        for i in pi_F_.keys():
-            assert_equal(len(self.rmg.F), len(pi_F_[i]))
-
-    def test_di_F_(self):
-        di_F_ = self.rmg.di_F_
-        for i in di_F_.keys():
-            assert_equal(len(self.rmg.F), len(di_F_[i]))
-
     def test_Tij_F_(self):
         Tij_F_ = self.rmg.Tij_F_
         jsos   = bright_config.track_isos
