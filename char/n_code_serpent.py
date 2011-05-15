@@ -1221,6 +1221,10 @@ class NCodeSerpent(object):
                 tally_serp_array = det['_'+tally][::-1]            
             else:
                 tally_serp_array = np.zeros(len(tally_hdf5_array[n]), dtype=float)
+
+            # Make sure there are no NaNs
+            mask = np.isnan(tally_serp_array)
+            tally_serp_array[mask] = 0.0
                 
             tally_hdf5_array[n] = tally_serp_array
 
