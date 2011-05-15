@@ -5449,6 +5449,44 @@ cdef class ReactorMG(FCComp):
 
 
 
+
+    property decay_matrix:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.decay_matrix)
+
+        def __set__(self, value):
+            self.rmg_pointer.decay_matrix = conv.array_to_vector_2d_dbl(value)
+
+
+    property thermal_yield_matrix:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.thermal_yield_matrix)
+
+        def __set__(self, value):
+            self.rmg_pointer.thermal_yield_matrix = conv.array_to_vector_2d_dbl(value)
+
+
+    property fast_yield_matrix:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.fast_yield_matrix)
+
+        def __set__(self, value):
+            self.rmg_pointer.fast_yield_matrix = conv.array_to_vector_2d_dbl(value)
+
+
+    property fission_product_yield_matrix:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.fission_product_yield_matrix)
+
+        def __set__(self, value):
+            self.rmg_pointer.fission_product_yield_matrix = conv.array_to_vector_3d_dbl(value)
+
+
+
+
+
+
+
     # Perturbation table goes here
 
 

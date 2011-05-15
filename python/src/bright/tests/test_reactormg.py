@@ -541,6 +541,9 @@ class TestReactorMGMutliGroupMethods(TestCase):
             # Test that A_inv is truly the inverso of A
             assert_array_almost_equal(np.dot(self.rmg.A_inv_tgh[s], self.rmg.A_tgh[s]), np.identity(G))
 
+            print np.isnan(self.rmg.T_int_tij[s]).any()
+            print np.isnan(self.rmg.M_tij[s]).any()
+
         
         raise TypeError
         

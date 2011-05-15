@@ -466,6 +466,10 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[int] J_order
         map[int, int] J_index
 
+        vector[vector[double]] decay_matrix
+        vector[vector[double]] thermal_yield_matrix
+        vector[vector[double]] fast_yield_matrix
+        vector[vector[vector[double]]] fission_product_yield_matrix
 
         # Perturbation table goes here
         int nperturbations
