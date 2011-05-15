@@ -367,6 +367,21 @@ class TestReactorMGBasicDataAttributes(TestCase):
             assert_equal(sigma_s_pgh[iso].shape, (nperturbations, G, G))
 
 
+    def test_decay_matrix(self):
+        assert not np.isnan(self.rmg.decay_matrix).any()
+
+
+    def test_thermal_yield_matrix(self):
+        assert not np.isnan(self.rmg.thermal_yield_matrix).any()
+
+
+    def test_fast_yield_matrix(self):
+        assert not np.isnan(self.rmg.fast_yield_matrix).any()
+
+
+    def test_fission_product_yield_matrix(self):
+        assert not np.isnan(self.rmg.fission_product_yield_matrix).any()
+
 
     """\
 
