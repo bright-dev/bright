@@ -525,9 +525,23 @@ class TestReactorMGMutliGroupMethods(TestCase):
         J = self.rmg.J
         S = self.rmg.S
 
-        print self.rmg.T_it
-        print self.rmg.A_tgh[0]
+        dia = np.identity(G, dtype=bool)
+        ndia = True - dia
 
+        #print self.rmg.T_it
+
+        #for s in range(S):
+        for s in range(1):
+            # Check A diagonal is positive, and off-diagonal elements
+            # are negative or zero.  This is a test of the physicality of 
+            # The algorithm
+            assert (0 < self.rmg.A_tgh[s][dia]).all()
+            assert (self.rmg.A_tgh[s][ndia] <= 0).all()
+
+            # Test that A_inv is truly the inverso of A
+            assert_array_almost_equal(np.dot(self.rmg.A_inv_tgh[s], self.rmg.A_tgh[s]), np.identity(G))
+
+        
         raise TypeError
         
 
