@@ -26,7 +26,9 @@ FluencePoint = bright.FluencePoint
 ReactorParameters = bright.ReactorParameters
 ReactorMG = bright.ReactorMG
 
-default_rp = bright.ReactorParameters()
+#default_rp = bright.ReactorParameters()
+default_rp = bright.lwr_defaults()
+
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
 default_rp.fuel_form = {"IHM": 1.0, "O16": 2.0}
@@ -45,8 +47,10 @@ default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
 default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
+#default_rp.burn_times = np.linspace(0.0, 100.0, 5)
 
 
+print default_rp.cladding_form
 
 def general_teardown():
     for f in os.listdir('.'):
@@ -432,6 +436,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
 
 
     def test_calc_nearest_neighbors(self):
+        raise nose.SkipTest
         self.rmg.burn_time = 0.0
         self.rmg.bt_s = 0
         self.rmg.calc_nearest_neighbors()
@@ -439,6 +444,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
 
 
     def test_interpolate_cross_sections(self):
+        raise nose.SkipTest
         # dp some setup
         self.rmg.burnup_core()
         self.rmg.burn_time = 0.0
@@ -471,6 +477,34 @@ class TestReactorMGMutliGroupMethods(TestCase):
             assert (0.0 <= s_f_itg[j]).all()
             assert (0.0 <= ns_f_itg[j]).all()
             assert (0.0 <= s_s_itgh[j]).all()
+
+
+    def test_calc_mass_weights(self):
+        # dp some setup
+        self.rmg.burnup_core()
+        self.rmg.burn_time = 0.0
+        self.rmg.bt_s = 0
+        
+        # Grab data from C++
+        G = self.rmg.G
+        J = self.rmg.J
+        S = self.rmg.S
+
+        assert (0 <= self.rmg.A_HM_t).all()
+        assert (0 <= self.rmg.MW_fuel_t).all()
+        assert (18 == self.rmg.MW_cool_t).all()
+        assert (0 <= self.rmg.MW_clad_t).all()
+
+        print self.rmg.MW_fuel_t
+        print self.rmg.MW_clad_t
+
+        print 
+
+        raise TypeError
+
+        for j in J:
+            print self.rmg.N_fuel_it[922350]
+            print self.rmg.N_fuel_it[10010]
 
 
 """\

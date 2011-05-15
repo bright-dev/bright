@@ -8,6 +8,7 @@ from enthought.traits.ui.table_column import ObjectColumn
 from enthought.traits.ui.table_filter import EvalFilterTemplate, MenuFilterTemplate, RuleFilterTemplate, EvalTableFilter, TableFilter
 
 import bright
+import isoname
 import mass_stream
 
 ###############################################################################
@@ -110,9 +111,9 @@ class _MassStreamView(HasTraits):
 
     def get_iso_entries_from_comp(self, comp=None):
         if comp == None:
-            comp = self.mass_stream.multByMass()
+            comp = self.mass_stream.mult_by_mass()
 
-        iso_entries = [ _IsoEntry(isotope=bright.zzaaam_2_LLAAAM(iso).capitalize(), mass_weight=comp[iso]) 
+        iso_entries = [ _IsoEntry(isotope=isoname.zzaaam_2_LLAAAM(iso).capitalize(), mass_weight=comp[iso]) 
                         for iso in sorted(comp.keys()) ]
         return iso_entries
 
@@ -127,7 +128,7 @@ class _MassStreamView(HasTraits):
 
         for iso in self.iso_entries:
             try:
-                isozz = bright.mixed_2_zzaaam(str(iso.isotope))
+                isozz = isoname.mixed_2_zzaaam(str(iso.isotope))
             except RuntimeError:
                 continue
 

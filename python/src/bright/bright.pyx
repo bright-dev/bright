@@ -1412,6 +1412,14 @@ cdef class ReactorParameters:
             self.rp_pointer.fuel_form = conv.dict_to_map_str_dbl(value)
 
 
+    property cladding_form:
+        def __get__(self):
+            return conv.map_to_dict_str_dbl(self.rp_pointer.cladding_form)
+
+        def __set__(self, dict value):
+            self.rp_pointer.cladding_form = conv.dict_to_map_str_dbl(value)
+
+
     property coolant_form:
         def __get__(self):
             return conv.map_to_dict_str_dbl(self.rp_pointer.coolant_form)

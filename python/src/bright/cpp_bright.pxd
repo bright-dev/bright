@@ -197,6 +197,7 @@ cdef extern from "../../../cpp/ReactorParameters.h":
         double flux
 
         map[std.string, double] fuel_form
+        map[std.string, double] cladding_form
         map[std.string, double] coolant_form
 
         double fuel_density
