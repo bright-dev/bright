@@ -6001,6 +6001,58 @@ cdef class ReactorMG(FCComp):
 
 
 
+    property A_tgh:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.A_tgh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.A_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+    property F_tgh:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.F_tgh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.F_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+    property A_inv_tgh:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.A_inv_tgh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.A_inv_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+    property A_inv_F_tgh:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.A_inv_F_tgh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.A_inv_F_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+    property T_int_tij:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.T_int_tij)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.T_int_tij = conv.array_to_vector_3d_dbl(value)
+
+
+    property M_tij:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.M_tij)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.M_tij = conv.array_to_vector_3d_dbl(value)
+
+
+
+
+
+
 
 
 

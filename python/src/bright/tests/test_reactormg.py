@@ -32,6 +32,7 @@ default_rp = bright.lwr_defaults()
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
 default_rp.fuel_form = {"IHM": 1.0, "O16": 2.0}
+default_rp.cladding_form = {"ZR93": 0.5, "ZR95": 0.5}
 default_rp.coolant_form = {"H1": 2.0, "O16": 1.0}
 default_rp.fuel_density = 10.7
 default_rp.coolant_density = 0.73
@@ -50,7 +51,7 @@ default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
 #default_rp.burn_times = np.linspace(0.0, 100.0, 5)
 
 
-print default_rp.cladding_form
+
 
 def general_teardown():
     for f in os.listdir('.'):
@@ -426,7 +427,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.ms_feed = MassStream({922350: 0.95, 922380: 0.05})
+        cls.rmg.burnup_core()
         cls.rmg.burn_time = 0.0
         cls.rmg.bt_s = 0
 
@@ -436,24 +438,10 @@ class TestReactorMGMutliGroupMethods(TestCase):
 
 
     def test_calc_nearest_neighbors(self):
-        raise nose.SkipTest
-        self.rmg.burn_time = 0.0
-        self.rmg.bt_s = 0
-        self.rmg.calc_nearest_neighbors()
         assert_equal(len(self.rmg.nearest_neighbors), self.rmg.nperturbations)
 
 
     def test_interpolate_cross_sections(self):
-        raise nose.SkipTest
-        # dp some setup
-        self.rmg.burnup_core()
-        self.rmg.burn_time = 0.0
-        self.rmg.bt_s = 0
-        self.rmg.calc_nearest_neighbors()
-
-        # Call the method of interest
-        self.rmg.interpolate_cross_sections()
-
         # Grab data from C++
         G = self.rmg.G
         J = self.rmg.J
@@ -480,10 +468,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
 
 
     def test_calc_mass_weights(self):
-        # dp some setup
-        self.rmg.burnup_core()
-        self.rmg.burn_time = 0.0
-        self.rmg.bt_s = 0
+        # FIXME
         
         # Grab data from C++
         G = self.rmg.G
@@ -493,19 +478,58 @@ class TestReactorMGMutliGroupMethods(TestCase):
         assert (0 <= self.rmg.A_HM_t).all()
         assert (0 <= self.rmg.MW_fuel_t).all()
         assert (18 == self.rmg.MW_cool_t).all()
-        assert (0 <= self.rmg.MW_clad_t).all()
+        assert (94 <= self.rmg.MW_clad_t).all()
 
-        print self.rmg.MW_fuel_t
-        print self.rmg.MW_clad_t
+        for j in J:
+            #assert (0 <= self.rmg.n_fuel_it[j]).all()
 
-        print 
+            if j == 10010:
+                assert (2 == self.rmg.n_cool_it[j]).all()
+            elif j == 80160:
+                assert (1 == self.rmg.n_cool_it[j]).all()
+            elif j == 400930:
+                assert (0.5 == self.rmg.n_clad_it[j]).all()
+            elif j == 400950:
+                assert (0.5 == self.rmg.n_clad_it[j]).all()
+            else:
+                assert (0 == self.rmg.n_cool_it[j]).all()
+                assert (0.0 == self.rmg.n_clad_it[j]).all()
+                
+            
+            #print j, self.rmg.n_fuel_it[j]
+            #print j, self.rmg.N_fuel_it[j]
+
+        #print self.rmg.MW_fuel_t
+
+        #raise TypeError
+
+
+    def test_fold_mass_weights(self):
+        # FIXME
+        raise nose.SkipTest
+
+        # Grab data from C++
+        G = self.rmg.G
+        J = self.rmg.J
+        S = self.rmg.S
+
+        #print self.rmg.Sigma_t_tg
+        print self.rmg.chi_tg
 
         raise TypeError
 
-        for j in J:
-            print self.rmg.N_fuel_it[922350]
-            print self.rmg.N_fuel_it[10010]
 
+    def test_assemble_multigroup_matrices(self):
+        # Grab data from C++
+        G = self.rmg.G
+        J = self.rmg.J
+        S = self.rmg.S
+
+        print self.rmg.T_it
+        print self.rmg.A_tgh[0]
+
+        raise TypeError
+        
 
 """\
 

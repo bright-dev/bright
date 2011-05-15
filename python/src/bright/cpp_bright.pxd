@@ -539,6 +539,13 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[vector[double]] Sigma_gamma_x_tg
         vector[vector[double]] Sigma_2n_x_tg
 
+        vector[vector[vector[double]]] A_tgh
+        vector[vector[vector[double]]] F_tgh
+        vector[vector[vector[double]]] A_inv_tgh
+        vector[vector[vector[double]]] A_inv_F_tgh
+        vector[vector[vector[double]]] T_int_tij
+        vector[vector[vector[double]]] M_tij
+
         vector[int] nearest_neighbors
 
         vector[double] k_t
