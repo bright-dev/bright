@@ -443,7 +443,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.95, 922380: 0.05})
+        cls.rmg.ms_feed = MassStream({922350: 0.05, 922380: 0.95})
         cls.rmg.burnup_core()
         cls.rmg.burn_time = 0.0
         cls.rmg.bt_s = 0
@@ -497,40 +497,73 @@ class TestReactorMGMutliGroupMethods(TestCase):
         assert (94 <= self.rmg.MW_clad_t).all()
 
         for j in J:
-            #assert (0 <= self.rmg.n_fuel_it[j]).all()
+            #for s in range(S):
+            for s in range(1):
+                # Test Fuel atomic density
+                assert 0 <= self.rmg.n_fuel_it[j][s] 
+                assert self.rmg.n_fuel_it[j][s] <= 3
 
-            if j == 10010:
-                assert (2 == self.rmg.n_cool_it[j]).all()
-            elif j == 80160:
-                assert (1 == self.rmg.n_cool_it[j]).all()
-            elif j == 400930:
-                assert (0.5 == self.rmg.n_clad_it[j]).all()
-            elif j == 400950:
-                assert (0.5 == self.rmg.n_clad_it[j]).all()
-            else:
-                assert (0 == self.rmg.n_cool_it[j]).all()
-                assert (0.0 == self.rmg.n_clad_it[j]).all()
-                
-            
-            #print j, self.rmg.n_fuel_it[j]
-            #print j, self.rmg.N_fuel_it[j]
+                # Test cool and clad atomic denisty
+                if j == 10010:
+                    assert_equal(2.0, self.rmg.n_cool_it[j][s])
+                elif j == 80160:
+                    assert_equal(1.0, self.rmg.n_cool_it[j][s])
+                elif j == 400930:
+                    assert_equal(0.5, self.rmg.n_clad_it[j][s])
+                elif j == 400950:
+                    assert_equal(0.5, self.rmg.n_clad_it[j][s])
+                else:
+                    assert_equal(0.0, self.rmg.n_cool_it[j][s])
+                    assert_equal(0.0, self.rmg.n_clad_it[j][s])
 
-        #print self.rmg.MW_fuel_t
+                # Test number densities
+                if self.rmg.N_fuel_it[j][s] != 0.0: 
+                    assert_almost_equal(1.0, self.rmg.n_fuel_it[j][s] * self.rmg.rho_fuel * 6.0221415E+23 / self.rmg.MW_fuel_t[s] / self.rmg.N_fuel_it[j][s]) 
 
-        #raise TypeError
+                if self.rmg.N_clad_it[j][s] != 0.0: 
+                    assert_almost_equal(1.0, self.rmg.n_clad_it[j][s] * self.rmg.rho_clad * 6.0221415E+23 / self.rmg.MW_clad_t[s] / self.rmg.N_clad_it[j][s])
+
+                if self.rmg.N_cool_it[j][s] != 0.0: 
+                    assert_almost_equal(1.0, self.rmg.n_cool_it[j][s] * self.rmg.rho_cool * 6.0221415E+23 / self.rmg.MW_cool_t[s] / self.rmg.N_cool_it[j][s])
+
 
 
     def test_fold_mass_weights(self):
         # FIXME
-        raise nose.SkipTest
 
         # Grab data from C++
         G = self.rmg.G
         J = self.rmg.J
         S = self.rmg.S
 
-        #print self.rmg.Sigma_t_tg
-        print self.rmg.chi_tg
+#        print self.rmg.V_fuel
+#        print self.rmg.V_clad
+#        print self.rmg.V_cool
+    
+        #for s in range(S):
+        for s in range(1):
+            assert (0 <= self.rmg.Sigma_t_tg[s]).all()
+            assert (self.rmg.Sigma_f_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+
+            assert (0.0 <= self.rmg.nubar_Sigma_f_tg[s] / self.rmg.Sigma_f_tg[s]).all()
+            assert (self.rmg.nubar_Sigma_f_tg[s] / self.rmg.Sigma_f_tg[s] <= 4.0).all()
+
+            assert (0.0 <= self.rmg.chi_tg[s]).all()
+            assert (self.rmg.chi_tg[s] <= 1.01).all()
+
+            assert (self.rmg.Sigma_gamma_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+            assert (self.rmg.Sigma_2n_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+            assert (self.rmg.Sigma_3n_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+            assert (self.rmg.Sigma_alpha_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+            assert (self.rmg.Sigma_proton_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+            assert (self.rmg.Sigma_gamma_x_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+            assert (self.rmg.Sigma_2n_x_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
+
+            print self.rmg.Sigma_t_tg[s]
+            #print self.rmg.chi_tg[s]
+            print self.rmg.Sigma_gamma_x_tg[s]
+
+        #print self.rmg.chi_tg
 
         raise TypeError
 
@@ -555,20 +588,27 @@ class TestReactorMGMutliGroupMethods(TestCase):
             # Test that A_inv is truly the inverso of A
             assert_array_almost_equal(np.dot(self.rmg.A_inv_tgh[s], self.rmg.A_tgh[s]), np.identity(G))
 
+            #print self.rmg.A_inv_F_tgh[s]
+
             assert not np.isnan(self.rmg.T_int_tij[s]).any()
             assert not np.isnan(self.rmg.M_tij[s]).any()
 
+        #raise TypeError
+
 
     def test_calc_criticality(self):
+        #raise nose.SkipTest
         # Grab data from C++
         G = self.rmg.G
         J = self.rmg.J
         S = self.rmg.S
 
-        print self.rmg.phi_tg[0]
-        print self.rmg.phi_t
-        print self.rmg.k_t
-        print self.rmg.P_NL
+        #print self.rmg.phi_tg[0]
+        #print self.rmg.phi_t
+        #print self.rmg.k_t
+        #print self.rmg.P_NL
+
+        print "k_t = ", self.rmg.k_t
 
         raise TypeError 
         

@@ -759,9 +759,17 @@ void ReactorMG::fold_mass_weights()
             +  (n_clad_it[*iso][bt_s] * V_frac_clad) \
             +  (n_cool_it[*iso][bt_s] * V_frac_cool));
 
+/*
         N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
                                          +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool));
+*/
+
+        N_i_cm2pb = (m_fuel_it[*iso][bt_s] + m_clad_it[*iso][bt_s] + m_cool_it[*iso][bt_s]);
+
+        if (0 == bt_s)
+            std::cout << *iso << "    " << n_i << "    " << N_i_cm2pb << "\n";
+
         // Loop over all groups
         for (int g = 0; g < G; g++)
         {
@@ -769,7 +777,8 @@ void ReactorMG::fold_mass_weights()
             nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
 // TESTME FIXME  I possibly neede to think more about the 
 // Normalization factor here for chi
-            chi_tg[bt_s][g] += n_i * chi_itg[*iso][bt_s][g];
+            //chi_tg[bt_s][g] += n_i * chi_itg[*iso][bt_s][g];
+            chi_tg[bt_s][g] += N_i_cm2pb * chi_itg[*iso][bt_s][g];
 // OK back to normal
             Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
             Sigma_gamma_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
@@ -926,7 +935,7 @@ void ReactorMG::calc_criticality()
 {
     // Init values
     int n = 0;
-    int N = 5;
+    int N = 100;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
@@ -951,12 +960,14 @@ void ReactorMG::calc_criticality()
         invPk = 1.0 / (P_NL * k0);
         phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
 
+/*
         for (g = 0; g < G; g++)
             std::cout << phi0[g] << "   ";
         std::cout << "\n";
         for (g = 0; g < G; g++)
             std::cout << phi1[g] << "   ";
         std::cout << "\n----------\n\n\n";
+*/
 
         // Calculate the next eigen-k
         nu_Sigma_f_phi0 = 0.0;
@@ -986,10 +997,7 @@ void ReactorMG::calc_criticality()
         k0 = k1;
         phi0 = phi1;
         n++;
-        std::cout << "n = " << n << "\n\n";
     };
-
-    std::cout << "N = " << N << "\n\n";
 
     // Set the final values to the class members
     k_t[bt_s] = k1;
