@@ -47,6 +47,7 @@ default_rp.clad_radius = 0.475
 default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
+
 default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
 #default_rp.burn_times = np.linspace(0.0, 100.0, 5)
 
@@ -543,8 +544,6 @@ class TestReactorMGMutliGroupMethods(TestCase):
         dia = np.identity(G, dtype=bool)
         ndia = True - dia
 
-        #print self.rmg.T_it
-
         #for s in range(S):
         for s in range(1):
             # Check A diagonal is positive, and off-diagonal elements
@@ -556,11 +555,22 @@ class TestReactorMGMutliGroupMethods(TestCase):
             # Test that A_inv is truly the inverso of A
             assert_array_almost_equal(np.dot(self.rmg.A_inv_tgh[s], self.rmg.A_tgh[s]), np.identity(G))
 
-            print np.isnan(self.rmg.T_int_tij[s]).any()
-            print np.isnan(self.rmg.M_tij[s]).any()
+            assert not np.isnan(self.rmg.T_int_tij[s]).any()
+            assert not np.isnan(self.rmg.M_tij[s]).any()
 
-        
-        raise TypeError
+
+    def test_calc_criticality(self):
+        # Grab data from C++
+        G = self.rmg.G
+        J = self.rmg.J
+        S = self.rmg.S
+
+        print self.rmg.phi_tg[0]
+        print self.rmg.phi_t
+        print self.rmg.k_t
+        print self.rmg.P_NL
+
+        raise TypeError 
         
 
 """\

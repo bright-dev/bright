@@ -6408,10 +6408,15 @@ cdef class ReactorMG(FCComp):
 
 
     def calc_criticality(self):
-        """Assembles the cross section matrices needed for 
-        multigroup burnup-criticality calculations.
+        """Performs the criticality calculation to find k for this time step.
         """
         self.rmg_pointer.calc_criticality()
+
+
+    def calc_transmutation(self):
+        """Burns up the fuel using a matrix exponential method for this time step.
+        """
+        self.rmg_pointer.calc_transmutation()
 
 
 

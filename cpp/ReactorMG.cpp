@@ -831,7 +831,6 @@ void ReactorMG::assemble_multigroup_matrices()
                 T_matrix[ind][jnd][g] = fission_product_yield_matrix[ind][jnd][g] * sigma_f_itg[J_order[ind]][bt_s][g];
         };
     };
-
     // Add the other cross sections
     int j_gamma, j_2n, j_3n, j_alpha, j_proton, j_gamma_x, j_2n_x; 
     for (ind = 0; ind < J_size; ind++)
@@ -927,7 +926,7 @@ void ReactorMG::calc_criticality()
 {
     // Init values
     int n = 0;
-    int N = 100;
+    int N = 5;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
@@ -952,6 +951,13 @@ void ReactorMG::calc_criticality()
         invPk = 1.0 / (P_NL * k0);
         phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
 
+        for (g = 0; g < G; g++)
+            std::cout << phi0[g] << "   ";
+        std::cout << "\n";
+        for (g = 0; g < G; g++)
+            std::cout << phi1[g] << "   ";
+        std::cout << "\n----------\n\n\n";
+
         // Calculate the next eigen-k
         nu_Sigma_f_phi0 = 0.0;
         nu_Sigma_f_phi1 = 0.0;
@@ -961,6 +967,8 @@ void ReactorMG::calc_criticality()
             nu_Sigma_f_phi1 += nubar_Sigma_f_tg[bt_s][g] * phi1[g]; 
         };
         k1 = k0 * nu_Sigma_f_phi1 / nu_Sigma_f_phi0;
+
+//        std::cout << k0 << "   " << k1 << "\n";
 
         // Calculate the epsilon value of k 
         epsik = fabs(1.0 - (k0/k1));
@@ -977,7 +985,11 @@ void ReactorMG::calc_criticality()
         // Set the next eigens to the previous values befor looping
         k0 = k1;
         phi0 = phi1;
+        n++;
+        std::cout << "n = " << n << "\n\n";
     };
+
+    std::cout << "N = " << N << "\n\n";
 
     // Set the final values to the class members
     k_t[bt_s] = k1;
