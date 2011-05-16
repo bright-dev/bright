@@ -48,8 +48,8 @@ default_rp.unit_cell_pitch = 0.7
 default_rp.open_slots = 123
 default_rp.total_slots = 180
 
-default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
-#default_rp.burn_times = np.linspace(0.0, 100.0, 5)
+#default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
+default_rp.burn_times = np.linspace(0.0, 100.0, 5)
 
 
 
@@ -535,10 +535,6 @@ class TestReactorMGMutliGroupMethods(TestCase):
         G = self.rmg.G
         J = self.rmg.J
         S = self.rmg.S
-
-#        print self.rmg.V_fuel
-#        print self.rmg.V_clad
-#        print self.rmg.V_cool
     
         #for s in range(S):
         for s in range(1):
@@ -549,7 +545,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
             assert (self.rmg.nubar_Sigma_f_tg[s] / self.rmg.Sigma_f_tg[s] <= 4.0).all()
 
             assert (0.0 <= self.rmg.chi_tg[s]).all()
-            assert (self.rmg.chi_tg[s] <= 1.01).all()
+            assert (self.rmg.chi_tg[s] <= 1.0).all()
+            assert_almost_equal(1.0, np.sum(self.rmg.chi_tg[s]))
 
             assert (self.rmg.Sigma_gamma_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
             assert (self.rmg.Sigma_2n_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
@@ -560,8 +557,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
             assert (self.rmg.Sigma_2n_x_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
 
             print self.rmg.Sigma_t_tg[s]
-            #print self.rmg.chi_tg[s]
-            print self.rmg.Sigma_gamma_x_tg[s]
+            print self.rmg.chi_tg[s]
+            #print self.rmg.Sigma_gamma_x_tg[s]
 
         #print self.rmg.chi_tg
 

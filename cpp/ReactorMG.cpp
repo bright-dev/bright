@@ -743,43 +743,27 @@ void ReactorMG::calc_mass_weights()
 void ReactorMG::fold_mass_weights()
 {
     // Folds mass weight in with cross-sections for current time step
+    int g;
 
     double V_total = V_fuel + V_clad + V_cool;
     double V_frac_fuel = V_fuel / V_total;
     double V_frac_clad = V_clad / V_total;
     double V_frac_cool = V_cool / V_total;
 
-    double n_i = 0.0;
     double N_i_cm2pb = 0.0;
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
-        // Calculate the core-average number density for this isotope.
-        n_i = ((n_fuel_it[*iso][bt_s] * V_frac_fuel) \
-            +  (n_clad_it[*iso][bt_s] * V_frac_clad) \
-            +  (n_cool_it[*iso][bt_s] * V_frac_cool));
-
-/*
         N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
                                          +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool));
-*/
-
-        N_i_cm2pb = (m_fuel_it[*iso][bt_s] + m_clad_it[*iso][bt_s] + m_cool_it[*iso][bt_s]);
-
-        if (0 == bt_s)
-            std::cout << *iso << "    " << n_i << "    " << N_i_cm2pb << "\n";
 
         // Loop over all groups
-        for (int g = 0; g < G; g++)
+        for (g = 0; g < G; g++)
         {
             Sigma_t_tg[bt_s][g] += N_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
             nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
-// TESTME FIXME  I possibly neede to think more about the 
-// Normalization factor here for chi
-            //chi_tg[bt_s][g] += n_i * chi_itg[*iso][bt_s][g];
             chi_tg[bt_s][g] += N_i_cm2pb * chi_itg[*iso][bt_s][g];
-// OK back to normal
             Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
             Sigma_gamma_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
             Sigma_2n_tg[bt_s][g] += N_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
@@ -793,6 +777,13 @@ void ReactorMG::fold_mass_weights()
                 Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
         };
     };
+
+    // Re-Normalize chi
+    double chi_tot = 0.0;
+    for (g = 0; g < G; g++)
+        chi_tot += chi_tg[bt_s][g]; 
+    for (g = 0; g < G; g++)
+        chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot; 
 };
 
 
@@ -1212,7 +1203,7 @@ void ReactorMG::burnup_core()
     M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
 
     // Init the multilplcation factpr
-    k_t = std::vector<double>(G, -1.0);
+    k_t = std::vector<double>(S, -1.0);
 
     // Loop through all time steps
     for (int s = 0; s < S; s++)
