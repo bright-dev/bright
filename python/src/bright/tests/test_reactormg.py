@@ -574,24 +574,18 @@ class TestReactorMGMutliGroupMethods(TestCase):
             assert (0 < self.rmg.A_tgh[s][dia]).all()
             assert (self.rmg.A_tgh[s][ndia] <= 0).all()
 
-            assert_array_almost_equal(np.ones((G, G)), 
-#                self.rmg.F_tgh[s] / (self.rmg.chi_tg[s] * self.rmg.nubar_Sigma_f_tg[s])
-#                self.rmg.F_tgh[s] / (self.rmg.nubar_Sigma_f_tg[s] * self.rmg.chi_tg[s])
-                self.rmg.F_tgh[s] / np.array([self.rmg.chi_tg[s] * self.rmg.nubar_Sigma_f_tg[s][g] for g in range(G)])
-                )            
+            assert_array_almost_equal(self.rmg.F_tgh[s], 
+                (self.rmg.nubar_Sigma_f_tg[s][:, np.newaxis] *  self.rmg.chi_tg[s]) )
 
             # Test that A_inv is truly the inverso of A
             assert_array_almost_equal(np.dot(self.rmg.A_inv_tgh[s], self.rmg.A_tgh[s]), np.identity(G))
 
-            assert_array_almost_equal(np.ones((G, G)), 
-                self.rmg.A_inv_F_tgh[s] / np.dot(self.rmg.A_inv_tgh[s], self.rmg.F_tgh[s])
-                )
-            #print self.rmg.A_inv_F_tgh[s]
+            assert_array_almost_equal(self.rmg.A_inv_F_tgh[s], 
+                np.dot(self.rmg.A_inv_tgh[s], self.rmg.F_tgh[s]) )
 
             assert not np.isnan(self.rmg.T_int_tij[s]).any()
             assert not np.isnan(self.rmg.M_tij[s]).any()
 
-        #raise TypeError
 
 
     def test_calc_criticality(self):

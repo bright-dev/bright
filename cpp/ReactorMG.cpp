@@ -808,7 +808,7 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
     // Assemble the F matrix
-    F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_tg[bt_s]);
+    F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
 
     // Grab the inverse of the A matrix
     A_inv_tgh[bt_s] = bright::matrix_inverse(A_tgh[bt_s]);
