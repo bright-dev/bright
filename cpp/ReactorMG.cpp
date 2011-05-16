@@ -926,7 +926,7 @@ void ReactorMG::calc_criticality()
 {
     // Init values
     int n = 0;
-    int N = 100;
+    int N = 5;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
@@ -951,13 +951,13 @@ void ReactorMG::calc_criticality()
         invPk = 1.0 / (P_NL * k0);
         phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
 
-/*
         for (g = 0; g < G; g++)
             std::cout << phi0[g] << "   ";
         std::cout << "\n";
         for (g = 0; g < G; g++)
             std::cout << phi1[g] << "   ";
         std::cout << "\n----------\n\n\n";
+/*
 */
 
         // Calculate the next eigen-k
@@ -970,7 +970,7 @@ void ReactorMG::calc_criticality()
         };
         k1 = k0 * nu_Sigma_f_phi1 / nu_Sigma_f_phi0;
 
-//        std::cout << k0 << "   " << k1 << "\n";
+        std::cout << k0 << "   " << k1 << "\n";
 
         // Calculate the epsilon value of k 
         epsik = fabs(1.0 - (k0/k1));
