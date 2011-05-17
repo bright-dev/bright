@@ -25,13 +25,13 @@ class _IsoEntry(HasTraits):
     mass_weight = Float(0.0)
 
 # Mass Stream isotopic filters
-UFilter   = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 == 92,        name='Uranium')
-PUFilter  = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 == 94,        name='Plutonium')
-LANFilter = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.lan, name='Lanthanides')
-ACTFilter = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.act, name='Actinides')
-TRUFilter = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.tru, name='Transuranics')
-MAFilter  = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.ma,  name='Minor Actinides')
-FPFilter  = TableFilter(allowed=lambda x: bright.mixed_2_zzaaam(str(x.isotope))/10000 in BriPy.fp,  name='Fission Products')
+UFilter   = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 == 92,        name='Uranium')
+PUFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 == 94,        name='Plutonium')
+LANFilter = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.lan, name='Lanthanides')
+ACTFilter = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.act, name='Actinides')
+TRUFilter = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.tru, name='Transuranics')
+MAFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.ma,  name='Minor Actinides')
+FPFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.fp,  name='Fission Products')
 
 
 mass_stream_editor = TableEditor(
