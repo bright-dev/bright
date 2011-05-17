@@ -754,9 +754,13 @@ void ReactorMG::fold_mass_weights()
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
+        double iso_weight = isoname::nuc_weight(*iso);
+
+/*
         N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
                                          +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool));
+*/
 
 //        N_i_cm2pb = bright::cm2_per_barn * (N_fuel_it[*iso][bt_s] + N_clad_it[*iso][bt_s] + N_cool_it[*iso][bt_s]);
 
@@ -766,6 +770,29 @@ void ReactorMG::fold_mass_weights()
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool))\
                                          / V_frac_fuel;
 */
+
+/*
+
+        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel * rho_fuel) \
+                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad * rho_clad) \
+                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool * rho_cool))\
+                                         / (V_frac_fuel * rho_fuel);
+*/
+
+/*
+        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel * rho_fuel / MW_fuel_t[bt_s]) \
+                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad * rho_clad / MW_clad_t[bt_s]) \
+                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool * rho_cool / MW_cool_t[bt_s]))\
+                                         *  (iso_weight / A_HM_t[bt_s]) \
+                                         /  (V_frac_fuel * rho_fuel / MW_fuel_t[bt_s]);
+*/
+
+        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
+                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
+                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool))\
+                                         *  (A_HM_t[bt_s] / iso_weight) \
+                                         /  (rho_fuel * V_frac_fuel / MW_fuel_t[bt_s]);
+
 
         // Loop over all groups
         for (g = 0; g < G; g++)
@@ -937,7 +964,7 @@ void ReactorMG::calc_criticality()
     int a0 = nearest_neighbors[0]; 
 
     int n = 0;
-    int N = 100;
+    int N = 5;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
