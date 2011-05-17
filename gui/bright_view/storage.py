@@ -2,10 +2,12 @@ from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trai
 
 from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor
 
+import mass_stream
+
 import bright
 
 from utils import _init_comp, _get_comp_pass_number
-from mass_stream import _MassStreamView
+from mass_stream_views import _MassStreamView
 
 def Storage(IsosIn, decay_time, name):
     """Storage:  
@@ -21,10 +23,10 @@ def Storage(IsosIn, decay_time, name):
     return IsosOut
 
 
-class _Storage_view(HasTraits):
+class _StorageView(HasTraits):
 
-    IsosIn  = Instance(bright.MassStream)
-    IsosOut = Instance(bright.MassStream)
+    IsosIn  = Instance(mass_stream.MassStream)
+    IsosOut = Instance(mass_stream.MassStream)
 
     IsosIn_view  = Instance(_MassStreamView)
     IsosOut_view = Instance(_MassStreamView)
@@ -88,3 +90,10 @@ class _Storage_view(HasTraits):
     @on_trait_change('IsosOut_view.mass_stream')
     def _IsosOut_view_changed(self):
         self.IsosOut = self.IsosOut_view.mass_stream
+
+
+if __name__ == "__main__":
+    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")  
+
+    _storageview = _StorageView(IsosIn = nu, IsosOut = nu )
+    _storageview.configure_traits()

@@ -145,7 +145,7 @@ class _MassStreamView(HasTraits):
     @on_trait_change('iso_entries.isotope')
     def update_mass_stream(self):
         comp = self.get_comp_from_iso_entries()
-        ms = bright.MassStream(comp, self.mass, str(self.name))
+        ms = mass_stream.MassStream(comp, self.mass, str(self.name))
         self.mass_stream = ms
 
     def update_from_mass_stream(self, ms=None):
