@@ -1772,8 +1772,8 @@ void ReactorMG::burnup_core()
 //        calc_criticality();
 //        calc_criticality2();
 //        calc_criticality3();
-//        calc_criticality4();
-        calc_criticality5();
+        calc_criticality4();
+//        calc_criticality5();
 
         if (s == 0)
             BU_t[0] = 0.0;
