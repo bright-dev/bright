@@ -66,17 +66,17 @@ default_rp.total_slots = 289
 
 
 # Only Fuel
-default_rp.void_radius = 0.412
-default_rp.clad_radius = 0.412
-default_rp.unit_cell_pitch = 0.412 * np.sqrt(np.pi)
-default_rp.open_slots = 0
+#default_rp.void_radius = 0.412
+#default_rp.clad_radius = 0.412
+#default_rp.unit_cell_pitch = 0.412 * np.sqrt(np.pi)
+#default_rp.open_slots = 0
 
 # Only Cool
-default_rp.fuel_radius = 0.001
-default_rp.void_radius = 0.0
-default_rp.clad_radius = 0.0
-default_rp.unit_cell_pitch = 1.33
-default_rp.open_slots = 0
+#default_rp.fuel_radius = 0.001
+#default_rp.void_radius = 0.0
+#default_rp.clad_radius = 0.0
+#default_rp.unit_cell_pitch = 1.33
+#default_rp.open_slots = 0
 
 
 
@@ -469,7 +469,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
         bright.load_track_isos_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.05, 922380: 0.95})
+#        cls.rmg.ms_feed = MassStream({922350: 0.05, 922380: 0.95})
+        cls.rmg.ms_feed = MassStream({922350: 0.03, 922380: 0.97})
         cls.rmg.burnup_core()
         cls.rmg.burn_time = 0.0
         cls.rmg.bt_s = 0
@@ -651,6 +652,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
 
 #        print self.rmg.phi_tg
 #        print 
+        print "s = ", s
+        print
         print "k_t = ", self.rmg.k_t
         print
         print "phi_tg[s] = ", self.rmg.phi_tg[s]
