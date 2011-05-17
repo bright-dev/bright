@@ -31,26 +31,52 @@ default_rp = bright.lwr_defaults()
 
 default_rp.batches = 3
 default_rp.flux = 2*(10**14)
+
 default_rp.fuel_form = {"IHM": 1.0, "O16": 2.0}
 default_rp.cladding_form = {"ZR93": 0.5, "ZR95": 0.5}
 default_rp.coolant_form = {"H1": 2.0, "O16": 1.0}
+
 default_rp.fuel_density = 10.7
+default_rp.cladding_density = 5.87
 default_rp.coolant_density = 0.73
+
 default_rp.pnl = 0.98
 default_rp.BUt = 50.0
 default_rp.use_disadvantage_factor = True
 default_rp.lattice_type = 'Cylindrical'
 default_rp.rescale_hydrogen = True
-default_rp.fuel_radius = 0.411
-default_rp.void_radius = 0.4195
+
+default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
+#default_rp.burn_times = np.linspace(0.0, 100.0, 5)
+
+default_rp.fuel_radius = 0.412
+default_rp.void_radius = 0.4205
 default_rp.clad_radius = 0.475
-default_rp.unit_cell_pitch = 0.7
-default_rp.open_slots = 123
-default_rp.total_slots = 180
+default_rp.unit_cell_pitch = 1.33
 
-#default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
-default_rp.burn_times = np.linspace(0.0, 100.0, 5)
 
+#default_rp.unit_cell_pitch = 0.7
+#default_rp.unit_cell_pitch = 0.4751 * 2.0
+#default_rp.unit_cell_pitch = 100.0
+#default_rp.unit_cell_pitch = 0.4121 * 2.0
+
+
+default_rp.open_slots = 25
+default_rp.total_slots = 289
+
+
+# Only Fuel
+default_rp.void_radius = 0.412
+default_rp.clad_radius = 0.412
+default_rp.unit_cell_pitch = 0.412 * np.sqrt(np.pi)
+default_rp.open_slots = 0
+
+# Only Cool
+default_rp.fuel_radius = 0.0
+default_rp.void_radius = 0.0
+default_rp.clad_radius = 0.0
+default_rp.unit_cell_pitch = 1.33
+default_rp.open_slots = 0
 
 
 
@@ -541,7 +567,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
             assert (0 <= self.rmg.Sigma_t_tg[s]).all()
             assert (self.rmg.Sigma_f_tg[s] <= self.rmg.Sigma_t_tg[s]).all()
 
-            assert (0.0 <= self.rmg.nubar_Sigma_f_tg[s] / self.rmg.Sigma_f_tg[s]).all()
+            assert (1.0 < self.rmg.nubar_Sigma_f_tg[s] / self.rmg.Sigma_f_tg[s]).all()
             assert (self.rmg.nubar_Sigma_f_tg[s] / self.rmg.Sigma_f_tg[s] <= 4.0).all()
 
             assert (0.0 <= self.rmg.chi_tg[s]).all()
@@ -600,11 +626,38 @@ class TestReactorMGMutliGroupMethods(TestCase):
         #print self.rmg.k_t
         #print self.rmg.P_NL
 
-        print self.rmg.A_inv_F_tgh[0]
-        print 
-        print (1.0/0.98) * np.dot(self.rmg.A_inv_F_tgh[0], np.ones(G))
-        print 
+#        print self.rmg.A_inv_F_tgh[0]
+#        print 
+        s = 0
+        k0 = 1.0
+        phi0 = np.ones(G, dtype=float)
+        phi0[2] = 2.0
+
+        """\
+        print "phi0 = ", phi0
+        print
+#        for i in range(100):
+        for i in range(3):
+            phi1 = (1.0/(0.98 * k0)) * np.dot(self.rmg.A_inv_F_tgh[s], phi0)
+            k1 = k0 * sum(self.rmg.nubar_Sigma_f_tg[s] * phi1) / sum(self.rmg.nubar_Sigma_f_tg[s] * phi0)
+
+            print "k1 = ", k1
+            print "phi1 = ", phi1
+            print 
+
+            k0 = k1
+            phi0 = phi1
+        """
+
+#        print self.rmg.phi_tg
+#        print 
         print "k_t = ", self.rmg.k_t
+        print
+        print "phi_tg[s] = ", self.rmg.phi_tg[s]
+        print
+        print self.rmg.V_fuel
+        print self.rmg.V_clad
+        print self.rmg.V_cool
 
         raise TypeError 
         

@@ -758,6 +758,15 @@ void ReactorMG::fold_mass_weights()
                                          +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool));
 
+//        N_i_cm2pb = bright::cm2_per_barn * (N_fuel_it[*iso][bt_s] + N_clad_it[*iso][bt_s] + N_cool_it[*iso][bt_s]);
+
+/*
+        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
+                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
+                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool))\
+                                         / V_frac_fuel;
+*/
+
         // Loop over all groups
         for (g = 0; g < G; g++)
         {
@@ -925,8 +934,10 @@ void ReactorMG::assemble_multigroup_matrices()
 void ReactorMG::calc_criticality()
 {
     // Init values
+    int a0 = nearest_neighbors[0]; 
+
     int n = 0;
-    int N = 5;
+    int N = 100;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
@@ -935,6 +946,8 @@ void ReactorMG::calc_criticality()
 
     double k0 = 1.0;
     std::vector<double> phi0 (G, 1.0);
+    phi0[2] = 2.0;
+//    std::vector<double> phi0 = phi_g[a0];
     double k1;
     std::vector<double> phi1;
 
@@ -951,13 +964,13 @@ void ReactorMG::calc_criticality()
         invPk = 1.0 / (P_NL * k0);
         phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
 
+/*
         for (g = 0; g < G; g++)
             std::cout << phi0[g] << "   ";
         std::cout << "\n";
         for (g = 0; g < G; g++)
             std::cout << phi1[g] << "   ";
         std::cout << "\n----------\n\n\n";
-/*
 */
 
         // Calculate the next eigen-k
@@ -989,6 +1002,8 @@ void ReactorMG::calc_criticality()
         phi0 = phi1;
         n++;
     };
+
+    std::cout << "N = " << N << "\n";
 
     // Set the final values to the class members
     k_t[bt_s] = k1;
