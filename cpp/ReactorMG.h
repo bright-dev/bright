@@ -298,6 +298,7 @@ public:
     void calc_criticality2();
     void calc_criticality3();
     void calc_criticality4();
+    void calc_criticality5();
     void calc_transmutation();
 
     void burnup_core();

@@ -1416,6 +1416,109 @@ void ReactorMG::calc_criticality4()
 
 
 
+
+
+
+
+
+
+void ReactorMG::calc_criticality5()
+{
+
+    // Init values
+    int n = 0;
+    int N = 1;
+
+    float epsik = 1.0;
+    float tmp_epsiphi; 
+    float epsiphi = 1.0;
+    float epsilon = 0.005;
+
+    double k0 = 1.0;
+    std::vector<double> phi0 (G, 1.0);
+//    phi0[2] = 2.0;
+    double k1;
+
+    std::vector<double> phi_fuel;
+    std::vector<double> phi_clad;
+    std::vector<double> phi_cool;
+    std::vector<double> phi1 (G, 0.0);
+    double phi1_tot = 0.0;
+
+    int g = 0;
+    double invPk;
+    double nu_Sigma_f_fuel_phi0;
+    double nu_Sigma_f_fuel_phi1;
+
+    // Solve for k and phi simeltaneoulsy
+    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
+    {
+        phi_cool = phi0;
+
+        // Calculate the next eigen-flux
+        phi0 = bright::scalar_matrix_vector_product(1.0, A_inv_cool_tgh[bt_s], phi0);
+        phi0 = bright::scalar_matrix_vector_product(1.0, A_inv_clad_tgh[bt_s], phi0);
+
+
+        invPk = 1.0 / (P_NL * k0);
+        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_fuel_tgh[bt_s], phi0);
+
+        // Calculate the next eigen-k
+        nu_Sigma_f_fuel_phi0 = 0.0;
+        nu_Sigma_f_fuel_phi1 = 0.0;
+        for (g = 0; g < G; g++)
+        {
+            nu_Sigma_f_fuel_phi0 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi0[g]; 
+            nu_Sigma_f_fuel_phi1 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi1[g]; 
+        };
+        k1 = k0 * nu_Sigma_f_fuel_phi1 / nu_Sigma_f_fuel_phi0;
+
+        phi1 = bright::scalar_matrix_vector_product(1.0, A_inv_clad_tgh[bt_s], phi1);
+        phi1 = bright::scalar_matrix_vector_product(1.0, A_inv_cool_tgh[bt_s], phi1);
+
+        // Calculate the epsilon value of k 
+        epsik = fabs(1.0 - (k0/k1));
+
+        // Calulate the maximum epsilon of phi over all groups
+        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
+        for (g = 1; g < G; g++)
+        {
+            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
+            if (epsiphi < tmp_epsiphi)
+                epsiphi = tmp_epsiphi;
+        };
+
+        // Set the next eigens to the previous values befor looping
+        k0 = k1;
+//        phi0 = phi1;
+
+        for (g = 0; g < G; g++)
+            phi0[g] = (phi1[g] + phi_cool[g]) / 2.0;
+
+        n++;
+    };
+
+//    std::cout << "N = " << N << "\n";
+
+    // Set the final values to the class members
+    k_t[bt_s] = k1;
+    phi_tg[bt_s] = phi1;
+
+    phi_t[bt_s] = 0.0;
+    for (g = 0; g < G; g++)
+        phi_t[bt_s] += phi1[0];
+
+    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+};
+
+
+
+
+
+
+
+
+
 void ReactorMG::calc_transmutation()
 {
     // Calculates a tranmutation step via the Pade method
@@ -1669,7 +1772,8 @@ void ReactorMG::burnup_core()
 //        calc_criticality();
 //        calc_criticality2();
 //        calc_criticality3();
-        calc_criticality4();
+//        calc_criticality4();
+        calc_criticality5();
 
         if (s == 0)
             BU_t[0] = 0.0;
