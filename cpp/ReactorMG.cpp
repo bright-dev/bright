@@ -750,17 +750,25 @@ void ReactorMG::fold_mass_weights()
     double V_frac_clad = V_clad / V_total;
     double V_frac_cool = V_cool / V_total;
 
+    double N_fuel_i_cm2pb = 0.0;
+    double N_clad_i_cm2pb = 0.0;
+    double N_cool_i_cm2pb = 0.0;
     double N_i_cm2pb = 0.0;
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         double iso_weight = isoname::nuc_weight(*iso);
 
-/*
+        N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
+
+        N_clad_i_cm2pb = bright::cm2_per_barn * N_clad_it[*iso][bt_s];
+
+        N_cool_i_cm2pb = bright::cm2_per_barn * N_cool_it[*iso][bt_s];
+
         N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
                                          +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool));
-*/
+
 
 //        N_i_cm2pb = bright::cm2_per_barn * (N_fuel_it[*iso][bt_s] + N_clad_it[*iso][bt_s] + N_cool_it[*iso][bt_s]);
 
@@ -787,16 +795,34 @@ void ReactorMG::fold_mass_weights()
                                          /  (V_frac_fuel * rho_fuel / MW_fuel_t[bt_s]);
 */
 
+/*
         N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
                                          +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
                                          +  (N_cool_it[*iso][bt_s] * V_frac_cool))\
                                          *  (A_HM_t[bt_s] / iso_weight) \
                                          /  (rho_fuel * V_frac_fuel / MW_fuel_t[bt_s]);
+*/
 
 
         // Loop over all groups
         for (g = 0; g < G; g++)
         {
+            Sigma_t_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            nubar_Sigma_f_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
+            chi_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * chi_itg[*iso][bt_s][g];
+            Sigma_f_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            Sigma_gamma_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
+            Sigma_2n_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
+            Sigma_3n_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
+            Sigma_alpha_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
+            Sigma_proton_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
+            Sigma_gamma_x_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
+            Sigma_2n_x_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
+
+            Sigma_t_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+
+            Sigma_t_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+
             Sigma_t_tg[bt_s][g] += N_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
             nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
             chi_tg[bt_s][g] += N_i_cm2pb * chi_itg[*iso][bt_s][g];
@@ -809,12 +835,24 @@ void ReactorMG::fold_mass_weights()
             Sigma_gamma_x_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
             Sigma_2n_x_tg[bt_s][g] += N_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
+
             for (int h =0; h < G; h++)
+            {
+                Sigma_s_fuel_tgh[bt_s][g][h] += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+                Sigma_s_clad_tgh[bt_s][g][h] += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+                Sigma_s_cool_tgh[bt_s][g][h] += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+            };
         };
     };
 
     // Re-Normalize chi
+    double chi_fuel_tot = 0.0;
+    for (g = 0; g < G; g++)
+        chi_fuel_tot += chi_fuel_tg[bt_s][g]; 
+    for (g = 0; g < G; g++)
+        chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot; 
+
     double chi_tot = 0.0;
     for (g = 0; g < G; g++)
         chi_tot += chi_tg[bt_s][g]; 
@@ -835,21 +873,34 @@ void ReactorMG::assemble_multigroup_matrices()
     for (int g = 0; g < G; g++)
     {
         // Add the total cross section
+        A_fuel_tgh[bt_s][g][g] += Sigma_t_fuel_tg[bt_s][g];
+        A_clad_tgh[bt_s][g][g] += Sigma_t_clad_tg[bt_s][g];
+        A_cool_tgh[bt_s][g][g] += Sigma_t_cool_tg[bt_s][g];
         A_tgh[bt_s][g][g] += Sigma_t_tg[bt_s][g];
 
         // Subtract the scattering kernel
         for (int h = 0; h < G; h++)
+        {
+            A_fuel_tgh[bt_s][g][h] -= Sigma_s_fuel_tgh[bt_s][g][h];
+            A_clad_tgh[bt_s][g][h] -= Sigma_s_clad_tgh[bt_s][g][h];
+            A_cool_tgh[bt_s][g][h] -= Sigma_s_cool_tgh[bt_s][g][h];
             A_tgh[bt_s][g][h] -= Sigma_s_tgh[bt_s][g][h];
+        };
     };
 
 
     // Assemble the F matrix
+    F_fuel_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_fuel_tg[bt_s], chi_fuel_tg[bt_s]);
     F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
 
     // Grab the inverse of the A matrix
+    A_inv_fuel_tgh[bt_s] = bright::matrix_inverse(A_fuel_tgh[bt_s]);
+    A_inv_clad_tgh[bt_s] = bright::matrix_inverse(A_clad_tgh[bt_s]);
+    A_inv_cool_tgh[bt_s] = bright::matrix_inverse(A_cool_tgh[bt_s]);
     A_inv_tgh[bt_s] = bright::matrix_inverse(A_tgh[bt_s]);
 
     // Multiply the inverse of A by F
+    A_inv_F_fuel_tgh[bt_s] = bright::matrix_multiplication(A_inv_fuel_tgh[bt_s], F_fuel_tgh[bt_s]);
     A_inv_F_tgh[bt_s] = bright::matrix_multiplication(A_inv_tgh[bt_s], F_tgh[bt_s]);
 
     //
@@ -1048,6 +1099,196 @@ void ReactorMG::calc_criticality()
 
 
 
+void ReactorMG::calc_criticality2()
+{
+    double V_total = V_fuel + V_clad + V_cool;
+    double V_frac_fuel = V_fuel / V_total;
+    double V_frac_clad = V_clad / V_total;
+    double V_frac_cool = V_cool / V_total;
+
+    // Init values
+    int n = 0;
+    int N = 5;
+
+    float epsik = 1.0;
+    float tmp_epsiphi; 
+    float epsiphi = 1.0;
+    float epsilon = 0.005;
+
+    double k0 = 1.0;
+    std::vector<double> phi0 (G, 1.0);
+//    phi0[2] = 2.0;
+    double k1;
+
+    std::vector<double> phi_fuel1;
+    std::vector<double> phi_clad1;
+    std::vector<double> phi_cool1;
+    std::vector<double> phi1 (G, 0.0);
+
+    int g = 0;
+    double invPk;
+    double nu_Sigma_f_fuel_phi0;
+    double nu_Sigma_f_fuel_phi1;
+
+
+    // Solve for k and phi simeltaneoulsy
+    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
+    {
+        // Calculate the next eigen-flux
+        invPk = 1.0 / (P_NL * k0);
+        phi_fuel1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_fuel_tgh[bt_s], phi0);
+        phi_clad1 = bright::scalar_matrix_vector_product(1.0, A_inv_clad_tgh[bt_s], phi0);
+        phi_cool1 = bright::scalar_matrix_vector_product(1.0, A_inv_cool_tgh[bt_s], phi0);
+
+        for (g = 0; g < G; g++)
+            phi1[g] = (V_frac_fuel * phi_fuel1[g]) + (V_frac_clad * phi_clad1[g]) + (V_frac_cool * phi_cool1[g]);
+
+/*
+        for (g = 0; g < G; g++)
+            std::cout << phi0[g] << "   ";
+        std::cout << "\n";
+        for (g = 0; g < G; g++)
+            std::cout << phi1[g] << "   ";
+        std::cout << "\n----------\n\n\n";
+*/
+
+        // Calculate the next eigen-k
+        nu_Sigma_f_fuel_phi0 = 0.0;
+        nu_Sigma_f_fuel_phi1 = 0.0;
+        for (g = 0; g < G; g++)
+        {
+            nu_Sigma_f_fuel_phi0 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi0[g]; 
+            nu_Sigma_f_fuel_phi1 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi1[g]; 
+        };
+        k1 = k0 * nu_Sigma_f_fuel_phi1 / nu_Sigma_f_fuel_phi0;
+
+//        std::cout << k0 << "   " << k1 << "\n";
+
+        // Calculate the epsilon value of k 
+        epsik = fabs(1.0 - (k0/k1));
+
+        // Calulate the maximum epsilon of phi over all groups
+        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
+        for (g = 1; g < G; g++)
+        {
+            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
+            if (epsiphi < tmp_epsiphi)
+                epsiphi = tmp_epsiphi;
+        };
+
+        // Set the next eigens to the previous values befor looping
+        k0 = k1;
+        phi0 = phi1;
+        n++;
+    };
+
+//    std::cout << "N = " << N << "\n";
+
+    // Set the final values to the class members
+    k_t[bt_s] = k1;
+    phi_tg[bt_s] = phi1;
+
+    phi_t[bt_s] = 0.0;
+    for (g = 0; g < G; g++)
+        phi_t[bt_s] += phi1[0];
+
+    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+};
+
+
+
+
+void ReactorMG::calc_criticality3()
+{
+    // Init values
+    int n = 0;
+    int N = 5;
+
+    float epsik = 1.0;
+    float tmp_epsiphi; 
+    float epsiphi = 1.0;
+    float epsilon = 0.005;
+
+    double k0 = 1.0;
+    std::vector<double> phi0 (G, 1.0);
+    phi0[2] = 2.0;
+//    std::vector<double> phi0 = phi_g[a0];
+    double k1;
+    std::vector<double> phi1;
+
+    int g = 0;
+    double invPk;
+    double nu_Sigma_f_phi0;
+    double nu_Sigma_f_phi1;
+
+
+    // Solve for k and phi simeltaneoulsy
+    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
+    {
+        // Calculate the next eigen-flux
+        invPk = 1.0 / (P_NL * k0);
+        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
+
+/*
+        for (g = 0; g < G; g++)
+            std::cout << phi0[g] << "   ";
+        std::cout << "\n";
+        for (g = 0; g < G; g++)
+            std::cout << phi1[g] << "   ";
+        std::cout << "\n----------\n\n\n";
+*/
+
+        // Calculate the next eigen-k
+        nu_Sigma_f_phi0 = 0.0;
+        nu_Sigma_f_phi1 = 0.0;
+        for (g = 0; g < G; g++)
+        {
+            nu_Sigma_f_phi0 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi0[g]; 
+            nu_Sigma_f_phi1 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi1[g]; 
+        };
+        k1 = k0 * nu_Sigma_f_phi1 / nu_Sigma_f_phi0;
+
+//        std::cout << k0 << "   " << k1 << "\n";
+
+        // Calculate the epsilon value of k 
+        epsik = fabs(1.0 - (k0/k1));
+
+        // Calulate the maximum epsilon of phi over all groups
+        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
+        for (g = 1; g < G; g++)
+        {
+            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
+            if (epsiphi < tmp_epsiphi)
+                epsiphi = tmp_epsiphi;
+        };
+
+        // Set the next eigens to the previous values befor looping
+        k0 = k1;
+        phi0 = phi1;
+        n++;
+    };
+
+//    std::cout << "N = " << N << "\n";
+
+    // Set the final values to the class members
+    k_t[bt_s] = k1;
+    phi_tg[bt_s] = phi1;
+
+    phi_t[bt_s] = 0.0;
+    for (g = 0; g < G; g++)
+        phi_t[bt_s] += phi1[0];
+
+    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+};
+
+
+
+
+
+
+
+
+
 void ReactorMG::calc_transmutation()
 {
     // Calculates a tranmutation step via the Pade method
@@ -1222,6 +1463,25 @@ void ReactorMG::burnup_core()
     };
 
     // Init the macroscopic cross sections
+    Sigma_t_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    nubar_Sigma_f_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    chi_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_s_fuel_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    Sigma_f_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_3n_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_alpha_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_proton_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_x_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_x_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+
+    Sigma_t_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_s_clad_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+
+    Sigma_t_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_s_cool_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+
     Sigma_t_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     nubar_Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     chi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
@@ -1237,10 +1497,22 @@ void ReactorMG::burnup_core()
 
 
     // Init the criticality matrices
+    A_fuel_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    F_fuel_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    A_inv_fuel_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    A_inv_F_fuel_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+
+    A_clad_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    A_inv_clad_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+
+    A_cool_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    A_inv_cool_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+
     A_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+
     T_int_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
     M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
 
@@ -1267,7 +1539,9 @@ void ReactorMG::burnup_core()
 
         // Preform the criticality and burnup calulations
         assemble_multigroup_matrices();
-        calc_criticality();
+//        calc_criticality();
+//        calc_criticality2();
+        calc_criticality3();
 
         if (s == 0)
             BU_t[0] = 0.0;

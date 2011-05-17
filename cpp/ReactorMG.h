@@ -198,6 +198,25 @@ public:
     iso_time_g sigma_2n_x_itg;       // (n, 2n *) cross section as a function of isotope and burn_time
 
 
+    time_g Sigma_t_fuel_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
+    time_g nubar_Sigma_f_fuel_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
+    time_g chi_fuel_tg;              // Core-average Fission neutron energy spectrum as a function of time and energy group
+    time_gh Sigma_s_fuel_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
+    time_g Sigma_f_fuel_tg;          // Core-average Macroscopic fission cross-section as a function of time and energy group
+    time_g Sigma_gamma_fuel_tg;      // Core-average Macroscopic capture cross-section as a function of time and energy group
+    time_g Sigma_2n_fuel_tg;         // Core-average Macroscopic (n, 2n) cross-section as a function of time and energy group
+    time_g Sigma_3n_fuel_tg;         // Core-average Macroscopic (n, 3n) cross-section as a function of time and energy group
+    time_g Sigma_alpha_fuel_tg;      // Core-average Macroscopic (n, alpha) cross-section as a function of time and energy group
+    time_g Sigma_proton_fuel_tg;     // Core-average Macroscopic (n, proton) cross-section as a function of time and energy group
+    time_g Sigma_gamma_x_fuel_tg;    // Core-average Macroscopic capture cross-section (excited) as a function of time and energy group
+    time_g Sigma_2n_x_fuel_tg;       // Core-average Macroscopic (n, 2n *) cross-section as a function of time and energy group
+
+    time_g Sigma_t_clad_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
+    time_gh Sigma_s_clad_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
+
+    time_g Sigma_t_cool_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
+    time_gh Sigma_s_cool_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
+
     time_g Sigma_t_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
     time_g nubar_Sigma_f_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
     time_g chi_tg;              // Core-average Fission neutron energy spectrum as a function of time and energy group
@@ -211,10 +230,22 @@ public:
     time_g Sigma_gamma_x_tg;    // Core-average Macroscopic capture cross-section (excited) as a function of time and energy group
     time_g Sigma_2n_x_tg;       // Core-average Macroscopic (n, 2n *) cross-section as a function of time and energy group
 
+    time_gh A_fuel_tgh;       // Absorprion Matrix, as a function of time
+    time_gh F_fuel_tgh;       // Fission Matrix, as a function of time
+    time_gh A_inv_fuel_tgh;   // Inverse of Absorprion Matrix, as a function of time
+    time_gh A_inv_F_fuel_tgh; // Inverse of Absorprion Matrix mult by the Fission Matrix, as a function of time
+
+    time_gh A_clad_tgh;       // Absorprion Matrix, as a function of time
+    time_gh A_inv_clad_tgh;   // Inverse of Absorprion Matrix, as a function of time
+
+    time_gh A_cool_tgh;       // Absorprion Matrix, as a function of time
+    time_gh A_inv_cool_tgh;   // Inverse of Absorprion Matrix, as a function of time
+
     time_gh A_tgh;       // Absorprion Matrix, as a function of time
     time_gh F_tgh;       // Fission Matrix, as a function of time
     time_gh A_inv_tgh;   // Inverse of Absorprion Matrix, as a function of time
     time_gh A_inv_F_tgh; // Inverse of Absorprion Matrix mult by the Fission Matrix, as a function of time
+
     time_gh T_int_tij;   // Energy Integral of the Transmutation Matrix, as a function of time
     time_gh M_tij;       // Burnup Matrix, T_int Matrix plus the Decay Matrix, as a function of time
 
@@ -264,6 +295,8 @@ public:
     void fold_mass_weights();
     void assemble_multigroup_matrices();
     void calc_criticality();
+    void calc_criticality2();
+    void calc_criticality3();
     void calc_transmutation();
 
     void burnup_core();
