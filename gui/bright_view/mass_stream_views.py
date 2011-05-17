@@ -103,8 +103,8 @@ class _MassStreamView(HasTraits):
                 editor      = mass_stream_editor,
                 ),
             ),
-#        width     = 0.4, 
-#        height    = 0.4,
+        width     = 0.4, 
+        height    = 0.4,
         resizable = True,
         )
 
