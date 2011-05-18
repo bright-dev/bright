@@ -5791,6 +5791,14 @@ cdef class ReactorMG(FCComp):
 
 
 
+    property zeta_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.zeta_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.zeta_tg = conv.array_to_vector_2d_dbl(value)
+
+
     property phi_tg:
         def __get__(self):
             return conv.vector_to_array_2d_dbl(self.rmg_pointer.phi_tg)

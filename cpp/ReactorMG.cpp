@@ -1198,6 +1198,7 @@ void ReactorMG::burnup_core()
     N_cool_it.clear();
 
     // Also init attributes caluclated from burnup
+    zeta_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 1.0) );
     phi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0) );
     phi_t = std::vector<double>(S, -1.0);
     Phi_t = std::vector<double>(S, -1.0);
@@ -1864,3 +1865,321 @@ MassStream ReactorMG::calc (MassStream instream)
 
     return calc();
 };
+
+
+
+
+// 
+// Lattice and Zeta functions below
+//
+
+
+
+void ReactorMG::lattice_E_planar(double a, double b)
+{
+    lattice_E_F_.clear();
+        lattice_E_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        if (0.0 == kappaC_F_[f])
+            lattice_E_F_[f] = 0.0;
+        else
+            lattice_E_F_[f] = kappaC_F_[f] * (b - a) * bright::COTH(kappaC_F_[f]*(b-a));
+    };
+    return;
+};
+
+
+
+
+
+
+void ReactorMG::lattice_F_planar(double a, double b)
+{
+    lattice_F_F_.clear();
+        lattice_F_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        if (0.0 == kappaF_F_[f])
+            lattice_F_F_[f] = 0.0;
+        else
+            lattice_F_F_[f] = lattice_F_F_[f] * a * bright::COTH(lattice_F_F_[f]*a) ;
+    };
+    return; 
+};
+
+
+
+
+void ReactorMG::lattice_E_spherical(double a, double b)
+{
+    lattice_E_F_.clear();
+        lattice_E_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        if (0.0 == kappaC_F_[f])
+            lattice_E_F_[f] = 0.0;
+        else
+        {
+            double coef = pow(kappaC_F_[f], 3) * (pow(b,3) - pow(a,3)) / (3*kappaC_F_[f]*a);
+            double num = 1.0 - ( kappaC_F_[f] * b * bright::COTH(kappaC_F_[f]*(b-a)) );
+            double den = 1.0 - (pow(kappaC_F_[f], 2)*a*b) - ( kappaC_F_[f]*(b-a) * bright::COTH(kappaC_F_[f]*(b-a)) );
+            lattice_E_F_[f] = coef * num / den;
+        };
+    };
+    return;
+};
+    
+
+
+
+
+void ReactorMG::lattice_F_spherical(double a, double b)
+{
+    lattice_F_F_.clear();
+        lattice_F_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        double coef = pow(kappaF_F_[f], 2) * pow(a, 2) / 3.0;
+        double num = bright::TANH(kappaF_F_[f]*a); 
+        double den = (kappaF_F_[f]*a) - bright::TANH(kappaF_F_[f]*a); 
+        lattice_F_F_[f] = coef * num / den;
+    };
+    return; 
+};
+
+
+
+
+
+void ReactorMG::lattice_E_cylindrical(double a, double b)
+{
+    namespace bm = boost::math;
+
+    lattice_E_F_.clear();
+        lattice_E_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        if (0.0 == kappaC_F_[f])
+            lattice_E_F_[f] = 0.0;
+        else
+        {
+            double coef = kappaC_F_[f] * (pow(b,2) - pow(a,2)) / (2.0*a);
+            double num = ( bm::cyl_bessel_i(0, kappaC_F_[f]*a) * bm::cyl_bessel_k(1, kappaC_F_[f]*b) ) + \
+                ( bm::cyl_bessel_k(0, kappaC_F_[f]*a) * bm::cyl_bessel_i(1, kappaC_F_[f]*b) );
+            double den = ( bm::cyl_bessel_i(1, kappaC_F_[f]*b) * bm::cyl_bessel_k(1, kappaC_F_[f]*a) ) - \
+                ( bm::cyl_bessel_k(1, kappaC_F_[f]*b) * bm::cyl_bessel_i(1, kappaC_F_[f]*a) );
+            lattice_E_F_[f] = coef * num / den;
+        };
+    };
+    return;
+};
+
+
+
+    
+void ReactorMG::lattice_F_cylindrical(double a, double b)
+{
+    namespace bm = boost::math;
+
+    lattice_F_F_.clear();
+        lattice_F_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        if (0.0 == kappaF_F_[f])
+            lattice_E_F_[f] = 0.0;
+        else
+        {
+            double num =  kappaF_F_[f] * a * bm::cyl_bessel_i(0, kappaF_F_[f]*a);
+            double den = 2.0 * bm::cyl_bessel_i(1, kappaF_F_[f]*a);
+            lattice_F_F_[f] = num / den;
+        };
+    };
+    return;
+};
+
+
+
+void ReactorMG::calc_zeta()
+{
+    // Computes the thermal disadvantage factor
+
+    //Prepare data sets to calculate the disadvantage factor
+    //For Fuel...
+    SigmaFa_F_.clear();
+    SigmaFtr_F_.clear();
+    kappaF_F_.clear();
+
+    SigmaFa_F_.assign( F.size(), 0.0 );
+    SigmaFtr_F_.assign( F.size(), 0.0 );
+    kappaF_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        //Calculate the following...
+        //	* Macroscopic abspobtion XS in Fuel
+        //	* Macroscopic transport XS in Fuel
+        for(CompIter iso = niF.begin(); iso != niF.end(); iso++)
+        {
+            //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
+            //Else use KAERI Data for sigma_a
+            if (570000 < iso->first < 720000 || 890000 < iso->first)
+            {
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
+
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+            }
+            else
+            {
+                //renormalize sigma_a for this fluenece
+                double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
+
+                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::cm2_per_barn);
+
+                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (sig_a + \
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+            };
+        };
+
+        //Calculate kappa
+        kappaF_F_[f]   = sqrt( 3.0 * SigmaFtr_F_[f] * SigmaFa_F_[f] );
+    };
+
+
+    //For Coolant...
+    SigmaCa_F_.clear();
+    SigmaCtr_F_.clear();
+    kappaC_F_.clear();
+
+    SigmaCa_F_.assign( F.size(), 0.0 );
+    SigmaCtr_F_.assign( F.size(), 0.0 );
+    kappaC_F_.assign( F.size(), 0.0 );
+
+    for (int f = 0; f < F.size(); f++)
+    {
+        //Calculate the following...
+        //	* Macroscopic abspobtion XS in Coolant
+        //	* Macroscopic transport XS in Coolant
+        for(CompIter iso = niC.begin(); iso != niC.end(); iso++)
+        {
+            //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
+            //Else use KAERI Data for sigma_a
+            if (570000 < iso->first < 720000 || 890000 < iso->first)
+            {
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
+
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+            }
+            else
+            {
+                //renormalize sigma_a for this fluenece
+                double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
+
+                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::cm2_per_barn);
+
+                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (sig_a + \
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+            };
+        };
+
+        //Calculate kappa
+        kappaC_F_[f]   = sqrt( 3.0 * SigmaCtr_F_[f] * SigmaCa_F_[f] );
+    };
+
+    //Calculate the lattice_flag Functions
+    double a, b;
+    if (lattice_flag == "Planar")
+    {
+        a = r;
+        b = l / 2.0;
+    
+        lattice_E_planar(a, b);
+        lattice_F_planar(a, b);
+    }
+    else if (lattice_flag == "Spherical")
+    {
+        a = r;
+        b = l / 2.0;
+    
+        lattice_E_spherical(a, b);
+        lattice_F_spherical(a, b);
+    }
+    else if (lattice_flag == "Cylindrical")
+    {
+        a = r;
+        b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
+
+        lattice_E_cylindrical(a, b);
+        lattice_F_cylindrical(a, b);
+    }
+    else
+    {
+        if (0 < FCComps::verbosity)
+            std::cout << "Did not specify use of planar or spheical or cylindrical lattice functions! Assuming cylindrical...\n";
+        
+        a = r;
+        b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
+
+        lattice_E_cylindrical(a, b);
+        lattice_F_cylindrical(a, b);
+    };
+
+    //Finally, Calculate Zeta
+    zeta_F_.clear();
+    zeta_F_.assign( F.size(), 0.0);
+    for (int f = 0; f < F.size(); f++) 
+    {
+        if (0.0 == SigmaCa_F_[f])
+            zeta_F_[f] = 1.0;
+        else
+            zeta_F_[f] = lattice_F_F_[f] + ( SigmaFa_F_[f] * VF * (lattice_E_F_[f] - 1.0) / (SigmaCa_F_[f] * VC) );
+    };
+
+
+    //Unfortunately, the above formulation for the disadvantage factor is ONLY valid for a << b!!!
+    //Often times in modern (thermal) reactors, this is not the case.
+    //We have a 'thin moderator' situation.
+    //
+    //To fix this problem correctly requires going to a multi-region diffusion/transport calculation.
+    //Doing so is beyond the scope of this code.
+    //What is more in-line with current practice is to use the results of a more sophisticated method,
+    //interpolate over them, and use them here.
+    //
+    //That is what is done here when 0.1 < VF / VC, (ie the fuel is greater than 10% of the coolant)
+    //A baseline zeta is determined from data presented in "Thermal disadvantage factor calculation by 
+    //the multiregion collision probability method" by B. Ozgener,  and H. A. Ozgener, Institute of 
+    //Nuclear Energy, Istanbul Technical University 80626 Maslak, Istanbul, Turkey, Received 
+    //28 January 2003;  accepted 20 May 2003.  Available online 6 March 2004.
+    //This baseline is a function of (VF/VC).
+    // 
+    //The above calculation of zeta is then used as a scaling factor on the baseline function to 
+    //account for variations in fuel composition and fluenece.
+
+    //Check if we are in the proper Fuel-to-Coolant Regime
+
+    double f2c = VF / VC;
+    if (f2c < 0.1)
+        return;
+
+    double zetabase  = 1.30857959 - (0.10656299 * f2c);
+    double zetaratio = zetabase / zeta_F_[0];	
+
+    for (int f = 0; f < F.size(); f++) 
+    {
+        zeta_F_[f] = zeta_F_[f] * zetaratio;
+
+        if (zeta_F_[f] < 1.0)
+            zeta_F_[f] = 1.0;
+    };
+
+    return;
+};
+

@@ -178,6 +178,7 @@ public:
 
 
     // Attributes caluclated from burnup_core()
+    time_g zeta_tg;     // Group disadvantage factors
     time_g phi_tg;      // Group fluxes as a function of time
     time_data phi_t;    // Group fluxes as a function of time
     time_data Phi_t;    // Fluence in [n/kb]
@@ -316,6 +317,14 @@ public:
     MassStream   calc (CompDict);
     MassStream   calc (MassStream);	
 
+    // Lattice functions
+    void lattice_E_planar(double, double);
+    void lattice_F_planar(double, double);
+    void lattice_E_spherical(double, double);
+    void lattice_F_spherical(double, double);
+    void lattice_E_cylindrical(double, double);
+    void lattice_F_cylindrical(double, double);
+    void calc_zeta();
 };
 
 
