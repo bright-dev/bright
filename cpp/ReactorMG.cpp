@@ -1274,6 +1274,7 @@ void ReactorMG::burnup_core()
 
     // Init the macroscopic cross sections
     Sigma_t_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     nubar_Sigma_f_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     chi_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_fuel_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
@@ -1287,9 +1288,11 @@ void ReactorMG::burnup_core()
     Sigma_2n_x_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
     Sigma_t_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_clad_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
     Sigma_t_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_cool_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
     Sigma_t_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
