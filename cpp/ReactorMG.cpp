@@ -845,9 +845,9 @@ void ReactorMG::fold_mass_weights()
     {
         for (h = 0; h < G; h++)
         {
-            Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tg[bt_s][g][h];
-            Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tg[bt_s][g][h];
-            Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tg[bt_s][g][h];
+            Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tgh[bt_s][g][h];
+            Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tgh[bt_s][g][h];
+            Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tgh[bt_s][g][h];
         };
     };
 };
@@ -1957,8 +1957,8 @@ void ReactorMG::lattice_E_spherical(double a, double b)
         else
         {
             coef = pow(kappa_cool_tg[bt_s][g], 3) * (pow(b,3) - pow(a,3)) / (3.0 * kappa_cool_tg[bt_s][g] * a);
-            num = 1.0 - (kappa_cool_[bt_s][g] * b * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
-            den = 1.0 - (pow(kappa_cool_tg[bt_s][g], 2) * a * b) - (kappa_cool_bt[bt_s][g] * (b - a) * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
+            num = 1.0 - (kappa_cool_tg[bt_s][g] * b * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
+            den = 1.0 - (pow(kappa_cool_tg[bt_s][g], 2) * a * b) - (kappa_cool_tg[bt_s][g] * (b - a) * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
             lattice_E_tg[bt_s][g] = coef * num / den;
         };
     };
@@ -1996,7 +1996,7 @@ void ReactorMG::lattice_E_cylindrical(double a, double b)
             lattice_E_tg[bt_s][g] = 0.0;
         else
         {
-            coef = kappa_cool_tg[f] * (pow(b, 2) - pow(a, 2)) / (2.0 * a);
+            coef = kappa_cool_tg[bt_s][g] * (pow(b, 2) - pow(a, 2)) / (2.0 * a);
 
             num = (bm::cyl_bessel_i(0, kappa_cool_tg[bt_s][g] * a) * bm::cyl_bessel_k(1, kappa_cool_tg[bt_s][g] * b)) + \
                   (bm::cyl_bessel_k(0, kappa_cool_tg[bt_s][g] * a) * bm::cyl_bessel_i(1, kappa_cool_tg[bt_s][g] * b));

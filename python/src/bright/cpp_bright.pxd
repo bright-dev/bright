@@ -516,6 +516,10 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[double] Phi_t
         vector[double] BU_t
 
+        vector[vector[double]] zeta_tg
+        vector[vector[double]] lattice_E_tg
+        vector[vector[double]] lattice_F_tg
+
         map[int, vector[double]] T_it
         map[int, vector[vector[double]]] sigma_t_itg
         map[int, vector[vector[double]]] nubar_sigma_f_itg
