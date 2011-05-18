@@ -203,6 +203,7 @@ public:
 
 
     time_g Sigma_t_fuel_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
+    time_g Sigma_a_fuel_tg;          // Core-average Macroscopic absorption cross section as a function of time and energy group
     time_g nubar_Sigma_f_fuel_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
     time_g chi_fuel_tg;              // Core-average Fission neutron energy spectrum as a function of time and energy group
     time_gh Sigma_s_fuel_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
@@ -217,10 +218,12 @@ public:
     time_g kappa_fuel_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_clad_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
+    time_g Sigma_a_clad_tg;          // Core-average Macroscopic absorption cross section as a function of time and energy group
     time_gh Sigma_s_clad_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
     time_g kappa_clad_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_cool_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
+    time_g Sigma_a_cool_tg;          // Core-average Macroscopic absorption cross section as a function of time and energy group
     time_gh Sigma_s_cool_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
     time_g kappa_cool_tg;            // Inverse of the diffusion coefficent
 

@@ -743,7 +743,7 @@ void ReactorMG::calc_mass_weights()
 void ReactorMG::fold_mass_weights()
 {
     // Folds mass weight in with cross-sections for current time step
-    int g;
+    int g, h;
     double mu;
     double nuc_weight;
 
@@ -805,7 +805,7 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_tg[bt_s][g] += N_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
 
-            for (int h =0; h < G; h++)
+            for (h =0; h < G; h++)
             {
                 Sigma_s_fuel_tgh[bt_s][g][h] += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_clad_tgh[bt_s][g][h] += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
@@ -835,6 +835,20 @@ void ReactorMG::fold_mass_weights()
         kappa_fuel_tg[bt_s][g] = (3.0 * Sigma_t_fuel_tg[bt_s][g]) - (2.0 * Sigma_s_fuel_tgh[bt_s][g][g] / MW_fuel_t[bt_s]); 
         kappa_clad_tg[bt_s][g] = (3.0 * Sigma_t_clad_tg[bt_s][g]) - (2.0 * Sigma_s_clad_tgh[bt_s][g][g] / MW_clad_t[bt_s]); 
         kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
+    };
+
+    // Get absorption XS estimate
+    Sigma_a_fuel_tg[bt_s][g] = Sigma_t_fuel_tg[bt_s][g];
+    Sigma_a_clad_tg[bt_s][g] = Sigma_t_clad_tg[bt_s][g];
+    Sigma_a_cool_tg[bt_s][g] = Sigma_t_cool_tg[bt_s][g];
+    for (g = 0; g < G; g++)
+    {
+        for (h = 0; h < G; h++)
+        {
+            Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tg[bt_s][g][h];
+            Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tg[bt_s][g][h];
+            Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tg[bt_s][g][h];
+        };
     };
 };
 
@@ -2032,16 +2046,16 @@ void ReactorMG::calc_zeta()
     }
     else if (lattice_flag == "Spherical")
     {
-        a = r;
-        b = l / 2.0;
+        a = r_fuel;
+        b = pitch / 2.0;
     
         lattice_E_spherical(a, b);
         lattice_F_spherical(a, b);
     }
     else if (lattice_flag == "Cylindrical")
     {
-        a = r;
-        b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
+        a = r_fuel;
+        b = pitch / sqrt(bright::pi); // radius of cylinder with an equivilent cell volume
 
         lattice_E_cylindrical(a, b);
         lattice_F_cylindrical(a, b);
@@ -2051,45 +2065,47 @@ void ReactorMG::calc_zeta()
         if (0 < FCComps::verbosity)
             std::cout << "Did not specify use of planar or spheical or cylindrical lattice functions! Assuming cylindrical...\n";
         
-        a = r;
-        b = l / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
+        a = r_fuel;
+        b = pitch / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
 
         lattice_E_cylindrical(a, b);
         lattice_F_cylindrical(a, b);
     };
 
-    //Finally, Calculate Zeta
-    zeta_F_.clear();
-    zeta_F_.assign( F.size(), 0.0);
-    for (int f = 0; f < F.size(); f++) 
+    // Finally, Calculate Zeta
+    int g, h;
+    double Sigma_a_fuel, Sigma_a_cool;
+    for (g = 0; g < G; g++) 
     {
+
+        // calc zeta
         if (0.0 == SigmaCa_F_[f])
-            zeta_F_[f] = 1.0;
+            zeta_tg[bt_s][g] = 1.0;
         else
-            zeta_F_[f] = lattice_F_F_[f] + ( SigmaFa_F_[f] * VF * (lattice_E_F_[f] - 1.0) / (SigmaCa_F_[f] * VC) );
+            zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (SigmaFa_F_[f] * V_fuel * (lattice_E_tg[bt_s][g] - 1.0) / (SigmaCa_F_[f] * V_cool));
     };
 
 
-    //Unfortunately, the above formulation for the disadvantage factor is ONLY valid for a << b!!!
-    //Often times in modern (thermal) reactors, this is not the case.
-    //We have a 'thin moderator' situation.
+    // Unfortunately, the above formulation for the disadvantage factor is ONLY valid for a << b!!!
+    // Often times in modern (thermal) reactors, this is not the case.
+    // We have a 'thin moderator' situation.
     //
-    //To fix this problem correctly requires going to a multi-region diffusion/transport calculation.
-    //Doing so is beyond the scope of this code.
-    //What is more in-line with current practice is to use the results of a more sophisticated method,
-    //interpolate over them, and use them here.
+    // To fix this problem correctly requires going to a multi-region diffusion/transport calculation.
+    // Doing so is beyond the scope of this code.
+    // What is more in-line with current practice is to use the results of a more sophisticated method,
+    // interpolate over them, and use them here.
     //
-    //That is what is done here when 0.1 < VF / VC, (ie the fuel is greater than 10% of the coolant)
-    //A baseline zeta is determined from data presented in "Thermal disadvantage factor calculation by 
-    //the multiregion collision probability method" by B. Ozgener,  and H. A. Ozgener, Institute of 
-    //Nuclear Energy, Istanbul Technical University 80626 Maslak, Istanbul, Turkey, Received 
-    //28 January 2003;  accepted 20 May 2003.  Available online 6 March 2004.
-    //This baseline is a function of (VF/VC).
+    // That is what is done here when 0.1 < VF / VC, (ie the fuel is greater than 10% of the coolant)
+    // A baseline zeta is determined from data presented in "Thermal disadvantage factor calculation by 
+    // the multiregion collision probability method" by B. Ozgener,  and H. A. Ozgener, Institute of 
+    // Nuclear Energy, Istanbul Technical University 80626 Maslak, Istanbul, Turkey, Received 
+    // 28 January 2003;  accepted 20 May 2003.  Available online 6 March 2004.
+    // This baseline is a function of (VF/VC).
     // 
-    //The above calculation of zeta is then used as a scaling factor on the baseline function to 
-    //account for variations in fuel composition and fluenece.
+    // The above calculation of zeta is then used as a scaling factor on the baseline function to 
+    // account for variations in fuel composition and fluenece.
 
-    //Check if we are in the proper Fuel-to-Coolant Regime
+    // Check if we are in the proper Fuel-to-Coolant Regime
 
     double f2c = VF / VC;
     if (f2c < 0.1)
@@ -2105,7 +2121,5 @@ void ReactorMG::calc_zeta()
         if (zeta_F_[f] < 1.0)
             zeta_F_[f] = 1.0;
     };
-
-    return;
 };
 
