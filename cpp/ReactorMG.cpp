@@ -1901,17 +1901,13 @@ MassStream ReactorMG::calc (MassStream instream)
 
 void ReactorMG::lattice_E_planar(double a, double b)
 {
-    lattice_E_F_.clear();
-        lattice_E_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
+    for (int g = 0; g < G; g++)
     {
-        if (0.0 == kappaC_F_[f])
-            lattice_E_F_[f] = 0.0;
+        if (0.0 == kappa_cool_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
         else
-            lattice_E_F_[f] = kappaC_F_[f] * (b - a) * bright::COTH(kappaC_F_[f]*(b-a));
+            lattice_E_tg[bt_s][g] = kappa_cool_tg[bt_s][g] * (b - a) * bright::COTH(kappa_cool_tg[bt_s][g]*(b-a));
     };
-    return;
 };
 
 
@@ -1921,17 +1917,13 @@ void ReactorMG::lattice_E_planar(double a, double b)
 
 void ReactorMG::lattice_F_planar(double a, double b)
 {
-    lattice_F_F_.clear();
-        lattice_F_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
+    for (int g = 0; g < G; g++)
     {
-        if (0.0 == kappaF_F_[f])
-            lattice_F_F_[f] = 0.0;
+        if (0.0 == kappa_fuel_tg[bt_s][g])
+            lattice_F_tg[bt_s][g] = 0.0;
         else
-            lattice_F_F_[f] = lattice_F_F_[f] * a * bright::COTH(lattice_F_F_[f]*a) ;
+            lattice_F_tg[bt_s][g] = kappa_fuel_tg[bt_s][g] * a * bright::COTH(kappa_fuel_tg[bt_s][g]*a) ;
     };
-    return; 
 };
 
 
@@ -2036,10 +2028,11 @@ void ReactorMG::calc_zeta()
 
     // Calculate the lattice_flag Functions
     double a, b;
+
     if (lattice_flag == "Planar")
     {
-        a = r;
-        b = l / 2.0;
+        a = r_fuel;
+        b = pitch / 2.0;
     
         lattice_E_planar(a, b);
         lattice_F_planar(a, b);

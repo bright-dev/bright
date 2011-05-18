@@ -1031,7 +1031,7 @@ void Reactor1G::lattice_F_planar(double a, double b)
         if (0.0 == kappaF_F_[f])
             lattice_F_F_[f] = 0.0;
         else
-            lattice_F_F_[f] = lattice_F_F_[f] * a * bright::COTH(lattice_F_F_[f]*a) ;
+            lattice_F_F_[f] = kappaF_F_[f] * a * bright::COTH(kappaF_F_[f]*a) ;
     };
     return; 
 };
