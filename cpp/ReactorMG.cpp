@@ -744,6 +744,8 @@ void ReactorMG::fold_mass_weights()
 {
     // Folds mass weight in with cross-sections for current time step
     int g;
+    double mu;
+    double nuc_weight;
 
     double V_total = V_fuel + V_clad + V_cool;
     double V_frac_fuel = V_fuel / V_total;
@@ -757,7 +759,7 @@ void ReactorMG::fold_mass_weights()
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
-        double iso_weight = isoname::nuc_weight(*iso);
+        nuc_weight = isoname::nuc_weight(*iso);
 
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
 
@@ -810,8 +812,17 @@ void ReactorMG::fold_mass_weights()
                 Sigma_s_cool_tgh[bt_s][g][h] += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
             };
+
+            // Calculate kappas as the inverse of the diffusion length
+            // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
+            // FIXME
+            mu = 2.0 / (3.0 * nuc_weight);
+            kappa_fuel_tg[bt_s][g] += Sigma_t_fuel_tg[bt_s][g] - (mu * Sigma_s_fuel_tgh[bt_s][g][g]); 
+            kappa_clad_tg[bt_s][g] += Sigma_t_clad_tg[bt_s][g] - (mu * Sigma_s_clad_tgh[bt_s][g][g]); 
+            kappa_cool_tg[bt_s][g] += Sigma_t_cool_tg[bt_s][g] - (mu * Sigma_s_cool_tgh[bt_s][g][g]); 
         };
     };
+
 
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
@@ -1198,11 +1209,15 @@ void ReactorMG::burnup_core()
     N_cool_it.clear();
 
     // Also init attributes caluclated from burnup
-    zeta_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 1.0) );
     phi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0) );
     phi_t = std::vector<double>(S, -1.0);
     Phi_t = std::vector<double>(S, -1.0);
     BU_t = std::vector<double>(S, -1.0);
+
+    zeta_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 1.0) );
+    lattice_E_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
+    lattice_F_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
+
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
@@ -1865,6 +1880,12 @@ MassStream ReactorMG::calc (MassStream instream)
 
     return calc();
 };
+
+
+
+
+
+
 
 
 

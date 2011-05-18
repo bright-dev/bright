@@ -178,11 +178,14 @@ public:
 
 
     // Attributes caluclated from burnup_core()
-    time_g zeta_tg;     // Group disadvantage factors
     time_g phi_tg;      // Group fluxes as a function of time
     time_data phi_t;    // Group fluxes as a function of time
     time_data Phi_t;    // Fluence in [n/kb]
     time_data BU_t;		// Burnup [MWd/kgIHM]
+
+    time_g zeta_tg;     // Group disadvantage factors
+    time_g lattice_E_tg;  // Lattice function E
+    time_g lattice_F_tg;  // Lattuce function F
 
     iso_time_map T_it;               // Transformation Matrix [kg_i/kgIHM]
     iso_time_g sigma_t_itg;          // Total cross section as a function of isotope and burn_time
@@ -211,12 +214,15 @@ public:
     time_g Sigma_proton_fuel_tg;     // Core-average Macroscopic (n, proton) cross-section as a function of time and energy group
     time_g Sigma_gamma_x_fuel_tg;    // Core-average Macroscopic capture cross-section (excited) as a function of time and energy group
     time_g Sigma_2n_x_fuel_tg;       // Core-average Macroscopic (n, 2n *) cross-section as a function of time and energy group
+    time_g kappa_fuel_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_clad_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
     time_gh Sigma_s_clad_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
+    time_g kappa_clad_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_cool_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
     time_gh Sigma_s_cool_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
+    time_g kappa_cool_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
     time_g nubar_Sigma_f_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
