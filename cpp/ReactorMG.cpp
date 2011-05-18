@@ -2077,15 +2077,12 @@ void ReactorMG::calc_zeta()
 
     // Finally, Calculate Zeta
     int g, h;
-    double Sigma_a_fuel, Sigma_a_cool;
     for (g = 0; g < G; g++) 
     {
-
-        // calc zeta
-        if (0.0 == SigmaCa_F_[f])
+        if (0.0 == Sigma_a_cool_tg[bt_s][g])
             zeta_tg[bt_s][g] = 1.0;
         else
-            zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (SigmaFa_F_[f] * V_fuel * (lattice_E_tg[bt_s][g] - 1.0) / (SigmaCa_F_[f] * V_cool));
+            zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (Sigma_a_fuel_tg[bt_s][g] * V_fuel * (lattice_E_tg[bt_s][g] - 1.0) / (Sigma_a_cool_tg[bt_s][g] * V_cool));
     };
 
 
@@ -2110,19 +2107,25 @@ void ReactorMG::calc_zeta()
 
     // Check if we are in the proper Fuel-to-Coolant Regime
 
-    double f2c = VF / VC;
+    double f2c = V_fuel / V_cool;
     if (f2c < 0.1)
         return;
 
     double zetabase  = 1.30857959 - (0.10656299 * f2c);
-    double zetaratio = zetabase / zeta_F_[0];	
 
-    for (int f = 0; f < F.size(); f++) 
+    // Find an index that is hopefully thermal
+    int g_therm = (2 * G) / 3;
+    while (g_therm != 0 || 0.0001 < E_g[g_therm])
+        g_therm = g_therm - 1;
+
+    double zetaratio = zetabase / zeta_tg[bt_s][g_therm];
+
+    for (g = 0; g < G; g++) 
     {
-        zeta_F_[f] = zeta_F_[f] * zetaratio;
+        zeta_tg[bt_s][g] = zeta_tg[bt_s][g] * zetaratio;
 
-        if (zeta_F_[f] < 1.0)
-            zeta_F_[f] = 1.0;
+        if (zeta_tg[bt_s][g] < 1.0)
+            zeta_tg[bt_s][g] = 1.0;
     };
 };
 
