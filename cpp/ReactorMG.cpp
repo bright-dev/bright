@@ -2034,39 +2034,7 @@ void ReactorMG::calc_zeta()
 {
     // Computes the thermal disadvantage factor
 
-    for (int f = 0; f < F.size(); f++)
-    {
-        //Calculate the following...
-        //	* Macroscopic abspobtion XS in Coolant
-        //	* Macroscopic transport XS in Coolant
-        for(CompIter iso = niC.begin(); iso != niC.end(); iso++)
-        {
-            //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
-            //Else use KAERI Data for sigma_a
-            if (570000 < iso->first < 720000 || 890000 < iso->first)
-            {
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
-
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            }
-            else
-            {
-                //renormalize sigma_a for this fluenece
-                double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
-
-                SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::cm2_per_barn);
-
-                SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (sig_a + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            };
-        };
-
-        //Calculate kappa
-        kappaC_F_[f]   = sqrt( 3.0 * SigmaCtr_F_[f] * SigmaCa_F_[f] );
-    };
-
-    //Calculate the lattice_flag Functions
+    // Calculate the lattice_flag Functions
     double a, b;
     if (lattice_flag == "Planar")
     {
