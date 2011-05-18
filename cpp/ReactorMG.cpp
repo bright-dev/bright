@@ -1931,22 +1931,20 @@ void ReactorMG::lattice_F_planar(double a, double b)
 
 void ReactorMG::lattice_E_spherical(double a, double b)
 {
-    lattice_E_F_.clear();
-        lattice_E_F_.assign( F.size(), 0.0 );
+    double coef, num, den;
 
-    for (int f = 0; f < F.size(); f++)
+    for (int g = 0; g < G; g++)
     {
-        if (0.0 == kappaC_F_[f])
-            lattice_E_F_[f] = 0.0;
+        if (0.0 == kappa_cool_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
         else
         {
-            double coef = pow(kappaC_F_[f], 3) * (pow(b,3) - pow(a,3)) / (3*kappaC_F_[f]*a);
-            double num = 1.0 - ( kappaC_F_[f] * b * bright::COTH(kappaC_F_[f]*(b-a)) );
-            double den = 1.0 - (pow(kappaC_F_[f], 2)*a*b) - ( kappaC_F_[f]*(b-a) * bright::COTH(kappaC_F_[f]*(b-a)) );
-            lattice_E_F_[f] = coef * num / den;
+            coef = pow(kappa_cool_tg[bt_s][g], 3) * (pow(b,3) - pow(a,3)) / (3.0 * kappa_cool_tg[bt_s][g] * a);
+            num = 1.0 - (kappa_cool_[bt_s][g] * b * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
+            den = 1.0 - (pow(kappa_cool_tg[bt_s][g], 2) * a * b) - (kappa_cool_bt[bt_s][g] * (b - a) * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
+            lattice_E_tg[bt_s][g] = coef * num / den;
         };
     };
-    return;
 };
     
 
@@ -1955,17 +1953,15 @@ void ReactorMG::lattice_E_spherical(double a, double b)
 
 void ReactorMG::lattice_F_spherical(double a, double b)
 {
-    lattice_F_F_.clear();
-        lattice_F_F_.assign( F.size(), 0.0 );
+    double coef, num, den;
 
-    for (int f = 0; f < F.size(); f++)
+    for (int g = 0; g < G; g++)
     {
-        double coef = pow(kappaF_F_[f], 2) * pow(a, 2) / 3.0;
-        double num = bright::TANH(kappaF_F_[f]*a); 
-        double den = (kappaF_F_[f]*a) - bright::TANH(kappaF_F_[f]*a); 
-        lattice_F_F_[f] = coef * num / den;
+        coef = pow(kappa_fuel_tg[bt_s][g], 2) * pow(a, 2) / 3.0;
+        num = bright::TANH(kappa_fuel_tg[bt_s][g] * a); 
+        den = (kappa_fuel_tg[bt_s][g] * a) - bright::TANH(kappa_fuel_tg[bt_s][g] * a); 
+        lattice_F_tg[bt_s][g] = coef * num / den;
     };
-    return; 
 };
 
 
@@ -1975,25 +1971,25 @@ void ReactorMG::lattice_F_spherical(double a, double b)
 void ReactorMG::lattice_E_cylindrical(double a, double b)
 {
     namespace bm = boost::math;
+    double coef, num, den;
 
-    lattice_E_F_.clear();
-        lattice_E_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
+    for (int g = 0; g < G; g++)
     {
-        if (0.0 == kappaC_F_[f])
-            lattice_E_F_[f] = 0.0;
+        if (0.0 == kappa_cool_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
         else
         {
-            double coef = kappaC_F_[f] * (pow(b,2) - pow(a,2)) / (2.0*a);
-            double num = ( bm::cyl_bessel_i(0, kappaC_F_[f]*a) * bm::cyl_bessel_k(1, kappaC_F_[f]*b) ) + \
-                ( bm::cyl_bessel_k(0, kappaC_F_[f]*a) * bm::cyl_bessel_i(1, kappaC_F_[f]*b) );
-            double den = ( bm::cyl_bessel_i(1, kappaC_F_[f]*b) * bm::cyl_bessel_k(1, kappaC_F_[f]*a) ) - \
-                ( bm::cyl_bessel_k(1, kappaC_F_[f]*b) * bm::cyl_bessel_i(1, kappaC_F_[f]*a) );
-            lattice_E_F_[f] = coef * num / den;
+            coef = kappa_cool_tg[f] * (pow(b, 2) - pow(a, 2)) / (2.0 * a);
+
+            num = (bm::cyl_bessel_i(0, kappa_cool_tg[bt_s][g] * a) * bm::cyl_bessel_k(1, kappa_cool_tg[bt_s][g] * b)) + \
+                  (bm::cyl_bessel_k(0, kappa_cool_tg[bt_s][g] * a) * bm::cyl_bessel_i(1, kappa_cool_tg[bt_s][g] * b));
+
+            den = (bm::cyl_bessel_i(1, kappa_cool_tg[bt_s][g] * b) * bm::cyl_bessel_k(1, kappa_cool_tg[bt_s][g] * a)) - \
+                  (bm::cyl_bessel_k(1, kappa_cool_tg[bt_s][g] * b) * bm::cyl_bessel_i(1, kappa_cool_tg[bt_s][g] * a));
+
+            lattice_E_tg[bt_s][g] = coef * num / den;
         };
     };
-    return;
 };
 
 
@@ -2002,22 +1998,19 @@ void ReactorMG::lattice_E_cylindrical(double a, double b)
 void ReactorMG::lattice_F_cylindrical(double a, double b)
 {
     namespace bm = boost::math;
+    double num, den;
 
-    lattice_F_F_.clear();
-        lattice_F_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
+    for (int g = 0; g < G; g++)
     {
-        if (0.0 == kappaF_F_[f])
-            lattice_E_F_[f] = 0.0;
+        if (0.0 == kappa_fuel_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
         else
         {
-            double num =  kappaF_F_[f] * a * bm::cyl_bessel_i(0, kappaF_F_[f]*a);
-            double den = 2.0 * bm::cyl_bessel_i(1, kappaF_F_[f]*a);
-            lattice_F_F_[f] = num / den;
+            num =  kappa_fuel_tg[bt_s][g] * a * bm::cyl_bessel_i(0, kappa_fuel_tg[bt_s][g] * a);
+            den = 2.0 * bm::cyl_bessel_i(1, kappa_fuel_tg[bt_s][g] * a);
+            lattice_F_tg[bt_s][g] = num / den;
         };
     };
-    return;
 };
 
 
