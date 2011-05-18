@@ -812,17 +812,8 @@ void ReactorMG::fold_mass_weights()
                 Sigma_s_cool_tgh[bt_s][g][h] += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
             };
-
-            // Calculate kappas as the inverse of the diffusion length
-            // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
-            // FIXME
-            mu = 2.0 / (3.0 * nuc_weight);
-            kappa_fuel_tg[bt_s][g] += Sigma_t_fuel_tg[bt_s][g] - (mu * Sigma_s_fuel_tgh[bt_s][g][g]); 
-            kappa_clad_tg[bt_s][g] += Sigma_t_clad_tg[bt_s][g] - (mu * Sigma_s_clad_tgh[bt_s][g][g]); 
-            kappa_cool_tg[bt_s][g] += Sigma_t_cool_tg[bt_s][g] - (mu * Sigma_s_cool_tgh[bt_s][g][g]); 
         };
     };
-
 
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
@@ -836,6 +827,15 @@ void ReactorMG::fold_mass_weights()
         chi_tot += chi_tg[bt_s][g]; 
     for (g = 0; g < G; g++)
         chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot; 
+
+    // Calculate kappas as the inverse of the diffusion length
+    // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
+    for (g = 0; g < G; g++)
+    {
+        kappa_fuel_tg[bt_s][g] = (3.0 * Sigma_t_fuel_tg[bt_s][g]) - (2.0 * Sigma_s_fuel_tgh[bt_s][g][g] / MW_fuel_t[bt_s]); 
+        kappa_clad_tg[bt_s][g] = (3.0 * Sigma_t_clad_tg[bt_s][g]) - (2.0 * Sigma_s_clad_tgh[bt_s][g][g] / MW_clad_t[bt_s]); 
+        kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
+    };
 };
 
 
@@ -981,6 +981,9 @@ void ReactorMG::assemble_multigroup_matrices()
     // Make the transmutation matrix for this time step
     M_tij[bt_s] = bright::matrix_addition(T_int_tij[bt_s], decay_matrix);
 };
+
+
+
 
 
 
@@ -2030,58 +2033,6 @@ void ReactorMG::lattice_F_cylindrical(double a, double b)
 void ReactorMG::calc_zeta()
 {
     // Computes the thermal disadvantage factor
-
-    //Prepare data sets to calculate the disadvantage factor
-    //For Fuel...
-    SigmaFa_F_.clear();
-    SigmaFtr_F_.clear();
-    kappaF_F_.clear();
-
-    SigmaFa_F_.assign( F.size(), 0.0 );
-    SigmaFtr_F_.assign( F.size(), 0.0 );
-    kappaF_F_.assign( F.size(), 0.0 );
-
-    for (int f = 0; f < F.size(); f++)
-    {
-        //Calculate the following...
-        //	* Macroscopic abspobtion XS in Fuel
-        //	* Macroscopic transport XS in Fuel
-        for(CompIter iso = niF.begin(); iso != niF.end(); iso++)
-        {
-            //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
-            //Else use KAERI Data for sigma_a
-            if (570000 < iso->first < 720000 || 890000 < iso->first)
-            {
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
-
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            }
-            else
-            {
-                //renormalize sigma_a for this fluenece
-                double sig_a = sigma_a_therm[iso->first] * di_F_[iso->first][f] / di_F_[iso->first][0];
-
-                SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::cm2_per_barn);
-
-                SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (sig_a + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
-            };
-        };
-
-        //Calculate kappa
-        kappaF_F_[f]   = sqrt( 3.0 * SigmaFtr_F_[f] * SigmaFa_F_[f] );
-    };
-
-
-    //For Coolant...
-    SigmaCa_F_.clear();
-    SigmaCtr_F_.clear();
-    kappaC_F_.clear();
-
-    SigmaCa_F_.assign( F.size(), 0.0 );
-    SigmaCtr_F_.assign( F.size(), 0.0 );
-    kappaC_F_.assign( F.size(), 0.0 );
 
     for (int f = 0; f < F.size(); f++)
     {
