@@ -67,17 +67,17 @@ default_rp.total_slots = 289
 
 
 # Only Fuel
-default_rp.void_radius = 0.412
-default_rp.clad_radius = 0.412
-default_rp.unit_cell_pitch = 0.412 * np.sqrt(np.pi)
-default_rp.open_slots = 0
+#default_rp.void_radius = 0.412
+#default_rp.clad_radius = 0.412
+#default_rp.unit_cell_pitch = 0.412 * np.sqrt(np.pi)
+#default_rp.open_slots = 0
 
 # Only Cool
-default_rp.fuel_radius = 0.001
-default_rp.void_radius = 0.0
-default_rp.clad_radius = 0.0
-default_rp.unit_cell_pitch = 1.33
-default_rp.open_slots = 0
+#default_rp.fuel_radius = 0.001
+#default_rp.void_radius = 0.0
+#default_rp.clad_radius = 0.0
+#default_rp.unit_cell_pitch = 1.33
+#default_rp.open_slots = 0
 
 
 

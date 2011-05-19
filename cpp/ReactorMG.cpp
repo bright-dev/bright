@@ -2125,6 +2125,7 @@ void ReactorMG::calc_zeta()
 {
     // Computes the thermal disadvantage factor
 
+    std::cout << "lattice\n";
     // Calculate the lattice_flag Functions
     double a, b;
 
@@ -2165,6 +2166,7 @@ void ReactorMG::calc_zeta()
     };
 
     // Finally, Calculate Zeta
+    std::cout << "czeta\n";
     int g, h;
     for (g = 0; g < G; g++) 
     {
@@ -2196,6 +2198,7 @@ void ReactorMG::calc_zeta()
 
     // Check if we are in the proper Fuel-to-Coolant Regime
 
+    std::cout << "f2c ratio\n";
     double f2c = V_fuel / V_cool;
     if (f2c < 0.1)
         return;
@@ -2203,12 +2206,17 @@ void ReactorMG::calc_zeta()
     double zetabase  = 1.30857959 - (0.10656299 * f2c);
 
     // Find an index that is hopefully thermal
+    std::cout << "g-therm\n";
     int g_therm = (2 * G) / 3;
-    while (g_therm != 0 || 0.0001 < E_g[g_therm])
+    while (g_therm != G-1 && 0.0001 < E_g[g_therm])
+    {
+        std::cout << g_therm << "\n";
         g_therm = g_therm + 1;
+    };
 
     double zetaratio = zetabase / zeta_tg[bt_s][g_therm];
 
+    std::cout << "adj zeta\n";
     for (g = 0; g < G; g++) 
     {
         zeta_tg[bt_s][g] = zeta_tg[bt_s][g] * zetaratio;
