@@ -42,9 +42,13 @@ default_rp.coolant_density = 0.73
 
 default_rp.pnl = 0.98
 default_rp.BUt = 50.0
+
 default_rp.use_disadvantage_factor = True
-default_rp.lattice_type = 'Cylindrical'
 default_rp.rescale_hydrogen = True
+
+#default_rp.lattice_type = 'Cylindrical'
+default_rp.lattice_type = 'Spherical'
+
 
 #default_rp.burn_times = np.linspace(0.0, 4200.0, 5)
 #default_rp.burn_times = np.linspace(0.0, 100.0, 5)
@@ -654,6 +658,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
 #        print self.rmg.phi_tg
 #        print 
         print "s = ", s
+        print
+        print "zeta_tg[s] = ", self.rmg.zeta_tg[s]
         print
         print "k_t = ", self.rmg.k_t
         print
