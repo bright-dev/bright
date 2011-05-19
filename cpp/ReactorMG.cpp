@@ -839,9 +839,9 @@ void ReactorMG::fold_mass_weights()
 
     std::cout << "Sigma_a\n";
     // Get absorption XS estimate
-    Sigma_a_fuel_tg[bt_s][g] = Sigma_t_fuel_tg[bt_s][g];
-    Sigma_a_clad_tg[bt_s][g] = Sigma_t_clad_tg[bt_s][g];
-    Sigma_a_cool_tg[bt_s][g] = Sigma_t_cool_tg[bt_s][g];
+    Sigma_a_fuel_tg[bt_s][g] = 1.0 * Sigma_t_fuel_tg[bt_s][g];
+    Sigma_a_clad_tg[bt_s][g] = 1.0 * Sigma_t_clad_tg[bt_s][g];
+    Sigma_a_cool_tg[bt_s][g] = 1.0 * Sigma_t_cool_tg[bt_s][g];
     for (g = 0; g < G; g++)
     {
         for (h = 0; h < G; h++)

@@ -659,6 +659,10 @@ class TestReactorMGMutliGroupMethods(TestCase):
 #        print 
         print "s = ", s
         print
+        print "Sigma_a_fuel_tg[s] = ", self.rmg.Sigma_a_fuel_tg[s]
+        print
+        print "Sigma_a_cool_tg[s] = ", self.rmg.Sigma_a_cool_tg[s]
+        print
         print "zeta_tg[s] = ", self.rmg.zeta_tg[s]
         print
         print "k_t = ", self.rmg.k_t
