@@ -2,10 +2,12 @@ from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trai
 
 from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor
 
+import mass_stream
+
 import bright
 
 from utils import _init_comp, _get_comp_pass_number
-from mass_stream import _MassStreamView
+from mass_stream_views import _MassStreamView
 
 def Enrichment(IsosIn, enrichment, name):
     """Enrichment:  
@@ -23,10 +25,10 @@ def Enrichment(IsosIn, enrichment, name):
     return IsosOut
 
 
-class _Enrichment_view(HasTraits):
+class _EnrichmentView(HasTraits):
 
-    IsosIn  = Instance(bright.MassStream)
-    IsosOut = Instance(bright.MassStream)
+    IsosIn  = Instance(mass_stream.MassStream)
+    IsosOut = Instance(mass_stream.MassStream)
 
     IsosIn_view  = Instance(_MassStreamView)
     IsosOut_view = Instance(_MassStreamView)
@@ -66,7 +68,7 @@ class _Enrichment_view(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = bright.MassStream()
+        IsosIn = mass_stream.MassStream()
         return IsosIn
 
     def _IsosIn_view_default(self):
@@ -79,7 +81,7 @@ class _Enrichment_view(HasTraits):
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = bright.MassStream()
+        IsosOut = mass_stream.MassStream()
         return IsosOut
 
     def _IsosOut_view_default(self):
@@ -88,3 +90,10 @@ class _Enrichment_view(HasTraits):
 
     def _IsosOut_view_changed(self):
         self.IsosOut = self.IsosOut_view.mass_stream
+
+
+if __name__ == "__main__":
+    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+    
+    _enrichmentview = _EnrichmentView(IsosIn = nu, IsoOut = nu)
+    _enrichmentview.configure_traits() 
