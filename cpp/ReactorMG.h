@@ -219,12 +219,32 @@ public:
 
     time_g Sigma_t_clad_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
     time_g Sigma_a_clad_tg;          // Core-average Macroscopic absorption cross section as a function of time and energy group
+    time_g nubar_Sigma_f_clad_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
+    time_g chi_clad_tg;              // Core-average Fission neutron energy spectrum as a function of time and energy group
     time_gh Sigma_s_clad_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
+    time_g Sigma_f_clad_tg;          // Core-average Macroscopic fission cross-section as a function of time and energy group
+    time_g Sigma_gamma_clad_tg;      // Core-average Macroscopic capture cross-section as a function of time and energy group
+    time_g Sigma_2n_clad_tg;         // Core-average Macroscopic (n, 2n) cross-section as a function of time and energy group
+    time_g Sigma_3n_clad_tg;         // Core-average Macroscopic (n, 3n) cross-section as a function of time and energy group
+    time_g Sigma_alpha_clad_tg;      // Core-average Macroscopic (n, alpha) cross-section as a function of time and energy group
+    time_g Sigma_proton_clad_tg;     // Core-average Macroscopic (n, proton) cross-section as a function of time and energy group
+    time_g Sigma_gamma_x_clad_tg;    // Core-average Macroscopic capture cross-section (excited) as a function of time and energy group
+    time_g Sigma_2n_x_clad_tg;       // Core-average Macroscopic (n, 2n *) cross-section as a function of time and energy group
     time_g kappa_clad_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_cool_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
     time_g Sigma_a_cool_tg;          // Core-average Macroscopic absorption cross section as a function of time and energy group
+    time_g nubar_Sigma_f_cool_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
+    time_g chi_cool_tg;              // Core-average Fission neutron energy spectrum as a function of time and energy group
     time_gh Sigma_s_cool_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
+    time_g Sigma_f_cool_tg;          // Core-average Macroscopic fission cross-section as a function of time and energy group
+    time_g Sigma_gamma_cool_tg;      // Core-average Macroscopic capture cross-section as a function of time and energy group
+    time_g Sigma_2n_cool_tg;         // Core-average Macroscopic (n, 2n) cross-section as a function of time and energy group
+    time_g Sigma_3n_cool_tg;         // Core-average Macroscopic (n, 3n) cross-section as a function of time and energy group
+    time_g Sigma_alpha_cool_tg;      // Core-average Macroscopic (n, alpha) cross-section as a function of time and energy group
+    time_g Sigma_proton_cool_tg;     // Core-average Macroscopic (n, proton) cross-section as a function of time and energy group
+    time_g Sigma_gamma_x_cool_tg;    // Core-average Macroscopic capture cross-section (excited) as a function of time and energy group
+    time_g Sigma_2n_x_cool_tg;       // Core-average Macroscopic (n, 2n *) cross-section as a function of time and energy group
     time_g kappa_cool_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group

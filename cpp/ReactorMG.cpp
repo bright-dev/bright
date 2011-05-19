@@ -745,32 +745,16 @@ void ReactorMG::fold_mass_weights()
     // Folds mass weight in with cross-sections for current time step
     int g, h;
     double mu;
-    double nuc_weight;
-
-    double V_total = V_fuel + V_clad + V_cool;
-    double V_frac_fuel = V_fuel / V_total;
-    double V_frac_clad = V_clad / V_total;
-    double V_frac_cool = V_cool / V_total;
 
     double N_fuel_i_cm2pb = 0.0;
     double N_clad_i_cm2pb = 0.0;
     double N_cool_i_cm2pb = 0.0;
-    double N_i_cm2pb = 0.0;
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
-        nuc_weight = isoname::nuc_weight(*iso);
-
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
-
         N_clad_i_cm2pb = bright::cm2_per_barn * N_clad_it[*iso][bt_s];
-
         N_cool_i_cm2pb = bright::cm2_per_barn * N_cool_it[*iso][bt_s];
-
-        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
-                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
-                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool));
-
 
 
         // Loop over all groups
@@ -789,20 +773,28 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            nubar_Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
+            chi_clad_tg[bt_s][g] += N_clad_i_cm2pb * chi_itg[*iso][bt_s][g];
+            Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            Sigma_gamma_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
+            Sigma_2n_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
+            Sigma_3n_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
+            Sigma_alpha_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
+            Sigma_proton_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
+            Sigma_gamma_x_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
+            Sigma_2n_x_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
-
-            Sigma_t_tg[bt_s][g] += N_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
-            nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
-            chi_tg[bt_s][g] += N_i_cm2pb * chi_itg[*iso][bt_s][g];
-            Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
-            Sigma_gamma_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
-            Sigma_2n_tg[bt_s][g] += N_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
-            Sigma_3n_tg[bt_s][g] += N_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
-            Sigma_alpha_tg[bt_s][g] += N_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
-            Sigma_proton_tg[bt_s][g] += N_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
-            Sigma_gamma_x_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
-            Sigma_2n_x_tg[bt_s][g] += N_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
+            nubar_Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
+            chi_cool_tg[bt_s][g] += N_cool_i_cm2pb * chi_itg[*iso][bt_s][g];
+            Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            Sigma_gamma_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
+            Sigma_2n_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
+            Sigma_3n_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
+            Sigma_alpha_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
+            Sigma_proton_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
+            Sigma_gamma_x_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
+            Sigma_2n_x_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
 
             for (h =0; h < G; h++)
@@ -810,23 +802,27 @@ void ReactorMG::fold_mass_weights()
                 Sigma_s_fuel_tgh[bt_s][g][h] += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_clad_tgh[bt_s][g][h] += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_cool_tgh[bt_s][g][h] += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
-                Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
             };
         };
     };
 
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
-    for (g = 0; g < G; g++)
-        chi_fuel_tot += chi_fuel_tg[bt_s][g]; 
-    for (g = 0; g < G; g++)
-        chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot; 
+    double chi_clad_tot = 0.0;
+    double chi_cool_tot = 0.0;
 
-    double chi_tot = 0.0;
     for (g = 0; g < G; g++)
-        chi_tot += chi_tg[bt_s][g]; 
+    {
+        chi_fuel_tot += chi_fuel_tg[bt_s][g]; 
+        chi_clad_tot += chi_clad_tg[bt_s][g]; 
+        chi_cool_tot += chi_cool_tg[bt_s][g]; 
+    };
     for (g = 0; g < G; g++)
-        chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot; 
+    {
+        chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot; 
+        chi_clad_tg[bt_s][g] = chi_clad_tg[bt_s][g] / chi_clad_tot; 
+        chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot; 
+    };
 
     // Calculate kappas as the inverse of the diffusion length
     // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
@@ -850,6 +846,44 @@ void ReactorMG::fold_mass_weights()
             Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tgh[bt_s][g][h];
         };
     };
+
+
+    // Calculate the disadvantage factor, if required.
+    if (use_zeta)
+        calc_zeta();
+
+    // Calculate Core averaged XS
+    double zeta_V_cool_g, denom_g;
+    for (g = 0; g < G; g++)
+    {
+        zeta_V_cool_g = zeta_tg[bt_s][g] * V_cool;
+        denom_g = V_fuel + zeta_V_cool_g; 
+
+        Sigma_t_tg[bt_s][g] = (V_fuel * Sigma_t_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_t_cool_tg[bt_s][g]) / denom_g;
+        Sigma_a_tg[bt_s][g] = (V_fuel * Sigma_a_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_a_cool_tg[bt_s][g]) / denom_g;
+        nubar_Sigma_f_tg[bt_s][g] = (V_fuel * nubar_Sigma_f_fuel_tg[bt_s][g] + zeta_V_cool_g * nubar_Sigma_f_cool_tg[bt_s][g]) / denom_g;
+        chi_tg[bt_s][g] = (V_fuel * chi_fuel_tg[bt_s][g] + zeta_V_cool_g * chi_cool_tg[bt_s][g]) / denom_g;
+        Sigma_f_tg[bt_s][g] = (V_fuel * Sigma_f_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_f_cool_tg[bt_s][g]) / denom_g;
+        Sigma_gamma_tg[bt_s][g] = (V_fuel * Sigma_gamma_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_gamma_cool_tg[bt_s][g]) / denom_g;
+        Sigma_2n_tg[bt_s][g] = (V_fuel * Sigma_2n_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_2n_cool_tg[bt_s][g]) / denom_g;
+        Sigma_3n_tg[bt_s][g] = (V_fuel * Sigma_3n_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_3n_cool_tg[bt_s][g]) / denom_g;
+        Sigma_alpha_tg[bt_s][g] = (V_fuel * Sigma_alpha_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_alpha_cool_tg[bt_s][g]) / denom_g;
+        Sigma_proton_tg[bt_s][g] = (V_fuel * Sigma_proton_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_proton_cool_tg[bt_s][g]) / denom_g;
+        Sigma_gamma_x_tg[bt_s][g] = (V_fuel * Sigma_gamma_x_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_gamma_x_cool_tg[bt_s][g]) / denom_g;
+        Sigma_2n_x_tg[bt_s][g] = (V_fuel * Sigma_2n_x_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_2n_x_cool_tg[bt_s][g]) / denom_g;
+
+        for (h = 0; h < G; h++)
+        {
+            Sigma_s_tgh[bt_s][g][h] = (V_fuel * Sigma_s_fuel_tgh[bt_s][g][h] + zeta_V_cool_g * Sigma_s_cool_tgh[bt_s][g][h]) / denom_g;
+        };
+    };
+
+    // Re-Normalize chi
+    double chi_tot = 0.0;
+    for (g = 0; g < G; g++)
+        chi_tot += chi_tg[bt_s][g]; 
+    for (g = 0; g < G; g++)
+        chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot; 
 };
 
 
@@ -1289,13 +1323,34 @@ void ReactorMG::burnup_core()
 
     Sigma_t_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_a_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    nubar_Sigma_f_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    chi_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_clad_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    Sigma_f_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_3n_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_alpha_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_proton_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_x_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_x_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
     Sigma_t_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_a_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    nubar_Sigma_f_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    chi_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_cool_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    Sigma_f_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_3n_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_alpha_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_proton_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_x_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_x_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
     Sigma_t_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     nubar_Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     chi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
