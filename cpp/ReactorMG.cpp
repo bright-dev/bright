@@ -1108,8 +1108,7 @@ void ReactorMG::calc_criticality()
 
 //    std::cout << "N = " << N << "\n";
 
-    // Set the final values to the class members
-    k_t[bt_s] = k1;
+    // Set the final flux values to the class members
     phi_tg[bt_s] = phi1;
 
     phi_t[bt_s] = 0.0;
@@ -1117,6 +1116,18 @@ void ReactorMG::calc_criticality()
         phi_t[bt_s] += phi1[0];
 
     Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+
+    // Calculate the multiplication factor, physically, and not from the eigenvalue
+    double k_num = 0.0;
+    double k_den = 0.0;
+
+    for (g = 0; g < G; g++)
+    {
+        k_num += V_fuel * nubar_Sigma_f_fuel_tg[bt_s][g] * phi_tg[bt_s][g];
+        k_den += phi_tg[bt_s][g] * ((V_fuel * Sigma_a_fuel_tg[bt_s][g]) + (zeta_tg[bt_s][g] * V_cool * Sigma_a_cool_tg[bt_s][g]));
+    };
+
+    k_t[bt_s] = P_NL * k_num / k_den;
 };
 
 
