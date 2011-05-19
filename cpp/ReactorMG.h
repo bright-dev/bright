@@ -248,6 +248,7 @@ public:
     time_g kappa_cool_tg;            // Inverse of the diffusion coefficent
 
     time_g Sigma_t_tg;          // Core-average Macroscopic total cross-section as a function of time and energy group
+    time_g Sigma_a_tg;          // Core-average Macroscopic absorption cross section as a function of time and energy group
     time_g nubar_Sigma_f_tg;    // Core-average nubar times the Macroscopic fission cross-section as a function of time and energy group
     time_g chi_tg;              // Core-average Fission neutron energy spectrum as a function of time and energy group
     time_gh Sigma_s_tgh;        // Core-average Macroscopic scattering kernel cross-section as a function of time
