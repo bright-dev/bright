@@ -750,6 +750,8 @@ void ReactorMG::fold_mass_weights()
     double N_clad_i_cm2pb = 0.0;
     double N_cool_i_cm2pb = 0.0;
 
+    std::cout << "Regions\n";
+
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
@@ -806,6 +808,7 @@ void ReactorMG::fold_mass_weights()
         };
     };
 
+    std::cout << "Regions chi\n";
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
     double chi_clad_tot = 0.0;
@@ -824,6 +827,7 @@ void ReactorMG::fold_mass_weights()
         chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot; 
     };
 
+    std::cout << "kappa\n";
     // Calculate kappas as the inverse of the diffusion length
     // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
     for (g = 0; g < G; g++)
@@ -833,6 +837,7 @@ void ReactorMG::fold_mass_weights()
         kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
     };
 
+    std::cout << "Sigma_a\n";
     // Get absorption XS estimate
     Sigma_a_fuel_tg[bt_s][g] = Sigma_t_fuel_tg[bt_s][g];
     Sigma_a_clad_tg[bt_s][g] = Sigma_t_clad_tg[bt_s][g];
@@ -848,10 +853,12 @@ void ReactorMG::fold_mass_weights()
     };
 
 
+    std::cout << "Zeta\n";
     // Calculate the disadvantage factor, if required.
     if (use_zeta)
         calc_zeta();
 
+    std::cout << "Full Core\n";
     // Calculate Core averaged XS
     double zeta_V_cool_g, denom_g;
     for (g = 0; g < G; g++)
@@ -878,6 +885,7 @@ void ReactorMG::fold_mass_weights()
         };
     };
 
+    std::cout << "Full-core chi\n";
     // Re-Normalize chi
     double chi_tot = 0.0;
     for (g = 0; g < G; g++)
@@ -1331,6 +1339,7 @@ void ReactorMG::burnup_core()
     Sigma_proton_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_gamma_x_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_2n_x_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    kappa_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
     Sigma_t_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_a_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
@@ -1345,6 +1354,7 @@ void ReactorMG::burnup_core()
     Sigma_proton_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_gamma_x_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_2n_x_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    kappa_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
     Sigma_t_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_a_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
@@ -1359,6 +1369,8 @@ void ReactorMG::burnup_core()
     Sigma_proton_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_gamma_x_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_2n_x_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    kappa_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+
 
     Sigma_t_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
@@ -1405,25 +1417,36 @@ void ReactorMG::burnup_core()
         bt_s = s;
         burn_time = burn_times[s];
 
+        std::cout << s << "\n";
+
         // Find the nearest neightbors for this time.
+        std::cout << "Nearest\n";
         calc_nearest_neighbors();
 
         // Interpolate cross section in preparation for 
         // criticality calculation.
+        std::cout << "Interpolate\n";
         interpolate_cross_sections();
 
         // Fold the mass weights for this time step
+        std::cout << "cmw\n";
         calc_mass_weights();
+        std::cout << "fmw\n";
         fold_mass_weights();
 
         // Preform the criticality and burnup calulations
+        std::cout << "amm\n";
         assemble_multigroup_matrices();
+        std::cout << "cc\n";
         calc_criticality();
 
+        std::cout << "ct\n";
         if (s == 0)
             BU_t[0] = 0.0;
         else        
             calc_transmutation();
+
+        std::cout << "\n\n\n\n";
     };
 
 };
@@ -2182,7 +2205,7 @@ void ReactorMG::calc_zeta()
     // Find an index that is hopefully thermal
     int g_therm = (2 * G) / 3;
     while (g_therm != 0 || 0.0001 < E_g[g_therm])
-        g_therm = g_therm - 1;
+        g_therm = g_therm + 1;
 
     double zetaratio = zetabase / zeta_tg[bt_s][g_therm];
 
