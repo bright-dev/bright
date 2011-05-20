@@ -743,65 +743,20 @@ void ReactorMG::calc_mass_weights()
 void ReactorMG::fold_mass_weights()
 {
     // Folds mass weight in with cross-sections for current time step
-    int g;
-
-    double V_total = V_fuel + V_clad + V_cool;
-    double V_frac_fuel = V_fuel / V_total;
-    double V_frac_clad = V_clad / V_total;
-    double V_frac_cool = V_cool / V_total;
+    int g, h;
+    double mu;
 
     double N_fuel_i_cm2pb = 0.0;
     double N_clad_i_cm2pb = 0.0;
     double N_cool_i_cm2pb = 0.0;
-    double N_i_cm2pb = 0.0;
+
+    std::cout << "Regions\n";
 
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
-        double iso_weight = isoname::nuc_weight(*iso);
-
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
-
         N_clad_i_cm2pb = bright::cm2_per_barn * N_clad_it[*iso][bt_s];
-
         N_cool_i_cm2pb = bright::cm2_per_barn * N_cool_it[*iso][bt_s];
-
-        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
-                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
-                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool));
-
-
-//        N_i_cm2pb = bright::cm2_per_barn * (N_fuel_it[*iso][bt_s] + N_clad_it[*iso][bt_s] + N_cool_it[*iso][bt_s]);
-
-/*
-        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
-                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
-                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool))\
-                                         / V_frac_fuel;
-*/
-
-/*
-
-        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel * rho_fuel) \
-                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad * rho_clad) \
-                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool * rho_cool))\
-                                         / (V_frac_fuel * rho_fuel);
-*/
-
-/*
-        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel * rho_fuel / MW_fuel_t[bt_s]) \
-                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad * rho_clad / MW_clad_t[bt_s]) \
-                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool * rho_cool / MW_cool_t[bt_s]))\
-                                         *  (iso_weight / A_HM_t[bt_s]) \
-                                         /  (V_frac_fuel * rho_fuel / MW_fuel_t[bt_s]);
-*/
-
-/*
-        N_i_cm2pb = bright::cm2_per_barn * ((N_fuel_it[*iso][bt_s] * V_frac_fuel) \
-                                         +  (N_clad_it[*iso][bt_s] * V_frac_clad) \
-                                         +  (N_cool_it[*iso][bt_s] * V_frac_cool))\
-                                         *  (A_HM_t[bt_s] / iso_weight) \
-                                         /  (rho_fuel * V_frac_fuel / MW_fuel_t[bt_s]);
-*/
 
 
         // Loop over all groups
@@ -820,39 +775,118 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            nubar_Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
+            chi_clad_tg[bt_s][g] += N_clad_i_cm2pb * chi_itg[*iso][bt_s][g];
+            Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            Sigma_gamma_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
+            Sigma_2n_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
+            Sigma_3n_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
+            Sigma_alpha_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
+            Sigma_proton_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
+            Sigma_gamma_x_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
+            Sigma_2n_x_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
-
-            Sigma_t_tg[bt_s][g] += N_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
-            nubar_Sigma_f_tg[bt_s][g] += N_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
-            chi_tg[bt_s][g] += N_i_cm2pb * chi_itg[*iso][bt_s][g];
-            Sigma_f_tg[bt_s][g] += N_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
-            Sigma_gamma_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
-            Sigma_2n_tg[bt_s][g] += N_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
-            Sigma_3n_tg[bt_s][g] += N_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
-            Sigma_alpha_tg[bt_s][g] += N_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
-            Sigma_proton_tg[bt_s][g] += N_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
-            Sigma_gamma_x_tg[bt_s][g] += N_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
-            Sigma_2n_x_tg[bt_s][g] += N_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
+            nubar_Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
+            chi_cool_tg[bt_s][g] += N_cool_i_cm2pb * chi_itg[*iso][bt_s][g];
+            Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
+            Sigma_gamma_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_gamma_itg[*iso][bt_s][g];
+            Sigma_2n_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_2n_itg[*iso][bt_s][g];
+            Sigma_3n_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_3n_itg[*iso][bt_s][g];
+            Sigma_alpha_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_alpha_itg[*iso][bt_s][g];
+            Sigma_proton_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_proton_itg[*iso][bt_s][g];
+            Sigma_gamma_x_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_gamma_x_itg[*iso][bt_s][g];
+            Sigma_2n_x_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
 
-            for (int h =0; h < G; h++)
+            for (h =0; h < G; h++)
             {
                 Sigma_s_fuel_tgh[bt_s][g][h] += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_clad_tgh[bt_s][g][h] += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_cool_tgh[bt_s][g][h] += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
-                Sigma_s_tgh[bt_s][g][h] += N_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
             };
         };
     };
 
+    std::cout << "Regions chi\n";
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
-    for (g = 0; g < G; g++)
-        chi_fuel_tot += chi_fuel_tg[bt_s][g]; 
-    for (g = 0; g < G; g++)
-        chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot; 
+    double chi_clad_tot = 0.0;
+    double chi_cool_tot = 0.0;
 
+    for (g = 0; g < G; g++)
+    {
+        chi_fuel_tot += chi_fuel_tg[bt_s][g]; 
+        chi_clad_tot += chi_clad_tg[bt_s][g]; 
+        chi_cool_tot += chi_cool_tg[bt_s][g]; 
+    };
+    for (g = 0; g < G; g++)
+    {
+        chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot; 
+        chi_clad_tg[bt_s][g] = chi_clad_tg[bt_s][g] / chi_clad_tot; 
+        chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot; 
+    };
+
+    std::cout << "kappa\n";
+    // Calculate kappas as the inverse of the diffusion length
+    // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
+    for (g = 0; g < G; g++)
+    {
+        kappa_fuel_tg[bt_s][g] = (3.0 * Sigma_t_fuel_tg[bt_s][g]) - (2.0 * Sigma_s_fuel_tgh[bt_s][g][g] / MW_fuel_t[bt_s]); 
+        kappa_clad_tg[bt_s][g] = (3.0 * Sigma_t_clad_tg[bt_s][g]) - (2.0 * Sigma_s_clad_tgh[bt_s][g][g] / MW_clad_t[bt_s]); 
+        kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
+    };
+
+    std::cout << "Sigma_a\n";
+    // Get absorption XS estimate
+    Sigma_a_fuel_tg[bt_s][g] = 1.0 * Sigma_t_fuel_tg[bt_s][g];
+    Sigma_a_clad_tg[bt_s][g] = 1.0 * Sigma_t_clad_tg[bt_s][g];
+    Sigma_a_cool_tg[bt_s][g] = 1.0 * Sigma_t_cool_tg[bt_s][g];
+    for (g = 0; g < G; g++)
+    {
+        for (h = 0; h < G; h++)
+        {
+            Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tgh[bt_s][g][h];
+            Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tgh[bt_s][g][h];
+            Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tgh[bt_s][g][h];
+        };
+    };
+
+
+    std::cout << "Zeta\n";
+    // Calculate the disadvantage factor, if required.
+    if (use_zeta)
+        calc_zeta();
+
+    std::cout << "Full Core\n";
+    // Calculate Core averaged XS
+    double zeta_V_cool_g, denom_g;
+    for (g = 0; g < G; g++)
+    {
+        zeta_V_cool_g = zeta_tg[bt_s][g] * V_cool;
+        denom_g = V_fuel + zeta_V_cool_g; 
+
+        Sigma_t_tg[bt_s][g] = (V_fuel * Sigma_t_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_t_cool_tg[bt_s][g]) / denom_g;
+        Sigma_a_tg[bt_s][g] = (V_fuel * Sigma_a_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_a_cool_tg[bt_s][g]) / denom_g;
+        nubar_Sigma_f_tg[bt_s][g] = (V_fuel * nubar_Sigma_f_fuel_tg[bt_s][g] + zeta_V_cool_g * nubar_Sigma_f_cool_tg[bt_s][g]) / denom_g;
+        chi_tg[bt_s][g] = (V_fuel * chi_fuel_tg[bt_s][g] + zeta_V_cool_g * chi_cool_tg[bt_s][g]) / denom_g;
+        Sigma_f_tg[bt_s][g] = (V_fuel * Sigma_f_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_f_cool_tg[bt_s][g]) / denom_g;
+        Sigma_gamma_tg[bt_s][g] = (V_fuel * Sigma_gamma_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_gamma_cool_tg[bt_s][g]) / denom_g;
+        Sigma_2n_tg[bt_s][g] = (V_fuel * Sigma_2n_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_2n_cool_tg[bt_s][g]) / denom_g;
+        Sigma_3n_tg[bt_s][g] = (V_fuel * Sigma_3n_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_3n_cool_tg[bt_s][g]) / denom_g;
+        Sigma_alpha_tg[bt_s][g] = (V_fuel * Sigma_alpha_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_alpha_cool_tg[bt_s][g]) / denom_g;
+        Sigma_proton_tg[bt_s][g] = (V_fuel * Sigma_proton_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_proton_cool_tg[bt_s][g]) / denom_g;
+        Sigma_gamma_x_tg[bt_s][g] = (V_fuel * Sigma_gamma_x_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_gamma_x_cool_tg[bt_s][g]) / denom_g;
+        Sigma_2n_x_tg[bt_s][g] = (V_fuel * Sigma_2n_x_fuel_tg[bt_s][g] + zeta_V_cool_g * Sigma_2n_x_cool_tg[bt_s][g]) / denom_g;
+
+        for (h = 0; h < G; h++)
+        {
+            Sigma_s_tgh[bt_s][g][h] = (V_fuel * Sigma_s_fuel_tgh[bt_s][g][h] + zeta_V_cool_g * Sigma_s_cool_tgh[bt_s][g][h]) / denom_g;
+        };
+    };
+
+    std::cout << "Full-core chi\n";
+    // Re-Normalize chi
     double chi_tot = 0.0;
     for (g = 0; g < G; g++)
         chi_tot += chi_tg[bt_s][g]; 
@@ -1009,11 +1043,12 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
 
+
+
+
 void ReactorMG::calc_criticality()
 {
     // Init values
-    int a0 = nearest_neighbors[0]; 
-
     int n = 0;
     int N = 5;
 
@@ -1024,8 +1059,6 @@ void ReactorMG::calc_criticality()
 
     double k0 = 1.0;
     std::vector<double> phi0 (G, 1.0);
-    phi0[2] = 2.0;
-//    std::vector<double> phi0 = phi_g[a0];
     double k1;
     std::vector<double> phi1;
 
@@ -1061,122 +1094,6 @@ void ReactorMG::calc_criticality()
         };
         k1 = k0 * nu_Sigma_f_phi1 / nu_Sigma_f_phi0;
 
-        std::cout << k0 << "   " << k1 << "\n";
-
-        // Calculate the epsilon value of k 
-        epsik = fabs(1.0 - (k0/k1));
-
-        // Calulate the maximum epsilon of phi over all groups
-        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
-        for (g = 1; g < G; g++)
-        {
-            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
-            if (epsiphi < tmp_epsiphi)
-                epsiphi = tmp_epsiphi;
-        };
-
-        // Set the next eigens to the previous values befor looping
-        k0 = k1;
-        phi0 = phi1;
-        n++;
-    };
-
-    std::cout << "N = " << N << "\n";
-
-    // Set the final values to the class members
-    k_t[bt_s] = k1;
-    phi_tg[bt_s] = phi1;
-
-    phi_t[bt_s] = 0.0;
-    for (g = 0; g < G; g++)
-        phi_t[bt_s] += phi1[0];
-
-    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
-};
-
-
-
-
-
-
-void ReactorMG::calc_criticality2()
-{
-    double V_total = V_fuel + V_clad + V_cool;
-    double V_frac_fuel = V_fuel / V_total;
-    double V_frac_clad = V_clad / V_total;
-    double V_frac_cool = V_cool / V_total;
-
-    // Init values
-    int n = 0;
-    int N = 10;
-
-    float epsik = 1.0;
-    float tmp_epsiphi; 
-    float epsiphi = 1.0;
-    float epsilon = 0.005;
-
-    double k0 = 1.0;
-    std::vector<double> phi0 (G, 1.0);
-//    phi0[2] = 2.0;
-    double k1;
-
-    std::vector<double> phi_fuel1;
-    std::vector<double> phi_clad1;
-    std::vector<double> phi_cool1;
-    std::vector<double> phi1 (G, 0.0);
-    double phi1_tot = 0.0;
-
-    int g = 0;
-    double invPk;
-    double nu_Sigma_f_fuel_phi0;
-    double nu_Sigma_f_fuel_phi1;
-
-
-    // Solve for k and phi simeltaneoulsy
-    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
-    {
-        // Calculate the next eigen-flux
-        invPk = 1.0 / (P_NL * k0);
-        phi_fuel1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_fuel_tgh[bt_s], phi0);
-        phi_clad1 = bright::scalar_matrix_vector_product(1.0, A_inv_clad_tgh[bt_s], phi0);
-        phi_cool1 = bright::scalar_matrix_vector_product(1.0, A_inv_cool_tgh[bt_s], phi0);
-
-        for (g = 0; g < G; g++)
-        {
-            phi1[g] = (V_frac_fuel * phi_fuel1[g]) + (V_frac_clad * phi_clad1[g]) + (V_frac_cool * phi_cool1[g]);
-        };
-/*
-        for (g = 0; g < G; g++)
-            std::cout << phi0[g] << "   ";
-        std::cout << "\n";
-        for (g = 0; g < G; g++)
-            std::cout << phi1[g] << "   ";
-        std::cout << "\n----------\n\n\n";
-*/
-
-        // Calculate the next eigen-k
-        nu_Sigma_f_fuel_phi0 = 0.0;
-        nu_Sigma_f_fuel_phi1 = 0.0;
-        for (g = 0; g < G; g++)
-        {
-            nu_Sigma_f_fuel_phi0 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi0[g]; 
-            nu_Sigma_f_fuel_phi1 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi_fuel1[g]; 
-        };
-        k1 = k0 * nu_Sigma_f_fuel_phi1 / nu_Sigma_f_fuel_phi0;
-
-
-/*
-        phi1_tot = 0.0;
-        for (g = 0; g < G; g++)
-        {
-//            phi1[g] = (V_frac_fuel * phi_fuel1[g]) + (V_frac_clad * phi_clad1[g]) + (V_frac_cool * phi_cool1[g]);
-            phi1_tot += phi1[g];
-        };
-        for (g = 0; g < G; g++)
-            phi1[g] = phi1[g] / phi1_tot;
-*/
-
-
 //        std::cout << k0 << "   " << k1 << "\n";
 
         // Calculate the epsilon value of k 
@@ -1199,8 +1116,7 @@ void ReactorMG::calc_criticality2()
 
 //    std::cout << "N = " << N << "\n";
 
-    // Set the final values to the class members
-    k_t[bt_s] = k1;
+    // Set the final flux values to the class members
     phi_tg[bt_s] = phi1;
 
     phi_t[bt_s] = 0.0;
@@ -1208,308 +1124,20 @@ void ReactorMG::calc_criticality2()
         phi_t[bt_s] += phi1[0];
 
     Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
-};
 
+    // Calculate the multiplication factor, physically, and not from the eigenvalue
+    double k_num = 0.0;
+    double k_den = 0.0;
 
-
-
-void ReactorMG::calc_criticality3()
-{
-    // Init values
-    int n = 0;
-    int N = 5;
-
-    float epsik = 1.0;
-    float tmp_epsiphi; 
-    float epsiphi = 1.0;
-    float epsilon = 0.005;
-
-    double k0 = 1.0;
-    std::vector<double> phi0 (G, 1.0);
-    phi0[2] = 2.0;
-//    std::vector<double> phi0 = phi_g[a0];
-    double k1;
-    std::vector<double> phi1;
-
-    int g = 0;
-    double invPk;
-    double nu_Sigma_f_phi0;
-    double nu_Sigma_f_phi1;
-
-
-    // Solve for k and phi simeltaneoulsy
-    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
+    for (g = 0; g < G; g++)
     {
-        // Calculate the next eigen-flux
-        invPk = 1.0 / (P_NL * k0);
-        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
-
-/*
-        for (g = 0; g < G; g++)
-            std::cout << phi0[g] << "   ";
-        std::cout << "\n";
-        for (g = 0; g < G; g++)
-            std::cout << phi1[g] << "   ";
-        std::cout << "\n----------\n\n\n";
-*/
-
-        // Calculate the next eigen-k
-        nu_Sigma_f_phi0 = 0.0;
-        nu_Sigma_f_phi1 = 0.0;
-        for (g = 0; g < G; g++)
-        {
-            nu_Sigma_f_phi0 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi0[g]; 
-            nu_Sigma_f_phi1 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi1[g]; 
-        };
-        k1 = k0 * nu_Sigma_f_phi1 / nu_Sigma_f_phi0;
-
-//        std::cout << k0 << "   " << k1 << "\n";
-
-        // Calculate the epsilon value of k 
-        epsik = fabs(1.0 - (k0/k1));
-
-        // Calulate the maximum epsilon of phi over all groups
-        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
-        for (g = 1; g < G; g++)
-        {
-            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
-            if (epsiphi < tmp_epsiphi)
-                epsiphi = tmp_epsiphi;
-        };
-
-        // Set the next eigens to the previous values befor looping
-        k0 = k1;
-        phi0 = phi1;
-        n++;
+        k_num += V_fuel * nubar_Sigma_f_fuel_tg[bt_s][g] * phi_tg[bt_s][g];
+        k_den += phi_tg[bt_s][g] * ((V_fuel * Sigma_a_fuel_tg[bt_s][g]) + (zeta_tg[bt_s][g] * V_cool * Sigma_a_cool_tg[bt_s][g]));
     };
 
-//    std::cout << "N = " << N << "\n";
-
-    // Set the final values to the class members
-    k_t[bt_s] = k1;
-    phi_tg[bt_s] = phi1;
-
-    phi_t[bt_s] = 0.0;
-    for (g = 0; g < G; g++)
-        phi_t[bt_s] += phi1[0];
-
-    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+    k_t[bt_s] = P_NL * k_num / k_den;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-void ReactorMG::calc_criticality4()
-{
-    double V_total = V_fuel + V_clad + V_cool;
-    double V_frac_fuel = V_fuel / V_total;
-    double V_frac_clad = V_clad / V_total;
-    double V_frac_cool = V_cool / V_total;
-
-    // Init values
-    int n = 0;
-    int N = 1;
-
-    float epsik = 1.0;
-    float tmp_epsiphi; 
-    float epsiphi = 1.0;
-    float epsilon = 0.005;
-
-    double k0 = 1.0;
-    std::vector<double> phi0 (G, 1.0);
-//    phi0[2] = 2.0;
-    double k1;
-
-    std::vector<double> phi_fuel1;
-    std::vector<double> phi_clad1;
-    std::vector<double> phi_cool1;
-    std::vector<double> phi1 (G, 0.0);
-    double phi1_tot = 0.0;
-
-    int g = 0;
-    double invPk;
-    double nu_Sigma_f_fuel_phi0;
-    double nu_Sigma_f_fuel_phi1;
-
-    phi0 = bright::scalar_matrix_vector_product(1.0, A_inv_cool_tgh[bt_s], phi0);
-    phi0 = bright::scalar_matrix_vector_product(1.0, A_inv_clad_tgh[bt_s], phi0);
-
-    // Solve for k and phi simeltaneoulsy
-    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
-    {
-        // Calculate the next eigen-flux
-        invPk = 1.0 / (P_NL * k0);
-        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_fuel_tgh[bt_s], phi0);
-
-/*
-        for (g = 0; g < G; g++)
-        {
-            phi1[g] = (V_frac_fuel * phi_fuel1[g]) + (V_frac_clad * phi_clad1[g]) + (V_frac_cool * phi_cool1[g]);
-        };
-
-        for (g = 0; g < G; g++)
-            std::cout << phi0[g] << "   ";
-        std::cout << "\n";
-        for (g = 0; g < G; g++)
-            std::cout << phi1[g] << "   ";
-        std::cout << "\n----------\n\n\n";
-*/
-
-        // Calculate the next eigen-k
-        nu_Sigma_f_fuel_phi0 = 0.0;
-        nu_Sigma_f_fuel_phi1 = 0.0;
-        for (g = 0; g < G; g++)
-        {
-            nu_Sigma_f_fuel_phi0 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi0[g]; 
-            nu_Sigma_f_fuel_phi1 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi1[g]; 
-        };
-        k1 = k0 * nu_Sigma_f_fuel_phi1 / nu_Sigma_f_fuel_phi0;
-
-
-//        std::cout << k0 << "   " << k1 << "\n";
-
-        // Calculate the epsilon value of k 
-        epsik = fabs(1.0 - (k0/k1));
-
-        // Calulate the maximum epsilon of phi over all groups
-        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
-        for (g = 1; g < G; g++)
-        {
-            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
-            if (epsiphi < tmp_epsiphi)
-                epsiphi = tmp_epsiphi;
-        };
-
-        // Set the next eigens to the previous values befor looping
-        k0 = k1;
-        phi0 = phi1;
-        n++;
-    };
-
-//    std::cout << "N = " << N << "\n";
-
-    // Set the final values to the class members
-    k_t[bt_s] = k1;
-    phi_tg[bt_s] = phi1;
-
-    phi_t[bt_s] = 0.0;
-    for (g = 0; g < G; g++)
-        phi_t[bt_s] += phi1[0];
-
-    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void ReactorMG::calc_criticality5()
-{
-
-    // Init values
-    int n = 0;
-    int N = 1;
-
-    float epsik = 1.0;
-    float tmp_epsiphi; 
-    float epsiphi = 1.0;
-    float epsilon = 0.005;
-
-    double k0 = 1.0;
-    std::vector<double> phi0 (G, 1.0);
-//    phi0[2] = 2.0;
-    double k1;
-
-    std::vector<double> phi_fuel;
-    std::vector<double> phi_clad;
-    std::vector<double> phi_cool;
-    std::vector<double> phi1 (G, 0.0);
-    double phi1_tot = 0.0;
-
-    int g = 0;
-    double invPk;
-    double nu_Sigma_f_fuel_phi0;
-    double nu_Sigma_f_fuel_phi1;
-
-    // Solve for k and phi simeltaneoulsy
-    while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
-    {
-        phi_cool = phi0;
-
-        // Calculate the next eigen-flux
-        phi0 = bright::scalar_matrix_vector_product(1.0, A_inv_cool_tgh[bt_s], phi0);
-        phi0 = bright::scalar_matrix_vector_product(1.0, A_inv_clad_tgh[bt_s], phi0);
-
-
-        invPk = 1.0 / (P_NL * k0);
-        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_fuel_tgh[bt_s], phi0);
-
-        // Calculate the next eigen-k
-        nu_Sigma_f_fuel_phi0 = 0.0;
-        nu_Sigma_f_fuel_phi1 = 0.0;
-        for (g = 0; g < G; g++)
-        {
-            nu_Sigma_f_fuel_phi0 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi0[g]; 
-            nu_Sigma_f_fuel_phi1 += nubar_Sigma_f_fuel_tg[bt_s][g] * phi1[g]; 
-        };
-        k1 = k0 * nu_Sigma_f_fuel_phi1 / nu_Sigma_f_fuel_phi0;
-
-        phi1 = bright::scalar_matrix_vector_product(1.0, A_inv_clad_tgh[bt_s], phi1);
-        phi1 = bright::scalar_matrix_vector_product(1.0, A_inv_cool_tgh[bt_s], phi1);
-
-        // Calculate the epsilon value of k 
-        epsik = fabs(1.0 - (k0/k1));
-
-        // Calulate the maximum epsilon of phi over all groups
-        epsiphi = fabs(1.0 - (phi0[0]/phi1[0]));
-        for (g = 1; g < G; g++)
-        {
-            tmp_epsiphi = fabs(1.0 - (phi0[g]/phi1[g]));
-            if (epsiphi < tmp_epsiphi)
-                epsiphi = tmp_epsiphi;
-        };
-
-        // Set the next eigens to the previous values befor looping
-        k0 = k1;
-//        phi0 = phi1;
-
-        for (g = 0; g < G; g++)
-            phi0[g] = (phi1[g] + phi_cool[g]) / 2.0;
-
-        n++;
-    };
-
-//    std::cout << "N = " << N << "\n";
-
-    // Set the final values to the class members
-    k_t[bt_s] = k1;
-    phi_tg[bt_s] = phi1;
-
-    phi_t[bt_s] = 0.0;
-    for (g = 0; g < G; g++)
-        phi_t[bt_s] += phi1[0];
-
-    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
-};
 
 
 
@@ -1656,6 +1284,11 @@ void ReactorMG::burnup_core()
     Phi_t = std::vector<double>(S, -1.0);
     BU_t = std::vector<double>(S, -1.0);
 
+    zeta_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 1.0) );
+    lattice_E_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
+    lattice_F_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
+
+
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         // Init the transmutation matrix
@@ -1694,6 +1327,7 @@ void ReactorMG::burnup_core()
 
     // Init the macroscopic cross sections
     Sigma_t_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     nubar_Sigma_f_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     chi_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_fuel_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
@@ -1705,14 +1339,41 @@ void ReactorMG::burnup_core()
     Sigma_proton_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_gamma_x_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_2n_x_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    kappa_fuel_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
     Sigma_t_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    nubar_Sigma_f_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    chi_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_clad_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    Sigma_f_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_3n_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_alpha_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_proton_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_x_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_x_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    kappa_clad_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
 
     Sigma_t_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    nubar_Sigma_f_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    chi_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_cool_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
+    Sigma_f_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_3n_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_alpha_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_proton_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_gamma_x_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_2n_x_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    kappa_cool_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+
 
     Sigma_t_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
+    Sigma_a_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     nubar_Sigma_f_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     chi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0));
     Sigma_s_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
@@ -1756,29 +1417,36 @@ void ReactorMG::burnup_core()
         bt_s = s;
         burn_time = burn_times[s];
 
+        std::cout << s << "\n";
+
         // Find the nearest neightbors for this time.
+        std::cout << "Nearest\n";
         calc_nearest_neighbors();
 
         // Interpolate cross section in preparation for 
         // criticality calculation.
+        std::cout << "Interpolate\n";
         interpolate_cross_sections();
 
         // Fold the mass weights for this time step
+        std::cout << "cmw\n";
         calc_mass_weights();
+        std::cout << "fmw\n";
         fold_mass_weights();
 
         // Preform the criticality and burnup calulations
+        std::cout << "amm\n";
         assemble_multigroup_matrices();
-//        calc_criticality();
-//        calc_criticality2();
-//        calc_criticality3();
-        calc_criticality4();
-//        calc_criticality5();
+        std::cout << "cc\n";
+        calc_criticality();
 
+        std::cout << "ct\n";
         if (s == 0)
             BU_t[0] = 0.0;
         else        
             calc_transmutation();
+
+        std::cout << "\n\n\n\n";
     };
 
 };
@@ -2321,3 +1989,240 @@ MassStream ReactorMG::calc (MassStream instream)
 
     return calc();
 };
+
+
+
+
+
+
+
+
+
+
+// 
+// Lattice and Zeta functions below
+//
+
+
+
+void ReactorMG::lattice_E_planar(double a, double b)
+{
+    for (int g = 0; g < G; g++)
+    {
+        if (0.0 == kappa_cool_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
+        else
+            lattice_E_tg[bt_s][g] = kappa_cool_tg[bt_s][g] * (b - a) * bright::COTH(kappa_cool_tg[bt_s][g]*(b-a));
+    };
+};
+
+
+
+
+
+
+void ReactorMG::lattice_F_planar(double a, double b)
+{
+    for (int g = 0; g < G; g++)
+    {
+        if (0.0 == kappa_fuel_tg[bt_s][g])
+            lattice_F_tg[bt_s][g] = 0.0;
+        else
+            lattice_F_tg[bt_s][g] = kappa_fuel_tg[bt_s][g] * a * bright::COTH(kappa_fuel_tg[bt_s][g]*a) ;
+    };
+};
+
+
+
+
+void ReactorMG::lattice_E_spherical(double a, double b)
+{
+    double coef, num, den;
+
+    for (int g = 0; g < G; g++)
+    {
+        if (0.0 == kappa_cool_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
+        else
+        {
+            coef = pow(kappa_cool_tg[bt_s][g], 3) * (pow(b,3) - pow(a,3)) / (3.0 * kappa_cool_tg[bt_s][g] * a);
+            num = 1.0 - (kappa_cool_tg[bt_s][g] * b * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
+            den = 1.0 - (pow(kappa_cool_tg[bt_s][g], 2) * a * b) - (kappa_cool_tg[bt_s][g] * (b - a) * bright::COTH(kappa_cool_tg[bt_s][g] * (b - a)));
+            lattice_E_tg[bt_s][g] = coef * num / den;
+        };
+    };
+};
+    
+
+
+
+
+void ReactorMG::lattice_F_spherical(double a, double b)
+{
+    double coef, num, den;
+
+    for (int g = 0; g < G; g++)
+    {
+        coef = pow(kappa_fuel_tg[bt_s][g], 2) * pow(a, 2) / 3.0;
+        num = bright::TANH(kappa_fuel_tg[bt_s][g] * a); 
+        den = (kappa_fuel_tg[bt_s][g] * a) - bright::TANH(kappa_fuel_tg[bt_s][g] * a); 
+        lattice_F_tg[bt_s][g] = coef * num / den;
+    };
+};
+
+
+
+
+
+void ReactorMG::lattice_E_cylindrical(double a, double b)
+{
+    namespace bm = boost::math;
+    double coef, num, den;
+
+    for (int g = 0; g < G; g++)
+    {
+        if (0.0 == kappa_cool_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
+        else
+        {
+            coef = kappa_cool_tg[bt_s][g] * (pow(b, 2) - pow(a, 2)) / (2.0 * a);
+
+            num = (bm::cyl_bessel_i(0, kappa_cool_tg[bt_s][g] * a) * bm::cyl_bessel_k(1, kappa_cool_tg[bt_s][g] * b)) + \
+                  (bm::cyl_bessel_k(0, kappa_cool_tg[bt_s][g] * a) * bm::cyl_bessel_i(1, kappa_cool_tg[bt_s][g] * b));
+
+            den = (bm::cyl_bessel_i(1, kappa_cool_tg[bt_s][g] * b) * bm::cyl_bessel_k(1, kappa_cool_tg[bt_s][g] * a)) - \
+                  (bm::cyl_bessel_k(1, kappa_cool_tg[bt_s][g] * b) * bm::cyl_bessel_i(1, kappa_cool_tg[bt_s][g] * a));
+
+            lattice_E_tg[bt_s][g] = coef * num / den;
+        };
+    };
+};
+
+
+
+    
+void ReactorMG::lattice_F_cylindrical(double a, double b)
+{
+    namespace bm = boost::math;
+    double num, den;
+
+    for (int g = 0; g < G; g++)
+    {
+        if (0.0 == kappa_fuel_tg[bt_s][g])
+            lattice_E_tg[bt_s][g] = 0.0;
+        else
+        {
+            num =  kappa_fuel_tg[bt_s][g] * a * bm::cyl_bessel_i(0, kappa_fuel_tg[bt_s][g] * a);
+            den = 2.0 * bm::cyl_bessel_i(1, kappa_fuel_tg[bt_s][g] * a);
+            lattice_F_tg[bt_s][g] = num / den;
+        };
+    };
+};
+
+
+
+void ReactorMG::calc_zeta()
+{
+    // Computes the thermal disadvantage factor
+
+    std::cout << "lattice\n";
+    // Calculate the lattice_flag Functions
+    double a, b;
+
+    if (lattice_flag == "Planar")
+    {
+        a = r_fuel;
+        b = pitch / 2.0;
+    
+        lattice_E_planar(a, b);
+        lattice_F_planar(a, b);
+    }
+    else if (lattice_flag == "Spherical")
+    {
+        a = r_fuel;
+        b = pitch / 2.0;
+    
+        lattice_E_spherical(a, b);
+        lattice_F_spherical(a, b);
+    }
+    else if (lattice_flag == "Cylindrical")
+    {
+        a = r_fuel;
+        b = pitch / sqrt(bright::pi); // radius of cylinder with an equivilent cell volume
+
+        lattice_E_cylindrical(a, b);
+        lattice_F_cylindrical(a, b);
+    }
+    else
+    {
+        if (0 < FCComps::verbosity)
+            std::cout << "Did not specify use of planar or spheical or cylindrical lattice functions! Assuming cylindrical...\n";
+        
+        a = r_fuel;
+        b = pitch / sqrt(bright::pi); //radius of cylinder with an equivilent cell volume
+
+        lattice_E_cylindrical(a, b);
+        lattice_F_cylindrical(a, b);
+    };
+
+    // Finally, Calculate Zeta
+    std::cout << "czeta\n";
+    int g, h;
+    for (g = 0; g < G; g++) 
+    {
+        if (0.0 == Sigma_a_cool_tg[bt_s][g])
+            zeta_tg[bt_s][g] = 1.0;
+        else
+            zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (Sigma_a_fuel_tg[bt_s][g] * V_fuel * (lattice_E_tg[bt_s][g] - 1.0) / (Sigma_a_cool_tg[bt_s][g] * V_cool));
+    };
+
+
+    // Unfortunately, the above formulation for the disadvantage factor is ONLY valid for a << b!!!
+    // Often times in modern (thermal) reactors, this is not the case.
+    // We have a 'thin moderator' situation.
+    //
+    // To fix this problem correctly requires going to a multi-region diffusion/transport calculation.
+    // Doing so is beyond the scope of this code.
+    // What is more in-line with current practice is to use the results of a more sophisticated method,
+    // interpolate over them, and use them here.
+    //
+    // That is what is done here when 0.1 < VF / VC, (ie the fuel is greater than 10% of the coolant)
+    // A baseline zeta is determined from data presented in "Thermal disadvantage factor calculation by 
+    // the multiregion collision probability method" by B. Ozgener,  and H. A. Ozgener, Institute of 
+    // Nuclear Energy, Istanbul Technical University 80626 Maslak, Istanbul, Turkey, Received 
+    // 28 January 2003;  accepted 20 May 2003.  Available online 6 March 2004.
+    // This baseline is a function of (VF/VC).
+    // 
+    // The above calculation of zeta is then used as a scaling factor on the baseline function to 
+    // account for variations in fuel composition and fluenece.
+
+    // Check if we are in the proper Fuel-to-Coolant Regime
+
+    std::cout << "f2c ratio\n";
+    double f2c = V_fuel / V_cool;
+    if (f2c < 0.1)
+        return;
+
+    double zetabase  = 1.30857959 - (0.10656299 * f2c);
+
+    // Find an index that is hopefully thermal
+    std::cout << "g-therm\n";
+    int g_therm = (2 * G) / 3;
+    while (g_therm != G-1 && 0.0001 < E_g[g_therm])
+    {
+        std::cout << g_therm << "\n";
+        g_therm = g_therm + 1;
+    };
+
+    double zetaratio = zetabase / zeta_tg[bt_s][g_therm];
+
+    std::cout << "adj zeta\n";
+    for (g = 0; g < G; g++) 
+    {
+        zeta_tg[bt_s][g] = zeta_tg[bt_s][g] * zetaratio;
+
+        if (zeta_tg[bt_s][g] < 1.0)
+            zeta_tg[bt_s][g] = 1.0;
+    };
+};
+

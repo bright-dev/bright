@@ -5791,6 +5791,14 @@ cdef class ReactorMG(FCComp):
 
 
 
+    property zeta_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.zeta_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.zeta_tg = conv.array_to_vector_2d_dbl(value)
+
+
     property phi_tg:
         def __get__(self):
             return conv.vector_to_array_2d_dbl(self.rmg_pointer.phi_tg)
@@ -5939,12 +5947,381 @@ cdef class ReactorMG(FCComp):
 
 
 
+    property Sigma_t_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_t_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_t_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_a_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_a_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_a_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property nubar_Sigma_f_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.nubar_Sigma_f_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.nubar_Sigma_f_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property chi_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.chi_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.chi_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_s_fuel_tgh:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.Sigma_s_fuel_tgh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_s_fuel_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+    property Sigma_f_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_f_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_f_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_gamma_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_gamma_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_gamma_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_2n_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_2n_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_2n_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_3n_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_3n_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_3n_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_alpha_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_alpha_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_alpha_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_proton_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_proton_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_proton_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_gamma_x_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_gamma_x_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_gamma_x_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_2n_x_fuel_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_2n_x_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_2n_x_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property kappa_fuell_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.kappa_fuel_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.kappa_fuel_tg = conv.array_to_vector_2d_dbl(value)
+
+
+
+
+
+
+
+
+
+    property Sigma_t_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_t_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_t_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_a_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_a_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_a_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property nubar_Sigma_f_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.nubar_Sigma_f_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.nubar_Sigma_f_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property chi_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.chi_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.chi_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_s_clad_tgh:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.Sigma_s_clad_tgh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_s_clad_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+    property Sigma_f_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_f_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_f_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_gamma_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_gamma_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_gamma_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_2n_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_2n_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_2n_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_3n_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_3n_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_3n_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_alpha_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_alpha_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_alpha_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_proton_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_proton_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_proton_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_gamma_x_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_gamma_x_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_gamma_x_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_2n_x_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_2n_x_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_2n_x_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property kappa_clad_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.kappa_clad_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.kappa_clad_tg = conv.array_to_vector_2d_dbl(value)
+
+
+
+
+
+
+
+
+
+
+    property Sigma_t_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_t_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_t_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_a_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_a_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_a_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property nubar_Sigma_f_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.nubar_Sigma_f_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.nubar_Sigma_f_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property chi_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.chi_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.chi_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_s_cool_tgh:
+        def __get__(self):
+            return conv.vector_to_array_3d_dbl(self.rmg_pointer.Sigma_s_cool_tgh)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_s_cool_tgh = conv.array_to_vector_3d_dbl(value)
+
+
+    property Sigma_f_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_f_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_f_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_gamma_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_gamma_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_gamma_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_2n_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_2n_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_2n_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_3n_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_3n_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_3n_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_alpha_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_alpha_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_alpha_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_proton_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_proton_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_proton_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_gamma_x_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_gamma_x_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_gamma_x_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_2n_x_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_2n_x_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_2n_x_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property kappa_cool_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.kappa_cool_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.kappa_cool_tg = conv.array_to_vector_2d_dbl(value)
+
+
+
+
+
+
+
+
+
+
+
+
     property Sigma_t_tg:
         def __get__(self):
             return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_t_tg)
 
         def __set__(self, dict value):
             self.rmg_pointer.Sigma_t_tg = conv.array_to_vector_2d_dbl(value)
+
+
+    property Sigma_a_tg:
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl(self.rmg_pointer.Sigma_a_tg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.Sigma_a_tg = conv.array_to_vector_2d_dbl(value)
 
 
     property nubar_Sigma_f_tg:
@@ -6033,6 +6410,9 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, dict value):
             self.rmg_pointer.Sigma_2n_x_tg = conv.array_to_vector_2d_dbl(value)
+
+
+
 
 
 

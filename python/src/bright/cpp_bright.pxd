@@ -516,6 +516,10 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[double] Phi_t
         vector[double] BU_t
 
+        vector[vector[double]] zeta_tg
+        vector[vector[double]] lattice_E_tg
+        vector[vector[double]] lattice_F_tg
+
         map[int, vector[double]] T_it
         map[int, vector[vector[double]]] sigma_t_itg
         map[int, vector[vector[double]]] nubar_sigma_f_itg
@@ -530,7 +534,53 @@ cdef extern from "../../../cpp/ReactorMG.h":
         map[int, vector[vector[double]]] sigma_gamma_x_itg
         map[int, vector[vector[double]]] sigma_2n_x_itg
 
+        vector[vector[double]] Sigma_t_fuel_tg
+        vector[vector[double]] Sigma_a_fuel_tg
+        vector[vector[double]] nubar_Sigma_f_fuel_tg
+        vector[vector[double]] chi_fuel_tg
+        vector[vector[vector[double]]] Sigma_s_fuel_tgh
+        vector[vector[double]] Sigma_f_fuel_tg
+        vector[vector[double]] Sigma_gamma_fuel_tg
+        vector[vector[double]] Sigma_2n_fuel_tg
+        vector[vector[double]] Sigma_3n_fuel_tg
+        vector[vector[double]] Sigma_alpha_fuel_tg
+        vector[vector[double]] Sigma_proton_fuel_tg
+        vector[vector[double]] Sigma_gamma_x_fuel_tg
+        vector[vector[double]] Sigma_2n_x_fuel_tg
+        vector[vector[double]] kappa_fuel_tg
+
+        vector[vector[double]] Sigma_t_clad_tg
+        vector[vector[double]] Sigma_a_clad_tg
+        vector[vector[double]] nubar_Sigma_f_clad_tg
+        vector[vector[double]] chi_clad_tg
+        vector[vector[vector[double]]] Sigma_s_clad_tgh
+        vector[vector[double]] Sigma_f_clad_tg
+        vector[vector[double]] Sigma_gamma_clad_tg
+        vector[vector[double]] Sigma_2n_clad_tg
+        vector[vector[double]] Sigma_3n_clad_tg
+        vector[vector[double]] Sigma_alpha_clad_tg
+        vector[vector[double]] Sigma_proton_clad_tg
+        vector[vector[double]] Sigma_gamma_x_clad_tg
+        vector[vector[double]] Sigma_2n_x_clad_tg
+        vector[vector[double]] kappa_clad_tg
+
+        vector[vector[double]] Sigma_t_cool_tg
+        vector[vector[double]] Sigma_a_cool_tg
+        vector[vector[double]] nubar_Sigma_f_cool_tg
+        vector[vector[double]] chi_cool_tg
+        vector[vector[vector[double]]] Sigma_s_cool_tgh
+        vector[vector[double]] Sigma_f_cool_tg
+        vector[vector[double]] Sigma_gamma_cool_tg
+        vector[vector[double]] Sigma_2n_cool_tg
+        vector[vector[double]] Sigma_3n_cool_tg
+        vector[vector[double]] Sigma_alpha_cool_tg
+        vector[vector[double]] Sigma_proton_cool_tg
+        vector[vector[double]] Sigma_gamma_x_cool_tg
+        vector[vector[double]] Sigma_2n_x_cool_tg
+        vector[vector[double]] kappa_cool_tg
+
         vector[vector[double]] Sigma_t_tg
+        vector[vector[double]] Sigma_a_tg
         vector[vector[double]] nubar_Sigma_f_tg
         vector[vector[double]] chi_tg
         vector[vector[vector[double]]] Sigma_s_tgh
