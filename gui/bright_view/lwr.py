@@ -12,7 +12,7 @@ import bright
 import numpy as np
 
 from utils import _init_comp, _get_comp_pass_number, _get_lwr_data_path
-from mass_stream import _MassStreamView
+from mass_stream_views import _MassStreamView
 
 from views.burnup_criticality_estimator import _burnup_criticality_estimator_plot, _k_BU
 
