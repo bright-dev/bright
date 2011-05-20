@@ -8,6 +8,7 @@ from enthought.chaco.tools.cursor_tool import CursorTool, BaseCursorTool
 from enthought.chaco.base import n_gon
 from numpy import linspace, sin, sqrt, transpose
 
+import mass_stream
 import bright
 import numpy as np
 
@@ -70,10 +71,10 @@ def _make_pincell_plot(radius, length):
     pincell_plot.title = "Fuel Pin Cell"
     return pincell_plot
 
-class _LightWaterReactor_view(HasTraits):
+class _LightWaterReactorView(HasTraits):
 
-    IsosIn  = Instance(bright.MassStream)
-    IsosOut = Instance(bright.MassStream)
+    IsosIn  = Instance(mass_stream.MassStream)
+    IsosOut = Instance(mass_stream.MassStream)
 
     IsosIn_view  = Instance(_MassStreamView)
     IsosOut_view = Instance(_MassStreamView)
@@ -311,3 +312,9 @@ class _LightWaterReactor_view(HasTraits):
             return
 
         self.burnup = self.top_cursor.current_position[0]
+
+if __name__ == "__main__":
+    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+
+    _lightwaterreactorview = _LightWaterReactorView(IsosIn = nu, IsosOut = nu)
+    _lightwaterreactorview.configure_traits()
