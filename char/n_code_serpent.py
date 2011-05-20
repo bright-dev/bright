@@ -627,6 +627,14 @@ class NCodeSerpent(object):
             top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
 
         ms = ms_n + top_up
+
+        # Add a differential mass of this isotope, if not otherwise present
+        # Needed to capture sigma_s_gh effects via serpent.
+        if (iso_zz not in ms.comp) or (ms.comp[iso_zz] == 0.0):
+            ms_iso = MassStream({iso_zz: 0.001})
+            ms = ms + ms_iso
+
+        # Set the final mass stream
         isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
         ms = MassStream(isovec)
 
