@@ -750,8 +750,6 @@ void ReactorMG::fold_mass_weights()
     double N_clad_i_cm2pb = 0.0;
     double N_cool_i_cm2pb = 0.0;
 
-    std::cout << "Regions\n";
-
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
@@ -808,7 +806,6 @@ void ReactorMG::fold_mass_weights()
         };
     };
 
-    std::cout << "Regions chi\n";
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
     double chi_clad_tot = 0.0;
@@ -827,7 +824,6 @@ void ReactorMG::fold_mass_weights()
         chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot; 
     };
 
-    std::cout << "kappa\n";
     // Calculate kappas as the inverse of the diffusion length
     // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
     for (g = 0; g < G; g++)
@@ -837,15 +833,17 @@ void ReactorMG::fold_mass_weights()
         kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
     };
 
-    std::cout << "Sigma_a\n";
     // Get absorption XS estimate
-    Sigma_a_fuel_tg[bt_s][g] = 1.0 * Sigma_t_fuel_tg[bt_s][g];
-    Sigma_a_clad_tg[bt_s][g] = 1.0 * Sigma_t_clad_tg[bt_s][g];
-    Sigma_a_cool_tg[bt_s][g] = 1.0 * Sigma_t_cool_tg[bt_s][g];
     for (g = 0; g < G; g++)
     {
+        Sigma_a_fuel_tg[bt_s][g] = 1.0 * Sigma_t_fuel_tg[bt_s][g];
+        Sigma_a_clad_tg[bt_s][g] = 1.0 * Sigma_t_clad_tg[bt_s][g];
+        Sigma_a_cool_tg[bt_s][g] = 1.0 * Sigma_t_cool_tg[bt_s][g];
+
         for (h = 0; h < G; h++)
         {
+            std::cout << g << "  " << h <<  "  " << Sigma_a_fuel_tg[bt_s][g] << "\n";
+
             Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tgh[bt_s][g][h];
             Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tgh[bt_s][g][h];
             Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tgh[bt_s][g][h];
@@ -853,12 +851,10 @@ void ReactorMG::fold_mass_weights()
     };
 
 
-    std::cout << "Zeta\n";
     // Calculate the disadvantage factor, if required.
     if (use_zeta)
         calc_zeta();
 
-    std::cout << "Full Core\n";
     // Calculate Core averaged XS
     double zeta_V_cool_g, denom_g;
     for (g = 0; g < G; g++)
@@ -885,7 +881,6 @@ void ReactorMG::fold_mass_weights()
         };
     };
 
-    std::cout << "Full-core chi\n";
     // Re-Normalize chi
     double chi_tot = 0.0;
     for (g = 0; g < G; g++)
@@ -924,6 +919,8 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
     // Assemble the F matrix
+//    F_fuel_tgh[bt_s] = bright::vector_outer_product(chi_fuel_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
+//    F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_tg[bt_s]);
     F_fuel_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_fuel_tg[bt_s], chi_fuel_tg[bt_s]);
     F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
 
@@ -1050,7 +1047,7 @@ void ReactorMG::calc_criticality()
 {
     // Init values
     int n = 0;
-    int N = 5;
+    int N = 1;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
@@ -1072,8 +1069,9 @@ void ReactorMG::calc_criticality()
     while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
     {
         // Calculate the next eigen-flux
-        invPk = 1.0 / (P_NL * k0);
-        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
+//        invPk = 1.0 / (P_NL * k0);
+//        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
+        phi1 = bright::scalar_matrix_vector_product(1.0 / k0, A_inv_F_tgh[bt_s], phi0);
 
 /*
         for (g = 0; g < G; g++)
@@ -1123,7 +1121,10 @@ void ReactorMG::calc_criticality()
     for (g = 0; g < G; g++)
         phi_t[bt_s] += phi1[0];
 
-    Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s]) * bright::sec_per_day;
+    if (bt_s == 0)
+        Phi_t[bt_s] = 0.0;
+    else
+        Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s-1]) * bright::sec_per_day;
 
     // Calculate the multiplication factor, physically, and not from the eigenvalue
     double k_num = 0.0;
@@ -2125,7 +2126,6 @@ void ReactorMG::calc_zeta()
 {
     // Computes the thermal disadvantage factor
 
-    std::cout << "lattice\n";
     // Calculate the lattice_flag Functions
     double a, b;
 
@@ -2166,7 +2166,6 @@ void ReactorMG::calc_zeta()
     };
 
     // Finally, Calculate Zeta
-    std::cout << "czeta\n";
     int g, h;
     for (g = 0; g < G; g++) 
     {
@@ -2197,8 +2196,6 @@ void ReactorMG::calc_zeta()
     // account for variations in fuel composition and fluenece.
 
     // Check if we are in the proper Fuel-to-Coolant Regime
-
-    std::cout << "f2c ratio\n";
     double f2c = V_fuel / V_cool;
     if (f2c < 0.1)
         return;
@@ -2206,7 +2203,6 @@ void ReactorMG::calc_zeta()
     double zetabase  = 1.30857959 - (0.10656299 * f2c);
 
     // Find an index that is hopefully thermal
-    std::cout << "g-therm\n";
     int g_therm = (2 * G) / 3;
     while (g_therm != G-1 && 0.0001 < E_g[g_therm])
     {
@@ -2216,7 +2212,6 @@ void ReactorMG::calc_zeta()
 
     double zetaratio = zetabase / zeta_tg[bt_s][g_therm];
 
-    std::cout << "adj zeta\n";
     for (g = 0; g < G; g++) 
     {
         zeta_tg[bt_s][g] = zeta_tg[bt_s][g] * zetaratio;
