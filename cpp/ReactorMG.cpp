@@ -1175,7 +1175,7 @@ void ReactorMG::calc_transmutation()
     // Calculates a tranmutation step via the Pade method
 
     // Get the transmutation matrix for this time delta
-    double dt = burn_times[bt_s] - burn_times[bt_s - 1];
+    double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
     std::vector< std::vector<double> > Mt = bright::scalar_matrix_product(dt, M_tij[bt_s]);
 
     // Set Pade coefficients, for p = q = 6
