@@ -1132,7 +1132,7 @@ void ReactorMG::calc_criticality()
     // Set the final flux values to the class members
 
     // Rescale flux
-    phi1_tot = 0.0;
+    double phi1_tot = 0.0;
     for (g = 0; g < G; g++)
         phi1_tot += phi1[0];
 
