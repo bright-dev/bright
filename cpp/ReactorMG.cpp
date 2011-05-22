@@ -1057,7 +1057,7 @@ void ReactorMG::assemble_transmutation_matrices()
         for (jnd = 0; jnd < J_size; jnd++)
         {
             for (g = 0; g < G; g++)
-                T_int_tij[bt_s][ind][jnd] += T_matrix[ind][jnd][g] * phi_tg[bt_s][g];
+                T_int_tij[bt_s][ind][jnd] += T_matrix[ind][jnd][g] * phi_tg[bt_s][g] * bright::cm2_per_barn;
         };
     };
 
