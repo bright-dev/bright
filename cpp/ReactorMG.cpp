@@ -1138,9 +1138,10 @@ void ReactorMG::calc_criticality()
 
     phi_t[bt_s] = 0.0;
     for (g = 0; g < G; g++)
+    {
         phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
         phi_t[bt_s] += phi_tg[bt_s][g];
-
+    };
 
     if (bt_s == 0)
         Phi_t[bt_s] = 0.0;
