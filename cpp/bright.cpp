@@ -566,7 +566,7 @@ std::vector<double> bright::scalar_matrix_vector_product(double a, std::vector< 
     {
         for (int j = 0; j < I; j++)
         {
-            r[i] += (M[i][j] * v[i]);
+            r[i] += (M[i][j] * v[j]);
         };
         r[i] = (r[i] * a);
     };

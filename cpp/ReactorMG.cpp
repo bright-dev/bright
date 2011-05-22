@@ -834,6 +834,7 @@ void ReactorMG::fold_mass_weights()
     };
 
     // Get absorption XS estimate
+/*
     for (g = 0; g < G; g++)
     {
         Sigma_a_fuel_tg[bt_s][g] = 1.0 * Sigma_t_fuel_tg[bt_s][g];
@@ -847,6 +848,21 @@ void ReactorMG::fold_mass_weights()
             Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tgh[bt_s][g][h];
             Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tgh[bt_s][g][h];
             Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tgh[bt_s][g][h];
+        };
+    };
+*/
+
+    for (h = 0; h < G; h++)
+    {
+        Sigma_a_fuel_tg[bt_s][h] = 1.0 * Sigma_t_fuel_tg[bt_s][h];
+        Sigma_a_clad_tg[bt_s][h] = 1.0 * Sigma_t_clad_tg[bt_s][h];
+        Sigma_a_cool_tg[bt_s][h] = 1.0 * Sigma_t_cool_tg[bt_s][h];
+
+        for (g = 0; g < G; g++)
+        {
+            Sigma_a_fuel_tg[bt_s][h] -= Sigma_s_fuel_tgh[bt_s][g][h];
+            Sigma_a_clad_tg[bt_s][h] -= Sigma_s_clad_tgh[bt_s][g][h];
+            Sigma_a_cool_tg[bt_s][h] -= Sigma_s_cool_tgh[bt_s][g][h];
         };
     };
 
@@ -1047,7 +1063,7 @@ void ReactorMG::calc_criticality()
 {
     // Init values
     int n = 0;
-    int N = 1;
+    int N = 100;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
@@ -1106,13 +1122,15 @@ void ReactorMG::calc_criticality()
                 epsiphi = tmp_epsiphi;
         };
 
+        std::cout << "epsik = " << epsik << "    epsiphi = " << epsiphi <<"\n";
+
         // Set the next eigens to the previous values befor looping
         k0 = k1;
         phi0 = phi1;
         n++;
     };
 
-//    std::cout << "N = " << N << "\n";
+    std::cout << "n = " << n << "/" << N << "\n";
 
     // Set the final flux values to the class members
     phi_tg[bt_s] = phi1;
@@ -2219,5 +2237,15 @@ void ReactorMG::calc_zeta()
         if (zeta_tg[bt_s][g] < 1.0)
             zeta_tg[bt_s][g] = 1.0;
     };
+
+    // try something else
+    for (g = 0; g < G; g++) 
+    {
+        if (g < g_therm)
+            zeta_tg[bt_s][g] = 1.0;
+        else
+            zeta_tg[bt_s][g] = 1.2;            
+    };
+
 };
 
