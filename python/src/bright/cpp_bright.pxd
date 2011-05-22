@@ -629,6 +629,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
         void calc_mass_weights() except +
         void fold_mass_weights() except +
         void assemble_multigroup_matrices() except +
+        void assemble_transmutation_matrices() except +
         void calc_criticality() except +
         void calc_transmutation() except +
 

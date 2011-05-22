@@ -325,6 +325,7 @@ public:
     void calc_mass_weights();
     void fold_mass_weights();
     void assemble_multigroup_matrices();
+    void assemble_transmutation_matrices();
     void calc_criticality();
     void calc_transmutation();
 

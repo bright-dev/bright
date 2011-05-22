@@ -6787,6 +6787,12 @@ cdef class ReactorMG(FCComp):
         self.rmg_pointer.assemble_multigroup_matrices()
 
 
+    def assemble_transmutation_matrices(self):
+        """Calculates the transmutation matrices for the current time step
+        """
+        self.rmg_pointer.assemble_transmutation_matrices()
+
+
     def calc_criticality(self):
         """Performs the criticality calculation to find k for this time step.
         """

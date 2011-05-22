@@ -950,6 +950,15 @@ void ReactorMG::assemble_multigroup_matrices()
     A_inv_F_fuel_tgh[bt_s] = bright::matrix_multiplication(A_inv_fuel_tgh[bt_s], F_fuel_tgh[bt_s]);
     A_inv_F_tgh[bt_s] = bright::matrix_multiplication(A_inv_tgh[bt_s], F_tgh[bt_s]);
 
+};
+
+
+
+
+
+
+void ReactorMG::assemble_transmutation_matrices()
+{
     //
     // Assemble the energy integral of transmutation matrix
     //
@@ -1038,6 +1047,11 @@ void ReactorMG::assemble_multigroup_matrices()
     };
 
     // Multiply by flux and integrate over energy
+    std::cout << "phi_tg = [";
+    for (int g = 0; g < G; g++)
+        std::cout << phi_tg[bt_s][g] << ", ";
+    std::cout << "]\n";
+
     for (ind = 0; ind < J_size; ind++)
     {
         for (jnd = 0; jnd < J_size; jnd++)
@@ -1116,11 +1130,17 @@ void ReactorMG::calc_criticality()
     };
 
     // Set the final flux values to the class members
-    phi_tg[bt_s] = phi1;
+
+    // Rescale flux
+    phi1_tot = 0.0;
+    for (g = 0; g < G; g++)
+        phi1_tot += phi1[0];
 
     phi_t[bt_s] = 0.0;
     for (g = 0; g < G; g++)
-        phi_t[bt_s] += phi1[0];
+        phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
+        phi_t[bt_s] += phi_tg[bt_s][g];
+
 
     if (bt_s == 0)
         Phi_t[bt_s] = 0.0;
@@ -1422,12 +1442,12 @@ void ReactorMG::burnup_core()
         std::cout << s << "\n";
 
         // Find the nearest neightbors for this time.
-        std::cout << "Nearest\n";
+        std::cout << "cnn\n";
         calc_nearest_neighbors();
 
         // Interpolate cross section in preparation for 
         // criticality calculation.
-        std::cout << "Interpolate\n";
+        std::cout << "ics\n";
         interpolate_cross_sections();
 
         // Fold the mass weights for this time step
@@ -1436,11 +1456,15 @@ void ReactorMG::burnup_core()
         std::cout << "fmw\n";
         fold_mass_weights();
 
-        // Preform the criticality and burnup calulations
+        // Preform the criticality calulation
         std::cout << "amm\n";
         assemble_multigroup_matrices();
         std::cout << "cc\n";
         calc_criticality();
+
+        // Preform the burnup calulation
+        std::cout << "atm\n";
+        assemble_transmutation_matrices();
 
         std::cout << "ct\n";
         if (s == 0)
