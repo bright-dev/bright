@@ -111,7 +111,7 @@ def check_shape(arr, npert, G, name=None):
 
 
 def test_basics():
-    #raise nose.SkipTest
+    raise nose.SkipTest
     for grp in rx_h5.root:
         if is_data_group(grp):
             for arr in grp:
@@ -124,6 +124,20 @@ def test_basics():
                     yield check_shape, a, npert, hi_G, arr._v_pathname
                 else:
                     yield check_shape, a, npert, G, arr._v_pathname
+
+
+def test_phi():
+    phi_arr, phi = read_array(rx_h5.root, 'phi')
+    phi_g_arr, phi_g = read_array(rx_h5.root, 'phi_g')
+    yield check_shape, phi, npert, G, phi_arr._v_pathname
+    yield check_shape, phi_g, npert, G, phi_g_arr._v_pathname
+    yield check_array_almost_eq, 1.0, phi / phi_g.sum(axis=-1), [phi_arr._v_pathname, 'sum(' + phi_g_arr._v_pathname + ')'], 5
+
+    if hasattr(rx_h5.root, 'hi_res'):
+        phi_arr, phi = read_array(rx_h5.root.hi_res, 'phi')
+        phi_g_arr, phi_g = read_array(rx_h5.root.hi_res, 'phi_g')
+        yield check_array_almost_eq, 1.0, phi / phi_g.sum(axis=-1), [phi_arr._v_pathname, 'sum(' + phi_g_arr._v_pathname + ')'], 5
+
 
 #
 # Test Cross sections
