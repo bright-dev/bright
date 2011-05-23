@@ -1014,7 +1014,7 @@ void ReactorMG::assemble_transmutation_matrices()
         };
 
         // Add the (n, alpha) cross-section
-        if (0 < J.count(j_2n))
+        if (0 < J.count(j_alpha))
         {
             jnd = J_index[j_alpha];
             for (g = 0; g < G; g++)
@@ -1024,7 +1024,7 @@ void ReactorMG::assemble_transmutation_matrices()
         // Add the (n, proton) cross-section
         if (0 < J.count(j_proton))
         {
-            jnd = J_index[j_2n];
+            jnd = J_index[j_proton];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_proton_itg[i][bt_s][g];
         };
@@ -1060,9 +1060,22 @@ void ReactorMG::assemble_transmutation_matrices()
                 T_int_tij[bt_s][ind][jnd] += T_matrix[ind][jnd][g] * phi_tg[bt_s][g] * bright::cm2_per_barn;
         };
     };
-
+    
     // Make the transmutation matrix for this time step
     M_tij[bt_s] = bright::matrix_addition(T_int_tij[bt_s], decay_matrix);
+
+/*
+*/
+    for (ind = 0; ind < J_size; ind++)
+    {
+//        M_tij[bt_s][ind][ind] -= 1.0;
+ 
+        for (jnd = 0; jnd < J_size; jnd++)
+        {
+            if (ind != jnd)
+                M_tij[bt_s][ind][ind] -= M_tij[bt_s][ind][jnd];
+        };
+    };
 };
 
 
