@@ -219,6 +219,7 @@ class NCodeSerpent(object):
                 80160:  0.00125,
                 }
             clad_stream = MassStream(clad_form)
+            self.env['clad_form'] = clad_stream
 
         # Try to find if the cladding form is mass or atomic weighted
         if 'clad_form_mass_weighted' in self.env:
@@ -246,6 +247,7 @@ class NCodeSerpent(object):
                 50110: (0.801 * 550 * 10.0**-6 * 11.0) / MW,
                 }
             cool_stream = MassStream(cool_form)
+            self.env['cool_form'] = cool_stream
 
         # Try to find if the coolant form is mass or atomic weighted
         if 'cool_form_mass_weighted' in self.env:
@@ -367,9 +369,16 @@ class NCodeSerpent(object):
         # Set the isotope to calculate XS for
         det['xsiso'] = "{0}.{1}".format(iso_serp, self.env['temp_flag'])
 
+        if iso_zz in self.env['cool_form'].comp.keys():
+            det['detector_mat'] = 'coolant' 
+        elif iso_zz in self.env['clad_form'].comp.keys():
+            det['detector_mat'] = 'cladding' 
+        else:
+            det['detector_mat'] = 'fuel' 
+
         # Setup detectors to calculate XS for
         det['xsdet'] = ''
-        det_format = "det {tally_name} de energies dm fuel dr {tally_type} xsmat dt 3 phi\n"
+        det_format = "det {tally_name} de energies dm {detector_mat} dr {tally_type} xsmat dt 3 phi\n"
 
         # Get tallies
         tallies = self.env['tallies']
@@ -377,7 +386,9 @@ class NCodeSerpent(object):
         # Add tally line if MT number is valid
         for tally in tallies:
             if tallies[tally] in self.env['iso_mts'][iso_zz]:
-                det['xsdet'] += det_format.format(tally_name=tally, tally_type=tallies[tally])
+                det['xsdet'] += det_format.format(tally_name=tally, 
+                                                  tally_type=tallies[tally], 
+                                                  detector_mat=det['detector_mat'])
 
         return det
 

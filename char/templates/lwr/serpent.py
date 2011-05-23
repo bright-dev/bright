@@ -70,8 +70,8 @@ mesh 3 800 800
 ene energies 1
 {group_structure}
 
-% Total flux in fuel
-det phi de energies dm fuel
+% Total flux in {detector_mat}
+det phi de energies dm {detector_mat}
 
 % Group constant material
 mat xsmat 1.0 {xsiso} 1.0
