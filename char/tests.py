@@ -139,6 +139,20 @@ def test_phi():
         yield check_array_almost_eq, 1.0, phi / phi_g.sum(axis=-1), [phi_arr._v_pathname, 'sum(' + phi_g_arr._v_pathname + ')'], 5
 
 
+def test_root_misc():
+    time0_arr, time0 = read_array(rx_h5.root, 'time0')
+    yield check_shape, time0, npert, G, time0_arr._v_pathname
+
+    BU0_arr, BU0 = read_array(rx_h5.root, 'BU0')
+    yield check_shape, BU0, npert, G, BU0_arr._v_pathname
+
+    Phi_arr, Phi = read_array(rx_h5.root, 'Phi')
+    yield check_shape, Phi, npert, G, Phi_arr._v_pathname
+
+    pert_arr, pert = read_array(rx_h5.root, 'perturbations')
+    yield check_shape, pert, npert, G, pert_arr._v_pathname
+
+
 #
 # Test Cross sections
 #
