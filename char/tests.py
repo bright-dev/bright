@@ -147,14 +147,78 @@ def test_chi():
 
 
 def test_sigma_s():
+    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'sigma_s'):
         raise nose.SkipTest
 
     for iso_LL in isos_LL:    
         iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
 
+        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
         sig_s_arr, sig_s = read_array(rx_h5.root.sigma_s, iso_LL)
         sig_s_gh_arr, sig_s_gh = read_array(rx_h5.root.sigma_s_gh, iso_LL)
 
+        yield check_le, sig_s, sig_t, [sig_s_arr._v_pathname, sig_t_arr._v_pathname]
         yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
         #yield check_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
+
+
+
+def test_sigma_a():
+    #raise nose.SkipTest
+    if not hasattr(rx_h5.root, 'sigma_a'):
+        raise nose.SkipTest
+
+    for iso_LL in isos_LL:    
+        iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
+
+        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
+        sig_a_arr, sig_a = read_array(rx_h5.root.sigma_a, iso_LL)
+
+        yield check_le, sig_a, sig_t, [sig_a_arr._v_pathname, sig_t_arr._v_pathname]
+
+        tot_sig_a = np.zeros(sig_a.shape, dtype=float)
+
+        if hasattr(rx_h5.root, 'sigma_f'):
+            sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, iso_LL)
+            yield check_le, sig_f, sig_a, [sig_f_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_f
+
+        if hasattr(rx_h5.root, 'sigma_gamma'):
+            sig_gam_arr, sig_gam = read_array(rx_h5.root.sigma_gamma, iso_LL)
+            yield check_le, sig_gam, sig_a, [sig_gam_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_gam
+
+        if hasattr(rx_h5.root, 'sigma_2n'):
+            sig_2n_arr, sig_2n = read_array(rx_h5.root.sigma_2n, iso_LL)
+            yield check_le, sig_2n, sig_a, [sig_2n_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_2n
+
+        if hasattr(rx_h5.root, 'sigma_3n'):
+            sig_3n_arr, sig_3n = read_array(rx_h5.root.sigma_3n, iso_LL)
+            yield check_le, sig_3n, sig_a, [sig_3n_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_3n
+
+        if hasattr(rx_h5.root, 'sigma_alpha'):
+            sig_alp_arr, sig_alp = read_array(rx_h5.root.sigma_alpha, iso_LL)
+            yield check_le, sig_alp, sig_a, [sig_alp_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_alp
+
+        if hasattr(rx_h5.root, 'sigma_proton'):
+            sig_pro_arr, sig_pro = read_array(rx_h5.root.sigma_proton, iso_LL)
+            yield check_le, sig_pro, sig_a, [sig_pro_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_pro
+
+        if hasattr(rx_h5.root, 'sigma_gamma_x'):
+            sig_gx_arr, sig_gx = read_array(rx_h5.root.sigma_gamma_x, iso_LL)
+            yield check_le, sig_gx, sig_a, [sig_gx_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_gx
+
+        if hasattr(rx_h5.root, 'sigma_2n_x'):
+            sig_2nx_arr, sig_2nx = read_array(rx_h5.root.sigma_2n_x, iso_LL)
+            yield check_le, sig_2nx, sig_a, [sig_2nx_arr._v_pathname, sig_a_arr._v_pathname]
+            tot_sig_a += sig_2nx
+
+        yield check_le, tot_sig_a, sig_a, ['sum(sig_a_parts)', sig_a_arr._v_pathname]
+
+
