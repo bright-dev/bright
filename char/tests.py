@@ -9,6 +9,8 @@ import isoname
 rx_h5 = None
 isos_LL = None
 
+npert = None
+G = None
 
 #
 # Helper funcs
@@ -16,10 +18,15 @@ isos_LL = None
 
 def _run_tests(path):
     """Runs tests on a library located at path"""
-    global rx_h5, isos_LL
+    global rx_h5, isos_LL, npert, G
     rx_h5 = tb.openFile(path, 'r')
+
     isos_LL = [iso_LL for iso_LL in rx_h5.root.transmute_isos_LL]
+    npert = len(rx_h5.root.perturbations)
+    G = len(rx_h5.root.energy[0]) - 1
+
     nose.runmodule(__name__, argv=[__file__])
+
     rx_h5.close()
 
 
@@ -92,14 +99,31 @@ def check_array_almost_eq(arr1, arr2, names=None, decimal=6):
         raise e
 
 
+def check_shape(arr, npert, G, name=None):
+    cond = (arr.shape in [(npert, ), (npert, G), (npert, G, G)])
+    if not cond:
+        if name is None:
+            names = 'arr'
+        print name + '.shape = ' + repr(arr.shape)
+        msg = '{0} not in {1}'.format(name, [(npert, ), (npert, G), (npert, G, G)])
+        print msg
+        raise AssertionError(msg)
+
+
 def test_basics():
-    raise nose.SkipTest
+    #raise nose.SkipTest
     for grp in rx_h5.root:
         if is_data_group(grp):
             for arr in grp:
                 a = np.array(arr)
                 yield check_isnan, a
                 yield check_le, np.array(0.0), a, ['zero', arr._v_pathname]
+
+                if 'hi_res' == grp._v_name:
+                    hi_G = len(grp.energy) - 1
+                    yield check_shape, a, npert, hi_G, arr._v_pathname
+                else:
+                    yield check_shape, a, npert, G, arr._v_pathname
 
 #
 # Test Cross sections
@@ -165,7 +189,7 @@ def test_sigma_s():
 
 
 def test_sigma_a():
-    #raise nose.SkipTest
+    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'sigma_a'):
         raise nose.SkipTest
 
