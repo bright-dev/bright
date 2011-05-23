@@ -148,6 +148,7 @@ public:
 
     std::map<int, pert_data> Ti0;                  // Data library's transmutation vector
     std::map<int, pert_data_g> sigma_t_pg;         // Total cross section from data library
+    std::map<int, pert_data_g> sigma_a_pg;         // Absorption cross section from data library
     std::map<int, pert_data_g> nubar_sigma_f_pg;   // Neutrons per fission times Fission cross section from data library
     std::map<int, pert_data_g> chi_pg;             // Fission energy spectrum from data library
     std::map<int, pert_data_gh> sigma_s_pgh;       // Group to group scattering cross section from data library
@@ -189,6 +190,7 @@ public:
 
     iso_time_map T_it;               // Transformation Matrix [kg_i/kgIHM]
     iso_time_g sigma_t_itg;          // Total cross section as a function of isotope and burn_time
+    iso_time_g sigma_a_itg;          // Absorption cross section as a function of isotope and burn_time
     iso_time_g nubar_sigma_f_itg;    // Neutrons per fission times Fission cross section as a function of isotope and burn_time
     iso_time_g chi_itg;              // Fission neutron energy spectrum as a function of isotope and burn_time
     iso_time_gh sigma_s_itgh;        // Group to group scattering cross section as a function of isotope and burn_time

@@ -179,6 +179,7 @@ void ReactorMG::loadlib(std::string libfile)
 
         // Add cross sections
         sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_t/" + iso_LL);
+        sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
         nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
         chi_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/chi/" + iso_LL);
         sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
@@ -585,6 +586,7 @@ void ReactorMG::interpolate_cross_sections()
     {
         // Interpolate the cross-sections
         sigma_t_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_t_pg[*iso][a1], sigma_t_pg[*iso][a0]);
+        sigma_a_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
         nubar_sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f_pg[*iso][a1], nubar_sigma_f_pg[*iso][a0]);
         chi_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, chi_pg[*iso][a1], chi_pg[*iso][a0]);
         sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
@@ -761,6 +763,7 @@ void ReactorMG::fold_mass_weights()
         for (g = 0; g < G; g++)
         {
             Sigma_t_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            Sigma_a_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             nubar_Sigma_f_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
             chi_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * chi_itg[*iso][bt_s][g];
             Sigma_f_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
@@ -773,6 +776,7 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            Sigma_a_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             nubar_Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
             chi_clad_tg[bt_s][g] += N_clad_i_cm2pb * chi_itg[*iso][bt_s][g];
             Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
@@ -785,6 +789,7 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            Sigma_a_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             nubar_Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
             chi_cool_tg[bt_s][g] += N_cool_i_cm2pb * chi_itg[*iso][bt_s][g];
             Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
@@ -833,25 +838,8 @@ void ReactorMG::fold_mass_weights()
         kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
     };
 
-    // Get absorption XS estimate
 /*
-    for (g = 0; g < G; g++)
-    {
-        Sigma_a_fuel_tg[bt_s][g] = 1.0 * Sigma_t_fuel_tg[bt_s][g];
-        Sigma_a_clad_tg[bt_s][g] = 1.0 * Sigma_t_clad_tg[bt_s][g];
-        Sigma_a_cool_tg[bt_s][g] = 1.0 * Sigma_t_cool_tg[bt_s][g];
-
-        for (h = 0; h < G; h++)
-        {
-            std::cout << g << "  " << h <<  "  " << Sigma_a_fuel_tg[bt_s][g] << "\n";
-
-            Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tgh[bt_s][g][h];
-            Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tgh[bt_s][g][h];
-            Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tgh[bt_s][g][h];
-        };
-    };
-*/
-
+    // Get absorption XS estimate
     for (h = 0; h < G; h++)
     {
         Sigma_a_fuel_tg[bt_s][h] = 1.0 * Sigma_t_fuel_tg[bt_s][h];
@@ -866,6 +854,7 @@ void ReactorMG::fold_mass_weights()
         };
     };
 
+*/
 
     // Calculate the disadvantage factor, if required.
     if (use_zeta)
@@ -1287,6 +1276,7 @@ void ReactorMG::burnup_core()
 
     // Also initialize the cross-section matrices as a function of time.
     sigma_t_itg.clear();
+    sigma_a_itg.clear();
     nubar_sigma_f_itg.clear();
     chi_itg.clear();
     sigma_s_itgh.clear();
@@ -1337,6 +1327,7 @@ void ReactorMG::burnup_core()
 
         // Init the cross-sections
         sigma_t_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         nubar_sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         chi_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         sigma_s_itgh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
