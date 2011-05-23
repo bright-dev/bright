@@ -151,13 +151,13 @@ def main():
     parser.add_option("-m", "--delta-mass",  action="store_true", dest="RUN_DELTAM", 
         default=False, help="Run the initial isotope sensitivity calculation.")
 
-    parser.add_option("-n", "--npert",  action="store", dest="NPERT", 
+    parser.add_option("-N", action="store", dest="NPERT", 
         default='', help="Pertubation indices to calculate, in Python slice syntax.")
 
-    parser.add_option("-I", "--isos",  action="store", dest="ISOS", 
+    parser.add_option("-I",  action="store", dest="ISOS", 
         default='', help="Isotopes to calculate.")
 
-    parser.add_option("-S", "--nsens",  action="store", dest="NSENS", 
+    parser.add_option("-S",  action="store", dest="NSENS", 
         default='', help="Sensitivity indices to calculate, in Python slice syntax.")
 
     parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
