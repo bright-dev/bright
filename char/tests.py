@@ -2,7 +2,7 @@ import nose
 import numpy as np
 import tables as tb
 
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_array_almost_equal
 
 import isoname
 
@@ -74,6 +74,24 @@ def check_eq(arr1, arr2, names=None):
         raise AssertionError(msg)
 
 
+def check_array_eq(arr1, arr2, names=None):
+    try:
+        assert_array_equal(arr1, arr2)
+    except AssertionError as e:
+        msg = '{0} != {1}'.format(*names)
+        print msg
+        raise e
+
+
+def check_array_almost_eq(arr1, arr2, names=None, decimal=6):
+    try:
+        assert_array_almost_equal(arr1, arr2, decimal)
+    except AssertionError as e:
+        msg = '{0} != {1}'.format(*names)
+        print msg
+        raise e
+
+
 def test_basics():
     raise nose.SkipTest
     for grp in rx_h5.root:
@@ -89,8 +107,9 @@ def test_basics():
 
 
 def test_sigma_f():
+    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'sigma_f'):
-        return
+        raise nose.SkipTest
 
     for iso_LL in isos_LL:
         iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
@@ -109,3 +128,33 @@ def test_sigma_f():
         else:
             yield check_eq, 0.0, sig_f, ['0.0', sig_f_arr._v_pathname]
             yield check_eq, 0.0, nu_sig_f, ['0.0', nu_sig_f_arr._v_pathname]
+
+
+def test_chi():
+    raise nose.SkipTest
+    if not hasattr(rx_h5.root, 'chi'):
+        raise nose.SkipTest
+
+    for iso_LL in isos_LL:    
+        iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
+
+        chi_arr, chi = read_array(rx_h5.root.chi, iso_LL)
+
+        if 89 <= (iso_zz%10000):
+            yield check_array_almost_eq, 1.0, chi.sum(axis=1), ['1.0', 'sum(' + chi_arr._v_pathname + ')']
+        else:
+            yield check_eq, 0.0, chi, ['0.0', chi_arr._v_pathname]
+
+
+def test_sigma_s():
+    if not hasattr(rx_h5.root, 'sigma_s'):
+        raise nose.SkipTest
+
+    for iso_LL in isos_LL:    
+        iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
+
+        sig_s_arr, sig_s = read_array(rx_h5.root.sigma_s, iso_LL)
+        sig_s_gh_arr, sig_s_gh = read_array(rx_h5.root.sigma_s_gh, iso_LL)
+
+        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
+        #yield check_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
