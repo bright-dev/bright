@@ -266,6 +266,6 @@ def test_sigma_a():
             yield check_le, sig_2nx, sig_a, [sig_2nx_arr._v_pathname, sig_a_arr._v_pathname]
             tot_sig_a += sig_2nx
 
-        yield check_le, tot_sig_a, sig_a, ['sum(sig_a_parts)', sig_a_arr._v_pathname]
+#        yield check_le, tot_sig_a, sig_a, ['sum(sig_a_parts)', sig_a_arr._v_pathname]
 
 
