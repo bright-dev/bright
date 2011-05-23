@@ -27,6 +27,7 @@ following information by using the ``--help`` option::
       -k, --kill        Kills the current transport run. Sets -p.
       --cwd             Run char in the current working directory.
       --ui              Launches the char ui.
+      -t, --test        Tests an existing library for soundness.
 
 The ``confchar`` argument is a path to a python file, typically called ``defchar.py`` that is used to 
 specify required parameters of char.  The reason that this appears as a runtime argument is because
@@ -173,6 +174,17 @@ The GUI is based of of the Enthought Tool Suite.  Here is a screenshot, because 
    :align: center
 
 
+-----------------------------
+Database Testing (-t, --test)
+-----------------------------
+Once the database has been created, it is a good idea to test that its data is valid
+before using the file.  To aid in this endevour, you may use the test command to run 
+suite of tests on the database itself.  Unlike the other commands, you pass a path 
+to the database in as char's aregument, rather than a defchar.py file.  For example::
+
+    char -t /path/to/reactor.h5
+
+
 ================
 Common Workflows
 ================
@@ -203,3 +215,7 @@ Run an isotopic sensitivity study and analyze the results::
 Start the user interface::
 
     char --ui
+
+Test the database file::
+
+    char --test /path/to/reactor.h5
