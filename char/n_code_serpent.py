@@ -219,7 +219,7 @@ class NCodeSerpent(object):
                 80160:  0.00125,
                 }
             clad_stream = MassStream(clad_form)
-            self.env['clad_form'] = clad_stream
+            self.env['clad_form'] = clad_form
 
         # Try to find if the cladding form is mass or atomic weighted
         if 'clad_form_mass_weighted' in self.env:
@@ -247,7 +247,7 @@ class NCodeSerpent(object):
                 50110: (0.801 * 550 * 10.0**-6 * 11.0) / MW,
                 }
             cool_stream = MassStream(cool_form)
-            self.env['cool_form'] = cool_stream
+            self.env['cool_form'] = cool_form
 
         # Try to find if the coolant form is mass or atomic weighted
         if 'cool_form_mass_weighted' in self.env:
@@ -369,9 +369,9 @@ class NCodeSerpent(object):
         # Set the isotope to calculate XS for
         det['xsiso'] = "{0}.{1}".format(iso_serp, self.env['temp_flag'])
 
-        if iso_zz in self.env['cool_form'].comp.keys():
+        if iso_zz in self.env['cool_form'].keys():
             det['detector_mat'] = 'coolant' 
-        elif iso_zz in self.env['clad_form'].comp.keys():
+        elif iso_zz in self.env['clad_form'].keys():
             det['detector_mat'] = 'cladding' 
         else:
             det['detector_mat'] = 'fuel' 
