@@ -55,7 +55,7 @@ serpent_default = set([
     "sigma_t", 
     "sigma_f", 
     "nubar_sigma_f",
-#   "sigma_a", 
+    "sigma_a", 
     "sigma_e", 
     "sigma_i1", 
     "sigma_i2",

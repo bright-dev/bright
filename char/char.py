@@ -35,6 +35,8 @@ import envchar
 from run.pbs import Pbs
 from run.bash import Bash
 
+from tests import _run_tests
+
 run_switch = {'': Bash, 
               'BASH': Bash,
               'bash': Bash,
@@ -182,6 +184,9 @@ def main():
     parser.add_option("--ui", action="store_true", dest="UI", default=False, 
         help="Launches the char ui.")
 
+    parser.add_option("-t", "--test", action="store_true", dest="TEST", 
+        default=False, help="Tests an existing library for soundness.")
+
     (options, args) = parser.parse_args()
 
     # Try launching ui before anything else
@@ -206,13 +211,20 @@ def main():
 
     # Make sure we have a configureation file before proceeding
     if len(args) == 0:
-        print(failure("Please specify a configuration file for CHAR."))
+        print(failure("Please specify a file for char."))
+        raise SystemExit
+
+    absolute_path = os.path.abspath(args[0])
+
+    # Run tests on a db file
+    if options.TEST:
+        _run_tests(absolute_path)
         raise SystemExit
 
     # Load the CHAR definition file into its own env namespace
     env = {}
-    absolute_path = os.path.abspath(args[0])
     execfile(absolute_path, {}, env)
+
 
     # Add command line arguments to env
     env['options'] = options
