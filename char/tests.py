@@ -111,7 +111,6 @@ def check_shape(arr, npert, G, name=None):
 
 
 def test_basics():
-    raise nose.SkipTest
     for grp in rx_h5.root:
         if is_data_group(grp):
             for arr in grp:
@@ -159,7 +158,6 @@ def test_root_misc():
 
 
 def test_sigma_f():
-    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'sigma_f'):
         raise nose.SkipTest
 
@@ -183,7 +181,6 @@ def test_sigma_f():
 
 
 def test_chi():
-    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'chi'):
         raise nose.SkipTest
 
@@ -199,7 +196,6 @@ def test_chi():
 
 
 def test_sigma_s():
-    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'sigma_s'):
         raise nose.SkipTest
 
@@ -217,7 +213,6 @@ def test_sigma_s():
 
 
 def test_sigma_a():
-    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'sigma_a'):
         raise nose.SkipTest
 
