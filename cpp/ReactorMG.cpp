@@ -278,15 +278,28 @@ void ReactorMG::loadlib(std::string libfile)
     decay_chains = std::map<int, std::map<int, DecayChain> > ();
     for (l = 0; l < decay_data_length; l++)
     {
-        dc = DeacyChain();
+        dc = DecayChain();
+        //DecayChain dc = DecayChain();
         dc.i = decay_data_array[l].from_iso_zz;
         dc.j = decay_data_array[l].to_iso_zz;
         dc.chain = std::vector<int> (2, 0); 
         dc.chain[0] = dc.i;
         dc.chain[1] = dc.j;
-        dc.decay_const[0] = decay_data_array[l].decay_const;
-        dc.branch_ratio[0] = decay_data_array[l].branch_ratio;
-        decay_chains[i][j] = dc;
+        dc.decay_const = decay_data_array[l].decay_const;
+        dc.branch_ratio = decay_data_array[l].branch_ratio;
+
+        if (decay_chains.count(dc.i) == 0)
+            decay_chains[dc.i] = std::map<int, DecayChain> ();
+
+        decay_chains[dc.i][dc.j] = dc;
+    };
+
+
+    for(std::set<int>::iterator iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
+    {
+        i = *iso_iter;
+        ind = J_index[i];
+        add_decay_chains(i);
     };
 
 /*
@@ -879,9 +892,23 @@ void ReactorMG::fold_mass_weights()
     };
     for (g = 0; g < G; g++)
     {
-        chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot; 
-        chi_clad_tg[bt_s][g] = chi_clad_tg[bt_s][g] / chi_clad_tot; 
-        chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot; 
+        // Normailze Fuel
+        if (chi_fuel_tot == 0.0)
+            chi_fuel_tg[bt_s][g] = 0.0;
+        else
+            chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot;
+
+        // Normailze Cladding
+        if (chi_clad_tot == 0.0)
+            chi_clad_tg[bt_s][g] = 0.0;
+        else
+            chi_clad_tg[bt_s][g] = chi_clad_tg[bt_s][g] / chi_clad_tot;
+
+        // Normailze Coolant
+        if (chi_cool_tot == 0.0)
+            chi_cool_tg[bt_s][g] = 0.0;
+        else
+            chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot;
     };
 
     // Calculate kappas as the inverse of the diffusion length
@@ -946,7 +973,12 @@ void ReactorMG::fold_mass_weights()
     for (g = 0; g < G; g++)
         chi_tot += chi_tg[bt_s][g]; 
     for (g = 0; g < G; g++)
-        chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot; 
+        chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot;
+    if (chi_tot == 0.0)
+    {
+        for (g = 0; g < G; g++)
+            chi_tg[bt_s][g] = 0.0;
+    };
 };
 
 
@@ -2324,8 +2356,10 @@ void ReactorMG::calc_zeta()
 
 
 
-void RecatorMG::add_decay_chains(int iso)
+void ReactorMG::add_decay_chains(int iso)
 {
+    std::cout << decay_chains.size() << "   " << decay_chains[iso].size() << "\n";
+
     int jso;
     DecayChain dc, new_dc;
     std::map<int, DecayChain>::iterator dciter;
@@ -2336,10 +2370,11 @@ void RecatorMG::add_decay_chains(int iso)
         dc = (*dciter).second;
 
         if (iso == jso)
+        {
+            std::cout << "(iso == jso)\n";
             continue;
+        };
 
-        if (decay_chains[iso].count(dc.j) == 1)
-            continue;
 
         // Add new chain
         new_dc = DecayChain();
@@ -2366,6 +2401,7 @@ void RecatorMG::add_decay_chains(int iso)
         new_dc.decay_const = dconst_num / dconst_den;
 
         decay_chains[new_dc.i][new_dc.j] = new_dc;
+        std::cout << "Added iso chain (" << new_dc.i << ", " << new_dc.j << ")\n";
 
         if (decay_chains[dc.j].count(dc.j) != 1)
             add_decay_chains(iso);
