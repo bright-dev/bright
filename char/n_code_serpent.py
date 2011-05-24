@@ -807,6 +807,9 @@ class NCodeSerpent(object):
         if 'sigma_2n_x' in tallies:
             xs_dict['sigma_2n_x'] = msnxs.sigma_reaction(iso, '2n_x')
 
+        if 'sigma_t' in tallies:
+            xs_dict['sigma_t'] = msnxs.sigma_t(iso, self.env['temperature'])
+
         return xs_dict
 
 
