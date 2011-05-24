@@ -59,12 +59,18 @@ def check_isnan(arr):
 def check_le(arr1, arr2, names=None):
     cond = (arr1 <= arr2).all()
     if not cond:
+        try:
+            q = arr1 / arr2
+            mask = np.isnan(q)
+            assert_array_almost_equal(1.0, q[mask])
+            return
+        except AssertionError:
+            pass
+
         if names is None:
             names = ['arr1', 'arr2']
         print names[0] + ' = ' + repr(arr1)
         print names[1] + ' = ' + repr(arr2)
-        #print 'where = ' + repr(arr1 <= arr2)
-        print 'where = ' + repr(1.0 - arr / arr2)
         msg = 'not ({0} <= {1})'.format(*names)
         print msg
         raise AssertionError(msg)
