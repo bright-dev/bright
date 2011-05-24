@@ -126,9 +126,10 @@ def test_basics():
                 yield check_isnan, a
                 yield check_le, np.array(0.0), a, ['zero', arr._v_pathname]
 
-                if 'hi_res' == grp._v_name:
+                if ('hi_res' == grp._v_name):
                     hi_G = len(grp.energy) - 1
-                    yield check_shape, a, npert, hi_G, arr._v_pathname
+                    if (arr._v_name != 'energy'):
+                        yield check_shape, a, npert, hi_G, arr._v_pathname
                 else:
                     yield check_shape, a, npert, G, arr._v_pathname
 

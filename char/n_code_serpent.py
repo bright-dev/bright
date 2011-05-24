@@ -1222,6 +1222,8 @@ class NCodeSerpent(object):
         iso_zz = isoname.mixed_2_zzaaam(iso)
         iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
+        iso_is_fissionable = (86 <= iso_zz/10000)
+
         # Add current working directory to path
         if sys.path[0] != os.getcwd():
             sys.path.insert(0, os.getcwd())
@@ -1244,14 +1246,18 @@ class NCodeSerpent(object):
                 tally_serp_array = det['DET{0}'.format(tally)]
                 tally_serp_array = tally_serp_array[::-1, 10]
             elif ('_'+tally in det):
-                tally_serp_array = det['_'+tally][::-1]            
+                tally_serp_array = det['_'+tally][::-1]
             else:
+                tally_serp_array = np.zeros(len(tally_hdf5_array[n]), dtype=float)
+
+            # Zero out non-fissionable isotope tallies
+            if (tally in set(['sigma_f', 'nubar_sigma_f', 'nubar', 'chi'])) and (not iso_is_fissionable):
                 tally_serp_array = np.zeros(len(tally_hdf5_array[n]), dtype=float)
 
             # Make sure there are no NaNs
             mask = np.isnan(tally_serp_array)
             tally_serp_array[mask] = 0.0
-                
+
             tally_hdf5_array[n] = tally_serp_array
 
         #
@@ -1268,7 +1274,10 @@ class NCodeSerpent(object):
             nubar_sigma_f = det['DETnubar_sigma_f']
             nubar_sigma_f = nubar_sigma_f[::-1, 10] 
 
-            nubar = nubar_sigma_f / sigma_f
+            if iso_is_fissionable:
+                nubar = nubar_sigma_f / sigma_f
+            else:
+                nubar = np.zeros(len(tally_hdf5_array[n]), dtype=float)            
 
             # Ensure nubar is well-formed            
             m = ((0.0 <= nubar) != True)
@@ -1355,30 +1364,12 @@ class NCodeSerpent(object):
             tally_hdf5_group = getattr(base_group, 'chi')
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
-            chi = res['CHI'][res['idx']][::2]
-
-#            if ('sigma_f' in tallies):
-#                sigma_f = det['DETsigma_f']
-#                sigma_f = sigma_f[::-1, 10]
-#
-#                print(sigma_f)
-#
-#                if (sigma_f == 0.0).all():
-#                    chi = 0.0
+            if iso_is_fissionable:
+                chi = res['CHI'][res['idx']][::2]
+            else:
+                chi = np.zeros(len(tally_hdf5_array[n]), dtype=float)                
 
             tally_hdf5_array[n] = chi
-
-        # sigma_gamma_x
-        #if ('sigma_gamma_x' in tallies):
-        #    tally_hdf5_group = getattr(base_group, 'sigma_gamma_x')
-        #    tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
-        #    tally_hdf5_array[n] = det['_sigma_gamma_x'][::-1]
-            
-        # sigma_2n_x
-        #if ('sigma_2n_x' in tallies):
-        #    tally_hdf5_group = getattr(base_group, 'sigma_2n_x')
-        #    tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
-        #    tally_hdf5_array[n] = det['_sigma_2n_x'][::-1]            
 
         # close the file before returning
         rx_h5.close()
