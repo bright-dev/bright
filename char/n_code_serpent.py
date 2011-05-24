@@ -1481,7 +1481,7 @@ class NCodeSerpent(object):
             tally_hdf5_group = getattr(base_group, 'sigma_s_gh')
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
-            sigma_s_gh = xs_dict['sigma_s_gh'][::-1, ::-1]
+            sigma_s_gh = xs_dict['sigma_s_gh'][::-1, ::-1].T
 
             tally_hdf5_array[n] = sigma_s_gh
 

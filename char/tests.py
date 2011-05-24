@@ -225,11 +225,10 @@ def test_sigma_s():
         sig_s_gh_arr, sig_s_gh = read_array(rx_h5.root.sigma_s_gh, iso_LL)
 
         yield check_le, sig_s, sig_t, [sig_s_arr._v_pathname, sig_t_arr._v_pathname]
-#        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
         #yield check_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
 
+        #yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
         yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-2), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
-#        yield check_array_almost_eq, 1.0, sig_s_gh.sum(axis=-2) / sig_s, [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
 
 
 def test_sigma_a():
