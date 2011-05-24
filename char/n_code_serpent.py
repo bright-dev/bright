@@ -1346,14 +1346,9 @@ class NCodeSerpent(object):
             G = len(sigma_s)
             gtp = gtp.reshape((G, G))
 
-#            print(gtp.sum(axis=0))
-#            print(gtp.sum(axis=1))
-
-#            print(gtp)
-#            print()
-#            print(sigma_s)
-#            print()
-#            print(sigma_s * gtp)
+            # Fix mal-formed group transfer probs.
+            cond = np.where(gtp.sum(axis=0) == 0.0)
+            gtp[cond, cond] = 1.0
 
             sigma_s_gh = sigma_s * gtp
 

@@ -102,6 +102,13 @@ def check_array_almost_eq(arr1, arr2, names=None, decimal=6):
     try:
         assert_array_almost_equal(arr1, arr2, decimal)
     except AssertionError as e:
+        try:
+            q = arr2 / arr1
+            assert_array_almost_equal(1.0, q, decimal)
+            return
+        except AssertionError:
+            pass
+
         msg = '{0} != {1}'.format(*names)
         print msg
         raise e
@@ -219,9 +226,10 @@ def test_sigma_s():
 
         yield check_le, sig_s, sig_t, [sig_s_arr._v_pathname, sig_t_arr._v_pathname]
 #        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
-        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-2), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
         #yield check_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
 
+        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-2), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
+#        yield check_array_almost_eq, 1.0, sig_s_gh.sum(axis=-2) / sig_s, [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
 
 
 def test_sigma_a():
