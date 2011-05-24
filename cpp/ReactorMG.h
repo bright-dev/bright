@@ -376,6 +376,7 @@ public:
     void calc_zeta();
 
     void add_decay_chains(int);
+    void add_decay_chains(DecayChain);
 };
 
 

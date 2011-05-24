@@ -295,12 +295,58 @@ void ReactorMG::loadlib(std::string libfile)
     };
 
 
+    for (l = 0; l < decay_data_length; l++)
+        add_decay_chains(decay_chains[decay_data_array[l].from_iso_zz][decay_data_array[l].to_iso_zz]);
+
+    int n;
+    bool chain_in_J = false;
+    std::set<int>::iterator iso_iter, jso_iter;
+    for(iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
+    {
+        i = *iso_iter;
+        ind = J_index[i];
+
+        if (decay_chains.count(i) == 0)
+            continue;
+        
+        for(jso_iter = J.begin(); jso_iter != J.end(); jso_iter++)
+        {
+            j = *jso_iter;
+            jnd = J_index[j];
+
+            if (decay_chains[i].count(j) == 0)
+                continue;
+
+            // Find out if any internal points in the deca chain
+            // Are also members of J.  If so, skip them.
+            chain_in_J = false;
+            dc = decay_chains[i][j];
+            for (n = 1; n < dc.chain.size() - 1; n++)
+            {
+                if (0 < J.count(dc.chain[n]))
+                {
+                    chain_in_J = true;
+                    break;
+                };
+            };
+            if (chain_in_J)
+                continue;
+
+            // Finally, add the adjusted decay paramters to the decay matrix
+            std::cout << "(" << i << ", " << j << "\n";
+            decay_matrix[ind][jnd] = dc.branch_ratio * dc.decay_const;            
+        };
+
+    };
+
+/*
     for(std::set<int>::iterator iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
     {
         i = *iso_iter;
         ind = J_index[i];
         add_decay_chains(i);
     };
+*/
 
 /*
     for(std::set<int>::iterator iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
@@ -2351,37 +2397,37 @@ void ReactorMG::calc_zeta()
 
 
 
-
-
-
-
-
-void ReactorMG::add_decay_chains(int iso)
+void ReactorMG::add_decay_chains(DecayChain dc)
 {
-    std::cout << decay_chains.size() << "   " << decay_chains[iso].size() << "\n";
+    if (dc.i == dc.j)
+        return;
 
-    int jso;
-    DecayChain dc, new_dc;
-    std::map<int, DecayChain>::iterator dciter;
+//    std::cout << "Adding sub-chains of (" << dc.i << ", " << dc.j << ")\n";
 
-    for (dciter = decay_chains[iso].begin(); dciter != decay_chains[iso].end(); dciter++)
+    std::map<int, DecayChain> from_isos = decay_chains[dc.i];
+    std::map<int, DecayChain> to_isos = decay_chains[dc.j];
+    std::map<int, DecayChain>::iterator to_isos_iter;
+
+    int next_iso;
+    DecayChain new_dc, next_dc;
+
+    for (to_isos_iter = to_isos.begin(); to_isos_iter != to_isos.end(); to_isos_iter++)
     {
-        jso = (*dciter).first;
-        dc = (*dciter).second;
+        next_iso = (*to_isos_iter).first;
+        next_dc = (*to_isos_iter).second;
 
-        if (iso == jso)
-        {
-            std::cout << "(iso == jso)\n";
+        if (from_isos.count(next_iso) == 1)
             continue;
-        };
 
+        if (2 < next_dc.chain.size())
+            continue;
 
         // Add new chain
         new_dc = DecayChain();
-        new_dc.i = iso; 
-        new_dc.j = dc.j; 
+        new_dc.i = dc.i; 
+        new_dc.j = next_dc.j; 
         new_dc.chain = dc.chain;
-        new_dc.chain.push_back(dc.j);
+        new_dc.chain.push_back(next_dc.j);
 
         int n, ni, nj;
         double br = 1.0;
@@ -2401,9 +2447,85 @@ void ReactorMG::add_decay_chains(int iso)
         new_dc.decay_const = dconst_num / dconst_den;
 
         decay_chains[new_dc.i][new_dc.j] = new_dc;
-        std::cout << "Added iso chain (" << new_dc.i << ", " << new_dc.j << ")\n";
+/*
+//        std::cout << "Added iso chain (" << new_dc.i << ", " << new_dc.j << ")\n";
 
-        if (decay_chains[dc.j].count(dc.j) != 1)
-            add_decay_chains(iso);
+        //std::cout << new_dc.i; 
+        std::cout << "(" << new_dc.i << ", " << new_dc.j << ")";
+//        for (n = 0; n < new_dc.chain.size(); n++)
+//            std::cout << "  -->  " << new_dc.chain[n];         
+        std::cout << "  " << new_dc.branch_ratio << "  " << new_dc.decay_const;
+        std::cout << "\n";
+*/            
+
+        add_decay_chains(new_dc);
+    };
+};
+
+
+
+
+
+
+void ReactorMG::add_decay_chains(int iso)
+{
+    std::cout << decay_chains.size() << "   " << decay_chains[iso].size() << "\n";
+
+    int jso, kso;
+    DecayChain dc, next_dc, new_dc;
+    std::map<int, DecayChain>::iterator dciter, dcjter;
+
+    for (dciter = decay_chains[iso].begin(); dciter != decay_chains[iso].end(); dciter++)
+    {
+        jso = (*dciter).first;
+        dc = (*dciter).second;
+
+        if (iso == jso)
+        {
+            std::cout << "(iso == jso)\n";
+            continue;
+        };
+
+        for (dcjter = decay_chains[jso].begin(); dcjter != decay_chains[jso].end(); dcjter++)
+        {
+            kso = (*dcjter).first;
+            next_dc = (*dcjter).second;
+
+            if (2 < next_dc.chain.size())
+                continue;
+
+            // Add new chain
+            new_dc = DecayChain();
+            new_dc.i = iso; 
+//            new_dc.j = next_dc.j; 
+            new_dc.j = kso; 
+            new_dc.chain = dc.chain;
+//            new_dc.chain.push_back(next_dc.j);
+            new_dc.chain.push_back(kso);
+
+            int n, ni, nj;
+            double br = 1.0;
+            double dconst_num = 1.0;
+            double dconst_den = 1.0;
+            for (n = 1; n < new_dc.chain.size(); n++)
+            {
+                ni = new_dc.chain[n-1];
+                nj = new_dc.chain[n];
+                br *= decay_chains[ni][nj].branch_ratio;
+                dconst_num *= decay_chains[ni][nj].decay_const;
+                if (1 < n)
+                    dconst_den *= (decay_chains[ni][nj].decay_const - decay_chains[new_dc.chain[0]][new_dc.chain[1]].decay_const);
+            };
+
+            new_dc.branch_ratio = br;
+            new_dc.decay_const = dconst_num / dconst_den;
+
+            decay_chains[new_dc.i][new_dc.j] = new_dc;
+            std::cout << "Added iso chain (" << new_dc.i << ", " << new_dc.j << ")\n";
+
+//            if (decay_chains[dc.j].count(dc.j) != 1)
+//            if (decay_chains[kso].count(kso) != 1)
+//                add_decay_chains(iso);
+        };
     };
 };
