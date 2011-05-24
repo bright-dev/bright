@@ -664,7 +664,7 @@ class NCodeSerpent(object):
 
         # Prep for metastable tallies
         tallies = self.env['tallies']
-
+ 
 
         #
         # Use models, if serpent is not available
@@ -709,6 +709,15 @@ class NCodeSerpent(object):
                 det['_sigma_2n_x'] = sig_2n_x
             else:
                 det['_sigma_2n_x'] = msnxs.sigma_reaction(iso_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
+
+        # Check validity of sigma_a
+        if ('_sigma_a' in det) and (det['_sigma_a'] == 0.0).all():
+            for tally in ['sigma_f', "sigma_gamma", "sigma_2n", "sigma_3n", "sigma_alpha", "sigma_proton"]:
+                if (tallies[tally] in self.env['iso_mts'][iso_zz]):
+                    det['_sigma_a'] += det['DET' + tally][::-1, 10]
+
+            for tally in ["sigma_gamma_x", "sigma_2n_x"]:
+                det['_sigma_a'] += det['_' + tally]
 
         return res, det
 
