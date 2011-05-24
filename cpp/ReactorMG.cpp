@@ -2,6 +2,20 @@
 
 #include "ReactorMG.h"
 
+
+DecayChain::DecayChain()
+{
+};
+
+
+DecayChain::~DecayChain()
+{
+};
+
+
+
+
+
 /***********************************************/
 /*** ReactorMG Component Class and Functions ***/
 /***********************************************/
@@ -231,8 +245,8 @@ void ReactorMG::loadlib(std::string libfile)
     // Make decay_martrix from this data.
     decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
 
-    int i, j, ind, jnd;
-    for (int l = 0; l < decay_data_length; l++)
+    int i, j, ind, jnd, l;
+    for (l = 0; l < decay_data_length; l++)
     {
         i = decay_data_array[l].from_iso_zz;
         j = decay_data_array[l].to_iso_zz;
@@ -257,6 +271,47 @@ void ReactorMG::loadlib(std::string libfile)
             decay_matrix[ind][jnd] = decay_data_array[l].branch_ratio * decay_data_array[l].decay_const;
     };
 
+
+
+    // Some hacks to fix decay matirx
+    DecayChain dc;
+    decay_chains = std::map<int, std::map<int, DecayChain> > ();
+    for (l = 0; l < decay_data_length; l++)
+    {
+        dc = DeacyChain();
+        dc.i = decay_data_array[l].from_iso_zz;
+        dc.j = decay_data_array[l].to_iso_zz;
+        dc.chain = std::vector<int> (2, 0); 
+        dc.chain[0] = dc.i;
+        dc.chain[1] = dc.j;
+        dc.decay_const[0] = decay_data_array[l].decay_const;
+        dc.branch_ratio[0] = decay_data_array[l].branch_ratio;
+        decay_chains[i][j] = dc;
+    };
+
+/*
+    for(std::set<int>::iterator iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
+    {
+        i = *iso_iter;
+        ind = J_index[i];
+
+        for (l = 0; l < decay_data_length; l++)
+        {
+            if (decay_data_array[l].from_iso_zz != i)
+                continue;
+
+            // Stop if nuclide is stable
+            if (decay_data_array[l].to_iso_zz == i)
+                break;
+
+            j = decay_data_array[l].to_iso_zz;
+            jnd = J_index[j];
+
+            if (J.count(j) == 1)
+                continue;
+        };
+    };
+*/
 
     //
     // Read in the fission table
@@ -2261,3 +2316,58 @@ void ReactorMG::calc_zeta()
 
 };
 
+
+
+
+
+
+
+
+
+void RecatorMG::add_decay_chains(int iso)
+{
+    int jso;
+    DecayChain dc, new_dc;
+    std::map<int, DecayChain>::iterator dciter;
+
+    for (dciter = decay_chains[iso].begin(); dciter != decay_chains[iso].end(); dciter++)
+    {
+        jso = (*dciter).first;
+        dc = (*dciter).second;
+
+        if (iso == jso)
+            continue;
+
+        if (decay_chains[iso].count(dc.j) == 1)
+            continue;
+
+        // Add new chain
+        new_dc = DecayChain();
+        new_dc.i = iso; 
+        new_dc.j = dc.j; 
+        new_dc.chain = dc.chain;
+        new_dc.chain.push_back(dc.j);
+
+        int n, ni, nj;
+        double br = 1.0;
+        double dconst_num = 1.0;
+        double dconst_den = 1.0;
+        for (n = 1; n < new_dc.chain.size(); n++)
+        {
+            ni = new_dc.chain[n-1];
+            nj = new_dc.chain[n];
+            br *= decay_chains[ni][nj].branch_ratio;
+            dconst_num *= decay_chains[ni][nj].decay_const;
+            if (1 < n)
+                dconst_den *= (decay_chains[ni][nj].decay_const - decay_chains[new_dc.chain[0]][new_dc.chain[1]].decay_const);
+        };
+
+        new_dc.branch_ratio = br;
+        new_dc.decay_const = dconst_num / dconst_den;
+
+        decay_chains[new_dc.i][new_dc.j] = new_dc;
+
+        if (decay_chains[dc.j].count(dc.j) != 1)
+            add_decay_chains(iso);
+    };
+};
