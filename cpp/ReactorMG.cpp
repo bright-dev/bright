@@ -299,6 +299,7 @@ void ReactorMG::loadlib(std::string libfile)
         add_decay_chains(decay_chains[decay_data_array[l].from_iso_zz][decay_data_array[l].to_iso_zz]);
 
     int n;
+    double b;
     bool chain_in_J = false;
     std::set<int>::iterator iso_iter, jso_iter;
     for(iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
@@ -314,6 +315,9 @@ void ReactorMG::loadlib(std::string libfile)
             j = *jso_iter;
             jnd = J_index[j];
 
+            if (i == j)
+                continue;
+
             if (decay_chains[i].count(j) == 0)
                 continue;
 
@@ -325,6 +329,7 @@ void ReactorMG::loadlib(std::string libfile)
             {
                 if (0 < J.count(dc.chain[n]))
                 {
+//                    std::cout << "Skipping (" << i << ", " << j << ")\n";
                     chain_in_J = true;
                     break;
                 };
@@ -333,8 +338,18 @@ void ReactorMG::loadlib(std::string libfile)
                 continue;
 
             // Finally, add the adjusted decay paramters to the decay matrix
-            std::cout << "(" << i << ", " << j << "\n";
-            decay_matrix[ind][jnd] = dc.branch_ratio * dc.decay_const;            
+//            std::cout << "(" << i << ", " << j << ")\n";
+//            decay_matrix[ind][jnd] = dc.branch_ratio * dc.decay_const;
+//            std::cout << "(" << i << ", " << j << ")   "; 
+//            double b = bateman(i, j);
+//            std::cout << b << "   ";
+//            std::cout << log(b); 
+//            std::cout << "\n";
+            b = bateman(i, j);
+            if (b <= 0)
+                continue;
+            double lam = decay_chains[dc.chain[0]][dc.chain[1]].decay_const;
+            decay_matrix[ind][jnd] = log(b * lam);
         };
 
     };
@@ -2529,3 +2544,53 @@ void ReactorMG::add_decay_chains(int iso)
         };
     };
 };
+
+
+
+
+double ReactorMG::bateman(int iso, int jso)
+{
+    // Solves the Bateman Equations for a unit mass of isotope i -> 
+    // decaying into isotope j.
+    DecayChain dc = decay_chains[iso][jso];
+    DecayChain link_n, link_m;
+
+    int n;
+    double B = 1.0;
+    double alpha_num = 1.0;
+
+    for (n = 0; n < dc.chain.size() - 1; n++)
+    {
+        link_n = decay_chains[dc.chain[n]][dc.chain[n+1]];
+        B *= link_n.branch_ratio;
+        alpha_num *= link_n.decay_const;
+    };
+
+    int m;
+    double alpha_den, sum_part;
+    for (n = 0; n < dc.chain.size(); n++)
+    {
+        alpha_den = 1.0;
+        if (n+1 == dc.chain.size())
+            link_n = decay_chains[dc.chain[n]][dc.chain[n]];
+        else
+            link_n = decay_chains[dc.chain[n]][dc.chain[n+1]];
+
+        for (m = 0; m < dc.chain.size(); m++)
+        {
+            if (m+1 == dc.chain.size())
+                link_m = decay_chains[dc.chain[m]][dc.chain[m]];
+            else
+                link_m = decay_chains[dc.chain[m]][dc.chain[m+1]];
+
+            if (n != m)
+                alpha_den *= (link_m.decay_const - link_n.decay_const);
+        };
+
+        sum_part += (exp(-link_n.decay_const) / alpha_den);
+    };
+
+    double mass_frac = B * alpha_num * sum_part;
+    return mass_frac;
+}
+

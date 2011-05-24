@@ -5,6 +5,7 @@
 #define _Bright_ReactorMG_
 
 //C++ stdlib
+#include <math.h>
 #include <map>
 #include <set>
 #include <vector>
@@ -377,6 +378,7 @@ public:
 
     void add_decay_chains(int);
     void add_decay_chains(DecayChain);
+    double bateman(int, int);
 };
 
 
