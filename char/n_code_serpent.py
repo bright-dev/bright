@@ -1337,6 +1337,15 @@ class NCodeSerpent(object):
             G = len(sigma_s)
             gtp = gtp.reshape((G, G))
 
+#            print(gtp.sum(axis=0))
+#            print(gtp.sum(axis=1))
+
+#            print(gtp)
+#            print()
+#            print(sigma_s)
+#            print()
+#            print(sigma_s * gtp)
+
             sigma_s_gh = sigma_s * gtp
 
             tally_hdf5_array[n] = sigma_s_gh
@@ -1347,6 +1356,15 @@ class NCodeSerpent(object):
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
             chi = res['CHI'][res['idx']][::2]
+
+#            if ('sigma_f' in tallies):
+#                sigma_f = det['DETsigma_f']
+#                sigma_f = sigma_f[::-1, 10]
+#
+#                print(sigma_f)
+#
+#                if (sigma_f == 0.0).all():
+#                    chi = 0.0
 
             tally_hdf5_array[n] = chi
 
@@ -1403,9 +1421,20 @@ class NCodeSerpent(object):
         # Grab the tallies
         tallies = self.env['tallies']
 
+        # Write the tallies taht were not calculated from models
+        for tally in tallies:
+            if tally in xs_dict:
+                continue
+
+            tally_hdf5_group = getattr(base_group, tally)
+            tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
+
+            tally_hdf5_array[n] = np.zeros(len(tally_hdf5_array[n]), dtype=float)
+
+
         # Write the raw tally arrays for this time and this iso        
         for tally in xs_dict:
-            if tally not in  tallies:
+            if tally not in tallies:
                 continue
 
             tally_hdf5_group = getattr(base_group, tally)
@@ -1415,6 +1444,7 @@ class NCodeSerpent(object):
 
             tally_hdf5_array[n] = tally_model_array
 
+    
         #
         # Write special tallies
         #

@@ -36,7 +36,8 @@ mcnp_advanced = set(["sigma_t", "sigma_f", "nubar", "chi", "sigma_a", "sigma_e",
 serpent_tallies = {}
 serpent_tallies.update(mt_tallies)
 serpent_tallies.update({
-    "sigma_t": -1, 
+#    "sigma_t": -1, 
+    "sigma_t": 1, 
     "sigma_a": 27, 
     "sigma_f": -6, 
     "nubar_sigma_f": -7,  

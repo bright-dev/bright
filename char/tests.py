@@ -64,6 +64,7 @@ def check_le(arr1, arr2, names=None):
         print names[0] + ' = ' + repr(arr1)
         print names[1] + ' = ' + repr(arr2)
         #print 'where = ' + repr(arr1 <= arr2)
+        print 'where = ' + repr(1.0 - arr / arr2)
         msg = 'not ({0} <= {1})'.format(*names)
         print msg
         raise AssertionError(msg)
@@ -171,7 +172,7 @@ def test_sigma_f():
 
         yield check_le, sig_f, sig_t, [sig_f_arr._v_pathname, sig_t_arr._v_pathname]
 
-        if 89 <= (iso_zz%10000):
+        if 86 <= (iso_zz/10000):
             mask = (sig_f != 0.0)
             nu = nu_sig_f[mask] / sig_f[mask]
             yield check_le, 1.0, nu, ['1.0', 'nu(' + sig_f_arr._v_pathname + ')']
@@ -189,9 +190,11 @@ def test_chi():
         iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
 
         chi_arr, chi = read_array(rx_h5.root.chi, iso_LL)
+        sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, iso_LL)
 
-        if 89 <= (iso_zz%10000):
-            yield check_array_almost_eq, 1.0, chi.sum(axis=1), ['1.0', 'sum(' + chi_arr._v_pathname + ')']
+        if 86 <= (iso_zz/10000):
+            mask = (sig_f != 0.0)
+            yield check_array_almost_eq, 1.0, chi.sum(axis=1)[mask], ['1.0', 'sum(' + chi_arr._v_pathname + ')']
         else:
             yield check_eq, 0.0, chi, ['0.0', chi_arr._v_pathname]
 
@@ -208,7 +211,8 @@ def test_sigma_s():
         sig_s_gh_arr, sig_s_gh = read_array(rx_h5.root.sigma_s_gh, iso_LL)
 
         yield check_le, sig_s, sig_t, [sig_s_arr._v_pathname, sig_t_arr._v_pathname]
-        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
+#        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
+        yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-2), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
         #yield check_eq, sig_s, sig_s_gh.sum(axis=-1), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
 
 
