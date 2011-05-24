@@ -590,8 +590,9 @@ class NCodeSerpent(object):
         self.make_burnup_input(n)
 
         # Run serpent on this input file as a subprocess
-        argstr = "{0}_burnup_{1} {2}".format(self.env['reactor'], n, self.mpi_flag)
-        rtn = self.run_serpent(argstr)
+        if not self.env['options'].CACHE:
+            argstr = "{0}_burnup_{1} {2}".format(self.env['reactor'], n, self.mpi_flag)
+            rtn = self.run_serpent(argstr)
 
         # Parse & write this output to HDF5
         res, dep = self.parse_burnup(n)
@@ -655,7 +656,8 @@ class NCodeSerpent(object):
         self.make_xs_gen_input(iso_LL, n)
 
         # Run serpent on this input file as a subprocess
-        rtn = self.run_serpent(args_xs_gen)
+        if not self.env['options'].CACHE:
+            rtn = self.run_serpent(args_xs_gen)
 
         # Parse this run 
         res, det = self.parse_xs_gen(iso_LL, n)
@@ -740,7 +742,8 @@ class NCodeSerpent(object):
         self.make_flux_g_input(n)
 
         # Run serpent on this input file as a subprocess
-        rtn = self.run_serpent(args_flux_g)
+        if not self.env['options'].CACHE:
+            rtn = self.run_serpent(args_flux_g)
 
         # Parse & write this output to HDF5
         res, det = self.parse_flux_g(n)
@@ -825,7 +828,8 @@ class NCodeSerpent(object):
         self.make_deltam_input(iso, n, s, iso_fracs)
 
         # Run serpent on this input file as a subprocess
-        rtn = self.run_serpent(argstr)
+        if not self.env['options'].CACHE:
+            rtn = self.run_serpent(argstr)
 
         # Parse & write this output to HDF5
         res, dep = self.parse_deltam(iso, n, s)

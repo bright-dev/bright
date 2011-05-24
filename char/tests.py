@@ -63,6 +63,7 @@ def check_le(arr1, arr2, names=None):
             names = ['arr1', 'arr2']
         print names[0] + ' = ' + repr(arr1)
         print names[1] + ' = ' + repr(arr2)
+        #print 'where = ' + repr(arr1 <= arr2)
         msg = 'not ({0} <= {1})'.format(*names)
         print msg
         raise AssertionError(msg)
@@ -213,6 +214,7 @@ def test_sigma_s():
 
 
 def test_sigma_a():
+    raise nose.SkipTest
     if not hasattr(rx_h5.root, 'sigma_a'):
         raise nose.SkipTest
 

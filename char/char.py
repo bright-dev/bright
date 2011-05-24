@@ -163,6 +163,9 @@ def main():
     parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
         help="Cleans the reactor direactory of current files.")
 
+    parser.add_option("-C", "--cache", action="store_true", dest="CACHE", 
+        default=False, help="Uses the current files in the reactor direactory.")
+
     parser.add_option("-l", "--local", action="store_true", dest="LOCAL", 
         default=True, help="Run or Fetch files locally.")
 
