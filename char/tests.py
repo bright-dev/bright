@@ -207,8 +207,9 @@ def test_chi():
         sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, iso_LL)
 
         if 86 <= (iso_zz/10000):
-            mask = (sig_f != 0.0)
-            yield check_array_almost_eq, 1.0, chi.sum(axis=1)[mask], ['1.0', 'sum(' + chi_arr._v_pathname + ')']
+#            mask = (sig_f != 0.0)
+#            yield check_array_almost_eq, 1.0, chi.sum(axis=1)[mask], ['1.0', 'sum(' + chi_arr._v_pathname + ')']
+            yield check_array_almost_eq, 1.0, chi.sum(axis=1), ['1.0', 'sum(' + chi_arr._v_pathname + ')']
         else:
             yield check_eq, 0.0, chi, ['0.0', chi_arr._v_pathname]
 
