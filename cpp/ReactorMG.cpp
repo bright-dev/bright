@@ -1053,22 +1053,22 @@ void ReactorMG::assemble_transmutation_matrices()
     // Assemble the energy integral of transmutation matrix
     //
     int g, i, j, ind, jnd;
-    std::vector< std::vector< std::vector<double> > > T_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
+    std::vector< std::vector< std::vector<double> > > T_matrix = std::vector< std::vector< std::vector<double> > > (K_num, std::vector< std::vector<double> >(K_num, std::vector<double>(G, 0.0) ) );
     
     // Add the fission yields first
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
-        for (jnd = 0; jnd < J_size; jnd++)
+        for (jnd = 0; jnd < K_num; jnd++)
         {
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] = fission_product_yield_matrix[ind][jnd][g] * sigma_f_itg[J_order[ind]][bt_s][g];
+                T_matrix[ind][jnd][g] = fission_product_yield_matrix[ind][jnd][g] * sigma_f_itg[K_ord[ind]][bt_s][g];
         };
     };
     // Add the other cross sections
     int j_gamma, j_2n, j_3n, j_alpha, j_proton, j_gamma_x, j_2n_x; 
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
-        i = J_order[ind];
+        i = K_ord[ind];
 
         // Get from isos
         j_gamma = ((i/10) + 1) * 10;
@@ -1080,57 +1080,57 @@ void ReactorMG::assemble_transmutation_matrices()
         j_2n_x = j_2n + 1;
 
         // Add the capture cross-section
-        if (0 < J.count(j_gamma))
+        if (0 < K.count(j_gamma))
         {
-            jnd = J_index[j_gamma];
+            jnd = K_ind[j_gamma];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_gamma_itg[i][bt_s][g];
         };
 
         // Add the (n, 2n) cross-section
-        if (0 < J.count(j_2n))
+        if (0 < K.count(j_2n))
         {
-            jnd = J_index[j_2n];
+            jnd = K_ind[j_2n];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_2n_itg[i][bt_s][g];
         };
 
         // Add the (n, 3n) cross-section
-        if (0 < J.count(j_3n))
+        if (0 < K.count(j_3n))
         {
-            jnd = J_index[j_3n];
+            jnd = K_ind[j_3n];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_3n_itg[i][bt_s][g];
         };
 
         // Add the (n, alpha) cross-section
-        if (0 < J.count(j_alpha))
+        if (0 < K.count(j_alpha))
         {
-            jnd = J_index[j_alpha];
+            jnd = K_ind[j_alpha];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_alpha_itg[i][bt_s][g];
         };
 
         // Add the (n, proton) cross-section
-        if (0 < J.count(j_proton))
+        if (0 < K.count(j_proton))
         {
-            jnd = J_index[j_proton];
+            jnd = K_ind[j_proton];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_proton_itg[i][bt_s][g];
         };
 
         // Add the capture (excited) cross-section
-        if (0 < J.count(j_gamma_x))
+        if (0 < K.count(j_gamma_x))
         {
-            jnd = J_index[j_gamma_x];
+            jnd = K_ind[j_gamma_x];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_gamma_x_itg[i][bt_s][g];
         };
 
         // Add the (n, 2n *) cross-section
-        if (0 < J.count(j_2n_x))
+        if (0 < K.count(j_2n_x))
         {
-            jnd = J_index[j_2n_x];
+            jnd = K_ind[j_2n_x];
             for (g = 0; g < G; g++)
                 T_matrix[ind][jnd][g] += sigma_2n_x_itg[i][bt_s][g];
         };
@@ -1142,9 +1142,9 @@ void ReactorMG::assemble_transmutation_matrices()
         std::cout << phi_tg[bt_s][g] << ", ";
     std::cout << "]\n";
 
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
-        for (jnd = 0; jnd < J_size; jnd++)
+        for (jnd = 0; jnd < K_num; jnd++)
         {
             for (g = 0; g < G; g++)
                 T_int_tij[bt_s][ind][jnd] += T_matrix[ind][jnd][g] * phi_tg[bt_s][g] * bright::cm2_per_barn;
@@ -1156,11 +1156,11 @@ void ReactorMG::assemble_transmutation_matrices()
 
 /*
 */
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
 //        M_tij[bt_s][ind][ind] -= 1.0;
  
-        for (jnd = 0; jnd < J_size; jnd++)
+        for (jnd = 0; jnd < K_num; jnd++)
         {
             if (ind != jnd)
                 M_tij[bt_s][ind][ind] -= M_tij[bt_s][ind][jnd];
@@ -1344,7 +1344,7 @@ void ReactorMG::calc_transmutation()
     CompDict cd_prev, cd_next;
     for (ind = 0; ind < J_size; ind++)
     {
-        i = J_order[ind];
+        i = K_ord[ind];
         cd_prev[i] = comp_prev[ind];
         cd_next[i] = comp_next[ind];
     };
@@ -1532,8 +1532,8 @@ void ReactorMG::burnup_core()
     A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
-    T_int_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
-    M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
+    T_int_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0)));
+    M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0)));
 
     // Init the multilplcation factpr
     k_t = std::vector<double>(S, -1.0);
