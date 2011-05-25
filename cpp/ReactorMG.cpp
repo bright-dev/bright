@@ -338,23 +338,46 @@ void ReactorMG::loadlib(std::string libfile)
                 continue;
 
             // Finally, add the adjusted decay paramters to the decay matrix
+            b = bateman(i, j);
+/*
+            if (decay_chains.count(dc.chain[1]) == 0)
+                continue;
+
+            if (decay_chains[dc.chain[1]].count(j) == 0)
+                continue;
+
+            if (dc.chain[1] == j)
+                continue;
+
+            b = bateman(dc.chain[1], j);
+*/
+
+//            if (b <= 0)
+//                continue;
+
+            double lam = decay_chains[dc.chain[0]][dc.chain[1]].decay_const;
+            double br = decay_chains[dc.chain[0]][dc.chain[1]].branch_ratio;
+
+
+
 //            std::cout << "(" << i << ", " << j << ")\n";
 //            decay_matrix[ind][jnd] = dc.branch_ratio * dc.decay_const;
-//            std::cout << "(" << i << ", " << j << ")   "; 
-//            double b = bateman(i, j);
-//            std::cout << b << "   ";
+            std::cout << "(" << i << ", " << j << ")   "; 
+            std::cout << b << "   ";
 //            std::cout << log(b); 
-//            std::cout << "\n";
-            b = bateman(i, j);
-            if (b <= 0)
-                continue;
-            double lam = decay_chains[dc.chain[0]][dc.chain[1]].decay_const;
-//            decay_matrix[ind][jnd] = log(b) FAILED
-//            decay_matrix[ind][jnd] = log(b * lam); FAILED
-//            decay_matrix[ind][jnd] = log(b) * lam; FAILED
+            std::cout << "\n";
+
+
+//            decay_matrix[ind][jnd] = log(b) * lam; //FAILED
 //            decay_matrix[ind][jnd] = b / lam; // FAILED
+//            decay_matrix[ind][jnd] = log(b * lam); //FAILED
+//            decay_matrix[ind][jnd] = log(b); // FAILED
 //            decay_matrix[ind][jnd] = b; // FAILED
+//            decay_matrix[ind][jnd] = -b * br * lam; // super FAILED
 //            decay_matrix[ind][jnd] = b * lam;
+//            decay_matrix[ind][jnd] = b / ((burn_times[1] - burn_times[0]) * bright::sec_per_day);
+//            decay_matrix[ind][jnd] = b * br / ((burn_times[1] - burn_times[0]) * bright::sec_per_day);
+//            decay_matrix[ind][jnd] = b * br * lam / ((burn_times[1] - burn_times[0]) * bright::sec_per_day);
         };
 
     };
@@ -2564,12 +2587,23 @@ double ReactorMG::bateman(int iso, int jso)
     double B = 1.0;
     double alpha_num = 1.0;
 
+    std::cout << "here (" << iso << ", " << jso << ")\n";
+    std::cout << dc.chain.size() << "\n";
+
     for (n = 0; n < dc.chain.size() - 1; n++)
     {
+        std::cout << dc.chain[n] << "\n";
+        std::cout << dc.chain[n+1] << "\n";
+
         link_n = decay_chains[dc.chain[n]][dc.chain[n+1]];
+
+        std::cout << "Found link_n\n";
+
         B *= link_n.branch_ratio;
         alpha_num *= link_n.decay_const;
     };
+
+    std::cout << "here again\n";
 
     int m;
     double alpha_den, sum_part;
@@ -2592,8 +2626,10 @@ double ReactorMG::bateman(int iso, int jso)
                 alpha_den *= (link_m.decay_const - link_n.decay_const);
         };
 
-        sum_part += (exp(-link_n.decay_const) / alpha_den);
+        sum_part += (exp(-link_n.decay_const * (burn_times[1] - burn_times[0]) * bright::sec_per_day) / alpha_den);
     };
+
+    std::cout << "here again again\n";
 
     double mass_frac = B * alpha_num * sum_part;
     return mass_frac;
