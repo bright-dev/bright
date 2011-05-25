@@ -99,6 +99,31 @@ namespace FCComps {
     extern H5::CompType fission_product_yields_desc;
 
 
+    typedef struct xs_1g_struct {
+        char iso_LL[6];
+        int iso_zz;
+
+        double sigma_t;
+        double sigma_s;
+        double sigma_e;
+        double sigma_i;
+        double sigma_a;
+
+        double sigma_gamma;
+        double sigma_f;
+        double sigma_alpha;
+        double sigma_proton;
+        double sigma_duet;
+        double sigma_trit;
+        double sigma_2n;
+        double sigma_3n;
+        double sigma_4n;
+    } xs_1g_struct;
+
+    H5::CompType make_xs_1g_desc();
+    extern H5::CompType xs_1g_desc;
+
+
 
 
 };

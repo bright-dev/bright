@@ -233,3 +233,36 @@ H5::CompType FCComps::make_fission_product_yields_desc()
 };
 
 H5::CompType FCComps::fission_product_yields_desc = FCComps::make_fission_product_yields_desc();
+
+
+
+
+
+H5::CompType FCComps::make_xs_1g_desc()
+{
+    //  Makes a decay isotope compound datatype
+    H5::CompType xs1gdesc( sizeof(xs_1g_struct) );
+
+    xs1gdesc.insertMember( "iso_LL", HOFFSET(xs_1g_struct, iso_LL), FCComps::iso_LL_type);
+    xs1gdesc.insertMember( "iso_zz", HOFFSET(xs_1g_struct, iso_zz), H5::PredType::NATIVE_INT);
+
+    xs1gdesc.insertMember( "sigma_t", HOFFSET(xs_1g_struct, sigma_t), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_s", HOFFSET(xs_1g_struct, sigma_s), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_e", HOFFSET(xs_1g_struct, sigma_e), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_i", HOFFSET(xs_1g_struct, sigma_i), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_a", HOFFSET(xs_1g_struct, sigma_a), H5::PredType::NATIVE_DOUBLE);
+
+    xs1gdesc.insertMember( "sigma_gamma", HOFFSET(xs_1g_struct, sigma_gamma), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_f", HOFFSET(xs_1g_struct, sigma_f), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_alpha", HOFFSET(xs_1g_struct, sigma_alpha), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_proton", HOFFSET(xs_1g_struct, sigma_proton), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_duet", HOFFSET(xs_1g_struct, sigma_duet), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_trit", HOFFSET(xs_1g_struct, sigma_trit), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_2n", HOFFSET(xs_1g_struct, sigma_2n), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_3n", HOFFSET(xs_1g_struct, sigma_3n), H5::PredType::NATIVE_DOUBLE);
+    xs1gdesc.insertMember( "sigma_4n", HOFFSET(xs_1g_struct, sigma_4n), H5::PredType::NATIVE_DOUBLE);
+ 
+    return xs1gdesc;
+};
+
+H5::CompType FCComps::xs_1g_desc = FCComps::make_xs_1g_desc();

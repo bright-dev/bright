@@ -123,10 +123,11 @@ public:
     // Attributes read in from data library
     iso_set I;   // Set of isotopes that may be in ms_feed.
     iso_set J;   // Set of isotopes that may be in ms_prod.
+    iso_set K;   // Set of isotopes that is the union of all isos in ms_feed and all isos in nuc_data
 
-    int J_size;
-    iso_vec J_order; // Lowest-to-highest order of J.
-    iso_map J_index; // Lowest-to-highest map of J into matrix position.
+    int K_num;
+    iso_vec K_ord; // Lowest-to-highest order of J.
+    iso_map K_ind; // Lowest-to-highest map of J into matrix position.
 
 
     std::vector< std::vector<double> > decay_matrix;

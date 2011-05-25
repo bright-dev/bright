@@ -115,12 +115,7 @@ void ReactorMG::loadlib(std::string libfile)
     // Load isos
     I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/load_isos_zz", H5::PredType::NATIVE_INT);
     J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
-
-    J_size = J.size();
-    J_order = std::vector<int> (J.begin(), J.end());
-    std::sort(J_order.begin(), J_order.end());
-    for (int j = 0; j < J_size; j++)
-        J_index[J_order[j]] = j;
+    K = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
 
     // Load perturbation table
     perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
@@ -222,6 +217,8 @@ void ReactorMG::loadlib(std::string libfile)
     //
     // Read in the decay data table as an array of FCComps::decay_iso_desc
     //
+    int i, j, k, ind, jnd, knd, l;
+
     H5::DataSet decay_data_set = nuc_data_h5.openDataSet("/decay");
     H5::DataSpace decay_data_space = decay_data_set.getSpace();
     int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
@@ -230,26 +227,30 @@ void ReactorMG::loadlib(std::string libfile)
     decay_data_set.read(decay_data_array, FCComps::decay_iso_desc);
 
 
+    // Finish initing K, based on decay info    
+    for (l = 0; l < decay_data_length; l++)
+    {
+        K.insert(decay_data_array[l].from_iso_zz);
+        K.insert(decay_data_array[l].to_iso_zz);
+    };
+
+    K_num = K.size();
+    K_ord = std::vector<int> (K.begin(), K.end());
+    std::sort(K_ord.begin(), K_ord.end());
+    for (k = 0; k < K_num k++)
+        k_index[K_ord[k]] = k;
+
     // Make decay_martrix from this data.
     decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
 
-    int i, j, ind, jnd, l;
     for (l = 0; l < decay_data_length; l++)
     {
         i = decay_data_array[l].from_iso_zz;
         j = decay_data_array[l].to_iso_zz;
 
-        // skip non-element from-isos
-        if (J.count(i) < 1)
-            continue;
-
-        // skip non-element to-isos
-        if (J.count(j) < 1)
-            continue;
-
         // Get the indexes for these nulcides into the matrix
-        ind = J_index[i];
-        jnd = J_index[j];
+        ind = K_ind[i];
+        jnd = K_ind[j];
 
         // Add diagonal elements
         decay_matrix[ind][ind] = -decay_data_array[l].decay_const;
@@ -278,14 +279,13 @@ void ReactorMG::loadlib(std::string libfile)
     std::map<int, std::vector<int> > fast_join;
 
     int ty, fy;
-    for (int l = 0; l < fission_length; l++)
+    for (l = 0; l < fission_length; l++)
     {
         i = fission_array[l].iso_zz;
 
         // skip non-element from-isos
-        if (J.count(i) < 1)
+        if (K.count(i) < 1)
             continue;
-
 
         // make thermal join
         ty = fission_array[l].thermal_yield;
@@ -293,8 +293,7 @@ void ReactorMG::loadlib(std::string libfile)
         if (thermal_join.count(ty) < 1)
             thermal_join[ty] = std::vector<int>();
 
-        thermal_join[ty].push_back(J_index[i]);
-
+        thermal_join[ty].push_back(K_ind[i]);
 
         // make fast join
         fy = fission_array[l].fast_yield;
@@ -302,7 +301,7 @@ void ReactorMG::loadlib(std::string libfile)
         if (fast_join.count(fy) < 1)
             fast_join[fy] = std::vector<int>();
 
-        fast_join[ty].push_back(J_index[i]);
+        fast_join[ty].push_back(K_ind[i]);
     };
 
 
@@ -316,17 +315,17 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     // Run through the array and make yield matrices
-    thermal_yield_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
-    fast_yield_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+    thermal_yield_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
+    fast_yield_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
 
     int index, tj, fj, TJ, FJ;
     double mf;
-    for (int l = 0; l < fp_yields_length; l++)
+    for (l = 0; l < fp_yields_length; l++)
     {
         // Get important data from struct
         index = fp_yields_array[l].index;
         j = fp_yields_array[l].to_iso_zz;
-        jnd = J_index[j];
+        jnd = K_ind[j];
         mf = fp_yields_array[l].mass_frac;
 
         // Add to thermal yields
@@ -354,18 +353,15 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     // Make fission product yield matrix
-    fission_product_yield_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
-    for (ind = 0; ind < J_size; ind++)
+    fission_product_yield_matrix = std::vector< std::vector< std::vector<double> > > (K_num, std::vector< std::vector<double> >(K_num, std::vector<double>(G, 0.0) ) );
+    for (ind = 0; ind < K_num; ind++)
     {
-        for (jnd = 0; jnd < J_size; jnd++)
+        for (jnd = 0; jnd < K_num; jnd++)
         {
             for (int g = 0; g < G; g++)
             {
-                // Test which regime we are in
-                if (0.1 < E_g[g])
-                    fission_product_yield_matrix[ind][jnd][g] = fast_yield_matrix[ind][jnd];
-                else
-                    fission_product_yield_matrix[ind][jnd][g] = thermal_yield_matrix[ind][jnd];
+                // Interpolate the mass fraction between thermal and fast data.
+                fission_product_yield_matrix[ind][jnd][g] = bright::SolveLine(E_g[g], 1.0, fast_yield_matrix[ind][jnd], 2.53e-08, thermal_yield_matrix[ind][jnd])
             };
         };
     };
