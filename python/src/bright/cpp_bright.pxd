@@ -463,8 +463,11 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         set[int] I
         set[int] J
-        vector[int] J_order
-        map[int, int] J_index
+        set[int] K
+
+        int K_num
+        vector[int] K_ord
+        map[int, int] J_ind
 
         vector[vector[double]] decay_matrix
         vector[vector[double]] thermal_yield_matrix

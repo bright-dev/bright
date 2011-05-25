@@ -237,11 +237,11 @@ void ReactorMG::loadlib(std::string libfile)
     K_num = K.size();
     K_ord = std::vector<int> (K.begin(), K.end());
     std::sort(K_ord.begin(), K_ord.end());
-    for (k = 0; k < K_num k++)
-        k_index[K_ord[k]] = k;
+    for (k = 0; k < K_num; k++)
+        K_ind[K_ord[k]] = k;
 
     // Make decay_martrix from this data.
-    decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+    decay_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
 
     for (l = 0; l < decay_data_length; l++)
     {
@@ -361,7 +361,7 @@ void ReactorMG::loadlib(std::string libfile)
             for (g = 0; g < G; g++)
             {
                 // Interpolate the mass fraction between thermal and fast data.
-                fission_product_yield_matrix[ind][jnd][g] = bright::SolveLine(E_g[g], 1.0, fast_yield_matrix[ind][jnd], 2.53e-08, thermal_yield_matrix[ind][jnd])
+                fission_product_yield_matrix[ind][jnd][g] = bright::SolveLine(E_g[g], 1.0, fast_yield_matrix[ind][jnd], 2.53e-08, thermal_yield_matrix[ind][jnd]);
             };
         };
     };
@@ -421,15 +421,15 @@ void ReactorMG::loadlib(std::string libfile)
         {
             Eng_g = E_g[g];
 
-            sig_t[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_t, 2.53e-08, xs_1g_thermal_array[l].sigma_t)
-            sig_a[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_a, 2.53e-08, xs_1g_thermal_array[l].sigma_a)
-            sig_f[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_f, 2.53e-08, xs_1g_thermal_array[l].sigma_f)
+            sig_t[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_t, 2.53e-08, xs_1g_thermal_array[l].sigma_t);
+            sig_a[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_a, 2.53e-08, xs_1g_thermal_array[l].sigma_a);
+            sig_f[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_f, 2.53e-08, xs_1g_thermal_array[l].sigma_f);
             nu_sig_f[g] = 2.5 * sig_f[g];
-            sig_gamma[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_gamma, 2.53e-08, xs_1g_thermal_array[l].sigma_gamma)
-            sig_2n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_2n, 2.53e-08, xs_1g_thermal_array[l].sigma_2n)
-            sig_3n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_3n, 2.53e-08, xs_1g_thermal_array[l].sigma_3n)
-            sig_alpha[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_alpha, 2.53e-08, xs_1g_thermal_array[l].sigma_alpha)
-            sig_proton[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_proton, 2.53e-08, xs_1g_thermal_array[l].sigma_proton)
+            sig_gamma[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_gamma, 2.53e-08, xs_1g_thermal_array[l].sigma_gamma);
+            sig_2n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_2n, 2.53e-08, xs_1g_thermal_array[l].sigma_2n);
+            sig_3n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_3n, 2.53e-08, xs_1g_thermal_array[l].sigma_3n);
+            sig_alpha[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_alpha, 2.53e-08, xs_1g_thermal_array[l].sigma_alpha);
+            sig_proton[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_proton, 2.53e-08, xs_1g_thermal_array[l].sigma_proton);
         };
 
         // Copy back the data to the XS library

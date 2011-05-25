@@ -5430,20 +5430,41 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.J = conv.py_to_cpp_set_int(value)
 
 
-    property J_order:
+    property K:
         def __get__(self):
-            return conv.vector_to_array_1d_int(self.rmg_pointer.J_order)
+            return conv.cpp_to_py_set_int(self.rmg_pointer.K)
 
         def __set__(self, set value):
-            self.rmg_pointer.J_order = conv.array_to_vector_1d_int(value)
+            self.rmg_pointer.K = conv.py_to_cpp_set_int(value)
 
 
-    property J_index:
+
+
+
+
+
+    property K_num:
         def __get__(self):
-            return conv.map_to_dict_int_int(self.rmg_pointer.J_index)
+            return self.rmg_pointer.K_num
+
+        def __set__(self, int value):
+            self.rmg_pointer.K_num = value
+
+
+    property K_ord:
+        def __get__(self):
+            return conv.vector_to_array_1d_int(self.rmg_pointer.K_order)
 
         def __set__(self, set value):
-            self.rmg_pointer.J_index = conv.dict_to_map_int_int(value)
+            self.rmg_pointer.K_ord = conv.array_to_vector_1d_int(value)
+
+
+    property K_ind:
+        def __get__(self):
+            return conv.map_to_dict_int_int(self.rmg_pointer.K_ind)
+
+        def __set__(self, set value):
+            self.rmg_pointer.K_ind = conv.dict_to_map_int_int(value)
 
 
 
