@@ -1290,13 +1290,13 @@ void ReactorMG::calc_transmutation()
                            1.50312650e-06};
 
     // Init the new matrices
-    std::vector< std::vector< std::vector<double> > > Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) ) );
-    std::vector< std::vector< std::vector<double> > > neg_Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) ) );
-    std::vector< std::vector<double> > N_pq = std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) );
-    std::vector< std::vector<double> > D_pq = std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) );
+    std::vector< std::vector< std::vector<double> > > Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) ) );
+    std::vector< std::vector< std::vector<double> > > neg_Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) ) );
+    std::vector< std::vector<double> > N_pq = std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) );
+    std::vector< std::vector<double> > D_pq = std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) );
 
     int n, i, j, ind, jnd;
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
         Mt_n[0][ind][ind] = 1.0;
         neg_Mt_n[0][ind][ind] = 1.0;
@@ -1323,10 +1323,10 @@ void ReactorMG::calc_transmutation()
     std::vector< std::vector<double> > exp_Mt = bright::matrix_multiplication(inv_D_pq, N_pq);
 
     // Make mass vectors
-    std::vector<double> comp_prev (J_size, 0.0);
-    for (ind = 0; ind < J_size; ind++)
+    std::vector<double> comp_prev (K_num, 0.0);
+    for (ind = 0; ind < K_num; ind++)
     {
-        i = J_order[ind];
+        i = K_ord[ind];
         comp_prev[ind] = T_it[i][bt_s-1];
     };
 
@@ -1334,15 +1334,15 @@ void ReactorMG::calc_transmutation()
     std::vector<double> comp_next = bright::scalar_matrix_vector_product(1.0, exp_Mt, comp_prev);
 
     // Copy this composition back to the tranmutuation matrix
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
-        i = J_order[ind];
+        i = K_ord[ind];
         T_it[i][bt_s] = comp_next[ind];
     };
 
     // Calculate the burnup 
     CompDict cd_prev, cd_next;
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
         cd_prev[i] = comp_prev[ind];
