@@ -217,7 +217,7 @@ void ReactorMG::loadlib(std::string libfile)
     //
     // Read in the decay data table as an array of FCComps::decay_iso_desc
     //
-    int i, j, k, ind, jnd, knd, l;
+    int i, j, k, ind, jnd, knd, l, g;
 
     H5::DataSet decay_data_set = nuc_data_h5.openDataSet("/decay");
     H5::DataSpace decay_data_space = decay_data_set.getSpace();
@@ -358,7 +358,7 @@ void ReactorMG::loadlib(std::string libfile)
     {
         for (jnd = 0; jnd < K_num; jnd++)
         {
-            for (int g = 0; g < G; g++)
+            for (g = 0; g < G; g++)
             {
                 // Interpolate the mass fraction between thermal and fast data.
                 fission_product_yield_matrix[ind][jnd][g] = bright::SolveLine(E_g[g], 1.0, fast_yield_matrix[ind][jnd], 2.53e-08, thermal_yield_matrix[ind][jnd])
@@ -386,6 +386,69 @@ void ReactorMG::loadlib(std::string libfile)
     FCComps::xs_1g_struct * xs_1g_fast_array = new FCComps::xs_1g_struct [xs_1g_fast_length];
     xs_1g_fast_set.read(xs_1g_fast_array, FCComps::xs_1g_desc);
 
+    // Copy the data over
+    double Eng_g;
+    std::vector<double> sig_t, sig_a, sig_f, nu_sig_f, sig_gamma, sig_2n, sig_3n, sig_alpha, sig_proton;
+    std::vector< std::vector<double> > zeros_pg;
+    std::vector< std::vector< std::vector<double> > > zeros_pgh;
+
+    zeros_pg = std::vector< std::vector<double> >(nperturbations, std::vector<double> (G,  0.0));
+    zeros_pgh =  std::vector< std::vector< std::vector<double> > >(nperturbations, std::vector< std::vector<double> > (G,  std::vector<double> (G, 0.0)));
+
+    for (l = 0; l < fp_yields_length; l++)
+    {
+        i = xs_1g_thermal_array[l].iso_zz;
+
+        if (J.count(i) == 1)
+            continue;
+
+        if (K.count(i) == 0)
+            continue;
+
+        // Init the interpolation arrays
+        sig_t = std::vector<double>(G);
+        sig_a = std::vector<double>(G);
+        sig_f = std::vector<double>(G);
+        nu_sig_f = std::vector<double>(G);
+        sig_gamma = std::vector<double>(G);
+        sig_2n = std::vector<double>(G);
+        sig_3n = std::vector<double>(G);
+        sig_alpha = std::vector<double>(G);
+        sig_proton = std::vector<double>(G);
+
+        // Fill the ineterpolation array
+        for (g = 0; g < G; g++)
+        {
+            Eng_g = E_g[g];
+
+            sig_t[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_t, 2.53e-08, xs_1g_thermal_array[l].sigma_t)
+            sig_a[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_a, 2.53e-08, xs_1g_thermal_array[l].sigma_a)
+            sig_f[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_f, 2.53e-08, xs_1g_thermal_array[l].sigma_f)
+            nu_sig_f[g] = 2.5 * sig_f[g];
+            sig_gamma[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_gamma, 2.53e-08, xs_1g_thermal_array[l].sigma_gamma)
+            sig_2n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_2n, 2.53e-08, xs_1g_thermal_array[l].sigma_2n)
+            sig_3n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_3n, 2.53e-08, xs_1g_thermal_array[l].sigma_3n)
+            sig_alpha[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_alpha, 2.53e-08, xs_1g_thermal_array[l].sigma_alpha)
+            sig_proton[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_proton, 2.53e-08, xs_1g_thermal_array[l].sigma_proton)
+        };
+
+        // Copy back the data to the XS library
+        sigma_t_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_t);
+        sigma_a_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_a);
+        sigma_f_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_f);
+        nubar_sigma_f_pg[i] = std::vector< std::vector<double> >(nperturbations, nu_sig_f);
+        sigma_gamma_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_gamma);
+        sigma_2n_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_2n);
+        sigma_3n_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_3n);
+        sigma_alpha_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_alpha);
+        sigma_proton_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_proton);
+
+        // Fill in zeros is places where data is not avilable
+        chi_pg[i] = zeros_pg;
+        sigma_s_pgh[i] = zeros_pgh;
+        sigma_2n_pg[i] = zeros_pg;
+        sigma_3n_pg[i] = zeros_pg;
+    };
 
     // close the nuc_data library
     nuc_data_h5.close();
