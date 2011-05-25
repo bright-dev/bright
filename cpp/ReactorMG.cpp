@@ -367,6 +367,26 @@ void ReactorMG::loadlib(std::string libfile)
     };
 
 
+    //
+    // Read in the one group cross sections
+    //
+    // Thermal
+    H5::DataSet xs_1g_thermal_set = nuc_data_h5.openDataSet("/neutron/xs_1g/Thermal");
+    H5::DataSpace xs_1g_thermal_space = xs_1g_thermal_set.getSpace();
+    int xs_1g_thermal_length = xs_1g_thermal_space.getSimpleExtentNpoints(); 
+
+    FCComps::xs_1g_struct * xs_1g_thermal_array = new FCComps::xs_1g_struct [xs_1g_thermal_length];
+    xs_1g_thermal_set.read(xs_1g_thermal_array, FCComps::xs_1g_desc);
+
+    // Fast
+    H5::DataSet xs_1g_fast_set = nuc_data_h5.openDataSet("/neutron/xs_1g/FissionSpectrumAve");
+    H5::DataSpace xs_1g_fast_space = xs_1g_fast_set.getSpace();
+    int xs_1g_fast_length = xs_1g_fast_space.getSimpleExtentNpoints(); 
+
+    FCComps::xs_1g_struct * xs_1g_fast_array = new FCComps::xs_1g_struct [xs_1g_fast_length];
+    xs_1g_fast_set.read(xs_1g_fast_array, FCComps::xs_1g_desc);
+
+
     // close the nuc_data library
     nuc_data_h5.close();
 
