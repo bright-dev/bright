@@ -61,20 +61,6 @@ typedef std::vector<int> iso_vec;
 typedef std::map<int, int> iso_map;
 
 
-class DecayChain
-{
-public:
-    DecayChain();
-    ~DecayChain();
-
-    int i;     
-    int j;
-    std::vector<int> chain;
-    double branch_ratio;
-    double decay_const;
-};
-
-
 class ReactorMG : public FCComp
 {
 /** Reactor class
@@ -144,7 +130,6 @@ public:
 
 
     std::vector< std::vector<double> > decay_matrix;
-    std::map<int, std::map<int, DecayChain> > decay_chains;
 
     std::vector< std::vector<double> > thermal_yield_matrix;
     std::vector< std::vector<double> > fast_yield_matrix;
@@ -375,10 +360,6 @@ public:
     void lattice_E_cylindrical(double, double);
     void lattice_F_cylindrical(double, double);
     void calc_zeta();
-
-    void add_decay_chains(int);
-    void add_decay_chains(DecayChain);
-    double bateman(int, int);
 };
 
 
