@@ -349,7 +349,12 @@ void ReactorMG::loadlib(std::string libfile)
             if (b <= 0)
                 continue;
             double lam = decay_chains[dc.chain[0]][dc.chain[1]].decay_const;
-            decay_matrix[ind][jnd] = log(b * lam);
+//            decay_matrix[ind][jnd] = log(b) FAILED
+//            decay_matrix[ind][jnd] = log(b * lam); FAILED
+//            decay_matrix[ind][jnd] = log(b) * lam; FAILED
+//            decay_matrix[ind][jnd] = b / lam; // FAILED
+//            decay_matrix[ind][jnd] = b; // FAILED
+//            decay_matrix[ind][jnd] = b * lam;
         };
 
     };
