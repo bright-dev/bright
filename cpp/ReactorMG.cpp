@@ -388,6 +388,7 @@ void ReactorMG::loadlib(std::string libfile)
 
     // Copy the data over
     double Eng_g;
+    iso_set xs_isos;
     std::vector<double> sig_t, sig_a, sig_f, nu_sig_f, sig_gamma, sig_2n, sig_3n, sig_alpha, sig_proton;
     std::vector< std::vector<double> > zeros_pg;
     std::vector< std::vector< std::vector<double> > > zeros_pgh;
@@ -404,6 +405,8 @@ void ReactorMG::loadlib(std::string libfile)
 
         if (K.count(i) == 0)
             continue;
+
+        xs_isos.insert(i);
 
         // Init the interpolation arrays
         sig_t = std::vector<double>(G);
@@ -446,8 +449,30 @@ void ReactorMG::loadlib(std::string libfile)
         // Fill in zeros is places where data is not avilable
         chi_pg[i] = zeros_pg;
         sigma_s_pgh[i] = zeros_pgh;
+        sigma_gamma_x_pg[i] = zeros_pg;
+        sigma_2n_x_pg[i] = zeros_pg;
+    };
+
+    // Zero out XS for isos present in decay but not XS data
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
+    {
+        i = *iso;
+        if (xs_isos.count(i) == 1)
+            continue;
+
+        sigma_t_pg[i] = zeros_pg;
+        sigma_a_pg[i] = zeros_pg;
+        nubar_sigma_f_pg[i] = zeros_pg;
+        chi_pg[i] = zeros_pg;
+        sigma_f_pg[i] = zeros_pg;
+        sigma_s_pgh[i] = zeros_pgh;
+        sigma_gamma_pg[i] = zeros_pg;
         sigma_2n_pg[i] = zeros_pg;
         sigma_3n_pg[i] = zeros_pg;
+        sigma_alpha_pg[i] = zeros_pg;
+        sigma_proton_pg[i] = zeros_pg;
+        sigma_gamma_x_pg[i] = zeros_pg;
+        sigma_2n_x_pg[i] = zeros_pg;
     };
 
     // close the nuc_data library
@@ -661,6 +686,7 @@ void ReactorMG::interpolate_cross_sections()
     if (nn0["burn_times"] != nn1["burn_times"])
         x_factor = x_factor + ((burn_time - nn0["burn_times"])/(nn1["burn_times"] - nn0["burn_times"]));
 
+    std::cout << "You\n";
 
     // Let's flesh out this time step a bit
     // for the nuclides not in the data library
@@ -669,6 +695,21 @@ void ReactorMG::interpolate_cross_sections()
         if (J.count(*iso) == 1)
             continue;
 
+        std::cout << *iso << "\n";
+        std::cout << sigma_t_pg[*iso].size() << "\n";
+        std::cout << sigma_a_pg[*iso].size() << "\n";
+        std::cout << nubar_sigma_f_pg[*iso].size() << "\n";
+        std::cout << chi_pg[*iso].size() << "\n";
+        std::cout << sigma_f_pg[*iso].size() << "\n";
+        std::cout << sigma_gamma_pg[*iso].size() << "\n";
+        std::cout << sigma_2n_pg[*iso].size() << "\n";
+        std::cout << sigma_3n_pg[*iso].size() << "\n";
+        std::cout << sigma_alpha_pg[*iso].size() << "\n";
+        std::cout << sigma_proton_pg[*iso].size() << "\n";
+        std::cout << sigma_gamma_x_pg[*iso].size() << "\n";
+        std::cout << sigma_2n_x_pg[*iso].size() << "\n";
+        std::cout << sigma_s_pgh[*iso].size() << "\n";
+        
         sigma_t_itg[*iso][bt_s] = sigma_t_pg[*iso][0];
         sigma_a_itg[*iso][bt_s] = sigma_a_pg[*iso][0];
         nubar_sigma_f_itg[*iso][bt_s] = nubar_sigma_f_pg[*iso][0];
@@ -685,6 +726,8 @@ void ReactorMG::interpolate_cross_sections()
         for (int g = 0; g < G; g++)
             sigma_s_itgh[*iso][bt_s][g] = sigma_s_pgh[*iso][0][g];
     };
+
+    std::cout << "Are\n";
 
     // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
@@ -706,7 +749,8 @@ void ReactorMG::interpolate_cross_sections()
         for (int g = 0; g < G; g++)
             sigma_s_itgh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_pgh[*iso][a1][g], sigma_s_pgh[*iso][a0][g]);
     };
-    
+
+    std::cout << "Here\n";    
 };
 
 
