@@ -686,8 +686,6 @@ void ReactorMG::interpolate_cross_sections()
     if (nn0["burn_times"] != nn1["burn_times"])
         x_factor = x_factor + ((burn_time - nn0["burn_times"])/(nn1["burn_times"] - nn0["burn_times"]));
 
-    std::cout << "You\n";
-
     // Let's flesh out this time step a bit
     // for the nuclides not in the data library
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
@@ -695,21 +693,6 @@ void ReactorMG::interpolate_cross_sections()
         if (J.count(*iso) == 1)
             continue;
 
-        std::cout << *iso << "\n";
-        std::cout << sigma_t_pg[*iso].size() << "\n";
-        std::cout << sigma_a_pg[*iso].size() << "\n";
-        std::cout << nubar_sigma_f_pg[*iso].size() << "\n";
-        std::cout << chi_pg[*iso].size() << "\n";
-        std::cout << sigma_f_pg[*iso].size() << "\n";
-        std::cout << sigma_gamma_pg[*iso].size() << "\n";
-        std::cout << sigma_2n_pg[*iso].size() << "\n";
-        std::cout << sigma_3n_pg[*iso].size() << "\n";
-        std::cout << sigma_alpha_pg[*iso].size() << "\n";
-        std::cout << sigma_proton_pg[*iso].size() << "\n";
-        std::cout << sigma_gamma_x_pg[*iso].size() << "\n";
-        std::cout << sigma_2n_x_pg[*iso].size() << "\n";
-        std::cout << sigma_s_pgh[*iso].size() << "\n";
-        
         sigma_t_itg[*iso][bt_s] = sigma_t_pg[*iso][0];
         sigma_a_itg[*iso][bt_s] = sigma_a_pg[*iso][0];
         nubar_sigma_f_itg[*iso][bt_s] = nubar_sigma_f_pg[*iso][0];
@@ -726,8 +709,6 @@ void ReactorMG::interpolate_cross_sections()
         for (int g = 0; g < G; g++)
             sigma_s_itgh[*iso][bt_s][g] = sigma_s_pgh[*iso][0][g];
     };
-
-    std::cout << "Are\n";
 
     // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
@@ -749,8 +730,6 @@ void ReactorMG::interpolate_cross_sections()
         for (int g = 0; g < G; g++)
             sigma_s_itgh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_pgh[*iso][a1][g], sigma_s_pgh[*iso][a0][g]);
     };
-
-    std::cout << "Here\n";    
 };
 
 
@@ -770,7 +749,7 @@ void ReactorMG::calc_mass_weights()
     // First things first, let's calculate the atomic weight of the HM
     double inverse_A_HM = 0.0;
     double mass_HM = 0.0;
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         mass_HM += T_it[*iso][bt_s];
         inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso));
@@ -849,7 +828,7 @@ void ReactorMG::calc_mass_weights()
     //
     // Build the number density dictionaries
     //
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         // Fuel Number Density
         N_fuel_it[*iso][bt_s] = n_fuel_it[*iso][bt_s] * rho_fuel * (bright::N_A / MW_fuel_t[bt_s]);
@@ -870,7 +849,7 @@ void ReactorMG::calc_mass_weights()
     double relative_volume_clad = (rho_clad * MW_fuel_t[bt_s] * V_clad) / (rho_fuel * MW_clad_t[bt_s] * V_fuel);
     double relative_volume_cool = (rho_cool * MW_fuel_t[bt_s] * V_cool) / (rho_fuel * MW_cool_t[bt_s] * V_fuel);
 
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         iso_weight = isoname::nuc_weight(*iso);
 
@@ -901,7 +880,7 @@ void ReactorMG::fold_mass_weights()
     double N_clad_i_cm2pb = 0.0;
     double N_cool_i_cm2pb = 0.0;
 
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
         N_clad_i_cm2pb = bright::cm2_per_barn * N_clad_it[*iso][bt_s];
@@ -1122,84 +1101,92 @@ void ReactorMG::assemble_transmutation_matrices()
     int g, i, j, ind, jnd;
     std::vector< std::vector< std::vector<double> > > T_matrix = std::vector< std::vector< std::vector<double> > > (K_num, std::vector< std::vector<double> >(K_num, std::vector<double>(G, 0.0) ) );
     
-    // Add the fission yields first
-    for (ind = 0; ind < K_num; ind++)
-    {
-        for (jnd = 0; jnd < K_num; jnd++)
-        {
-            for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] = fission_product_yield_matrix[ind][jnd][g] * sigma_f_itg[K_ord[ind]][bt_s][g];
-        };
-    };
-    // Add the other cross sections
+    // Add the cross sections
     int j_gamma, j_2n, j_3n, j_alpha, j_proton, j_gamma_x, j_2n_x; 
+    int jnd_gamma, jnd_2n, jnd_3n, jnd_alpha, jnd_proton, jnd_gamma_x, jnd_2n_x; 
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
 
-        // Get from isos
-        j_gamma = ((i/10) + 1) * 10;
-        j_2n = j_gamma - 20;
-        j_3n = j_2n - 10;
-        j_alpha = j_3n - 20010;
-        j_proton = j_gamma - 10010;
-        j_gamma_x = j_gamma + 1;
-        j_2n_x = j_2n + 1;
+        // Add diag entries
+        for (g = 0; g < G; g++)
+            T_matrix[ind][ind][g] += -(sigma_f_itg[i][bt_s][g] + \
+                                       sigma_gamma_itg[i][bt_s][g] + \
+                                       sigma_2n_itg[i][bt_s][g] + \
+                                       sigma_3n_itg[i][bt_s][g] + \
+                                       sigma_alpha_itg[i][bt_s][g] + \
+                                       sigma_proton_itg[i][bt_s][g] + \
+                                       sigma_gamma_x_itg[i][bt_s][g] + \
+                                       sigma_2n_x_itg[i][bt_s][g]);
+
+        // Add the fission source
+        for (jnd = 0; jnd < K_num; jnd++)
+        {
+            for (g = 0; g < G; g++)
+                T_matrix[ind][jnd][g] += fission_product_yield_matrix[ind][jnd][g] * sigma_f_itg[i][bt_s][g];
+        };
 
         // Add the capture cross-section
-        if (0 < K.count(j_gamma))
+        j_gamma = ((i/10) + 1) * 10;
+        if (K.count(j_gamma) == 1)
         {
-            jnd = K_ind[j_gamma];
+            jnd_gamma = K_ind[j_gamma];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_gamma_itg[i][bt_s][g];
+                T_matrix[ind][jnd_gamma][g] += sigma_gamma_itg[i][bt_s][g];
         };
 
         // Add the (n, 2n) cross-section
-        if (0 < K.count(j_2n))
+        j_2n = j_gamma - 20;
+        if (K.count(j_2n) == 1)
         {
-            jnd = K_ind[j_2n];
+            jnd_2n = K_ind[j_2n];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_2n_itg[i][bt_s][g];
+                T_matrix[ind][jnd_2n][g] += sigma_2n_itg[i][bt_s][g];
         };
 
         // Add the (n, 3n) cross-section
-        if (0 < K.count(j_3n))
+        j_3n = j_2n - 10;
+        if (K.count(j_3n) == 1)
         {
-            jnd = K_ind[j_3n];
+            jnd_3n = K_ind[j_3n];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_3n_itg[i][bt_s][g];
+                T_matrix[ind][jnd_3n][g] += sigma_3n_itg[i][bt_s][g];
         };
 
         // Add the (n, alpha) cross-section
-        if (0 < K.count(j_alpha))
+        j_alpha = j_3n - 20010;
+        if (K.count(j_alpha) == 1)
         {
-            jnd = K_ind[j_alpha];
+            jnd_alpha = K_ind[j_alpha];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_alpha_itg[i][bt_s][g];
+                T_matrix[ind][jnd_alpha][g] += sigma_alpha_itg[i][bt_s][g];
         };
 
         // Add the (n, proton) cross-section
-        if (0 < K.count(j_proton))
+        j_proton = j_gamma - 10010;
+        if (K.count(j_proton) == 1)
         {
-            jnd = K_ind[j_proton];
+            jnd_proton = K_ind[j_proton];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_proton_itg[i][bt_s][g];
+                T_matrix[ind][jnd_proton][g] += sigma_proton_itg[i][bt_s][g];
         };
 
         // Add the capture (excited) cross-section
-        if (0 < K.count(j_gamma_x))
+        j_gamma_x = j_gamma + 1;
+        if (K.count(j_gamma_x) == 1)
         {
-            jnd = K_ind[j_gamma_x];
+            jnd_gamma_x = K_ind[j_gamma_x];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_gamma_x_itg[i][bt_s][g];
+                T_matrix[ind][jnd_gamma_x][g] += sigma_gamma_x_itg[i][bt_s][g];
         };
 
         // Add the (n, 2n *) cross-section
-        if (0 < K.count(j_2n_x))
+        j_2n_x = j_2n + 1;
+        if (K.count(j_2n_x) == 1)
         {
-            jnd = K_ind[j_2n_x];
+            jnd_2n_x = K_ind[j_2n_x];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_2n_x_itg[i][bt_s][g];
+                T_matrix[ind][jnd_2n_x][g] += sigma_2n_x_itg[i][bt_s][g];
         };
     };
 
@@ -1209,6 +1196,8 @@ void ReactorMG::assemble_transmutation_matrices()
         std::cout << phi_tg[bt_s][g] << ", ";
     std::cout << "]\n";
 
+
+    // Integrate over energy
     for (ind = 0; ind < K_num; ind++)
     {
         for (jnd = 0; jnd < K_num; jnd++)
@@ -1220,19 +1209,6 @@ void ReactorMG::assemble_transmutation_matrices()
     
     // Make the transmutation matrix for this time step
     M_tij[bt_s] = bright::matrix_addition(T_int_tij[bt_s], decay_matrix);
-
-/*
-*/
-    for (ind = 0; ind < K_num; ind++)
-    {
-//        M_tij[bt_s][ind][ind] -= 1.0;
- 
-        for (jnd = 0; jnd < K_num; jnd++)
-        {
-            if (ind != jnd)
-                M_tij[bt_s][ind][ind] -= M_tij[bt_s][ind][jnd];
-        };
-    };
 };
 
 
