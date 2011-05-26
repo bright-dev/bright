@@ -1416,7 +1416,7 @@ void ReactorMG::burnup_core()
     lattice_F_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
 
 
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         // Init the transmutation matrix
         T_it[*iso] = time_data(S, -1.0);
