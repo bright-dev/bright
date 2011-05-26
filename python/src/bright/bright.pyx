@@ -5453,7 +5453,7 @@ cdef class ReactorMG(FCComp):
 
     property K_ord:
         def __get__(self):
-            return conv.vector_to_array_1d_int(self.rmg_pointer.K_order)
+            return conv.vector_to_array_1d_int(self.rmg_pointer.K_ord)
 
         def __set__(self, set value):
             self.rmg_pointer.K_ord = conv.array_to_vector_1d_int(value)
