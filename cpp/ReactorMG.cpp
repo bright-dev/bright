@@ -662,6 +662,29 @@ void ReactorMG::interpolate_cross_sections()
         x_factor = x_factor + ((burn_time - nn0["burn_times"])/(nn1["burn_times"] - nn0["burn_times"]));
 
 
+    // Let's flesh out this time step a bit
+    // for the nuclides not in the data library
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
+    {
+        if (J.count(*iso) == 1)
+            continue;
+
+        sigma_t_itg[*iso][bt_s] = sigma_t_pg[*iso][0];
+        sigma_a_itg[*iso][bt_s] = sigma_a_pg[*iso][0];
+        nubar_sigma_f_itg[*iso][bt_s] = nubar_sigma_f_pg[*iso][0];
+        chi_itg[*iso][bt_s] = chi_pg[*iso][0];
+        sigma_f_itg[*iso][bt_s] = sigma_f_pg[*iso][0];
+        sigma_gamma_itg[*iso][bt_s] = sigma_gamma_pg[*iso][0];
+        sigma_2n_itg[*iso][bt_s] = sigma_2n_pg[*iso][0];
+        sigma_3n_itg[*iso][bt_s] = sigma_3n_pg[*iso][0];
+        sigma_alpha_itg[*iso][bt_s] = sigma_alpha_pg[*iso][0];
+        sigma_proton_itg[*iso][bt_s] = sigma_proton_pg[*iso][0];
+        sigma_gamma_x_itg[*iso][bt_s] = sigma_gamma_x_pg[*iso][0];
+        sigma_2n_x_itg[*iso][bt_s] = sigma_2n_x_pg[*iso][0];
+
+        for (int g = 0; g < G; g++)
+            sigma_s_itgh[*iso][bt_s][g] = sigma_s_pgh[*iso][0][g];
+    };
 
     // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
