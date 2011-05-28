@@ -274,17 +274,47 @@ bool cmp_by_col (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b)
 };
 
 
+template<class InputIterator, class T>
+InputIterator find_row( InputIterator first, InputIterator last, const T& value )
+{
+    for ( ;first!=last; first++) 
+    {
+        if ( ((*first).row)==value ) 
+            break;
+    };
+    return first;
+};
+
+
+
+template<class InputIterator, class T>
+InputIterator find_col( InputIterator first, InputIterator last, const T& value )
+{
+    for ( ;first!=last; first++) 
+    {
+        if ( ((*first).col)==value ) 
+            break;
+    };
+    return first;
+};
+
+
+
 template <class T=double>
 class SparseMatrix
 {
 public:
+    int nrows, ncols;
     std::vector< sparse_matrix_entry<T> > sm;
 
     SparseMatrix(){};
     ~SparseMatrix(){};
 
-    SparseMatrix(int N)
+    SparseMatrix(int N, int nr=0, int nc = 0)
     {
+        nrows = nr;
+        ncols = nc;
+
         sm = std::vector< sparse_matrix_entry <T> >();
         sm.reserve(N);
     };
@@ -312,6 +342,96 @@ public:
     {
         std::sort(sm.begin(), sm.end(), cmp_by_col<T>);
     };
+
+
+    SparseMatrix operator* (double s)
+    {
+        int n;
+        int N = this.size();
+        sparse_matrix_entry<T> a_entry;
+        SparseMatrix<T> B = SparseMatrix<T>(N, this.nrows, this.ncols);
+        for (n = 0; n < N; n++)
+        {
+            a_entry = this.sm[n];
+            B.push_back(a_entry.row, a_entry.col, a_entry.val * s);
+        };
+        B.sort_by_row();
+        return B;
+    };
+
+
+    SparseMatrix operator* (std::vector<double> vec)
+    {
+        int n, p;
+        int N = this.size();
+        int P = vec.size();
+
+        sparse_matrix_entry<T> a_entry;
+        SparseMatrix<T> B = SparseMatrix<T>(N, this.nrows, this.ncols);
+
+        double dot_prod; 
+        for (n = 0; n < N; n++)
+        {
+            dot_prod = 0.0;
+            a_entry = this.sm[n];
+
+            for (p = 0; p < P; p++)
+                dot_prod += (a_entry.val[p] * vec[p]);
+
+            B.push_back(a_entry.row, a_entry.col, dot_prod);
+        };
+        B.sort_by_row();
+        return B;
+    };
+
+
+    SparseMatrix operator* (SparseMatrix<T> B)
+    {
+        int n, i, j;
+        int N = this.size();
+
+        std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter;
+        SparseMatrix<T> C = SparseMatrix<T>(N, this.nrows, this.ncols);
+
+        // Put B in col-order
+        B.sort_by_col();
+
+        double dot_prod;
+        for (i = 0; i < C.nrows; i++)
+        {
+            for (j = 0; j < C.cols; j++)
+            {
+                a_iter = find_row(this.sm.begin(), this.sm.end(); i);
+                b_iter = find_col(B.sm.begin(), B.sm.end(); j);
+
+                dot_prod = 0.0;
+
+                while(((*a_iter).row == i) && ((*b_iter).col == j))
+                {
+                    if ((*a_iter).col == (*b_iter).row)
+                    {
+                        dot_prod += ((*a_iter).val * (*b_iter).val);
+                        a_iter++;
+                        b_iter++;
+                    }
+                    else if ((*a_iter).col < (*b_iter).row)
+                        a_iter++;
+                    else
+                        b_iter++;
+                };
+
+                // Add entry, if not sparse
+                if (dot_prod != 0.0)
+                    C.push_back(i, j, dot_prod);
+            };
+        };
+
+        // Put B back in the right order
+        B.sort_by_row();
+    };
+
+    C.sort_by_row();
+    return C;
 };
 
 
