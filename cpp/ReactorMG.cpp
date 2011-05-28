@@ -227,7 +227,7 @@ void ReactorMG::loadlib(std::string libfile)
     decay_data_set.read(decay_data_array, FCComps::decay_iso_desc);
 
 
-    // Finish initing K, based on decay info    
+    // Finish initializing K, based on decay info    
     for (l = 0; l < decay_data_length; l++)
     {
         K.insert(decay_data_array[l].from_iso_zz);
@@ -241,7 +241,8 @@ void ReactorMG::loadlib(std::string libfile)
         K_ind[K_ord[k]] = k;
 
     // Make decay_martrix from this data.
-    decay_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
+//    decay_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
+    decay_matrix = bright::SparseMatrix<double>(2*decay_data_length, K_num, K_num);
 
     for (l = 0; l < decay_data_length; l++)
     {
@@ -253,14 +254,16 @@ void ReactorMG::loadlib(std::string libfile)
         jnd = K_ind[j];
 
         // Add diagonal elements
-        decay_matrix[ind][ind] = -decay_data_array[l].decay_const;
+        decay_matrix.push_back(ind, ind, -decay_data_array[l].decay_const);
 
         // Add i,j element to matrix
         if (i != j)
-            decay_matrix[ind][jnd] = decay_data_array[l].branch_ratio * decay_data_array[l].decay_const;
+            decay_matrix.push_back(ind, jnd, decay_data_array[l].branch_ratio * decay_data_array[l].decay_const);
     };
 
+    decay_matrix.clean_up();
 
+/*
 
     //
     // Read in the fission table
@@ -478,6 +481,7 @@ void ReactorMG::loadlib(std::string libfile)
     // close the nuc_data library
     nuc_data_h5.close();
 
+*/
     return;
 };
 
@@ -1208,7 +1212,7 @@ void ReactorMG::assemble_transmutation_matrices()
     };
     
     // Make the transmutation matrix for this time step
-    M_tij[bt_s] = bright::matrix_addition(T_int_tij[bt_s], decay_matrix);
+//    M_tij[bt_s] = bright::matrix_addition(T_int_tij[bt_s], decay_matrix);
 };
 
 
@@ -2408,3 +2412,5 @@ void ReactorMG::calc_zeta()
 
 
 
+
+template class bright::SparseMatrix<double>;

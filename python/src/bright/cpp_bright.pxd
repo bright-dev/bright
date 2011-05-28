@@ -469,7 +469,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[int] K_ord
         map[int, int] K_ind
 
-        vector[vector[double]] decay_matrix
+#        vector[vector[double]] decay_matrix
         vector[vector[double]] thermal_yield_matrix
         vector[vector[double]] fast_yield_matrix
         vector[vector[vector[double]]] fission_product_yield_matrix

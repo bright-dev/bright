@@ -15,6 +15,7 @@
 #include <sys/stat.h> 
 #include <vector>
 #include <algorithm>
+#include <typeinfo>
 
 /*** Macros ***/
 #define length_array(a) ( sizeof ( a ) / sizeof ( *a ) )
@@ -234,7 +235,7 @@ private:
 
 
 
-template <class T=double>
+template <class T>
 class sparse_matrix_entry
 {
 public:
@@ -254,7 +255,7 @@ public:
 };
 
 
-template <class T=double>
+template <class T>
 bool cmp_by_row (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b) 
 {
     if (a.row != b.row)
@@ -264,7 +265,7 @@ bool cmp_by_row (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b)
 };
 
 
-template <class T=double>
+template <class T>
 bool cmp_by_col (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b) 
 {
     if (a.col != b.col)
@@ -300,7 +301,7 @@ InputIterator find_col( InputIterator first, InputIterator last, const T& value 
 
 
 
-template <class T=double>
+template <class T>
 class SparseMatrix
 {
 public:
@@ -344,15 +345,44 @@ public:
     };
 
 
-    SparseMatrix operator* (double s)
+    void clean_up()
+    {
+        // First, get all of your ducks in a row
+        sort_by_row();
+
+        int n, N;
+        N = sm.size();
+        std::vector<int> bad_ind = std::vector<int>();
+
+        // Calculate indices to remove
+        for (n = N - 1; 0 < n; n--)
+        {
+            if ((sm[n].row == sm[n-1].row) && (sm[n].col == sm[n-1].col))
+                bad_ind.push_back(n);
+            else if (sm[n].val == 0.0)
+                bad_ind.push_back(n);
+        }; 
+
+        // remove the offending indices
+        int p, P;
+        P = bad_ind.size();
+        for (p = 0; p < P; p++)
+            sm.erase(sm.begin()+bad_ind[p]);
+
+        // Save some space
+        sm.resize(sm.size());
+    };
+
+
+    SparseMatrix<T> operator* (double s)
     {
         int n;
-        int N = this.size();
+        int N = size();
         sparse_matrix_entry<T> a_entry;
-        SparseMatrix<T> B = SparseMatrix<T>(N, this.nrows, this.ncols);
+        SparseMatrix<T> B = SparseMatrix<T>(N, nrows, ncols);
         for (n = 0; n < N; n++)
         {
-            a_entry = this.sm[n];
+            a_entry = sm[n];
             B.push_back(a_entry.row, a_entry.col, a_entry.val * s);
         };
         B.sort_by_row();
@@ -360,38 +390,31 @@ public:
     };
 
 
-    SparseMatrix operator* (std::vector<double> vec)
+    std::vector<double> operator* (std::vector<double> vec)
     {
-        int n, p;
-        int N = this.size();
+        int n, i, j;
+        int N = size();
         int P = vec.size();
 
-        sparse_matrix_entry<T> a_entry;
-        SparseMatrix<T> B = SparseMatrix<T>(N, this.nrows, this.ncols);
+        if (P != nrows && P != ncols)
+            throw VectorSizeError();
 
-        double dot_prod; 
+        std::vector<double> new_vec = std::vector<double>(P, 0.0);
+
         for (n = 0; n < N; n++)
-        {
-            dot_prod = 0.0;
-            a_entry = this.sm[n];
+            new_vec[sm[n].row] += (sm[n].val * vec[sm[n].col]);
 
-            for (p = 0; p < P; p++)
-                dot_prod += (a_entry.val[p] * vec[p]);
-
-            B.push_back(a_entry.row, a_entry.col, dot_prod);
-        };
-        B.sort_by_row();
-        return B;
+        return new_vec;
     };
 
 
-    SparseMatrix operator* (SparseMatrix<T> B)
+    SparseMatrix<T> operator* (SparseMatrix<T> B)
     {
-        int n, i, j;
-        int N = this.size();
+        int i, j;
+        int N = size();
 
-        std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter;
-        SparseMatrix<T> C = SparseMatrix<T>(N, this.nrows, this.ncols);
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter;
+        SparseMatrix<T> C = SparseMatrix<T>(N, nrows, ncols);
 
         // Put B in col-order
         B.sort_by_col();
@@ -399,10 +422,10 @@ public:
         double dot_prod;
         for (i = 0; i < C.nrows; i++)
         {
-            for (j = 0; j < C.cols; j++)
+            for (j = 0; j < C.ncols; j++)
             {
-                a_iter = find_row(this.sm.begin(), this.sm.end(); i);
-                b_iter = find_col(B.sm.begin(), B.sm.end(); j);
+                a_iter = find_row(sm.begin(), sm.end(), i);
+                b_iter = find_col(B.sm.begin(), B.sm.end(), j);
 
                 dot_prod = 0.0;
 
@@ -428,10 +451,10 @@ public:
 
         // Put B back in the right order
         B.sort_by_row();
-    };
 
-    C.sort_by_row();
-    return C;
+        C.sort_by_row();
+        return C;
+    };
 };
 
 
