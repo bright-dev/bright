@@ -457,7 +457,7 @@ void ReactorMG::loadlib(std::string libfile)
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         i = *iso;
-        if (xs_isos.count(i) == 1)
+        if ((xs_isos.count(i) == 1) || (J.count(i) == 1))
             continue;
 
         sigma_t_pg[i] = zeros_pg;
@@ -1348,6 +1348,7 @@ void ReactorMG::calc_transmutation()
     // Calculate the exponential matrices
     for (n = 1; n < 7; n++)
     {
+        std::cout << "Yo\n";
         Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], Mt);
         neg_Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], bright::scalar_matrix_product(-1.0, Mt));
     };
@@ -1618,8 +1619,8 @@ void ReactorMG::burnup_core()
         std::cout << "ct\n";
         if (s == 0)
             BU_t[0] = 0.0;
-        else        
-            calc_transmutation();
+//        else        
+//            calc_transmutation();
 
         std::cout << "\n\n\n\n";
     };
