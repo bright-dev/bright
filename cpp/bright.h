@@ -232,6 +232,90 @@ private:
 };
 
 
+
+
+template <class T=double>
+class sparse_matrix_entry
+{
+public:
+    int row;
+    int col;
+    T val;
+
+    sparse_matrix_entry();
+    ~sparse_matrix_entry();
+
+    sparse_matrix_entry(int i, int j, T v)
+    {
+        row = i;
+        col = j;
+        val = v;
+    };
+};
+
+
+template <class T=double>
+bool cmp_by_row (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b) 
+{
+    if (a.row != b.row)
+        return (a.row < b.row);
+    else
+        return (a.col < b.col);
+};
+
+
+template <class T=double>
+bool cmp_by_col (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b) 
+{
+    if (a.col != b.col)
+        return (a.col < b.col);
+    else
+        return (a.row < b.row);
+};
+
+
+template <class T=double>
+class SparseMatrix
+{
+public:
+    std::vector< sparse_matrix_entry<T> > sm;
+
+    SparseMatrix(){};
+    ~SparseMatrix(){};
+
+    SparseMatrix(int N)
+    {
+        sm = std::vector< sparse_matrix_entry <T> >();
+        sm.reserve(N);
+    };
+
+
+    int size()
+    {
+        return sm.size();
+    };
+
+
+    void push_back(int i, int j, T value)
+    {
+        sm.push_back(sparse_matrix_entry<T>(i, j, value));
+    };
+
+
+    void sort_by_row()
+    {
+        std::sort(sm.begin(), sm.end(), cmp_by_row<T>);
+    };
+
+
+    void sort_by_col()
+    {
+        std::sort(sm.begin(), sm.end(), cmp_by_col<T>);
+    };
+};
+
+
+
 // End bright namespace
 };
 
