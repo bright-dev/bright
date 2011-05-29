@@ -1156,8 +1156,8 @@ void ReactorMG::assemble_transmutation_matrices()
             if (sig == 0.0)
                 continue;
 
-            fpy_end = fission_product_yield_matrix[g].end();
-            fpy_iter = bright::find_row(fission_product_yield_matrix[g].begin(), fpy_end, ind);
+            fpy_end = fission_product_yield_matrix[g].sm.end();
+            fpy_iter = bright::find_row(fission_product_yield_matrix[g].sm.begin(), fpy_end, ind);
 
             while((*fpy_iter).row == ind)
             {
