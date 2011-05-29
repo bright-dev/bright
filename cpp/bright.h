@@ -7,6 +7,7 @@
 #include <string>
 #include <string.h>
 #include <sstream>
+#include <iostream>
 #include <cctype>
 #include <stdlib.h>
 #include <iostream>
@@ -388,6 +389,20 @@ public:
     };
 
 
+    friend std::ostream& operator<< (std::ostream& out, SparseMatrix<T> & A) 
+    {
+        int n = 0;
+        int N = A.size();
+        
+        out << "Sparse Matrix [" << A.nrows << ", " << A.ncols << "] (" << N << ")\n";
+        for (n = 0; n < N; n++)
+            out << "  (" << A.sm[n].row << ", " << A.sm[n].col << ") = " << A.sm[n].val << "\n";
+
+        return out;
+    };
+
+
+
     SparseMatrix<T> operator* (double s)
     {
         int n;
@@ -496,6 +511,8 @@ public:
             a_iter = find_row(sm.begin(), a_end, i);
             b_iter = find_row(B.sm.begin(), b_end, i);
 
+            std::cout << "-------  " << i << "  -------\n";
+
             while((((*a_iter).row == i) || ((*b_iter).row == i)) && ((a_iter != a_end) || (b_iter != b_end)))
             {
                 if (((*a_iter).row == i) && ((*b_iter).row == i))
@@ -504,29 +521,40 @@ public:
                     {
                         tmp_sum = ((*a_iter).val + (*b_iter).val);
                         if (tmp_sum != 0.0)
+                        {
+                            std::cout << "(" << i << ", " << (*a_iter).col << ") = a + b = " << tmp_sum << "\n";
                             C.push_back(i, (*a_iter).col, tmp_sum);
+                        };
 
                         a_iter++;
                         b_iter++;
                     }
                     else if ((*a_iter).col < (*b_iter).col)
                     {
+                        std::cout << "(" << i << ", " << (*a_iter).col << ") = a = " << (*a_iter).val << "\n";
+
                         C.push_back(i, (*a_iter).col, (*a_iter).val);
                         a_iter++;
                     }
                     else
                     {
+                        std::cout << "(" << i << ", " << (*b_iter).col << ") = b = " << (*b_iter).val << "\n";
+
                         C.push_back(i, (*b_iter).col, (*b_iter).val);
                         b_iter++;
                     };
                 }
                 else if ((*a_iter).row == i)
                 {
+                    std::cout << "(" << i << ", " << (*a_iter).col << ") = a = " << (*a_iter).val << "\n";
+
                     C.push_back(i, (*a_iter).col, (*a_iter).val);
                     a_iter++;
                 }
                 else if ((*b_iter).row == i)
                 {
+                    std::cout << "(" << i << ", " << (*b_iter).col << ") = b = " << (*b_iter).val << "\n";
+
                     C.push_back(i, (*b_iter).col, (*b_iter).val);
                     b_iter++;
                 }
