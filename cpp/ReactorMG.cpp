@@ -370,7 +370,7 @@ void ReactorMG::loadlib(std::string libfile)
     // Make fission product yield matrix
     // from the equation y = mx + b
     double fyval, tyval, fpyval_g;
-    bright::SparseMatrix m, b;
+    bright::SparseMatrix<double> m, b;
     fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
 
     m = (fast_yield_matrix + (thermal_yield_matrix * -1.0)) * (1.0 / (1.0 - 2.53e-08));
