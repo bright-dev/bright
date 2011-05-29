@@ -665,3 +665,7 @@ bool bright::FileExists(std::string strFilename)
    
   return(blnReturn); 
 };
+
+
+
+

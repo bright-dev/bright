@@ -243,8 +243,8 @@ public:
     int col;
     T val;
 
-    sparse_matrix_entry();
-    ~sparse_matrix_entry();
+    sparse_matrix_entry() {};
+    ~sparse_matrix_entry() {};
 
     sparse_matrix_entry(int i, int j, T v)
     {

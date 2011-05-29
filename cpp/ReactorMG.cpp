@@ -2412,5 +2412,6 @@ void ReactorMG::calc_zeta()
 
 
 
+//template class bright::sparse_matrix_entry<double>;
 
 template class bright::SparseMatrix<double>;
