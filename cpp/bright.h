@@ -511,9 +511,8 @@ public:
             a_iter = find_row(sm.begin(), a_end, i);
             b_iter = find_row(B.sm.begin(), b_end, i);
 
-            std::cout << "-------  " << i << "  -------\n";
-
-            while((((*a_iter).row == i) || ((*b_iter).row == i)) && ((a_iter != a_end) || (b_iter != b_end)))
+//            while((((*a_iter).row == i) || ((*b_iter).row == i)) && ((a_iter != a_end) || (b_iter != b_end)))
+            while( ((*a_iter).row == i) || ((*b_iter).row == i) )
             {
                 if (((*a_iter).row == i) && ((*b_iter).row == i))
                 {
@@ -521,40 +520,29 @@ public:
                     {
                         tmp_sum = ((*a_iter).val + (*b_iter).val);
                         if (tmp_sum != 0.0)
-                        {
-                            std::cout << "(" << i << ", " << (*a_iter).col << ") = a + b = " << tmp_sum << "\n";
                             C.push_back(i, (*a_iter).col, tmp_sum);
-                        };
 
                         a_iter++;
                         b_iter++;
                     }
                     else if ((*a_iter).col < (*b_iter).col)
                     {
-                        std::cout << "(" << i << ", " << (*a_iter).col << ") = a = " << (*a_iter).val << "\n";
-
                         C.push_back(i, (*a_iter).col, (*a_iter).val);
                         a_iter++;
                     }
                     else
                     {
-                        std::cout << "(" << i << ", " << (*b_iter).col << ") = b = " << (*b_iter).val << "\n";
-
                         C.push_back(i, (*b_iter).col, (*b_iter).val);
                         b_iter++;
                     };
                 }
                 else if ((*a_iter).row == i)
                 {
-                    std::cout << "(" << i << ", " << (*a_iter).col << ") = a = " << (*a_iter).val << "\n";
-
                     C.push_back(i, (*a_iter).col, (*a_iter).val);
                     a_iter++;
                 }
                 else if ((*b_iter).row == i)
                 {
-                    std::cout << "(" << i << ", " << (*b_iter).col << ") = b = " << (*b_iter).val << "\n";
-
                     C.push_back(i, (*b_iter).col, (*b_iter).val);
                     b_iter++;
                 }

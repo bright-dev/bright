@@ -308,7 +308,7 @@ void ReactorMG::loadlib(std::string libfile)
         if (fast_join.count(fy) < 1)
             fast_join[fy] = std::vector<int>();
 
-        fast_join[ty].push_back(K_ind[i]);
+        fast_join[fy].push_back(K_ind[i]);
     };
 
 
@@ -373,7 +373,7 @@ void ReactorMG::loadlib(std::string libfile)
     fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
     std::cout << "get m\n";
 
-    std::cout << fast_yield_matrix << "\n";
+    //std::cout << fast_yield_matrix << "\n";
 /*
     temp_m = (thermal_yield_matrix * -1.0);
     std::cout << temp_m.size() << "\n";    
@@ -397,9 +397,9 @@ void ReactorMG::loadlib(std::string libfile)
     // Interpolate the mass fraction between thermal and fast data.
     for (g = 0; g < G; g++)
     {
-        std::cout << "     " << g << "\n";
-
         fission_product_yield_matrix[g] = (m * E_g[g]) + b;
+        std::cout << "     " << g << "   " << fission_product_yield_matrix[g].size() <<"\n";
+
     };
 
     std::cout << "Interpolated yields\n";
@@ -1125,6 +1125,8 @@ void ReactorMG::assemble_transmutation_matrices()
     //
     int g, i, j, ind, jnd;
     std::vector< bright::SparseMatrix<double> > T_matrix = std::vector< bright::SparseMatrix<double> > (G,  bright::SparseMatrix<double>(fast_yield_matrix.size(), K_num, K_num));
+    std::vector< bright::sparse_matrix_entry<double> >::iterator fpy_iter, fpy_end;
+    
     
     // Add the cross sections
     double fpy, sig;
@@ -1133,6 +1135,8 @@ void ReactorMG::assemble_transmutation_matrices()
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
+
+        std::cout << "Assembling T_matrix[" << ind << " = " << i << "]\n";
 
         // Add diag entries
         for (g = 0; g < G; g++)
@@ -1146,19 +1150,21 @@ void ReactorMG::assemble_transmutation_matrices()
                                               sigma_2n_x_itg[i][bt_s][g]));
 
         // Add the fission source
-        for (jnd = 0; jnd < K_num; jnd++)
+        for (g = 0; g < G; g++)
         {
-            for (g = 0; g < G; g++)
+            sig = sigma_f_itg[i][bt_s][g];
+            if (sig == 0.0)
+                continue;
+
+            fpy_end = fission_product_yield_matrix[g].end();
+            fpy_iter = bright::find_row(fission_product_yield_matrix[g].begin(), fpy_end, ind);
+
+            while((*fpy_iter).row == ind)
             {
-                sig = sigma_f_itg[i][bt_s][g];
-                if (sig == 0.0)
-                    continue;
-
-                fpy = fission_product_yield_matrix[g].at(ind, jnd);
-                if (fpy == 0.0)
-                    continue;
-
+                jnd = (*fpy_iter).col;
+                fpy = (*fpy_iter).val;                
                 T_matrix[g].push_back(ind, jnd, fpy * sig);
+                fpy_iter++;
             };
         };
 
