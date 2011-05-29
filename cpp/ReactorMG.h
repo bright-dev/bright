@@ -130,12 +130,11 @@ public:
     iso_map K_ind; // Lowest-to-highest map of J into matrix position.
 
 
-//    std::vector< std::vector<double> > decay_matrix;
     bright::SparseMatrix<double> decay_matrix;
 
-    std::vector< std::vector<double> > thermal_yield_matrix;
-    std::vector< std::vector<double> > fast_yield_matrix;
-    std::vector< std::vector< std::vector<double> > > fission_product_yield_matrix;
+    bright::SparseMatrix<double> thermal_yield_matrix;
+    bright::SparseMatrix<double> fast_yield_matrix;
+    std::vector< bright::SparseMatrix<double> > fission_product_yield_matrix;
 
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table

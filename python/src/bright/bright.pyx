@@ -5477,7 +5477,6 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, value):
             self.rmg_pointer.decay_matrix = conv.array_to_vector_2d_dbl(value)
-    """
 
 
     property thermal_yield_matrix:
@@ -5503,6 +5502,7 @@ cdef class ReactorMG(FCComp):
         def __set__(self, value):
             self.rmg_pointer.fission_product_yield_matrix = conv.array_to_vector_3d_dbl(value)
 
+    """
 
 
 

@@ -333,6 +333,18 @@ public:
     };
 
 
+    T at(int i, int j)
+    {
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter = find_row(sm.begin(), sm.end(), i);
+        while (i == (*a_iter).row)
+        {
+            if (j == (*a_iter).col)
+                return (*a_iter).val;
+        };
+        return 0.0;
+    };
+
+
     void sort_by_row()
     {
         std::sort(sm.begin(), sm.end(), cmp_by_row<T>);

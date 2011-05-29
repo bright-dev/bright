@@ -241,7 +241,6 @@ void ReactorMG::loadlib(std::string libfile)
         K_ind[K_ord[k]] = k;
 
     // Make decay_martrix from this data.
-//    decay_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
     decay_matrix = bright::SparseMatrix<double>(2*decay_data_length, K_num, K_num);
 
     for (l = 0; l < decay_data_length; l++)
@@ -263,7 +262,6 @@ void ReactorMG::loadlib(std::string libfile)
 
     decay_matrix.clean_up();
 
-/*
 
     //
     // Read in the fission table
@@ -318,8 +316,8 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     // Run through the array and make yield matrices
-    thermal_yield_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
-    fast_yield_matrix = std::vector< std::vector<double> > (K_num, std::vector<double>(K_num, 0.0) );
+    thermal_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
+    fast_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
 
     int index, tj, fj, TJ, FJ;
     double mf;
@@ -338,7 +336,7 @@ void ReactorMG::loadlib(std::string libfile)
             for (tj = 0; tj < TJ; tj++)
             {
                 ind = thermal_join[index][tj];
-                thermal_yield_matrix[ind][jnd] = mf;
+                thermal_yield_matrix.push_back(ind, jnd, mf);
             };
         };
 
@@ -349,26 +347,40 @@ void ReactorMG::loadlib(std::string libfile)
             for (fj = 0; fj < FJ; fj++)
             {
                 ind = fast_join[index][fj];
-                fast_yield_matrix[ind][jnd] = mf;
+                fast_yield_matrix.push_back(ind, jnd, mf);
             };
         };
     };
 
+    thermal_yield_matrix.clean_up();
+    fast_yield_matrix.clean_up();
+
 
     // Make fission product yield matrix
-    fission_product_yield_matrix = std::vector< std::vector< std::vector<double> > > (K_num, std::vector< std::vector<double> >(K_num, std::vector<double>(G, 0.0) ) );
+    double fyval, tyval, fpyval_g;
+    fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G, bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
+
     for (ind = 0; ind < K_num; ind++)
     {
         for (jnd = 0; jnd < K_num; jnd++)
         {
+            fyval = fast_yield_matrix.at(ind, jnd);
+            tyval = thermal_yield_matrix.at(ind, jnd);
+
+            if (fyval == 0.0 && tyval == 0.0)
+                continue;
+
             for (g = 0; g < G; g++)
             {
                 // Interpolate the mass fraction between thermal and fast data.
-                fission_product_yield_matrix[ind][jnd][g] = bright::SolveLine(E_g[g], 1.0, fast_yield_matrix[ind][jnd], 2.53e-08, thermal_yield_matrix[ind][jnd]);
+                fpyval_g = bright::SolveLine(E_g[g], 1.0, fyval, 2.53e-08, tyval);
+                fission_product_yield_matrix[g].push_back(ind, jnd, fpyval_g);
             };
         };
     };
 
+    for (g = 0; g < G; g++)
+        fission_product_yield_matrix[g].clean_up();
 
     //
     // Read in the one group cross sections
@@ -481,7 +493,6 @@ void ReactorMG::loadlib(std::string libfile)
     // close the nuc_data library
     nuc_data_h5.close();
 
-*/
     return;
 };
 
