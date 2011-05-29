@@ -282,8 +282,8 @@ public:
     time_gh A_inv_tgh;   // Inverse of Absorprion Matrix, as a function of time
     time_gh A_inv_F_tgh; // Inverse of Absorprion Matrix mult by the Fission Matrix, as a function of time
 
-    time_gh T_int_tij;   // Energy Integral of the Transmutation Matrix, as a function of time
-    time_gh M_tij;       // Burnup Matrix, T_int Matrix plus the Decay Matrix, as a function of time
+    std::vector< bright::SparseMatrix<double> > T_int_tij;   // Energy Integral of the Transmutation Matrix, as a function of time
+    std::vector< bright::SparseMatrix<double> > M_tij;       // Burnup Matrix, T_int Matrix plus the Decay Matrix, as a function of time
 
 
 

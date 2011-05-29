@@ -340,6 +340,8 @@ public:
         {
             if (j == (*a_iter).col)
                 return (*a_iter).val;
+
+            a_iter++;
         };
         return 0.0;
     };
