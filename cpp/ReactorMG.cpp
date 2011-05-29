@@ -995,24 +995,6 @@ void ReactorMG::fold_mass_weights()
         kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
     };
 
-/*
-    // Get absorption XS estimate
-    for (h = 0; h < G; h++)
-    {
-        Sigma_a_fuel_tg[bt_s][h] = 1.0 * Sigma_t_fuel_tg[bt_s][h];
-        Sigma_a_clad_tg[bt_s][h] = 1.0 * Sigma_t_clad_tg[bt_s][h];
-        Sigma_a_cool_tg[bt_s][h] = 1.0 * Sigma_t_cool_tg[bt_s][h];
-
-        for (g = 0; g < G; g++)
-        {
-            Sigma_a_fuel_tg[bt_s][h] -= Sigma_s_fuel_tgh[bt_s][g][h];
-            Sigma_a_clad_tg[bt_s][h] -= Sigma_s_clad_tgh[bt_s][g][h];
-            Sigma_a_cool_tg[bt_s][h] -= Sigma_s_cool_tgh[bt_s][g][h];
-        };
-    };
-
-*/
-
     // Calculate the disadvantage factor, if required.
     if (use_zeta)
         calc_zeta();
@@ -1386,7 +1368,7 @@ void ReactorMG::calc_criticality()
 
 
 
-
+/*
 
 
 void ReactorMG::calc_transmutation()
@@ -1395,7 +1377,7 @@ void ReactorMG::calc_transmutation()
 
     // Get the transmutation matrix for this time delta
     double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
-    std::vector< std::vector<double> > Mt = bright::scalar_matrix_product(dt, M_tij[bt_s]);
+    bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
 
     // Set Pade coefficients, for p = q = 6
     double N_coef_n [7] = {1.00000000e+00,   5.00000000e-01,   1.13636364e-01, \
@@ -1476,6 +1458,105 @@ void ReactorMG::calc_transmutation()
 
     BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
 };
+
+*/
+
+
+
+
+
+
+void ReactorMG::calc_transmutation()
+{
+    // Calculates a tranmutation step via the Pade method
+    int n, i, j, ind, jnd;
+    int N = 100;
+    double fact = 1.0;
+    double mass_epsilon = 0.005;
+    double max_mass_residual = 1.0;
+    double nuc_residual;
+
+    // Get the transmutation matrix for this time delta
+    double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
+    bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
+
+    bright::SparseMatrix<double> identity (K_num, K_num, K_num);
+    for (ind = 0; ind < K_num; ind++)
+        identity.push_back(ind, ind, 1.0);
+
+    // Make mass vectors
+    std::vector<double> comp_next;
+    std::vector<double> comp_prev (K_num, 0.0);
+    std::vector<double> comp_next_n (K_num, 0.0);
+    for (ind = 0; ind < K_num; ind++)
+    {
+        i = K_ord[ind];
+        comp_prev[ind] = T_it[i][bt_s-1];
+        comp_next_n[ind] = T_it[i][bt_s-1];
+    };
+
+
+    // Init the new matrices
+    bright::SparseMatrix<double> Mt_n = Mt;
+    bright::SparseMatrix<double> exp_Mt_n = (identity + Mt);
+
+    comp_next = (exp_Mt_n * comp_prev);
+
+    n = 2;
+    while((n < 100) && (mass_epsilon < max_mass_residual))
+    {
+        // Calculate this iterations values
+        fact *= n;
+        Mt_n = (Mt_n * Mt);
+        exp_Mt_n = exp_Mt_n + ((1.0 / fact) * Mt_n);
+        comp_next = (exp_Mt_n * comp_prev);
+
+        // Calculate end contition
+        max_mass_residual = 0.0;
+        for (ind = 0; ind < K_num; ind++)
+        {
+            nuc_residual = fabs(1.0 - (comp_next_n[ind] / comp_next[ind]));
+
+            // Careful, this line relies on NaNs alwways comparing 'False'
+            if (max_mass_residual < nuc_residual)
+                max_mass_residual = nuc_residual;
+        };
+
+        // Finish up interation
+        comp_next_n = comp_next;
+        n++;
+    };
+
+    // Copy this composition back to the tranmutuation matrix
+    for (ind = 0; ind < K_num; ind++)
+    {
+        i = K_ord[ind];
+        T_it[i][bt_s] = comp_next[ind];
+    };
+
+    // Calculate the burnup 
+    CompDict cd_prev, cd_next;
+    for (ind = 0; ind < K_num; ind++)
+    {
+        i = K_ord[ind];
+        cd_prev[i] = comp_prev[ind];
+        cd_next[i] = comp_next[ind];
+    };
+
+    MassStream ms_prev (cd_prev);
+    MassStream act_prev = ms_prev.get_act();
+
+    MassStream ms_next (cd_next);
+    MassStream act_next = ms_next.get_act();
+
+    double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
+
+    BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
+};
+
+
+
+
 
 
 

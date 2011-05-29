@@ -397,7 +397,7 @@ public:
         for (n = 0; n < N; n++)
             B.push_back(sm[n].row, sm[n].col, sm[n].val * s);
 
-        B.sort_by_row();
+        B.clean_up();
         return B;
     };
 
@@ -470,7 +470,7 @@ public:
         // Put B back in the right order
         B.sort_by_row();
 
-        C.sort_by_row();
+        C.clean_up();
         return C;
     };
 
@@ -540,6 +540,10 @@ public:
     };
 
 
+//    SparseMatrix<T> operator= (SparseMatrix<T> rhs)
+//    {
+//        return rhs;
+//    };
 
 };
 
