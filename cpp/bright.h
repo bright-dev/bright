@@ -284,7 +284,7 @@ InputIterator find_row( InputIterator first, InputIterator last, const T& value 
         if ((*first).row == value) 
             break;
 
-        if (value < (*first).row) 
+        if (value < (*first).row)
             first = last - 1;
     };
 
@@ -507,25 +507,17 @@ public:
         if (B.nrows != nrows && B.ncols != ncols)
             throw VectorSizeError();
 
-        std::cout << "In add\n";
-
         typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_end, b_end;
         a_end = sm.end();
         b_end = B.sm.end();
 
-        std::cout << " got iters\n";
-
         SparseMatrix<T> C = SparseMatrix<T>(N + B.size(), nrows, ncols);
-
-        std::cout << sm.size() << "   " << B.sm.size() << "\n";
 
         double tmp_sum;
         for (i = 0; i < C.nrows; i++)
         {
             a_iter = find_row(sm.begin(), a_end, i);
             b_iter = find_row(B.sm.begin(), b_end, i);
-
-//            std::cout << (a_iter == a_end) << "   " << (b_iter == b_end) << "\n";
 
             // Cover the case where there are no a- or b-entries for row == i
             if ((a_iter == a_end) && (b_iter == b_end))

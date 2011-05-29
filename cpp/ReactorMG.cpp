@@ -1136,8 +1136,6 @@ void ReactorMG::assemble_transmutation_matrices()
     {
         i = K_ord[ind];
 
-        std::cout << "Assembling T_matrix[" << ind << " = " << i << "]\n";
-
         // Add diag entries
         for (g = 0; g < G; g++)
             T_matrix[g].push_back(ind, ind, -(sigma_f_itg[i][bt_s][g] + \
@@ -1769,8 +1767,6 @@ void ReactorMG::burnup_core()
     A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
-//    T_int_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
-//    M_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
     T_int_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (0, K_num, K_num));
     M_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (0, K_num, K_num));
 
