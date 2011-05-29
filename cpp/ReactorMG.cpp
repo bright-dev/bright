@@ -240,6 +240,8 @@ void ReactorMG::loadlib(std::string libfile)
     for (k = 0; k < K_num; k++)
         K_ind[K_ord[k]] = k;
 
+    std::cout << "Loading decay Matrix\n";
+
     // Make decay_martrix from this data.
     decay_matrix = bright::SparseMatrix<double>(2*decay_data_length, K_num, K_num);
 
@@ -262,6 +264,8 @@ void ReactorMG::loadlib(std::string libfile)
 
     decay_matrix.clean_up();
 
+    std::cout << "    " << decay_matrix.size() << "\n";
+
 
     //
     // Read in the fission table
@@ -278,6 +282,8 @@ void ReactorMG::loadlib(std::string libfile)
     //  value = vector of J_indexs
     std::map<int, std::vector<int> > thermal_join;
     std::map<int, std::vector<int> > fast_join;
+
+    std::cout << "Loading FP Joins\n";
 
     int ty, fy;
     for (l = 0; l < fission_length; l++)
@@ -319,6 +325,8 @@ void ReactorMG::loadlib(std::string libfile)
     thermal_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
     fast_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
 
+    std::cout << "Loading FP Yeilds\n";
+
     int index, tj, fj, TJ, FJ;
     double mf;
     for (l = 0; l < fp_yields_length; l++)
@@ -355,32 +363,24 @@ void ReactorMG::loadlib(std::string libfile)
     thermal_yield_matrix.clean_up();
     fast_yield_matrix.clean_up();
 
+    std::cout << "   Therm  " << thermal_yield_matrix.size() << "\n";
+    std::cout << "   Fast   " << fast_yield_matrix.size() << "\n";
+
 
     // Make fission product yield matrix
+    // from the equation y = mx + b
     double fyval, tyval, fpyval_g;
-    fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G, bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
+    bright::SparseMatrix m, b;
+    fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
 
-    for (ind = 0; ind < K_num; ind++)
-    {
-        for (jnd = 0; jnd < K_num; jnd++)
-        {
-            fyval = fast_yield_matrix.at(ind, jnd);
-            tyval = thermal_yield_matrix.at(ind, jnd);
+    m = (fast_yield_matrix + (thermal_yield_matrix * -1.0)) * (1.0 / (1.0 - 2.53e-08));
+    b = thermal_yield_matrix + (m * -2.53e-08);
 
-            if (fyval == 0.0 && tyval == 0.0)
-                continue;
-
-            for (g = 0; g < G; g++)
-            {
-                // Interpolate the mass fraction between thermal and fast data.
-                fpyval_g = bright::SolveLine(E_g[g], 1.0, fyval, 2.53e-08, tyval);
-                fission_product_yield_matrix[g].push_back(ind, jnd, fpyval_g);
-            };
-        };
-    };
-
+    // Interpolate the mass fraction between thermal and fast data.
     for (g = 0; g < G; g++)
-        fission_product_yield_matrix[g].clean_up();
+        fission_product_yield_matrix[g] = (m * E_g[g]) + b;
+
+    std::cout << "Interpolated yields\n";
 
     //
     // Read in the one group cross sections
@@ -410,6 +410,8 @@ void ReactorMG::loadlib(std::string libfile)
 
     zeros_pg = std::vector< std::vector<double> >(nperturbations, std::vector<double> (G,  0.0));
     zeros_pgh =  std::vector< std::vector< std::vector<double> > >(nperturbations, std::vector< std::vector<double> > (G,  std::vector<double> (G, 0.0)));
+
+    std::cout << "Reading in 1G XS\n";
 
     for (l = 0; l < fp_yields_length; l++)
     {
@@ -468,6 +470,8 @@ void ReactorMG::loadlib(std::string libfile)
         sigma_2n_x_pg[i] = zeros_pg;
     };
 
+    std::cout << "Zero Out Other Isos\n";
+
     // Zero out XS for isos present in decay but not XS data
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
@@ -492,6 +496,8 @@ void ReactorMG::loadlib(std::string libfile)
 
     // close the nuc_data library
     nuc_data_h5.close();
+
+    std::cout << "Finished loadlib()\n";
 
     return;
 };
