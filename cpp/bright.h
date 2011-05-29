@@ -392,13 +392,11 @@ public:
     {
         int n;
         int N = size();
-        sparse_matrix_entry<T> a_entry;
         SparseMatrix<T> B = SparseMatrix<T>(N, nrows, ncols);
+
         for (n = 0; n < N; n++)
-        {
-            a_entry = sm[n];
-            B.push_back(a_entry.row, a_entry.col, a_entry.val * s);
-        };
+            B.push_back(sm[n].row, sm[n].col, sm[n].val * s);
+
         B.sort_by_row();
         return B;
     };
@@ -427,7 +425,13 @@ public:
         int i, j;
         int N = size();
 
-        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter;
+        if (B.nrows != nrows && B.ncols != ncols)
+            throw VectorSizeError();
+
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_end, b_end;
+        a_end = sm.end();
+        b_end = B.sm.end();
+
         SparseMatrix<T> C = SparseMatrix<T>(N, nrows, ncols);
 
         // Put B in col-order
@@ -438,12 +442,12 @@ public:
         {
             for (j = 0; j < C.ncols; j++)
             {
-                a_iter = find_row(sm.begin(), sm.end(), i);
-                b_iter = find_col(B.sm.begin(), B.sm.end(), j);
+                a_iter = find_row(sm.begin(), a_end, i);
+                b_iter = find_col(B.sm.begin(), b_end, j);
 
                 dot_prod = 0.0;
 
-                while(((*a_iter).row == i) && ((*b_iter).col == j))
+                while(((*a_iter).row == i) && ((*b_iter).col == j) && (a_iter != a_end) && (b_iter != b_end))
                 {
                     if ((*a_iter).col == (*b_iter).row)
                     {
@@ -469,6 +473,74 @@ public:
         C.sort_by_row();
         return C;
     };
+
+
+
+    SparseMatrix<T> operator+ (SparseMatrix<T> B)
+    {
+        int i, j;
+        int N = size();
+
+        if (B.nrows != nrows && B.ncols != ncols)
+            throw VectorSizeError();
+
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_end, b_end;
+        a_end = sm.end();
+        b_end = B.sm.end();
+
+        SparseMatrix<T> C = SparseMatrix<T>(N + B.size(), nrows, ncols);
+
+        double tmp_sum;
+        for (i = 0; i < C.nrows; i++)
+        {
+            a_iter = find_row(sm.begin(), a_end, i);
+            b_iter = find_row(B.sm.begin(), b_end, i);
+
+            while((((*a_iter).row == i) || ((*b_iter).row == i)) && ((a_iter != a_end) || (b_iter != b_end)))
+            {
+                if (((*a_iter).row == i) && ((*b_iter).row == i))
+                {
+                    if ((*a_iter).col == (*b_iter).col)
+                    {
+                        tmp_sum = ((*a_iter).val + (*b_iter).val);
+                        if (tmp_sum != 0.0)
+                            C.push_back(i, (*a_iter).col, tmp_sum);
+
+                        a_iter++;
+                        b_iter++;
+                    }
+                    else if ((*a_iter).col < (*b_iter).col)
+                    {
+                        C.push_back(i, (*a_iter).col, (*a_iter).val);
+                        a_iter++;
+                    }
+                    else
+                    {
+                        C.push_back(i, (*b_iter).col, (*b_iter).val);
+                        b_iter++;
+                    };
+                }
+                else if ((*a_iter).row == i)
+                {
+                    C.push_back(i, (*a_iter).col, (*a_iter).val);
+                    a_iter++;
+                }
+                else if ((*b_iter).row == i)
+                {
+                    C.push_back(i, (*b_iter).col, (*b_iter).val);
+                    b_iter++;
+                }
+                else
+                    break;
+            };
+        };
+
+        C.clean_up();
+        return C;
+    };
+
+
+
 };
 
 

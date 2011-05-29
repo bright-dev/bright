@@ -1279,9 +1279,11 @@ void ReactorMG::assemble_transmutation_matrices()
 
         T_int_tij[bt_s] = T_int_tij[bt_s] + (T_matrix[g] * adj_phi);
     };
+    T_int_tij[bt_s].clean_up();
     
     // Make the transmutation matrix for this time step
     M_tij[bt_s] = (T_int_tij[bt_s] + decay_matrix);
+    M_tij[bt_s].clean_up();
 };
 
 
