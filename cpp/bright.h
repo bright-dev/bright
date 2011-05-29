@@ -539,12 +539,6 @@ public:
         return C;
     };
 
-
-//    SparseMatrix<T> operator= (SparseMatrix<T> rhs)
-//    {
-//        return rhs;
-//    };
-
 };
 
 

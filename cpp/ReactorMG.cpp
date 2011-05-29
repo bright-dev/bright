@@ -1508,7 +1508,7 @@ void ReactorMG::calc_transmutation()
         // Calculate this iterations values
         fact *= n;
         Mt_n = (Mt_n * Mt);
-        exp_Mt_n = exp_Mt_n + ((1.0 / fact) * Mt_n);
+        exp_Mt_n = exp_Mt_n + (Mt_n * (1.0 / fact));
         comp_next = (exp_Mt_n * comp_prev);
 
         // Calculate end contition
@@ -1730,8 +1730,8 @@ void ReactorMG::burnup_core()
     A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
-    T_int_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0)));
-    M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0)));
+    T_int_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
+    M_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
 
     // Init the multilplcation factpr
     k_t = std::vector<double>(S, -1.0);
@@ -1773,8 +1773,8 @@ void ReactorMG::burnup_core()
         std::cout << "ct\n";
         if (s == 0)
             BU_t[0] = 0.0;
-//        else        
-//            calc_transmutation();
+        else        
+            calc_transmutation();
 
         std::cout << "\n\n\n\n";
     };
