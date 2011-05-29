@@ -6472,7 +6472,7 @@ cdef class ReactorMG(FCComp):
         def __set__(self, dict value):
             self.rmg_pointer.A_inv_F_tgh = conv.array_to_vector_3d_dbl(value)
 
-
+    """\
     property T_int_tij:
         def __get__(self):
             return conv.vector_to_array_3d_dbl(self.rmg_pointer.T_int_tij)
@@ -6488,6 +6488,7 @@ cdef class ReactorMG(FCComp):
         def __set__(self, dict value):
             self.rmg_pointer.M_tij = conv.array_to_vector_3d_dbl(value)
 
+    """
 
 
 

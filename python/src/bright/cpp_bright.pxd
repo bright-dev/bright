@@ -600,8 +600,8 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[vector[vector[double]]] F_tgh
         vector[vector[vector[double]]] A_inv_tgh
         vector[vector[vector[double]]] A_inv_F_tgh
-        vector[vector[vector[double]]] T_int_tij
-        vector[vector[vector[double]]] M_tij
+#        vector[vector[vector[double]]] T_int_tij
+#        vector[vector[vector[double]]] M_tij
 
         vector[int] nearest_neighbors
 
