@@ -281,9 +281,13 @@ InputIterator find_row( InputIterator first, InputIterator last, const T& value 
 {
     for ( ;first!=last; first++) 
     {
-        if ( ((*first).row)==value ) 
+        if ((*first).row == value) 
             break;
+
+        if (value < (*first).row) 
+            first = last - 1;
     };
+
     return first;
 };
 
@@ -294,9 +298,13 @@ InputIterator find_col( InputIterator first, InputIterator last, const T& value 
 {
     for ( ;first!=last; first++) 
     {
-        if ( ((*first).col)==value ) 
+        if ((*first).col == value) 
             break;
+
+        if (value < (*first).col) 
+            first = last - 1 ;
     };
+
     return first;
 };
 
@@ -499,11 +507,17 @@ public:
         if (B.nrows != nrows && B.ncols != ncols)
             throw VectorSizeError();
 
+        std::cout << "In add\n";
+
         typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_end, b_end;
         a_end = sm.end();
         b_end = B.sm.end();
 
+        std::cout << " got iters\n";
+
         SparseMatrix<T> C = SparseMatrix<T>(N + B.size(), nrows, ncols);
+
+        std::cout << sm.size() << "   " << B.sm.size() << "\n";
 
         double tmp_sum;
         for (i = 0; i < C.nrows; i++)
@@ -511,8 +525,36 @@ public:
             a_iter = find_row(sm.begin(), a_end, i);
             b_iter = find_row(B.sm.begin(), b_end, i);
 
-//            while((((*a_iter).row == i) || ((*b_iter).row == i)) && ((a_iter != a_end) || (b_iter != b_end)))
-            while( ((*a_iter).row == i) || ((*b_iter).row == i) )
+//            std::cout << (a_iter == a_end) << "   " << (b_iter == b_end) << "\n";
+
+            // Cover the case where there are no a- or b-entries for row == i
+            if ((a_iter == a_end) && (b_iter == b_end))
+                continue;
+
+            // Cover the case where there are no b-entries for row == i
+            if ((a_iter != a_end) && (b_iter == b_end))
+            {
+                while((*a_iter).row == i)
+                {
+                    C.push_back(i, (*a_iter).col, (*a_iter).val);
+                    a_iter++;
+                };
+                continue;
+            };
+
+            // Cover the case where there are no a-entries for row == i
+            if ((a_iter == a_end) && (b_iter != b_end))
+            {
+                while((*b_iter).row == i)
+                {
+                    C.push_back(i, (*b_iter).col, (*b_iter).val);
+                    b_iter++;
+                };
+                continue;
+            };
+
+            // cover the case when there are both a and b entries for row == i
+            while(((*a_iter).row == i) || ((*b_iter).row == i))
             {
                 if (((*a_iter).row == i) && ((*b_iter).row == i))
                 {

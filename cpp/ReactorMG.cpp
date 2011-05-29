@@ -1293,11 +1293,16 @@ void ReactorMG::assemble_transmutation_matrices()
         if (adj_phi == 0.0)
             continue;
 
+        std::cout << "Integrated over energy - " << g << "\n";
         T_int_tij[bt_s] = T_int_tij[bt_s] + (T_matrix[g] * adj_phi);
     };
     
+    std::cout << "Integrated over energy\n";
+
     // Make the transmutation matrix for this time step
     M_tij[bt_s] = (T_int_tij[bt_s] + decay_matrix);
+
+    std::cout << "Added decay\n";
 };
 
 
@@ -1764,8 +1769,10 @@ void ReactorMG::burnup_core()
     A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
-    T_int_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
-    M_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
+//    T_int_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
+//    M_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (fast_yield_matrix.size(), K_num, K_num));
+    T_int_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (0, K_num, K_num));
+    M_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (0, K_num, K_num));
 
     // Init the multilplcation factpr
     k_t = std::vector<double>(S, -1.0);
