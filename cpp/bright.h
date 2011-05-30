@@ -426,6 +426,34 @@ public:
     };
 
 
+    double abs_max()
+    {
+        int n, N;
+        N = sm.size();
+        double m = 0.0;
+
+        for (n = 0; n < N; n++)
+            if (m < fabs(sm[n].val))
+                m = fabs(sm[n].val);
+
+        return m;
+    };
+
+
+    void prune(double precision = 1E-10)
+    {
+        int n, N;
+        N = sm.size();
+        double cutoff = precision * abs_max();
+
+        for (n = 0; n < N; n++)
+            if (fabs(sm[n].val) < cutoff)
+                sm[n].val = 0.0;
+
+        clean_up();
+    };
+
+
     void find_inf()
     {
         // Calculates the Frobenius norm for the sparse matrix
@@ -501,12 +529,23 @@ public:
             {
                 a_iter = find_row(a_stor, a_end, i);
                 b_iter = find_col(b_stor, b_end, j);
+//                b_iter = find_col(b_beg, b_end, j);
+
+//                std::cout << "(" << i << ", " << j << ") = a(" << (*a_iter).row << ", " << (*a_iter).col << ") = b(" << (*b_iter).row << ", " << (*b_iter).col << ")\n";
 
                 a_stor = a_iter;
                 b_stor = b_iter;
 
                 if ((a_iter == a_end) || (b_iter == b_end))
+                {
+                    if (a_iter == a_end)
+                        a_stor = a_beg;
+
+                    if (b_iter == b_end)
+                        b_stor = b_beg;
+
                     continue;
+                };
 
                 dot_prod = 0.0;
 
@@ -530,10 +569,10 @@ public:
                 if (dot_prod != 0.0)
                     C.push_back(i, j, dot_prod);
 
-                if ((a_iter == a_beg) || (a_iter == a_end))
+                if ((a_iter == a_beg) || (a_iter == a_end) || (a_iter == a_end - 1))
                     a_stor = a_beg;
 
-                if ((b_iter == b_beg) || (b_iter == b_end))
+                if ((b_iter == b_beg) || (b_iter == b_end) || (b_iter == b_end - 1))
                     b_stor = b_beg;
             };
         };

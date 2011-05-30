@@ -1484,7 +1484,8 @@ void ReactorMG::calc_transmutation()
 {
     // Calculates a tranmutation step via the Pade method
     int n, i, j, ind, jnd;
-    int N = 100;
+//    int N = 100;
+    int N = 20;
     double fact = 1.0;
     double epsilon = 0.005;
     double diff = 1.0;
@@ -1496,9 +1497,55 @@ void ReactorMG::calc_transmutation()
     double dt = (burn_times[bt_s + 1] - burn_times[bt_s]) * bright::sec_per_day;
     bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
 
+    std::cout << "Mt before prune was " << Mt.sm.size() << "\n";
+    Mt.prune(1.0);
+    std::cout << "and Mt after prune is " << Mt.sm.size() << "\n";
+
     bright::SparseMatrix<double> identity (K_num, K_num, K_num);
     for (ind = 0; ind < K_num; ind++)
         identity.push_back(ind, ind, 1.0);
+
+    bright::SparseMatrix<double> id (5, 5, 5);
+    for (ind = 0; ind < 5; ind++)
+        id.push_back(ind, ind, 1.0);
+
+    id.push_back(1, 2, 3.0);
+    id.clean_up();
+    std::cout << "id\n" << id << "\n"; 
+
+
+    bright::SparseMatrix<double> id2 = (id * id);
+    std::cout << "id2\n" << id2 << "\n";
+
+    bright::SparseMatrix<double> id3 = (id + id);
+    std::cout << "id3\n" << id3 << "\n";
+
+    id.push_back(0, 4, 6.0);
+    id.push_back(4, 0, 6.0);
+    id.clean_up();
+    std::cout << "id\n" << id << "\n"; 
+
+    bright::SparseMatrix<double> id4 = (id3 + id);
+    std::cout << "id4\n" << id4 << "\n";
+
+    bright::SparseMatrix<double> id5 = (id4 * id);
+    std::cout << "id5\n" << id5 << "\n";
+
+    id5.prune(1.0);
+    std::cout << "id5\n" << id5 << "\n";
+    std::cout << id5.abs_max() << "\n";
+
+    std::vector<double> v (5, 12.0);
+    for (ind = 0; ind < 5; ind++)
+       v[ind] += ind;
+
+    std::vector<double> new_v = id * v;
+    std::cout << "new_v = [";
+    for (ind = 0; ind < 5; ind++)
+        std::cout << new_v[ind] << ", ";
+    std::cout << "]\n";
+
+    int q[1] = {100}; std::cout << q[9000] << "\n";
 
     // Make mass vectors
     std::vector<double> comp_next;
@@ -1520,7 +1567,7 @@ void ReactorMG::calc_transmutation()
     //comp_next = (exp_Mt_n * comp_prev);
 
     n = 2;
-    while((n < 100) && (epsilon < residual))
+    while((n < N) && (epsilon < residual))
     {
         std::cout << "Matrix exponential step " << n << "\n";
 
