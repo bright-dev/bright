@@ -1485,6 +1485,8 @@ void ReactorMG::calc_transmutation()
     int N = 100;
     double fact = 1.0;
     double epsilon = 0.005;
+    double diff = 1.0;
+    double diff_last = 1.0;
     double residual = 1.0;
 
     // Get the transmutation matrix for this time delta
@@ -1525,23 +1527,23 @@ void ReactorMG::calc_transmutation()
         Mt_n = (Mt_n * Mt);
         exp_Mt_n = exp_Mt_n + (Mt_n * (1.0 / fact));
 
-        exp_Mt_n.find_inf();
         std::cout << "    size = " << exp_Mt_n.size() << "\n";
 
         // Calculate end contition
         exp_Mt_diff = exp_Mt_n + (exp_Mt_n_last * -1.0);
-        double diff_norm = exp_Mt_diff.norm();
-        double exp_norm = exp_Mt_n.norm();
-        residual = diff_norm / exp_norm;
+        diff = exp_Mt_diff.norm();
+        residual = fabs(1.0 - (diff_last / diff));
+//        residual = diff_norm / exp_norm;
         //residual = exp_Mt_diff.norm() / exp_Mt_n.norm();
 
-        std::cout << "    d = " << diff_norm << "\n";
-        std::cout << "    e = " << exp_norm << "\n";
+        std::cout << "    d = " << diff << "\n";
+        std::cout << "    l = " << diff_last << "\n";
         std::cout << "    r = " << residual << "\n";
 
         // Finish up interation
         //comp_next_n = comp_next;
         exp_Mt_n_last = exp_Mt_n;
+        diff_last = diff;
         n++;
     };
 
