@@ -250,6 +250,9 @@ void ReactorMG::loadlib(std::string libfile)
         i = decay_data_array[l].from_iso_zz;
         j = decay_data_array[l].to_iso_zz;
 
+        if (i == j)
+            continue;
+
         // Get the indexes for these nulcides into the matrix
         ind = K_ind[i];
         jnd = K_ind[j];
@@ -1498,8 +1501,9 @@ void ReactorMG::calc_transmutation()
     bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
 
     std::cout << "Mt before prune was " << Mt.sm.size() << "\n";
-    Mt.prune(1.0);
+    Mt.prune();
     std::cout << "and Mt after prune is " << Mt.sm.size() << "\n";
+    std::cout << Mt << "\n";
 
     bright::SparseMatrix<double> identity (K_num, K_num, K_num);
     for (ind = 0; ind < K_num; ind++)
@@ -1533,7 +1537,6 @@ void ReactorMG::calc_transmutation()
 
     id5.prune(1.0);
     std::cout << "id5\n" << id5 << "\n";
-    std::cout << id5.abs_max() << "\n";
 
     std::vector<double> v (5, 12.0);
     for (ind = 0; ind < 5; ind++)

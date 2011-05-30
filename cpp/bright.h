@@ -378,7 +378,7 @@ public:
         std::vector<int> bad_ind = std::vector<int>();
 
         // Calculate indices to remove
-        for (n = N - 1; 0 < n; n--)
+        for (n = N - 1; 0 <= n; n--)
         {
             if ((sm[n].row == sm[n-1].row) && (sm[n].col == sm[n-1].col))
                 bad_ind.push_back(n);
@@ -445,6 +445,7 @@ public:
         int n, N;
         N = sm.size();
         double cutoff = precision * abs_max();
+        std::cout << abs_max() << "    " << cutoff << "\n";
 
         for (n = 0; n < N; n++)
             if (fabs(sm[n].val) < cutoff)
