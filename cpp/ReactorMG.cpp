@@ -1277,21 +1277,19 @@ void ReactorMG::assemble_transmutation_matrices()
 
 
     // Multiply by flux and integrate over energy
-    std::cout << "phi_tg = [";
-    for (int g = 0; g < G; g++)
-        std::cout << phi_tg[bt_s][g] << ", ";
-    std::cout << "]\n";
-
-
-    // Integrate over energy
     double adj_phi;
     for (g = 0; g < G; g++)
     {
-        adj_phi = phi_tg[bt_s][g] * bright::cm2_per_barn;
+        // Adjust the flux value for burning
+//        if (bt_s == 0)
+            adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
+//        else
+//            adj_phi = bright::cm2_per_barn * (phi_tg[bt_s][g] + phi_tg[bt_s-1][g]) / 2.0;
+
+        // Skip this group if there is no flux 
         if (adj_phi == 0.0)
             continue;
 
-        std::cout << "Integrated over energy - " << g << "\n";
         T_int_tij[bt_s] = T_int_tij[bt_s] + (T_matrix[g] * adj_phi);
     };
     
@@ -1509,9 +1507,8 @@ void ReactorMG::calc_transmutation()
     int n, i, j, ind, jnd;
     int N = 100;
     double fact = 1.0;
-    double mass_epsilon = 0.005;
-    double max_mass_residual = 1.0;
-    double nuc_residual;
+    double epsilon = 0.005;
+    double residual = 1.0;
 
     // Get the transmutation matrix for this time delta
     double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
@@ -1524,23 +1521,25 @@ void ReactorMG::calc_transmutation()
     // Make mass vectors
     std::vector<double> comp_next;
     std::vector<double> comp_prev (K_num, 0.0);
-    std::vector<double> comp_next_n (K_num, 0.0);
+//    std::vector<double> comp_next_n (K_num, 0.0);
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
         comp_prev[ind] = T_it[i][bt_s-1];
-        comp_next_n[ind] = T_it[i][bt_s-1];
+//        comp_next_n[ind] = T_it[i][bt_s-1];
     };
 
 
     // Init the new matrices
     bright::SparseMatrix<double> Mt_n = Mt;
     bright::SparseMatrix<double> exp_Mt_n = (identity + Mt);
+    bright::SparseMatrix<double> exp_Mt_n_last = exp_Mt_n;
+    bright::SparseMatrix<double> exp_Mt_diff;
 
-    comp_next = (exp_Mt_n * comp_prev);
+    //comp_next = (exp_Mt_n * comp_prev);
 
     n = 2;
-    while((n < 100) && (mass_epsilon < max_mass_residual))
+    while((n < 100) && (epsilon < max_residual))
     {
         std::cout << "Matrix exponential step " << n << "\n";
 
@@ -1553,22 +1552,23 @@ void ReactorMG::calc_transmutation()
         std::cout << "    size = " << exp_Mt_n.size() << "\n";
 
         // Calculate end contition
-        max_mass_residual = 0.0;
-        for (ind = 0; ind < K_num; ind++)
-        {
-            nuc_residual = fabs(1.0 - (comp_next_n[ind] / comp_next[ind]));
+        exp_Mt_diff = exp_Mt_n + (exp_Mt_n_last * -1.0);
+        double diff_norm = exp_Mt_diff.norm();
+        double exp_norm = exp_Mt_n.norm();
+        //residual = exp_Mt_diff.norm() / exp_Mt_n.norm();
 
-            // Careful, this line relies on NaNs alwways comparing 'False'
-            if (max_mass_residual < nuc_residual)
-                max_mass_residual = nuc_residual;
-        };
-
-        std::cout << "    r = " << max_mass_residual << "\n";
+        std::cout << "    d = " << diff_norm << "\n";
+        std::cout << "    e = " << exp_norm << "\n";
+        std::cout << "    r = " << residual << "\n";
 
         // Finish up interation
-        comp_next_n = comp_next;
+        //comp_next_n = comp_next;
+        exp_Mt_n_last = exp_Mt_n;
         n++;
     };
+
+    // Calculate the mass vector
+    comp_next = (exp_Mt_n * comp_prev);
 
     // Copy this composition back to the tranmutuation matrix
     for (ind = 0; ind < K_num; ind++)

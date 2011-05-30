@@ -411,6 +411,22 @@ public:
 
 
 
+    double norm()
+    {
+        // Calculates the Frobenius norm for the sparse matrix
+        int n, N;
+        N = sm.size();
+        double frob = 0.0;
+
+        for (n = 0; n < N; n++)
+            frob += (sm[n].val * sm[n].val);
+
+        frob = sqrt(frob);
+        return frob;
+    };
+
+
+
     SparseMatrix<T> operator* (double s)
     {
         int n;
@@ -470,10 +486,6 @@ public:
         {
             for (j = 0; j < C.ncols; j++)
             {
-//                std::cout << "(" << i << ", " << j << ")\n";
-
-                //a_iter = find_row(sm.begin(), a_end, i);
-                //b_iter = find_col(B.sm.begin(), b_end, j);
                 a_iter = find_row(a_stor, a_end, i);
                 b_iter = find_col(b_stor, b_end, j);
 
