@@ -774,6 +774,7 @@ void ReactorMG::calc_mass_weights()
         mass_HM += T_it[*iso][bt_s];
         inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso));
     };
+    std::cout << "  Mass HM = " << mass_HM << "\n";
     A_HM_t[bt_s] = mass_HM / inverse_A_HM;
 
 
@@ -1258,10 +1259,10 @@ void ReactorMG::assemble_transmutation_matrices()
     for (g = 0; g < G; g++)
     {
         // Adjust the flux value for burning
-//        if (bt_s == 0)
+        if (bt_s == 0)
             adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
-//        else
-//            adj_phi = bright::cm2_per_barn * (phi_tg[bt_s][g] + phi_tg[bt_s-1][g]) / 2.0;
+        else
+            adj_phi = bright::cm2_per_barn * (phi_tg[bt_s][g] + phi_tg[bt_s-1][g]) / 2.0;
 
         // Skip this group if there is no flux 
         if (adj_phi == 0.0)
@@ -1500,12 +1501,10 @@ void ReactorMG::calc_transmutation()
     // Make mass vectors
     std::vector<double> comp_next;
     std::vector<double> comp_prev (K_num, 0.0);
-//    std::vector<double> comp_next_n (K_num, 0.0);
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
         comp_prev[ind] = T_it[i][bt_s-1];
-//        comp_next_n[ind] = T_it[i][bt_s-1];
     };
 
 
@@ -1541,7 +1540,6 @@ void ReactorMG::calc_transmutation()
         std::cout << "    r = " << residual << "\n";
 
         // Finish up interation
-        //comp_next_n = comp_next;
         exp_Mt_n_last = exp_Mt_n;
         diff_last = diff;
         n++;
@@ -1644,8 +1642,6 @@ void ReactorMG::burnup_core()
 
         if (0 < ms_feed.comp.count(*iso))
             T_it[*iso][0] = ms_feed.comp[*iso];
-        else
-            T_it[*iso][0] = 0.0;
 
         // Init the cross-sections
         sigma_t_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
