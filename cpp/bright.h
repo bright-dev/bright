@@ -426,6 +426,20 @@ public:
     };
 
 
+    void find_inf()
+    {
+        std::cout << "Got Here!\n";
+        // Calculates the Frobenius norm for the sparse matrix
+        int n, N;
+        N = sm.size();
+        double infin = 1.0 / 0.0;
+
+        for (n = 0; n < N; n++)
+            if (sm[n].val == infin)
+                std::cout << "  (" << sm[n].row << ", " << sm[n].col << ") = " << sm[n].val << "\n";
+    };
+
+
 
     SparseMatrix<T> operator* (double s)
     {

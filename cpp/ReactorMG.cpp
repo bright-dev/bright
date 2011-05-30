@@ -371,36 +371,13 @@ void ReactorMG::loadlib(std::string libfile)
     // from the equation y = mx + b
     bright::SparseMatrix<double> m, b, temp_b, temp_m;
     fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
-    std::cout << "get m\n";
-
-    //std::cout << fast_yield_matrix << "\n";
-/*
-    temp_m = (thermal_yield_matrix * -1.0);
-    std::cout << temp_m.size() << "\n";    
-    temp_m = (fast_yield_matrix + temp_m);
-    std::cout << temp_m.size() << "\n";    
-    m = temp_m * (1.0 / (1.0 - 2.53e-08));
-    std::cout << m.size() << "\n";
-
-    temp_b = (m * -2.53e-08);
-    std::cout << temp_b.size() << "\n";
-    b = thermal_yield_matrix + temp_b;
-*/
 
     m = (fast_yield_matrix + (thermal_yield_matrix * -1.0)) * (1.0 / (1.0 - 2.53e-08));
-    std::cout << "    " << m.size() << "\n";
     b = thermal_yield_matrix + (m * -2.53e-08);
-    std::cout << "    " << b.size() << "\n";
-
-    std::cout << "calc'd slope and intesect\n";
 
     // Interpolate the mass fraction between thermal and fast data.
     for (g = 0; g < G; g++)
-    {
         fission_product_yield_matrix[g] = (m * E_g[g]) + b;
-        std::cout << "     " << g << "   " << fission_product_yield_matrix[g].size() <<"\n";
-
-    };
 
     std::cout << "Interpolated yields\n";
 
@@ -1539,7 +1516,7 @@ void ReactorMG::calc_transmutation()
     //comp_next = (exp_Mt_n * comp_prev);
 
     n = 2;
-    while((n < 100) && (epsilon < max_residual))
+    while((n < 100) && (epsilon < residual))
     {
         std::cout << "Matrix exponential step " << n << "\n";
 
@@ -1547,14 +1524,15 @@ void ReactorMG::calc_transmutation()
         fact *= n;
         Mt_n = (Mt_n * Mt);
         exp_Mt_n = exp_Mt_n + (Mt_n * (1.0 / fact));
-        comp_next = (exp_Mt_n * comp_prev);
 
+        exp_Mt_n.find_inf();
         std::cout << "    size = " << exp_Mt_n.size() << "\n";
 
         // Calculate end contition
         exp_Mt_diff = exp_Mt_n + (exp_Mt_n_last * -1.0);
         double diff_norm = exp_Mt_diff.norm();
         double exp_norm = exp_Mt_n.norm();
+        residual = diff_norm / exp_norm;
         //residual = exp_Mt_diff.norm() / exp_Mt_n.norm();
 
         std::cout << "    d = " << diff_norm << "\n";
