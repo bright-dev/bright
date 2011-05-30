@@ -1259,10 +1259,11 @@ void ReactorMG::assemble_transmutation_matrices()
     for (g = 0; g < G; g++)
     {
         // Adjust the flux value for burning
-        if (bt_s == 0)
-            adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
-        else
-            adj_phi = bright::cm2_per_barn * (phi_tg[bt_s][g] + phi_tg[bt_s-1][g]) / 2.0;
+        adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
+//        if (bt_s == 0)
+//            adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
+//        else
+//            adj_phi = bright::cm2_per_barn * (phi_tg[bt_s][g] + phi_tg[bt_s-1][g]) / 2.0;
 
         // Skip this group if there is no flux 
         if (adj_phi == 0.0)
@@ -1491,7 +1492,8 @@ void ReactorMG::calc_transmutation()
     double residual = 1.0;
 
     // Get the transmutation matrix for this time delta
-    double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
+//    double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
+    double dt = (burn_times[bt_s + 1] - burn_times[bt_s]) * bright::sec_per_day;
     bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
 
     bright::SparseMatrix<double> identity (K_num, K_num, K_num);
@@ -1504,7 +1506,8 @@ void ReactorMG::calc_transmutation()
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
-        comp_prev[ind] = T_it[i][bt_s-1];
+//        comp_prev[ind] = T_it[i][bt_s - 1];
+        comp_prev[ind] = T_it[i][bt_s];
     };
 
 
@@ -1552,7 +1555,8 @@ void ReactorMG::calc_transmutation()
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
-        T_it[i][bt_s] = comp_next[ind];
+//        T_it[i][bt_s] = comp_next[ind];
+        T_it[i][bt_s+1] = comp_next[ind];
     };
 
     // Calculate the burnup 
@@ -1572,7 +1576,8 @@ void ReactorMG::calc_transmutation()
 
     double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
 
-    BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
+//    BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
+    BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 };
 
 
@@ -1628,7 +1633,7 @@ void ReactorMG::burnup_core()
     phi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0) );
     phi_t = std::vector<double>(S, -1.0);
     Phi_t = std::vector<double>(S, -1.0);
-    BU_t = std::vector<double>(S, -1.0);
+    BU_t = std::vector<double>(S, 0.0);
 
     zeta_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 1.0) );
     lattice_E_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
@@ -1790,9 +1795,11 @@ void ReactorMG::burnup_core()
         assemble_transmutation_matrices();
 
         std::cout << "ct\n";
-        if (s == 0)
-            BU_t[0] = 0.0;
-        else        
+//        if (s == 0)
+//            BU_t[0] = 0.0;
+//        else        
+//            calc_transmutation();
+        if (s != S - 1)
             calc_transmutation();
 
         std::cout << "\n\n\n\n";
