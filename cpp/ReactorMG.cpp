@@ -820,7 +820,7 @@ void ReactorMG::calc_mass_weights()
     {
         if ( (key->first) == "IHM")
         {
-            for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+            for (iso_iter iso = K.begin(); iso != K.end(); iso++)
                 n_fuel_it[*iso][bt_s] += chemical_form_fuel[key->first] * T_it[*iso][bt_s];
         }
         else
