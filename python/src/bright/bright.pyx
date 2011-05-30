@@ -6073,7 +6073,7 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.Sigma_2n_x_fuel_tg = conv.array_to_vector_2d_dbl(value)
 
 
-    property kappa_fuell_tg:
+    property kappa_fuel_tg:
         def __get__(self):
             return conv.vector_to_array_2d_dbl(self.rmg_pointer.kappa_fuel_tg)
 

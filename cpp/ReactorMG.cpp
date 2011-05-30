@@ -1640,7 +1640,7 @@ void ReactorMG::burnup_core()
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         // Init the transmutation matrix
-        T_it[*iso] = time_data(S, -1.0);
+        T_it[*iso] = time_data(S, 0.0);
 
         if (0 < ms_feed.comp.count(*iso))
             T_it[*iso][0] = ms_feed.comp[*iso];
