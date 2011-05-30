@@ -1542,11 +1542,15 @@ void ReactorMG::calc_transmutation()
     n = 2;
     while((n < 100) && (mass_epsilon < max_mass_residual))
     {
+        std::cout << "Matrix exponential step " << n << "\n";
+
         // Calculate this iterations values
         fact *= n;
         Mt_n = (Mt_n * Mt);
         exp_Mt_n = exp_Mt_n + (Mt_n * (1.0 / fact));
         comp_next = (exp_Mt_n * comp_prev);
+
+        std::cout << "    size = " << exp_Mt_n.size() << "\n";
 
         // Calculate end contition
         max_mass_residual = 0.0;
@@ -1558,6 +1562,8 @@ void ReactorMG::calc_transmutation()
             if (max_mass_residual < nuc_residual)
                 max_mass_residual = nuc_residual;
         };
+
+        std::cout << "    r = " << max_mass_residual << "\n";
 
         // Finish up interation
         comp_next_n = comp_next;

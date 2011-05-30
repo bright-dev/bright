@@ -451,22 +451,37 @@ public:
         if (B.nrows != nrows && B.ncols != ncols)
             throw VectorSizeError();
 
-        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_end, b_end;
-        a_end = sm.end();
-        b_end = B.sm.end();
-
-        SparseMatrix<T> C = SparseMatrix<T>(N, nrows, ncols);
-
         // Put B in col-order
         B.sort_by_col();
+
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_stor, b_stor, a_beg, b_beg, a_end, b_end;
+        a_beg = sm.begin();
+        a_end = sm.end();
+        a_stor = a_beg;
+
+        b_beg = B.sm.begin();
+        b_end = B.sm.end();
+        b_stor = b_beg;
+
+        SparseMatrix<T> C = SparseMatrix<T>(N, nrows, ncols);
 
         double dot_prod;
         for (i = 0; i < C.nrows; i++)
         {
             for (j = 0; j < C.ncols; j++)
             {
-                a_iter = find_row(sm.begin(), a_end, i);
-                b_iter = find_col(B.sm.begin(), b_end, j);
+//                std::cout << "(" << i << ", " << j << ")\n";
+
+                //a_iter = find_row(sm.begin(), a_end, i);
+                //b_iter = find_col(B.sm.begin(), b_end, j);
+                a_iter = find_row(a_stor, a_end, i);
+                b_iter = find_col(b_stor, b_end, j);
+
+                a_stor = a_iter;
+                b_stor = b_iter;
+
+                if ((a_iter == a_end) || (b_iter == b_end))
+                    continue;
 
                 dot_prod = 0.0;
 
@@ -480,13 +495,21 @@ public:
                     }
                     else if ((*a_iter).col < (*b_iter).row)
                         a_iter++;
-                    else
+                    else if ((*b_iter).row < (*a_iter).col)
                         b_iter++;
+                    else
+                        break;
                 };
 
                 // Add entry, if not sparse
                 if (dot_prod != 0.0)
                     C.push_back(i, j, dot_prod);
+
+                if ((a_iter == a_beg) || (a_iter == a_end))
+                    a_stor = a_beg;
+
+                if ((b_iter == b_beg) || (b_iter == b_end))
+                    b_stor = b_beg;
             };
         };
 
