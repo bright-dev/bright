@@ -688,6 +688,7 @@ public:
             throw VectorSizeError();
 
         // Init vectors
+        std::vector<double> new_vec_temp;
         std::vector<double> new_vec_last = vec;
 
         std::cout << "  new_vec = [";
@@ -716,11 +717,11 @@ public:
             
 //            new_vec = ( ((*this) * (1.0 / n_fact)) * new_vec_last);
 //            new_vec = ( ((*this) * (1.0 / n_fact)) * new_vec);
-            new_vec = ((*this) * new_vec);
+            new_vec_temp = ((*this) * new_vec);
             for (p = 0; p < P; p++)
             {
-                new_vec[p] /= n_fact;
-                new_vec[p] += new_vec_last[p];
+                new_vec_temp[p] /= n_fact;
+                new_vec[p] += new_vec_temp[p];
 
                 // Calculate end contition
                 ind_rel_err = fabs(1.0 - fabs(new_vec_last[p] / new_vec[p]));
