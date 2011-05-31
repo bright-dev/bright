@@ -46,6 +46,19 @@ void ReactorMG::initialize(ReactorParameters rp)
      *  Must be done once at the beginning of reactor object life.
      */
 
+    int z;
+    bright::SparseMatrix<double> id (5, 5, 5);
+    for (z = 0; z < 5; z++)
+        id.push_back(z, z, z+1.0);
+
+    std::cout << id;
+    
+    std::vector<double> v (5, 1.0);
+
+    std::vector<double> exp_id_v = id.exp(v);
+
+    int a [1] = {100}; std::cout << a[9000] << "\n";
+
     B = rp.batches;				//Total number of fuel loading batches
     flux = rp.flux;				//Flux used for Fluence
     chemical_form_fuel = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
