@@ -717,6 +717,8 @@ public:
             n++;
         };
 
+        std::cout << "  matrix exp found at iter = " << n << "\n";
+
         return new_vec;
     };
 

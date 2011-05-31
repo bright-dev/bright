@@ -1496,95 +1496,26 @@ void ReactorMG::calc_transmutation()
 void ReactorMG::calc_transmutation()
 {
     // Calculates a tranmutation step via the Pade method
-    int n, i, j, ind, jnd;
-    int N = 100;
-//    int N = 20;
-    double fact = 1.0;
-    double epsilon = 0.005;
-    double ind_diff = 1.0;
-    double max_diff = 1.0;
-    int max_ind = 0;
+    int i, j, ind, jnd;
 
     // Get the transmutation matrix for this time delta
-//    double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
     double dt = (burn_times[bt_s + 1] - burn_times[bt_s]) * bright::sec_per_day;
     bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
 
     // Make mass vectors
-    std::vector<double> comp_next;
-    std::vector<double> comp_next_last;
     std::vector<double> comp_prev (K_num, 0.0);
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
-//        comp_prev[ind] = T_it[i][bt_s - 1];
         comp_prev[ind] = T_it[i][bt_s];
     };
 
-/*
-    comp_next = (Mt * comp_prev);
-    for (ind = 0; ind < K_num; ind++)
-        comp_next[ind] += comp_prev[ind];
-
-    comp_next_last = comp_next;
-
-    n = 2;
-    while((n < N) && (epsilon < max_diff))
-    {
-        std::cout << "Matrix exponential step " << n << "\n";
-
-        // Calculate this iteration's values
-        fact *= n;
-        max_diff = 0.0;
-        comp_next = (Mt * comp_next_last);
-        for (ind = 0; ind < K_num; ind++)
-        {
-            comp_next[ind] /= fact;
-            comp_next[ind] += comp_next_last[ind];
-
-            // Calculate end contition
-            ind_diff = fabs(1.0 - (comp_next_last[ind] / comp_next[ind]));
-            if (max_diff < ind_diff)
-            {
-                max_diff = ind_diff;
-                max_ind = ind;
-            }
-        };        
-
-        std::cout << "    diff = " << max_diff << "\n";
-        std::cout << "    mind = " << max_ind << "\n";
-        std::cout << "    miso = " << K_ord[max_ind] << "\n";
-        std::cout << "    mval = " << comp_next[max_ind] << "\n";
-
-        // Finish up interation
-        comp_next_last = comp_next;
-        n++;
-    };
-*/
-
-    int z;
-    bright::SparseMatrix<double> id (5, 5, 5);
-    for (z = 0; z < 5; z++)
-        id.push_back(z, z, z+1.0);
-
-    std::cout << id;
-    
-    std::vector<double> v (5, 1.0);
-
-    std::vector<double> exp_id_v = id.exp(v);
-
-//    std::cout << "exp_id_v = [";
-//    for (z = 0; z < 5; z++)
-//        std::cout << exp_id_v[z] << ", ";
-//    std::cout << "]\n";
-
-    comp_next = Mt.exp(comp_prev);
+    std::vector<double> comp_next = Mt.exp(comp_prev);
 
     // Copy this composition back to the tranmutuation matrix
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
-//        T_it[i][bt_s] = comp_next[ind];
         T_it[i][bt_s+1] = comp_next[ind];
     };
 
@@ -1605,7 +1536,6 @@ void ReactorMG::calc_transmutation()
 
     double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
 
-//    BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 };
 
