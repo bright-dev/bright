@@ -419,8 +419,6 @@ void ReactorMG::loadlib(std::string libfile)
     {
         i = xs_1g_thermal_array[l].iso_zz;
 
-        std::cout << i << "   " << (i == xs_1g_fast_array[l].iso_zz) << "   "  << xs_1g_fast_array[l].sigma_t << "\n";
-
         if (J.count(i) == 1)
             continue;
 
@@ -474,10 +472,6 @@ void ReactorMG::loadlib(std::string libfile)
         sigma_2n_x_pg[i] = zeros_pg;
     };
 
-    std::cout << xs_1g_fast_length << "\n";
-    std::cout << xs_1g_thermal_length << "\n";
-
-    int q[1] = {100}; std::cout << q[9000] << "\n";
     std::cout << "Zero Out Other Isos\n";
 
     // Zero out XS for isos present in decay but not XS data
@@ -1263,8 +1257,8 @@ void ReactorMG::assemble_transmutation_matrices()
     {
         T_matrix[g].clean_up();
 
-        T_matrix[g].prune();
-        std::cout << g << "\n" << T_matrix[g] << "\n";
+//        T_matrix[g].prune();
+//        std::cout << g << "\n" << T_matrix[g] << "\n";
     };
 
 
@@ -1287,6 +1281,10 @@ void ReactorMG::assemble_transmutation_matrices()
         T_int_tij[bt_s] = T_int_tij[bt_s] + (T_matrix[g] * adj_phi);
     };
     
+//    std::cout << "T_int_tij[bt_s] before prune was " <<  T_int_tij[bt_s].sm.size() << "\n";
+//    T_int_tij[bt_s].prune(0.0001);
+//    std::cout << "and T_int_tij[bt_s] after prune is " << T_int_tij[bt_s].sm.size() << "\n";
+
     std::cout << "Integrated over energy\n";
 
     // Make the transmutation matrix for this time step
@@ -1505,6 +1503,8 @@ void ReactorMG::calc_transmutation()
     double epsilon = 0.005;
     double diff = 1.0;
     double diff_last = 1.0;
+    double diff_norm = 1.0;
+    double exp_norm = 1.0;
     double residual = 1.0;
 
     // Get the transmutation matrix for this time delta
@@ -1512,17 +1512,20 @@ void ReactorMG::calc_transmutation()
     double dt = (burn_times[bt_s + 1] - burn_times[bt_s]) * bright::sec_per_day;
     bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
 
-    std::cout << "Mt before prune was " << Mt.sm.size() << "\n";
-    Mt.prune();
-    std::cout << "and Mt after prune is " << Mt.sm.size() << "\n";
-    std::cout << Mt << "\n";
-    for (int nn = 0; nn < Mt.size(); nn++)
-        std::cout << "(" << Mt.sm[nn].row << ", " << Mt.sm[nn].col << ") = (" << K_ord[Mt.sm[nn].row] << ", " << K_ord[Mt.sm[nn].col] << ")\n";
+//    std::cout << "Mt before prune was " << Mt.sm.size() << "\n";
+//    Mt.prune();
+//    std::cout << "and Mt after prune is " << Mt.sm.size() << "\n";
+//    std::cout << Mt << "\n";
+//    for (int nn = 0; nn < Mt.size(); nn++)
+//        std::cout << "(" << Mt.sm[nn].row << ", " << Mt.sm[nn].col << ") = (" << K_ord[Mt.sm[nn].row] << ", " << K_ord[Mt.sm[nn].col] << ")\n";
+    //int q[1] = {100}; std::cout << q[9000] << "\n";
 
-    bright::SparseMatrix<double> identity (K_num, K_num, K_num);
-    for (ind = 0; ind < K_num; ind++)
-        identity.push_back(ind, ind, 1.0);
+//    bright::SparseMatrix<double> identity (K_num, K_num, K_num);
+//    for (ind = 0; ind < K_num; ind++)
+//        identity.push_back(ind, ind, 1.0);
 
+
+/*
     bright::SparseMatrix<double> id (5, 5, 5);
     for (ind = 0; ind < 5; ind++)
         id.push_back(ind, ind, 1.0);
@@ -1562,8 +1565,9 @@ void ReactorMG::calc_transmutation()
         std::cout << new_v[ind] << ", ";
     std::cout << "]\n";
 
+*/
     //int q[1] = {100}; std::cout << q[9000] << "\n";
-    return;
+    //return;
 
     // Make mass vectors
     std::vector<double> comp_next;
@@ -1591,25 +1595,31 @@ void ReactorMG::calc_transmutation()
 
         // Calculate this iterations values
         fact *= n;
+        std::cout << "    fact = " << fact << "\n";
         Mt_n = (Mt_n * Mt);
+        std::cout << "    Mt_n = " << Mt_n.size() << "\n";
         exp_Mt_n = exp_Mt_n + (Mt_n * (1.0 / fact));
 
         std::cout << "    size = " << exp_Mt_n.size() << "\n";
 
         // Calculate end contition
         exp_Mt_diff = exp_Mt_n + (exp_Mt_n_last * -1.0);
-        diff = exp_Mt_diff.norm();
-        residual = fabs(1.0 - (diff_last / diff));
-//        residual = diff_norm / exp_norm;
+        diff_norm = exp_Mt_diff.norm();
+        exp_norm = exp_Mt_n.norm();
+//        residual = fabs(1.0 - (diff_last / diff));
+        residual = diff_norm / exp_norm;
         //residual = exp_Mt_diff.norm() / exp_Mt_n.norm();
 
-        std::cout << "    d = " << diff << "\n";
-        std::cout << "    l = " << diff_last << "\n";
+        std::cout << "    d = " << diff_norm << "\n";
+        std::cout << "    e = " << exp_norm << "\n";
         std::cout << "    r = " << residual << "\n";
+        std::cout << "    last = " << exp_Mt_n_last.size() << "\n";
+        std::cout << "    this = " << exp_Mt_n.size() << "\n";
+        std::cout << "    amax = " << exp_Mt_n.abs_max() << "\n";
 
         // Finish up interation
         exp_Mt_n_last = exp_Mt_n;
-        diff_last = diff;
+//        diff_last = diff;
         n++;
     };
 

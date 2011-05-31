@@ -445,7 +445,6 @@ public:
         int n, N;
         N = sm.size();
         double cutoff = precision * abs_max();
-        std::cout << abs_max() << "    " << cutoff << "\n";
 
         for (n = 0; n < N; n++)
             if (fabs(sm[n].val) < cutoff)
@@ -530,7 +529,6 @@ public:
             {
                 a_iter = find_row(a_stor, a_end, i);
                 b_iter = find_col(b_stor, b_end, j);
-//                b_iter = find_col(b_beg, b_end, j);
 
 //                std::cout << "(" << i << ", " << j << ") = a(" << (*a_iter).row << ", " << (*a_iter).col << ") = b(" << (*b_iter).row << ", " << (*b_iter).col << ")\n";
 
