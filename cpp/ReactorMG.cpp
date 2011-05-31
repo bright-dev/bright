@@ -1497,8 +1497,8 @@ void ReactorMG::calc_transmutation()
 {
     // Calculates a tranmutation step via the Pade method
     int n, i, j, ind, jnd;
-//    int N = 100;
-    int N = 20;
+    int N = 100;
+//    int N = 20;
     double fact = 1.0;
     double epsilon = 0.005;
     double ind_diff = 1.0;
@@ -1534,7 +1534,7 @@ void ReactorMG::calc_transmutation()
 
         // Calculate this iteration's values
         fact *= n;
-        ind_diff = 0.0;
+        max_diff = 0.0;
         comp_next = (Mt * comp_next_last);
         for (ind = 0; ind < K_num; ind++)
         {
