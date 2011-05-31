@@ -415,9 +415,11 @@ void ReactorMG::loadlib(std::string libfile)
 
     std::cout << "Reading in 1G XS\n";
 
-    for (l = 0; l < fp_yields_length; l++)
+    for (l = 0; l < xs_1g_fast_length; l++)
     {
         i = xs_1g_thermal_array[l].iso_zz;
+
+        std::cout << i << "   " << (i == xs_1g_fast_array[l].iso_zz) << "   "  << xs_1g_fast_array[l].sigma_t << "\n";
 
         if (J.count(i) == 1)
             continue;
@@ -472,6 +474,10 @@ void ReactorMG::loadlib(std::string libfile)
         sigma_2n_x_pg[i] = zeros_pg;
     };
 
+    std::cout << xs_1g_fast_length << "\n";
+    std::cout << xs_1g_thermal_length << "\n";
+
+    int q[1] = {100}; std::cout << q[9000] << "\n";
     std::cout << "Zero Out Other Isos\n";
 
     // Zero out XS for isos present in decay but not XS data
@@ -716,21 +722,21 @@ void ReactorMG::interpolate_cross_sections()
         if (J.count(*iso) == 1)
             continue;
 
-        sigma_t_itg[*iso][bt_s] = sigma_t_pg[*iso][0];
-        sigma_a_itg[*iso][bt_s] = sigma_a_pg[*iso][0];
-        nubar_sigma_f_itg[*iso][bt_s] = nubar_sigma_f_pg[*iso][0];
-        chi_itg[*iso][bt_s] = chi_pg[*iso][0];
-        sigma_f_itg[*iso][bt_s] = sigma_f_pg[*iso][0];
-        sigma_gamma_itg[*iso][bt_s] = sigma_gamma_pg[*iso][0];
-        sigma_2n_itg[*iso][bt_s] = sigma_2n_pg[*iso][0];
-        sigma_3n_itg[*iso][bt_s] = sigma_3n_pg[*iso][0];
-        sigma_alpha_itg[*iso][bt_s] = sigma_alpha_pg[*iso][0];
-        sigma_proton_itg[*iso][bt_s] = sigma_proton_pg[*iso][0];
-        sigma_gamma_x_itg[*iso][bt_s] = sigma_gamma_x_pg[*iso][0];
-        sigma_2n_x_itg[*iso][bt_s] = sigma_2n_x_pg[*iso][0];
+        sigma_t_itg[*iso][bt_s] = sigma_t_pg[*iso][a0];
+        sigma_a_itg[*iso][bt_s] = sigma_a_pg[*iso][a0];
+        nubar_sigma_f_itg[*iso][bt_s] = nubar_sigma_f_pg[*iso][a0];
+        chi_itg[*iso][bt_s] = chi_pg[*iso][a0];
+        sigma_f_itg[*iso][bt_s] = sigma_f_pg[*iso][a0];
+        sigma_gamma_itg[*iso][bt_s] = sigma_gamma_pg[*iso][a0];
+        sigma_2n_itg[*iso][bt_s] = sigma_2n_pg[*iso][a0];
+        sigma_3n_itg[*iso][bt_s] = sigma_3n_pg[*iso][a0];
+        sigma_alpha_itg[*iso][bt_s] = sigma_alpha_pg[*iso][a0];
+        sigma_proton_itg[*iso][bt_s] = sigma_proton_pg[*iso][a0];
+        sigma_gamma_x_itg[*iso][bt_s] = sigma_gamma_x_pg[*iso][a0];
+        sigma_2n_x_itg[*iso][bt_s] = sigma_2n_x_pg[*iso][a0];
 
         for (int g = 0; g < G; g++)
-            sigma_s_itgh[*iso][bt_s][g] = sigma_s_pgh[*iso][0][g];
+            sigma_s_itgh[*iso][bt_s][g] = sigma_s_pgh[*iso][a0][g];
     };
 
     // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
@@ -1254,7 +1260,13 @@ void ReactorMG::assemble_transmutation_matrices()
     };
 
     for (g = 0; g < G; g++)
+    {
         T_matrix[g].clean_up();
+
+        T_matrix[g].prune();
+        std::cout << g << "\n" << T_matrix[g] << "\n";
+    };
+
 
 
     // Multiply by flux and integrate over energy
@@ -1504,6 +1516,8 @@ void ReactorMG::calc_transmutation()
     Mt.prune();
     std::cout << "and Mt after prune is " << Mt.sm.size() << "\n";
     std::cout << Mt << "\n";
+    for (int nn = 0; nn < Mt.size(); nn++)
+        std::cout << "(" << Mt.sm[nn].row << ", " << Mt.sm[nn].col << ") = (" << K_ord[Mt.sm[nn].row] << ", " << K_ord[Mt.sm[nn].col] << ")\n";
 
     bright::SparseMatrix<double> identity (K_num, K_num, K_num);
     for (ind = 0; ind < K_num; ind++)
@@ -1548,7 +1562,8 @@ void ReactorMG::calc_transmutation()
         std::cout << new_v[ind] << ", ";
     std::cout << "]\n";
 
-    int q[1] = {100}; std::cout << q[9000] << "\n";
+    //int q[1] = {100}; std::cout << q[9000] << "\n";
+    return;
 
     // Make mass vectors
     std::vector<double> comp_next;
