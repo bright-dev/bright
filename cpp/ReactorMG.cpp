@@ -1521,6 +1521,7 @@ void ReactorMG::calc_transmutation()
         comp_prev[ind] = T_it[i][bt_s];
     };
 
+/*
     comp_next = (Mt * comp_prev);
     for (ind = 0; ind < K_num; ind++)
         comp_next[ind] += comp_prev[ind];
@@ -1559,6 +1560,25 @@ void ReactorMG::calc_transmutation()
         comp_next_last = comp_next;
         n++;
     };
+*/
+
+    int z;
+    bright::SparseMatrix<double> id (5, 5, 5);
+    for (z = 0; z < 5; z++)
+        id.push_back(z, z, z+1.0);
+
+    std::cout << id;
+    
+    std::vector<double> v (5, 1.0);
+
+    std::vector<double> exp_id_v = id.exp(v);
+
+//    std::cout << "exp_id_v = [";
+//    for (z = 0; z < 5; z++)
+//        std::cout << exp_id_v[z] << ", ";
+//    std::cout << "]\n";
+
+//    comp_next = Mt.exp(comp_prev);
 
     // Copy this composition back to the tranmutuation matrix
     for (ind = 0; ind < K_num; ind++)

@@ -675,6 +675,71 @@ public:
         return C;
     };
 
+
+    std::vector<double> exp (std::vector<double> vec, int max_iter = 100, double epsilon = 1e-8)
+    {
+        int n, p;
+        int P = vec.size();
+        double n_fact = 1.0;
+        double ind_rel_err = 0.0;
+        double max_rel_err = 1.0;
+
+        if (P != nrows && P != ncols)
+            throw VectorSizeError();
+
+        // Init vectors
+        std::vector<double> new_vec_last = vec;
+
+        std::cout << "  new_vec = [";
+        for (p = 0; p < P; p++)
+            std::cout << new_vec_last[p] << ", ";
+        std::cout << "]\n";
+
+        std::vector<double> new_vec = ((*this) * new_vec_last);
+        for (p = 0; p < P; p++)
+            new_vec[p] += new_vec_last[p]; 
+
+        std::cout << "  new_vec = [";
+        for (p = 0; p < P; p++)
+            std::cout << new_vec[p] << ", ";
+        std::cout << "]\n";
+
+        //new_vec_last = new_vec;
+
+        n = 2;
+        while((n < max_iter) && (epsilon < max_rel_err))
+        {
+            n_fact *= n;
+            max_rel_err = 0.0;
+
+            std::cout << "  At matrix exp iteration " << n << "\n";
+            
+//            new_vec = ( ((*this) * (1.0 / n_fact)) * new_vec_last);
+//            new_vec = ( ((*this) * (1.0 / n_fact)) * new_vec);
+            new_vec = ((*this) * new_vec);
+            for (p = 0; p < P; p++)
+            {
+                new_vec[p] /= n_fact;
+                new_vec[p] += new_vec_last[p];
+
+                // Calculate end contition
+                ind_rel_err = fabs(1.0 - fabs(new_vec_last[p] / new_vec[p]));
+                if (max_rel_err < ind_rel_err)
+                    max_rel_err = ind_rel_err;
+            };
+
+            std::cout << "  new_vec = [";
+            for (p = 0; p < P; p++)
+                std::cout << new_vec[p] << ", ";
+            std::cout << "]\n";
+
+            new_vec_last = new_vec;
+            n++;
+        };
+
+        return new_vec;
+    };
+
 };
 
 
