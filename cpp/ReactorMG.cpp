@@ -250,8 +250,8 @@ void ReactorMG::loadlib(std::string libfile)
         i = decay_data_array[l].from_iso_zz;
         j = decay_data_array[l].to_iso_zz;
 
-//        if (i == j)
-//            continue;
+        if (i == j)
+            continue;
 
         // Get the indexes for these nulcides into the matrix
         ind = K_ind[i];
@@ -1171,7 +1171,7 @@ void ReactorMG::assemble_transmutation_matrices()
                 fpy_ind = ind_PU239;
             };
 
-            double tot_fpy = 0.0;
+            //double tot_fpy = 0.0;
             while((*fpy_iter).row == fpy_ind)
             {
                 jnd = (*fpy_iter).col;
@@ -1179,12 +1179,10 @@ void ReactorMG::assemble_transmutation_matrices()
                 T_matrix[g].push_back(ind, jnd, fpy * sig);
                 fpy_iter++;
 
-                if (fpy < 0.0)
-                    std::cout << "Bad val at (" << i << ", " << K_ord[jnd] << ") = " << fpy << "\n";
-                tot_fpy += fpy;
+            //    tot_fpy += fpy;
             };
 
-            //std::cout << "  Total FP for " << i << " is " << tot_fpy << "\n";
+//            std::cout << "  Total FP for " << i << " is " << tot_fpy << "\n";
         };
 
         // Add the capture cross-section
@@ -1454,7 +1452,13 @@ void ReactorMG::calc_transmutation()
         comp_prev[ind] = T_it[i][bt_s];
     };
 
-    std::vector<double> comp_next = Mt.exp(comp_prev);
+
+//    bright::SparseMatrix<double> Mt_T = Mt.transpose();
+    bright::SparseMatrix<double> Mt_T = (decay_matrix * 1E+17).transpose();
+//    bright::SparseMatrix<double> Mt_T = (decay_matrix * 1E+17);
+    std::vector<double> comp_next = Mt_T.exp(comp_prev);
+//    std::vector<double> comp_next = Mt.exp(comp_prev);
+
 
     // Copy this composition back to the tranmutuation matrix
     for (ind = 0; ind < K_num; ind++)
@@ -1470,6 +1474,7 @@ void ReactorMG::calc_transmutation()
         i = K_ord[ind];
         cd_prev[i] = comp_prev[ind];
         cd_next[i] = comp_next[ind];
+        std::cout << i << "   " << comp_prev[ind] << "   " << comp_next[ind] << "\n";
     };
 
     MassStream ms_prev (cd_prev);
@@ -1481,6 +1486,9 @@ void ReactorMG::calc_transmutation()
     double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
 
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
+
+//    ms_next.print_ms();
+    int a [1] = {100}; a[9000] = 1;
 };
 
 

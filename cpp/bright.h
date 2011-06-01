@@ -468,6 +468,22 @@ public:
 
 
 
+
+    SparseMatrix<T> transpose()
+    {
+        int n;
+        int N = size();
+        SparseMatrix<T> B = SparseMatrix<T>(N, nrows, ncols);
+
+        for (n = 0; n < N; n++)
+            B.push_back(sm[n].col, sm[n].row, sm[n].val);
+
+        B.clean_up();
+        return B;
+    };
+
+
+
     SparseMatrix<T> operator* (double s)
     {
         int n;
