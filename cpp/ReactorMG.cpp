@@ -250,8 +250,8 @@ void ReactorMG::loadlib(std::string libfile)
         i = decay_data_array[l].from_iso_zz;
         j = decay_data_array[l].to_iso_zz;
 
-        if (i == j)
-            continue;
+//        if (i == j)
+//            continue;
 
         // Get the indexes for these nulcides into the matrix
         ind = K_ind[i];
@@ -372,7 +372,7 @@ void ReactorMG::loadlib(std::string libfile)
 
     // Make fission product yield matrix
     // from the equation y = mx + b
-    bright::SparseMatrix<double> m, b, temp_b, temp_m;
+    bright::SparseMatrix<double> m, b;
     fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
 
     m = (fast_yield_matrix + (thermal_yield_matrix * -1.0)) * (1.0 / (1.0 - 2.53e-08));
@@ -381,6 +381,22 @@ void ReactorMG::loadlib(std::string libfile)
     // Interpolate the mass fraction between thermal and fast data.
     for (g = 0; g < G; g++)
         fission_product_yield_matrix[g] = (m * E_g[g]) + b;
+
+    double mtot = 0.0;
+    std::vector<double> ones (K_num, 1.0);
+    std::vector<double> mass;
+    for (g = 0; g < G; g++)
+    {
+        mass = fission_product_yield_matrix[g] * ones;
+
+        CompDict cd;
+        for (ind = 0; ind < K_num; ind++)
+            cd[K_ord[ind]] = mass[ind];
+
+        MassStream ms (cd);
+        ms.print_ms();
+    };
+    //int a [1] = {100}; std::cout << a[9000] << "\n";
 
     std::cout << "Interpolated yields\n";
 
@@ -1111,6 +1127,8 @@ void ReactorMG::assemble_transmutation_matrices()
     
     // Add the cross sections
     double fpy, sig;
+    int fpy_ind;
+    int ind_PU239 = K_ind[942390];
     int j_gamma, j_2n, j_3n, j_alpha, j_proton, j_gamma_x, j_2n_x; 
     int jnd_gamma, jnd_2n, jnd_3n, jnd_alpha, jnd_proton, jnd_gamma_x, jnd_2n_x;
     for (ind = 0; ind < K_num; ind++)
@@ -1119,6 +1137,8 @@ void ReactorMG::assemble_transmutation_matrices()
 
         // Add diag entries
         for (g = 0; g < G; g++)
+            T_matrix[g].push_back(ind, ind, -1.0 * sigma_a_itg[i][bt_s][g]);
+/*
             T_matrix[g].push_back(ind, ind, -(sigma_f_itg[i][bt_s][g] + \
                                               sigma_gamma_itg[i][bt_s][g] + \
                                               sigma_2n_itg[i][bt_s][g] + \
@@ -1127,6 +1147,7 @@ void ReactorMG::assemble_transmutation_matrices()
                                               sigma_proton_itg[i][bt_s][g] + \
                                               sigma_gamma_x_itg[i][bt_s][g] + \
                                               sigma_2n_x_itg[i][bt_s][g]));
+*/
 
         // Add the fission source
         for (g = 0; g < G; g++)
@@ -1137,11 +1158,19 @@ void ReactorMG::assemble_transmutation_matrices()
 
             fpy_end = fission_product_yield_matrix[g].sm.end();
             fpy_iter = bright::find_row(fission_product_yield_matrix[g].sm.begin(), fpy_end, ind);
+            fpy_ind = ind;
 
-            while((*fpy_iter).row == ind)
+            // Deafult to Pu239 FP if yields not available
+            if (fpy_iter == fpy_end)
+            {
+                fpy_iter = bright::find_row(fission_product_yield_matrix[g].sm.begin(), fpy_end, ind_PU239);
+                fpy_ind = ind_PU239;
+            };
+
+            while((*fpy_iter).row == fpy_ind)
             {
                 jnd = (*fpy_iter).col;
-                fpy = (*fpy_iter).val;                
+                fpy = (*fpy_iter).val;
                 T_matrix[g].push_back(ind, jnd, fpy * sig);
                 fpy_iter++;
             };
@@ -1391,102 +1420,6 @@ void ReactorMG::calc_criticality()
 
 
 
-
-
-
-
-/*
-
-
-void ReactorMG::calc_transmutation()
-{
-    // Calculates a tranmutation step via the Pade method
-
-    // Get the transmutation matrix for this time delta
-    double dt = (burn_times[bt_s] - burn_times[bt_s - 1]) * bright::sec_per_day;
-    bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
-
-    // Set Pade coefficients, for p = q = 6
-    double N_coef_n [7] = {1.00000000e+00,   5.00000000e-01,   1.13636364e-01, \
-                           1.51515152e-02,   1.26262626e-03,   6.31313131e-05, \
-                           1.50312650e-06};
-    double D_coef_n [7] = {1.00000000e+00,   5.00000000e-01,   1.13636364e-01, \
-                           1.51515152e-02,   1.26262626e-03,   6.31313131e-05, \
-                           1.50312650e-06};
-
-    // Init the new matrices
-    std::vector< std::vector< std::vector<double> > > Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) ) );
-    std::vector< std::vector< std::vector<double> > > neg_Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) ) );
-    std::vector< std::vector<double> > N_pq = std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) );
-    std::vector< std::vector<double> > D_pq = std::vector< std::vector<double> >(K_num, std::vector<double>(K_num, 0.0) );
-
-    int n, i, j, ind, jnd;
-    for (ind = 0; ind < K_num; ind++)
-    {
-        Mt_n[0][ind][ind] = 1.0;
-        neg_Mt_n[0][ind][ind] = 1.0;
-    };
-
-    // Calculate the exponential matrices
-    for (n = 1; n < 7; n++)
-    {
-        std::cout << "Yo\n";
-        Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], Mt);
-        neg_Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], bright::scalar_matrix_product(-1.0, Mt));
-    };
-
-    // Calculate the pade numerator and denom matrices
-    for (n = 0; n < 7; n++)
-    {
-        N_pq = bright::matrix_addition(N_pq, bright::scalar_matrix_product(N_coef_n[n], Mt_n[n]));
-        D_pq = bright::matrix_addition(D_pq, bright::scalar_matrix_product(D_coef_n[n], neg_Mt_n[n]));
-    };
-
-    // Invert the denominator
-    std::vector< std::vector<double> > inv_D_pq = bright::matrix_inverse(D_pq);
-
-    // Approximate the exponential e^(Mt) = D^-1 * N
-    std::vector< std::vector<double> > exp_Mt = bright::matrix_multiplication(inv_D_pq, N_pq);
-
-    // Make mass vectors
-    std::vector<double> comp_prev (K_num, 0.0);
-    for (ind = 0; ind < K_num; ind++)
-    {
-        i = K_ord[ind];
-        comp_prev[ind] = T_it[i][bt_s-1];
-    };
-
-    // Get the composition for the next time step
-    std::vector<double> comp_next = bright::scalar_matrix_vector_product(1.0, exp_Mt, comp_prev);
-
-    // Copy this composition back to the tranmutuation matrix
-    for (ind = 0; ind < K_num; ind++)
-    {
-        i = K_ord[ind];
-        T_it[i][bt_s] = comp_next[ind];
-    };
-
-    // Calculate the burnup 
-    CompDict cd_prev, cd_next;
-    for (ind = 0; ind < K_num; ind++)
-    {
-        i = K_ord[ind];
-        cd_prev[i] = comp_prev[ind];
-        cd_next[i] = comp_next[ind];
-    };
-
-    MassStream ms_prev (cd_prev);
-    MassStream act_prev = ms_prev.get_act();
-
-    MassStream ms_next (cd_next);
-    MassStream act_next = ms_next.get_act();
-
-    double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
-
-    BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
-};
-
-*/
 
 
 

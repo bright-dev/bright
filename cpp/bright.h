@@ -713,6 +713,8 @@ public:
                     max_rel_err = ind_rel_err;
             };
 
+            std::cout << "  n = " << n << ", iso = " << new_vec[2812] << ", err = " << max_rel_err << "\n";
+
             new_vec_last = new_vec;
             n++;
         };
