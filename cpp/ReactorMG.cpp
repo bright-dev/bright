@@ -371,17 +371,20 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     // Make fission product yield matrix
-    // from the equation y = mx + b
-    bright::SparseMatrix<double> m, b;
     fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
 
-    m = (fast_yield_matrix + (thermal_yield_matrix * -1.0)) * (1.0 / (1.0 - 2.53e-08));
-    b = thermal_yield_matrix + (m * -2.53e-08);
-
-    // Interpolate the mass fraction between thermal and fast data.
+    // Set the mass fraction between thermal and fast data.
+    // Do not interpolate here, you'll get negative masses...
     for (g = 0; g < G; g++)
-        fission_product_yield_matrix[g] = (m * E_g[g]) + b;
+    {
+        
+        if (0.001 < E_g[g])
+            fission_product_yield_matrix[g] = fast_yield_matrix;
+        else
+            fission_product_yield_matrix[g] = thermal_yield_matrix;
+    };
 
+/*
     double mtot = 0.0;
     std::vector<double> ones (K_num, 1.0);
     std::vector<double> mass;
@@ -397,6 +400,7 @@ void ReactorMG::loadlib(std::string libfile)
         ms.print_ms();
     };
     //int a [1] = {100}; std::cout << a[9000] << "\n";
+*/
 
     std::cout << "Interpolated yields\n";
 
@@ -1167,13 +1171,20 @@ void ReactorMG::assemble_transmutation_matrices()
                 fpy_ind = ind_PU239;
             };
 
+            double tot_fpy = 0.0;
             while((*fpy_iter).row == fpy_ind)
             {
                 jnd = (*fpy_iter).col;
                 fpy = (*fpy_iter).val;
                 T_matrix[g].push_back(ind, jnd, fpy * sig);
                 fpy_iter++;
+
+                if (fpy < 0.0)
+                    std::cout << "Bad val at (" << i << ", " << K_ord[jnd] << ") = " << fpy << "\n";
+                tot_fpy += fpy;
             };
+
+            //std::cout << "  Total FP for " << i << " is " << tot_fpy << "\n";
         };
 
         // Add the capture cross-section
@@ -1287,7 +1298,7 @@ void ReactorMG::assemble_transmutation_matrices()
         T_matrix[g].clean_up();
 
 //        T_matrix[g].prune();
-//        std::cout << g << "\n" << T_matrix[g] << "\n";
+        std::cout << "  " << g << "   " << T_matrix[g].size() << "\n";
     };
 
 
