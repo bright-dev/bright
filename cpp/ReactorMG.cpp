@@ -1329,6 +1329,109 @@ void ReactorMG::assemble_transmutation_matrices()
     M_tij[bt_s] = (T_int_tij[bt_s] + decay_matrix);
 
     std::cout << "Added decay\n";
+
+    // Add initial transmutatio chains
+    if (bt_s == 0)
+    {
+        std::vector< sparse_matrix_entry<double> >::iterator M_iter, M_end;
+        M_iter = M_tij[bt_s].sm.begin();
+        M_end = M_tij[bt_s].sm.end();
+
+        // Initialize the chains container
+        for ( ; M_iter != M_end; M_iter++)
+        {
+            ind = (*M_iter).row;
+            i = K_ord[ind];
+
+            jnd = (*M_iter).col;
+            j = K_ord[jnd];
+
+            if (i == j)
+                continue;
+
+            if (transmutation_chains.count(i) == 0)
+                transmutation_chains[i] = std::map<int, std::vector<int> > ();
+
+            transmutation_chains[i][j] = std::vector<int>(2);
+            transmutation_chains[i][j][0] = i;
+            transmutation_chains[i][j][0] = j;
+        };
+
+
+        // Fill in the chains container with more than one-step values
+        M_iter = M_tij[bt_s].sm.begin();
+        for ( ; M_iter != M_end; M_iter++)
+        {
+            ind = (*M_iter).row;
+            i = K_ord[ind];
+
+            jnd = (*M_iter).col;
+            j = K_ord[jnd];
+
+            if (J.count(i) == 0)
+                continue;
+
+            if (i == j)
+                continue;
+
+            add_transmutation_chains(transmutation_chains[i][j]);
+        };
+
+        std::cout << "Added chains\n";
+    }
+
+};
+
+
+
+
+
+void ReactorMG::add_transmutation_chains(std::vector<int> tc)
+{
+    int n;
+    int chain_len = tc.size();
+    int i = tc[0];
+    int j = tc[chain_len - 1];
+    int k, jnd, knd;
+    bool k_in_chain = false;
+
+    jnd = K_ind[j];
+
+//    std::cout << "Adding sub-chains of (" << dc.i << ", " << dc.j << ")\n";
+
+    std::vector< sparse_matrix_entry<double> >::iterator M_beg, M_end, to_isos_iter;
+    M_beg = M_tij[bt_s].sm.begin();
+    M_end = M_tij[bt_s].sm.end();
+    to_isos_iter = bright::find_row(M_beg, M_end, jnd);
+
+    std::vector<int> next_chain;
+
+    for (; j != (*to_isos_iter).row; to_isos_iter++)
+    {
+        knd = (*to_iso_iter).col;
+        k = K_ord[knd];
+
+        if (jnd == knd)
+            continue;
+
+        // Don't allow cyclic chains
+        k_in_chain = false;
+        for (n = 0; n < chain_len; n++)
+            if (k == tc[n])
+                k_in_chain = true;
+
+        if (k_in_chain)
+            continue;
+
+        // construct new chains
+        next_chain = tc;
+        next_chain.push_back(k);
+
+        // add new chains
+        transmutation_chains[i][k] = next_chain;
+        add_transmutation_chains(next_chain);
+    };
+
 };
 
 

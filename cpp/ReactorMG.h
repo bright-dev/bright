@@ -136,6 +136,8 @@ public:
     bright::SparseMatrix<double> fast_yield_matrix;
     std::vector< bright::SparseMatrix<double> > fission_product_yield_matrix;
 
+    std::map<int, std::map<int, std::vector<int> > > transmutation_chains;
+
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
     int nperturbations; // number of rows in the pertubtaion table
@@ -361,6 +363,9 @@ public:
     void lattice_E_cylindrical(double, double);
     void lattice_F_cylindrical(double, double);
     void calc_zeta();
+
+    // Transmutation chain functions
+    add_transmutation_chains(std::vector<int>);
 };
 
 
