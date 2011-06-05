@@ -136,6 +136,8 @@ public:
     bright::SparseMatrix<double> fast_yield_matrix;
     std::vector< bright::SparseMatrix<double> > fission_product_yield_matrix;
 
+    std::vector<double> decay_consts;
+    std::vector< std::vector<double> > branch_ratios;
     std::map<int, std::map<int, std::vector<int> > > transmutation_chains;
 
 
@@ -365,7 +367,8 @@ public:
     void calc_zeta();
 
     // Transmutation chain functions
-    add_transmutation_chains(std::vector<int>);
+    void add_transmutation_chains(std::vector<int>);
+    double bateman(int, int, double);
 };
 
 

@@ -336,6 +336,21 @@ public:
     };
 
 
+
+
+    std::vector< std::vector<T> > todense()
+    {
+        int n;
+        int N = size();
+        typename std::vector< std::vector<T> > M = std::vector< std::vector<T> > (nrows, std::vector<T> (ncols, 0.0));
+        for (n = 0; n < N; n++)
+            M[sm[n].row][sm[n].col] = sm[n].val;
+        return M;
+    };
+
+
+
+
     void push_back(int i, int j, T value)
     {
         sm.push_back(sparse_matrix_entry<T>(i, j, value));

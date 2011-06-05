@@ -1439,6 +1439,59 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
 
 
+double ReactorMG::bateman(int i, int j, double t)
+{
+    // Solves the Bateman Equations for a unit mass of isotope i -> 
+    // decaying into isotope j.
+    ind = K_ind[i];
+    jnd = K_ind[j];
+    
+    std::vector<int> chain = transmutation_chains[i][j];
+
+    int n;
+    int N = chain.size();
+
+    int qnd, rnd, snd;
+    qnd = ind;
+
+    double B = 1.0;
+    double alpha_num = 1.0;
+
+    for (n = 0; n < N - 1; n++)
+    {
+        rnd = K_ind[chain[n+1]];
+        B *= branch_ratios[qnd][rnd];
+        alpha_num *= trans_consts[qnd];
+        qnd = rnd;
+    };
+
+
+    int m;
+    double alpha_den, sum_part;
+    for (n = 0; n < N; n++)
+    {
+        qnd = K_ind[chain[n]];
+        alpha_den = 1.0;
+
+        for (m = 0; m < N; m++)
+        {
+            rnd = K_ind[chain[m]];
+            if (n != m)
+                alpha_den *= (trans_const[rnd] - trans_const[qnd]);
+        };
+
+        sum_part += (exp(-trans_const[qnd] * t) / alpha_den);
+    };
+
+    double mass_frac = B * alpha_num * sum_part;
+    return mass_frac;
+}
+
+
+
+
+
+
 
 
 
@@ -1545,7 +1598,21 @@ void ReactorMG::calc_transmutation()
 
     // Get the transmutation matrix for this time delta
     double dt = (burn_times[bt_s + 1] - burn_times[bt_s]) * bright::sec_per_day;
-    bright::SparseMatrix<double> Mt = (M_tij[bt_s] * dt);
+
+    int k, q;
+    trans_consts = std::vector<double>(K_num, 0.0);
+    branch_ratios = M_tij[bt_s].todense();
+    for (k = 0; k < K_num; k++)
+    {
+        trans_consts[k] = -branch_ratios[k][k];
+
+        if (trans_consts[k] == 0.0)
+            continue;
+
+        branch_ratios[k][k] = 0.0;
+        for (q = 0; q < K_num; q++)
+            branch_ratios[k][k] = branch_ratios[k][q] / trans_consts[k];
+    };
 
     // Make mass vectors
     std::vector<double> comp_prev (K_num, 0.0);
@@ -1556,11 +1623,25 @@ void ReactorMG::calc_transmutation()
     };
 
 
-//    bright::SparseMatrix<double> Mt_T = Mt.transpose();
-    bright::SparseMatrix<double> Mt_T = (decay_matrix * 1E+17).transpose();
-//    bright::SparseMatrix<double> Mt_T = (decay_matrix * 1E+17);
-    std::vector<double> comp_next = Mt_T.exp(comp_prev);
-//    std::vector<double> comp_next = Mt.exp(comp_prev);
+    std::vector<double> comp_next = (K_num, 0.0);
+    for (ind = 0; ind < K_num; ind++)
+    {
+        if (comp_prev[ind] == 0.0)
+            continue;
+
+        i = K_ord[ind];
+        for (jnd = 0; jnd < K_num; jnd++)
+        {
+            j = K_ord[jnd];
+            if (transmutation_chains[i].count(j) == 0)
+                continue;
+
+            if (i == j)
+                comp_next[ind] += comp_prev[ind] * exp(-trans_consts * dt);
+            else
+                comp_next[ind] += comp_prev[ind] * bateman(i, j, dt);     
+        };
+    };
 
 
     // Copy this composition back to the tranmutuation matrix
@@ -1591,7 +1672,7 @@ void ReactorMG::calc_transmutation()
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
 //    ms_next.print_ms();
-    int a [1] = {100}; a[9000] = 1;
+//    int a [1] = {100}; a[9000] = 1;
 };
 
 
