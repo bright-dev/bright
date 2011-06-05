@@ -1333,7 +1333,7 @@ void ReactorMG::assemble_transmutation_matrices()
     // Add initial transmutatio chains
     if (bt_s == 0)
     {
-        std::vector< sparse_matrix_entry<double> >::iterator M_iter, M_end;
+        std::vector< bright::sparse_matrix_entry<double> >::iterator M_iter, M_end;
         M_iter = M_tij[bt_s].sm.begin();
         M_end = M_tij[bt_s].sm.end();
 
@@ -1399,7 +1399,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
 //    std::cout << "Adding sub-chains of (" << dc.i << ", " << dc.j << ")\n";
 
-    std::vector< sparse_matrix_entry<double> >::iterator M_beg, M_end, to_isos_iter;
+    std::vector< bright::sparse_matrix_entry<double> >::iterator M_beg, M_end, to_isos_iter;
     M_beg = M_tij[bt_s].sm.begin();
     M_end = M_tij[bt_s].sm.end();
     to_isos_iter = bright::find_row(M_beg, M_end, jnd);
@@ -1408,7 +1408,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
     for (; j != (*to_isos_iter).row; to_isos_iter++)
     {
-        knd = (*to_iso_iter).col;
+        knd = (*to_isos_iter).col;
         k = K_ord[knd];
 
         if (jnd == knd)
@@ -1443,8 +1443,8 @@ double ReactorMG::bateman(int i, int j, double t)
 {
     // Solves the Bateman Equations for a unit mass of isotope i -> 
     // decaying into isotope j.
-    ind = K_ind[i];
-    jnd = K_ind[j];
+    int ind = K_ind[i];
+    int jnd = K_ind[j];
     
     std::vector<int> chain = transmutation_chains[i][j];
 
