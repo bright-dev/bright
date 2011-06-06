@@ -1140,9 +1140,11 @@ void ReactorMG::assemble_transmutation_matrices()
         i = K_ord[ind];
 
         // Add diag entries
-        for (g = 0; g < G; g++)
-            T_matrix[g].push_back(ind, ind, -1.0 * sigma_a_itg[i][bt_s][g]);
+        //for (g = 0; g < G; g++)
+        //    T_matrix[g].push_back(ind, ind, -1.0 * sigma_a_itg[i][bt_s][g]);
 /*
+*/
+        for (g = 0; g < G; g++)
             T_matrix[g].push_back(ind, ind, -(sigma_f_itg[i][bt_s][g] + \
                                               sigma_gamma_itg[i][bt_s][g] + \
                                               sigma_2n_itg[i][bt_s][g] + \
@@ -1151,7 +1153,6 @@ void ReactorMG::assemble_transmutation_matrices()
                                               sigma_proton_itg[i][bt_s][g] + \
                                               sigma_gamma_x_itg[i][bt_s][g] + \
                                               sigma_2n_x_itg[i][bt_s][g]));
-*/
 
         // Add the fission source
         for (g = 0; g < G; g++)
@@ -1582,26 +1583,33 @@ void ReactorMG::calc_transmutation()
     // Get the transmutation matrix for this time delta
     double dt = (burn_times[bt_s + 1] - burn_times[bt_s]) * bright::sec_per_day;
 
-    int k, q;
+    int knd, qnd;
     trans_consts = std::vector<double>(K_num, 0.0);
     branch_ratios = M_tij[bt_s].todense();
+    double brsum ;
     for (k = 0; k < K_num; k++)
     {
-        trans_consts[k] = -branch_ratios[k][k];
+        brsum = 0.0;
+        trans_consts[knd] = -branch_ratios[knd][knd];
 
-        if (trans_consts[k] == 0.0)
+        if (trans_consts[knd] == 0.0)
             continue;
 
-        branch_ratios[k][k] = 0.0;
+        branch_ratios[knd][knd] = 0.0;
         for (q = 0; q < K_num; q++)
-            branch_ratios[k][q] = branch_ratios[k][q] / trans_consts[k];
+        {
+            branch_ratios[knd][qnd] = branch_ratios[knd][qnd] / trans_consts[knd];
+            brsum += branch_ratios[knd][qnd];
+        }
+        std::cout << "Branch ratio sum [" << K_ind[knd] << "] = " << brsum << "\n"; 
     };
 
 
     // Fill in the chains container with more than one-step values
     if (bt_s == 0)
     {
-        for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+        //for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+        for (iso_iter iso = K.begin(); iso != K.end(); iso++)
         {
             i = (*iso);
             ind = K_ind[i];
@@ -1636,15 +1644,15 @@ void ReactorMG::calc_transmutation()
             continue;
 
         i = K_ord[ind];
-        if (J.count(i) == 0)
-            continue;
+        //if (J.count(i) == 0)
+        //    continue;
 
         for (jnd = 0; jnd < K_num; jnd++)
         {
             j = K_ord[jnd];
 
-            if (J.count(j) == 0)
-                continue;
+            //if (J.count(j) == 0)
+            //    continue;
 
             if (transmutation_chains[i].count(j) == 0)
                 continue;
@@ -1678,7 +1686,7 @@ void ReactorMG::calc_transmutation()
         i = K_ord[ind];
         cd_prev[i] = comp_prev[ind];
         cd_next[i] = comp_next[ind];
-        std::cout << i << "   " << comp_prev[ind] << "   " << comp_next[ind] << "\n";
+        //std::cout << i << "   " << comp_prev[ind] << "   " << comp_next[ind] << "\n";
     };
 
     MassStream ms_prev (cd_prev);
@@ -1691,7 +1699,8 @@ void ReactorMG::calc_transmutation()
 
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
-//    ms_next.print_ms();
+    //ms_next.print_ms();
+    std::cout << "mass = " << ms_next.mass << "\n";
 
     int a [1] = {100}; a[9000] = 1;
 };
