@@ -1429,13 +1429,6 @@ double ReactorMG::bateman(int i, int j, double t)
     int n;
     int N = chain.size();
 
-    std::cout << i << " -->  " << j << "\n";
-    std::cout << "chain = [";
-    for (n = 0; n < N; n++)
-        std::cout << chain[n] << ", ";
-    std::cout << "]\n";
-
-
     int qnd, rnd;
     qnd = ind;
 
@@ -1447,9 +1440,6 @@ double ReactorMG::bateman(int i, int j, double t)
         rnd = K_ind[chain[n+1]];
         B *= branch_ratios[qnd][rnd];
         alpha_num *= trans_consts[qnd];
-
-        std::cout << chain[n] << "  " << chain[n+1] << ")  = " << B << "   "  << alpha_num << "\n";  
-        
         qnd = rnd;
     };
 
@@ -1469,11 +1459,14 @@ double ReactorMG::bateman(int i, int j, double t)
         };
 
         sum_part += (exp(-trans_consts[qnd] * t) / alpha_den);
-
-        std::cout << chain[n] << ")  = " << sum_part << "   "  << alpha_den << "\n";  
     };
 
     double mass_frac = B * alpha_num * sum_part;
+
+    // Sanity check
+    if (!(0.0 < mass_frac))
+        mass_frac = 0.0;
+
     return mass_frac;
 }
 
@@ -1605,9 +1598,9 @@ void ReactorMG::calc_transmutation()
     };
 
 
+    // Fill in the chains container with more than one-step values
     if (bt_s == 0)
     {
-        // Fill in the chains container with more than one-step values
         for (iso_iter iso = J.begin(); iso != J.end(); iso++)
         {
             i = (*iso);
@@ -1658,13 +1651,13 @@ void ReactorMG::calc_transmutation()
 
             if (i == j)
             {
-                comp_next[ind] += comp_prev[ind] * exp(-trans_consts[ind] * dt);
-                std::cout << " (" << i << ", " << j << ") = " << exp(-trans_consts[ind] * dt) << "\n";
+                comp_next[jnd] += comp_prev[ind] * exp(-trans_consts[ind] * dt);
+                //std::cout << " (" << i << ", " << j << ") = " << exp(-trans_consts[ind] * dt) << "\n";
             }
             else
             {
-                comp_next[ind] += comp_prev[ind] * bateman(i, j, dt);
-                std::cout << " (" << i << ", " << j << ") = " << bateman(i, j, dt) << "\n";
+                comp_next[jnd] += comp_prev[ind] * bateman(i, j, dt);
+                //std::cout << " (" << i << ", " << j << ") = " << bateman(i, j, dt) << "\n";
             }
 
         };
@@ -1699,13 +1692,6 @@ void ReactorMG::calc_transmutation()
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
 //    ms_next.print_ms();
-
-    /*
-    std::cout << "trans_consts = [";
-    for (ind = 0; ind < K_num; ind++)
-        std::cout << ",  " << trans_consts[ind];
-    std::cout << "]\n";
-    */
 
     int a [1] = {100}; a[9000] = 1;
 };
