@@ -1586,10 +1586,10 @@ void ReactorMG::calc_transmutation()
     int knd, qnd;
     trans_consts = std::vector<double>(K_num, 0.0);
     branch_ratios = M_tij[bt_s].todense();
-    double brsum ;
+    //double brsum ;
     for (knd = 0; knd < K_num; knd++)
     {
-        brsum = 0.0;
+        //brsum = 0.0;
         trans_consts[knd] = -branch_ratios[knd][knd];
 
         if (trans_consts[knd] == 0.0)
@@ -1599,9 +1599,9 @@ void ReactorMG::calc_transmutation()
         for (qnd = 0; qnd < K_num; qnd++)
         {
             branch_ratios[knd][qnd] = branch_ratios[knd][qnd] / trans_consts[knd];
-            brsum += branch_ratios[knd][qnd];
+            //brsum += branch_ratios[knd][qnd];
         }
-        std::cout << "Branch ratio sum [" << K_ind[knd] << "] = " << brsum << "\n"; 
+        //std::cout << "Branch ratio sum [" << K_ord[knd] << "] = " << brsum << "\n"; 
     };
 
 
@@ -1654,20 +1654,20 @@ void ReactorMG::calc_transmutation()
             //if (J.count(j) == 0)
             //    continue;
 
-            if (transmutation_chains[i].count(j) == 0)
-                continue;
 
             if (i == j)
             {
-                comp_next[jnd] += comp_prev[ind] * exp(-trans_consts[ind] * dt);
+                comp_next[ind] += comp_prev[ind] * exp(-trans_consts[ind] * dt);
                 //std::cout << " (" << i << ", " << j << ") = " << exp(-trans_consts[ind] * dt) << "\n";
             }
+            else if (transmutation_chains[i].count(j) == 0)
+                continue;
             else
             {
                 comp_next[jnd] += comp_prev[ind] * bateman(i, j, dt);
                 //std::cout << " (" << i << ", " << j << ") = " << bateman(i, j, dt) << "\n";
             }
-
+           std::cout << " (" << i << ", " << j << ") = " << -trans_consts[ind] * dt << "   " << branch_ratios[ind][jnd] << "\n";
         };
     };
 
