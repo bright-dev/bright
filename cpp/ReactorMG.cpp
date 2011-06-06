@@ -1396,6 +1396,9 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
         k = K_ord[knd];
 
+        if (transmutation_chains[i].count(k) == 1)
+            continue;
+
         // Don't allow cyclic chains
         k_in_chain = false;
         for (n = 0; n < chain_len; n++)
@@ -1626,6 +1629,9 @@ void ReactorMG::calc_transmutation()
                     continue;
 
                 j = K_ord[jnd];
+
+                //if (transmutation_chains[i].count(j) == 1)
+                //    continue;
 
                 std::cout << "Starting with chain (" << i << ", " << j << ")\n";
                 add_transmutation_chains(transmutation_chains[i][j]);
