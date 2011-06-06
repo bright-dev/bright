@@ -136,7 +136,7 @@ public:
     bright::SparseMatrix<double> fast_yield_matrix;
     std::vector< bright::SparseMatrix<double> > fission_product_yield_matrix;
 
-    std::vector<double> decay_consts;
+    std::vector<double> trans_consts;
     std::vector< std::vector<double> > branch_ratios;
     std::map<int, std::map<int, std::vector<int> > > transmutation_chains;
 

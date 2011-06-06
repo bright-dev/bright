@@ -1354,27 +1354,7 @@ void ReactorMG::assemble_transmutation_matrices()
 
             transmutation_chains[i][j] = std::vector<int>(2);
             transmutation_chains[i][j][0] = i;
-            transmutation_chains[i][j][0] = j;
-        };
-
-
-        // Fill in the chains container with more than one-step values
-        M_iter = M_tij[bt_s].sm.begin();
-        for ( ; M_iter != M_end; M_iter++)
-        {
-            ind = (*M_iter).row;
-            i = K_ord[ind];
-
-            jnd = (*M_iter).col;
-            j = K_ord[jnd];
-
-            if (J.count(i) == 0)
-                continue;
-
-            if (i == j)
-                continue;
-
-            add_transmutation_chains(transmutation_chains[i][j]);
+            transmutation_chains[i][j][1] = j;
         };
 
         std::cout << "Added chains\n";
@@ -1397,22 +1377,24 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
     jnd = K_ind[j];
 
-//    std::cout << "Adding sub-chains of (" << dc.i << ", " << dc.j << ")\n";
+    std::cout << "Adding sub-chains of (" << i << ", " << j << ")\n";
 
-    std::vector< bright::sparse_matrix_entry<double> >::iterator M_beg, M_end, to_isos_iter;
-    M_beg = M_tij[bt_s].sm.begin();
-    M_end = M_tij[bt_s].sm.end();
-    to_isos_iter = bright::find_row(M_beg, M_end, jnd);
+//    std::vector< bright::sparse_matrix_entry<double> >::iterator M_beg, M_end, to_isos_iter;
+//    M_beg = M_tij[bt_s].sm.begin();
+//    M_end = M_tij[bt_s].sm.end();
+//    to_isos_iter = bright::find_row(M_beg, M_end, jnd);
 
     std::vector<int> next_chain;
 
-    for (; j != (*to_isos_iter).row; to_isos_iter++)
+    for (knd = 0; knd < K_num; knd++)
     {
-        knd = (*to_isos_iter).col;
-        k = K_ord[knd];
+        if (branch_ratios[jnd][knd] == 0.0)
+            continue;
 
         if (jnd == knd)
             continue;
+
+        k = K_ord[knd];
 
         // Don't allow cyclic chains
         k_in_chain = false;
@@ -1451,7 +1433,14 @@ double ReactorMG::bateman(int i, int j, double t)
     int n;
     int N = chain.size();
 
-    int qnd, rnd, snd;
+    std::cout << i << " -->  " << j << "\n";
+    std::cout << "chain = [";
+    for (n = 0; n < N; n++)
+        std::cout << chain[n] << ", ";
+    std::cout << "]\n";
+
+
+    int qnd, rnd;
     qnd = ind;
 
     double B = 1.0;
@@ -1462,6 +1451,9 @@ double ReactorMG::bateman(int i, int j, double t)
         rnd = K_ind[chain[n+1]];
         B *= branch_ratios[qnd][rnd];
         alpha_num *= trans_consts[qnd];
+
+        std::cout << chain[n] << "  " << chain[n+1] << ")  = " << B << "   "  << alpha_num << "\n";  
+        
         qnd = rnd;
     };
 
@@ -1477,13 +1469,18 @@ double ReactorMG::bateman(int i, int j, double t)
         {
             rnd = K_ind[chain[m]];
             if (n != m)
-                alpha_den *= (trans_const[rnd] - trans_const[qnd]);
+                alpha_den *= (trans_consts[rnd] - trans_consts[qnd]);
         };
 
-        sum_part += (exp(-trans_const[qnd] * t) / alpha_den);
+        sum_part += (exp(-trans_consts[qnd] * t) / alpha_den);
+
+        std::cout << chain[n] << ")  = " << sum_part << "   "  << alpha_den << "\n";  
     };
 
     double mass_frac = B * alpha_num * sum_part;
+
+    //int a [1] = {100}; a[9000] = 1;
+
     return mass_frac;
 }
 
@@ -1611,8 +1608,32 @@ void ReactorMG::calc_transmutation()
 
         branch_ratios[k][k] = 0.0;
         for (q = 0; q < K_num; q++)
-            branch_ratios[k][k] = branch_ratios[k][q] / trans_consts[k];
+            branch_ratios[k][q] = branch_ratios[k][q] / trans_consts[k];
     };
+
+
+    if (bt_s == 0)
+    {
+        // Fill in the chains container with more than one-step values
+        for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+        {
+            i = (*iso);
+            ind = K_ind[i];
+
+            for (jnd = 0; jnd < K_num; jnd++)
+            {
+                if (branch_ratios[ind][jnd] == 0.0)
+                    continue;
+
+                j = K_ord[jnd];
+
+                std::cout << "Starting with chain (" << i << ", " << j << ")\n";
+                add_transmutation_chains(transmutation_chains[i][j]);
+            };
+        };
+    };
+
+
 
     // Make mass vectors
     std::vector<double> comp_prev (K_num, 0.0);
@@ -1623,23 +1644,37 @@ void ReactorMG::calc_transmutation()
     };
 
 
-    std::vector<double> comp_next = (K_num, 0.0);
+    std::vector<double> comp_next (K_num, 0.0);
     for (ind = 0; ind < K_num; ind++)
     {
         if (comp_prev[ind] == 0.0)
             continue;
 
         i = K_ord[ind];
+        if (J.count(i) == 0)
+            continue;
+
         for (jnd = 0; jnd < K_num; jnd++)
         {
             j = K_ord[jnd];
+
+            if (J.count(j) == 0)
+                continue;
+
             if (transmutation_chains[i].count(j) == 0)
                 continue;
 
             if (i == j)
-                comp_next[ind] += comp_prev[ind] * exp(-trans_consts * dt);
+            {
+                comp_next[ind] += comp_prev[ind] * exp(-trans_consts[ind] * dt);
+                std::cout << " (" << i << ", " << j << ") = " << exp(-trans_consts[ind] * dt) << "\n";
+            }
             else
-                comp_next[ind] += comp_prev[ind] * bateman(i, j, dt);     
+            {
+                comp_next[ind] += comp_prev[ind] * bateman(i, j, dt);
+                std::cout << " (" << i << ", " << j << ") = " << bateman(i, j, dt) << "\n";
+            }
+
         };
     };
 
@@ -1672,7 +1707,15 @@ void ReactorMG::calc_transmutation()
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
 //    ms_next.print_ms();
-//    int a [1] = {100}; a[9000] = 1;
+
+    /*
+    std::cout << "trans_consts = [";
+    for (ind = 0; ind < K_num; ind++)
+        std::cout << ",  " << trans_consts[ind];
+    std::cout << "]\n";
+    */
+
+    int a [1] = {100}; a[9000] = 1;
 };
 
 
