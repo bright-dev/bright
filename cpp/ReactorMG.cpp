@@ -1587,7 +1587,7 @@ void ReactorMG::calc_transmutation()
     trans_consts = std::vector<double>(K_num, 0.0);
     branch_ratios = M_tij[bt_s].todense();
     double brsum ;
-    for (k = 0; k < K_num; k++)
+    for (knd = 0; knd < K_num; knd++)
     {
         brsum = 0.0;
         trans_consts[knd] = -branch_ratios[knd][knd];
@@ -1596,7 +1596,7 @@ void ReactorMG::calc_transmutation()
             continue;
 
         branch_ratios[knd][knd] = 0.0;
-        for (q = 0; q < K_num; q++)
+        for (qnd = 0; qnd < K_num; qnd++)
         {
             branch_ratios[knd][qnd] = branch_ratios[knd][qnd] / trans_consts[knd];
             brsum += branch_ratios[knd][qnd];
