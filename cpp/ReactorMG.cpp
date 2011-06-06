@@ -1377,13 +1377,6 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
     jnd = K_ind[j];
 
-    std::cout << "Adding sub-chains of (" << i << ", " << j << ")\n";
-
-//    std::vector< bright::sparse_matrix_entry<double> >::iterator M_beg, M_end, to_isos_iter;
-//    M_beg = M_tij[bt_s].sm.begin();
-//    M_end = M_tij[bt_s].sm.end();
-//    to_isos_iter = bright::find_row(M_beg, M_end, jnd);
-
     std::vector<int> next_chain;
 
     for (knd = 0; knd < K_num; knd++)
@@ -1481,9 +1474,6 @@ double ReactorMG::bateman(int i, int j, double t)
     };
 
     double mass_frac = B * alpha_num * sum_part;
-
-    //int a [1] = {100}; a[9000] = 1;
-
     return mass_frac;
 }
 
@@ -1630,10 +1620,6 @@ void ReactorMG::calc_transmutation()
 
                 j = K_ord[jnd];
 
-                //if (transmutation_chains[i].count(j) == 1)
-                //    continue;
-
-                std::cout << "Starting with chain (" << i << ", " << j << ")\n";
                 add_transmutation_chains(transmutation_chains[i][j]);
             };
         };
