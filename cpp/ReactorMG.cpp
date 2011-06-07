@@ -1489,7 +1489,7 @@ void ReactorMG::calc_criticality()
     if (bt_s == 0)
         Phi_t[bt_s] = 0.0;
     else
-        Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s-1]) * bright::sec_per_day;
+        Phi_t[bt_s] = Phi_t[bt_s - 1] + (phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s-1]) * bright::sec_per_day);
 
     // Calculate the multiplication factor, physically, and not from the eigenvalue
     double k_num = 0.0;
