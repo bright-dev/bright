@@ -761,7 +761,6 @@ void ReactorMG::calc_mass_weights()
         mass_HM += T_it[*iso][bt_s];
         inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso));
     };
-    std::cout << "  Mass HM = " << mass_HM << "\n";
     A_HM_t[bt_s] = mass_HM / inverse_A_HM;
 
 
@@ -1813,7 +1812,7 @@ void ReactorMG::burnup_core()
         burn_time = burn_times[s];
 
         if (2 <= FCComps::verbosity)
-            std::cout << "Time step[" << s << "] = " << burn_times[s] << "\n";
+            std::cout << "Time step " << s << " = " << burn_times[s] << " days\n";
 
         // Find the nearest neightbors for this time.
         calc_nearest_neighbors();
