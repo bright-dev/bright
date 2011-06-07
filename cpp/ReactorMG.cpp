@@ -384,23 +384,6 @@ void ReactorMG::loadlib(std::string libfile)
             fission_product_yield_matrix[g] = thermal_yield_matrix;
     };
 
-/*
-    double mtot = 0.0;
-    std::vector<double> ones (K_num, 1.0);
-    std::vector<double> mass;
-    for (g = 0; g < G; g++)
-    {
-        mass = fission_product_yield_matrix[g] * ones;
-
-        CompDict cd;
-        for (ind = 0; ind < K_num; ind++)
-            cd[K_ord[ind]] = mass[ind];
-
-        MassStream ms (cd);
-        ms.print_ms();
-    };
-    //int a [1] = {100}; std::cout << a[9000] << "\n";
-*/
 
     std::cout << "Interpolated yields\n";
 
@@ -1182,8 +1165,6 @@ void ReactorMG::assemble_transmutation_matrices()
 
             //    tot_fpy += fpy;
             };
-
-//            std::cout << "  Total FP for " << i << " is " << tot_fpy << "\n";
         };
 
         // Add the capture cross-section
@@ -1308,10 +1289,6 @@ void ReactorMG::assemble_transmutation_matrices()
     {
         // Adjust the flux value for burning
         adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
-//        if (bt_s == 0)
-//            adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
-//        else
-//            adj_phi = bright::cm2_per_barn * (phi_tg[bt_s][g] + phi_tg[bt_s-1][g]) / 2.0;
 
         // Skip this group if there is no flux 
         if (adj_phi == 0.0)
@@ -1320,9 +1297,6 @@ void ReactorMG::assemble_transmutation_matrices()
         T_int_tij[bt_s] = T_int_tij[bt_s] + (T_matrix[g] * adj_phi);
     };
     
-//    std::cout << "T_int_tij[bt_s] before prune was " <<  T_int_tij[bt_s].sm.size() << "\n";
-//    T_int_tij[bt_s].prune(0.0001);
-//    std::cout << "and T_int_tij[bt_s] after prune is " << T_int_tij[bt_s].sm.size() << "\n";
 
     std::cout << "Integrated over energy\n";
 
@@ -1545,7 +1519,8 @@ void ReactorMG::calc_criticality()
     phi_t[bt_s] = 0.0;
     for (g = 0; g < G; g++)
     {
-        phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
+        //phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
+        phi_tg[bt_s][g] = flux * phi1[g] / phi1_tot;
         phi_t[bt_s] += phi_tg[bt_s][g];
     };
 
@@ -1689,7 +1664,7 @@ void ReactorMG::calc_transmutation()
     ms_next.print_ms();
     std::cout << "mass = " << ms_next.mass << "\n";
 
-    int a [1] = {100}; a[9000] = 1;
+    //int a [1] = {100}; a[9000] = 1;
 };
 
 
