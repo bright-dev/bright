@@ -240,8 +240,6 @@ void ReactorMG::loadlib(std::string libfile)
     for (k = 0; k < K_num; k++)
         K_ind[K_ord[k]] = k;
 
-    std::cout << "Loading decay Matrix\n";
-
     // Make decay_martrix from this data.
     decay_matrix = bright::SparseMatrix<double>(2*decay_data_length, K_num, K_num);
 
@@ -267,8 +265,6 @@ void ReactorMG::loadlib(std::string libfile)
 
     decay_matrix.clean_up();
 
-    std::cout << "    " << decay_matrix.size() << "\n";
-
 
     //
     // Read in the fission table
@@ -285,8 +281,6 @@ void ReactorMG::loadlib(std::string libfile)
     //  value = vector of J_indexs
     std::map<int, std::vector<int> > thermal_join;
     std::map<int, std::vector<int> > fast_join;
-
-    std::cout << "Loading FP Joins\n";
 
     int ty, fy;
     for (l = 0; l < fission_length; l++)
@@ -328,8 +322,6 @@ void ReactorMG::loadlib(std::string libfile)
     thermal_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
     fast_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
 
-    std::cout << "Loading FP Yeilds\n";
-
     int index, tj, fj, TJ, FJ;
     double mf;
     for (l = 0; l < fp_yields_length; l++)
@@ -366,9 +358,6 @@ void ReactorMG::loadlib(std::string libfile)
     thermal_yield_matrix.clean_up();
     fast_yield_matrix.clean_up();
 
-    std::cout << "   Therm  " << thermal_yield_matrix.size() << "\n";
-    std::cout << "   Fast   " << fast_yield_matrix.size() << "\n";
-
 
     // Make fission product yield matrix
     fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
@@ -384,8 +373,6 @@ void ReactorMG::loadlib(std::string libfile)
             fission_product_yield_matrix[g] = thermal_yield_matrix;
     };
 
-
-    std::cout << "Interpolated yields\n";
 
     //
     // Read in the one group cross sections
@@ -415,8 +402,6 @@ void ReactorMG::loadlib(std::string libfile)
 
     zeros_pg = std::vector< std::vector<double> >(nperturbations, std::vector<double> (G,  0.0));
     zeros_pgh =  std::vector< std::vector< std::vector<double> > >(nperturbations, std::vector< std::vector<double> > (G,  std::vector<double> (G, 0.0)));
-
-    std::cout << "Reading in 1G XS\n";
 
     for (l = 0; l < xs_1g_fast_length; l++)
     {
@@ -475,8 +460,6 @@ void ReactorMG::loadlib(std::string libfile)
         sigma_2n_x_pg[i] = zeros_pg;
     };
 
-    std::cout << "Zero Out Other Isos\n";
-
     // Zero out XS for isos present in decay but not XS data
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
@@ -501,8 +484,6 @@ void ReactorMG::loadlib(std::string libfile)
 
     // close the nuc_data library
     nuc_data_h5.close();
-
-    std::cout << "Finished loadlib()\n";
 
     return;
 };
@@ -1080,8 +1061,6 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
     // Assemble the F matrix
-//    F_fuel_tgh[bt_s] = bright::vector_outer_product(chi_fuel_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
-//    F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_tg[bt_s]);
     F_fuel_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_fuel_tg[bt_s], chi_fuel_tg[bt_s]);
     F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
 
@@ -1123,10 +1102,6 @@ void ReactorMG::assemble_transmutation_matrices()
         i = K_ord[ind];
 
         // Add diag entries
-        //for (g = 0; g < G; g++)
-        //    T_matrix[g].push_back(ind, ind, -1.0 * sigma_a_itg[i][bt_s][g]);
-/*
-*/
         for (g = 0; g < G; g++)
             T_matrix[g].push_back(ind, ind, -(sigma_f_itg[i][bt_s][g] + \
                                               sigma_gamma_itg[i][bt_s][g] + \
@@ -1155,15 +1130,12 @@ void ReactorMG::assemble_transmutation_matrices()
                 fpy_ind = ind_PU239;
             };
 
-            //double tot_fpy = 0.0;
             while((*fpy_iter).row == fpy_ind)
             {
                 jnd = (*fpy_iter).col;
                 fpy = (*fpy_iter).val;
                 T_matrix[g].push_back(ind, jnd, fpy * sig);
                 fpy_iter++;
-
-            //    tot_fpy += fpy;
             };
         };
 
@@ -1274,12 +1246,7 @@ void ReactorMG::assemble_transmutation_matrices()
     };
 
     for (g = 0; g < G; g++)
-    {
         T_matrix[g].clean_up();
-
-//        T_matrix[g].prune();
-        std::cout << "  " << g << "   " << T_matrix[g].size() << "\n";
-    };
 
 
 
@@ -1298,12 +1265,8 @@ void ReactorMG::assemble_transmutation_matrices()
     };
     
 
-    std::cout << "Integrated over energy\n";
-
     // Make the transmutation matrix for this time step
     M_tij[bt_s] = (T_int_tij[bt_s] + decay_matrix);
-
-    std::cout << "Added decay\n";
 
     // Add initial transmutatio chains
     if (bt_s == 0)
@@ -1331,9 +1294,7 @@ void ReactorMG::assemble_transmutation_matrices()
             transmutation_chains[i][j][0] = i;
             transmutation_chains[i][j][1] = j;
         };
-
-        std::cout << "Added chains\n";
-    }
+    };
 
 };
 
@@ -1514,7 +1475,9 @@ void ReactorMG::calc_criticality()
     // Rescale flux
     double phi1_tot = 0.0;
     for (g = 0; g < G; g++)
-        phi1_tot += phi1[0];
+        phi1_tot += phi1[g];
+
+    //std::cout << "sum(phi1) = " << phi1_tot << "\n";
 
     phi_t[bt_s] = 0.0;
     for (g = 0; g < G; g++)
@@ -1577,7 +1540,6 @@ void ReactorMG::calc_transmutation()
     // Fill in the chains container with more than one-step values
     if (bt_s == 0)
     {
-        //for (iso_iter iso = J.begin(); iso != J.end(); iso++)
         for (iso_iter iso = K.begin(); iso != K.end(); iso++)
         {
             i = (*iso);
@@ -1613,8 +1575,8 @@ void ReactorMG::calc_transmutation()
             continue;
 
         i = K_ord[ind];
-        //if (J.count(i) == 0)
-        //    continue;
+        if (J.count(i) == 0)
+            continue;
 
         for (jnd = 0; jnd < K_num; jnd++)
         {
@@ -1648,7 +1610,6 @@ void ReactorMG::calc_transmutation()
         i = K_ord[ind];
         cd_prev[i] = comp_prev[ind];
         cd_next[i] = comp_next[ind];
-        //std::cout << i << "   " << comp_prev[ind] << "   " << comp_next[ind] << "\n";
     };
 
     MassStream ms_prev (cd_prev);
@@ -1661,10 +1622,7 @@ void ReactorMG::calc_transmutation()
 
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
-    ms_next.print_ms();
-    std::cout << "mass = " << ms_next.mass << "\n";
-
-    //int a [1] = {100}; a[9000] = 1;
+    std::cout << "   mass = " << ms_next.mass << "\n";
 };
 
 
@@ -1854,42 +1812,29 @@ void ReactorMG::burnup_core()
         bt_s = s;
         burn_time = burn_times[s];
 
-        std::cout << s << "\n";
+        if (2 <= FCComps::verbosity)
+            std::cout << "Time step[" << s << "] = " << burn_times[s] << "\n";
 
         // Find the nearest neightbors for this time.
-        std::cout << "cnn\n";
         calc_nearest_neighbors();
 
         // Interpolate cross section in preparation for 
         // criticality calculation.
-        std::cout << "ics\n";
         interpolate_cross_sections();
 
         // Fold the mass weights for this time step
-        std::cout << "cmw\n";
         calc_mass_weights();
-        std::cout << "fmw\n";
         fold_mass_weights();
 
         // Preform the criticality calulation
-        std::cout << "amm\n";
         assemble_multigroup_matrices();
-        std::cout << "cc\n";
         calc_criticality();
 
         // Preform the burnup calulation
-        std::cout << "atm\n";
         assemble_transmutation_matrices();
 
-        std::cout << "ct\n";
-//        if (s == 0)
-//            BU_t[0] = 0.0;
-//        else        
-//            calc_transmutation();
         if (s != S - 1)
             calc_transmutation();
-
-        std::cout << "\n\n\n\n";
     };
 
 };
