@@ -13,13 +13,15 @@ from char.m2py import convert_res, convert_dep
 
 def run_serpent():
     input_file = 'serpent_reactormg_regression'
-    serpent.main(input_file)
 
-    convert_res(input_file + '_res.m')
+    if (not os.path.exists(input_file + '_res.py')) or (not os.path.exists(input_file + '_dep.py')):
+        serpent.main(input_file)
+        convert_res(input_file + '_res.m')
+        convert_dep(input_file + '_dep.m')
+
     res = {}
     exec(input_file + '_res.py', {}, res)
 
-    convert_dep(input_file + '_dep.m')
     dep = {}
     exec(input_file + '_dep.py', {}, dep)
 

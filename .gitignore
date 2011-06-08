@@ -23,4 +23,4 @@ python/src/bright/tests/serpent_reactormg_regression_dep.m
 python/src/bright/tests/serpent_reactormg_regression_dep.py
 python/src/bright/tests/serpent_reactormg_regression.seed
 python/src/bright/tests/serpent_reactormg_regression_geom1.png
-python/src/bright/tests/serpent_reactormg_regression_mesh1_bstep1.png
+python/src/bright/tests/serpent_reactormg_regression_mesh1_bstep*.png
