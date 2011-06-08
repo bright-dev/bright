@@ -20,10 +20,10 @@ def run_serpent():
         convert_dep(input_file + '_dep.m')
 
     res = {}
-    exec(input_file + '_res.py', {}, res)
+    execfile(input_file + '_res.py', {}, res)
 
     dep = {}
-    exec(input_file + '_dep.py', {}, dep)
+    execfile(input_file + '_dep.py', {}, dep)
 
     return res, dep
 
