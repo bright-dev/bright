@@ -82,6 +82,9 @@ def test_regression():
     res, dep = run_serpent()
     rmg = run_reactormg()
 
+    print "Reactor k: ", rmg.k_t
+    print "Serpent k: ", res['SIX_FF_KEFF'][::2]
+    print "Fractional Diff: ", 1.0 - rmg.k_t / res['SIX_FF_KEFF'][::2]
 
 if __name__ == "__main__":
     test_regression()
