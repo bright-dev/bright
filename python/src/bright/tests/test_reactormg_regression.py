@@ -86,5 +86,7 @@ def test_regression():
     print "Serpent k: ", res['SIX_FF_KEFF'][::2]
     print "Fractional Diff: ", 1.0 - rmg.k_t / res['SIX_FF_KEFF'][::2]
 
+    return rmg, res, dep
+
 if __name__ == "__main__":
-    test_regression()
+    rmg, res, dep = test_regression()
