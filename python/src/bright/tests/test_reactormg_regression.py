@@ -6,9 +6,27 @@ from bright import *
 import isoname
 from mass_stream import MassStream
 
+import serpent
+
+from char.m2py import convert_res, convert_dep
 
 
-def test_regression():
+def run_serpent():
+    input_file = 'serpent_reactormg_regression'
+    serpent.main(input_file)
+
+    convert_res(input_file + '_res.m')
+    res = {}
+    exec(input_file + '_res.py', {}, res)
+
+    convert_dep(input_file + '_dep.m')
+    dep = {}
+    exec(input_file + '_dep.py', {}, dep)
+
+    return res, dep
+
+
+def run_reactormg():
     # Init bright
     libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
     load_track_isos_hdf5(libfile)
@@ -35,14 +53,33 @@ def test_regression():
     rp.lattice_type = 'Spherical'
     rp.lattice_type = 'Planar'
     rp.rescale_hydrogen = True
+
+    rp.fuel_radius = 0.412
+    rp.void_radius = 0.4205
+    rp.clad_radius = 0.475
+    rp.unit_cell_pitch = 1.33
+
+    rp.open_slots = 25
+    rp.total_slots = 289
+
     rp.burn_times = np.linspace(0.0, 365.0, 10)
+
+    # Init mass stream
+    leu = MassStream({922350: 0.05, 922380: 0.95})
 
     # Init ReactorMG
     rmg = ReactorMG(reactor_parameters=rp, name="rmg")
+    rmg.loadlib(libfile)
 
-    
+    # Run the reactor
+    rmg.calc(leu)
+    return rmg
 
-    leu = MassStream({922350: 0.05, 922380: 0.95})
+
+def test_regression():
+    res, dep = run_serpent()
+    rmg = run_reactormg()
+
 
 if __name__ == "__main__":
     test_regresssion()
