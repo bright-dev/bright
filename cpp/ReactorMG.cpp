@@ -1060,8 +1060,14 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
     // Assemble the F matrix
-    F_fuel_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_fuel_tg[bt_s], chi_fuel_tg[bt_s]);
-    F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
+    F_fuel_tgh[bt_s] = bright::vector_outer_product(chi_fuel_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
+
+    //F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_tg[bt_s]);
+    //F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
+    F_tgh[bt_s] = bright::vector_outer_product(chi_fuel_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
+
+    //F_fuel_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_fuel_tg[bt_s], chi_fuel_tg[bt_s]);
+    //F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
 
     // Grab the inverse of the A matrix
     A_inv_fuel_tgh[bt_s] = bright::matrix_inverse(A_fuel_tgh[bt_s]);
@@ -1470,6 +1476,7 @@ void ReactorMG::calc_criticality()
     };
 
     // Set the final flux values to the class members
+    std::cout << "   k0 = " << k0 << "\n";
 
     // Rescale flux
     double phi1_tot = 0.0;

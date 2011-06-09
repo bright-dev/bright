@@ -74,7 +74,9 @@ def run_reactormg():
     rmg.loadlib(libfile)
 
     # Run the reactor
-    rmg.calc(leu)
+    #rmg.calc(leu)
+    rmg.ms_feed = leu
+    rmg.burnup_core()
     return rmg
 
 
@@ -83,8 +85,16 @@ def test_regression():
     rmg = run_reactormg()
 
     print "Reactor k: ", rmg.k_t
-    print "Serpent k: ", res['SIX_FF_KEFF'][::2]
-    print "Fractional Diff: ", 1.0 - rmg.k_t / res['SIX_FF_KEFF'][::2]
+    print "Serpent k: ", res['SIX_FF_KEFF'][:, 0]
+    print "Fractional Diff: ", 1.0 - rmg.k_t / res['SIX_FF_KEFF'][:, 0]
+    print
+
+    r_phi = rmg.phi_tg[0] /rmg.phi_t[0]
+    s_phi = res['FLUX'][0, 2::2] / res['FLUX'][0, 0]
+    print "Normalized Reactor phi: ", r_phi
+    print "Normalized Serpent phi: ", s_phi
+    print "Fractional Diff: ", 1.0 - r_phi / s_phi
+    print
 
     return rmg, res, dep
 
