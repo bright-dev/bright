@@ -7,6 +7,7 @@ from numpy.testing import assert_array_equal, assert_array_almost_equal
 
 import isoname
 
+np.seterr(all='ignore')
 
 rx_h5 = None
 isos_LL = None
