@@ -488,6 +488,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         map[int, vector[double]] Ti0
         map[int, vector[vector[double]]] sigma_t_pg
+        map[int, vector[vector[double]]] sigma_a_pg
         map[int, vector[vector[double]]] nubar_sigma_f_pg
         map[int, vector[vector[double]]] chi_pg
         map[int, vector[vector[vector[double]]]] sigma_s_pgh

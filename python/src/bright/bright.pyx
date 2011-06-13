@@ -5610,6 +5610,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.sigma_t_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
     
     
+    property sigma_a_pg:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_pg)
+    
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_a_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+    
+    
     property nubar_sigma_f_pg:
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_sigma_f_pg)

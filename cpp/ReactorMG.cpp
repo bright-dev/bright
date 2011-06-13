@@ -151,6 +151,7 @@ void ReactorMG::loadlib(std::string libfile)
     // Clear transmutation vectors and cross sections before reading in
     Ti0.clear();
     sigma_t_pg.clear();
+    sigma_a_pg.clear();
     nubar_sigma_f_pg.clear();
     chi_pg.clear();
     sigma_s_pgh.clear();
