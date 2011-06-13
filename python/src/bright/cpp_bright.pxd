@@ -525,6 +525,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         map[int, vector[double]] T_it
         map[int, vector[vector[double]]] sigma_t_itg
+        map[int, vector[vector[double]]] sigma_a_itg
         map[int, vector[vector[double]]] nubar_sigma_f_itg
         map[int, vector[vector[double]]] chi_itg
         map[int, vector[vector[vector[double]]]] sigma_s_itgh
