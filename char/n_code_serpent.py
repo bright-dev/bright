@@ -676,7 +676,8 @@ class NCodeSerpent(object):
                 if tally == 'sigma_f':
                     det['_sigma_f'] = msnxs.sigma_f(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
                 elif tally == 'sigma_a':
-                    det['_sigma_a'] = msnxs.sigma_a(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                    # Do absorption later, after other XS have been calculated
+                    pass 
                 elif tally == 'sigma_s_gh':
                     det['_sigma_s_gh'] = msnxs.sigma_s_gh(iso, self.env['temperature'], E_n=E_n, E_g=E_g, phi_n=phi_n)
                 elif tally == 'sigma_s':
@@ -710,14 +711,14 @@ class NCodeSerpent(object):
             else:
                 det['_sigma_2n_x'] = msnxs.sigma_reaction(iso_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
 
-        # Check validity of sigma_a
-        if ('_sigma_a' in det) and (det['_sigma_a'] == 0.0).all():
-            for tally in ['sigma_f', "sigma_gamma", "sigma_2n", "sigma_3n", "sigma_alpha", "sigma_proton"]:
+        # Get absoprtion XS if MT not available
+        if tallies['sigma_a'] not in self.env['iso_mts'][iso_zz]:
+            det['_sigma_a'] = np.zeros(len(E_g) - 1, dtype=float)
+            for tally in tally_types.sigma_a_tallies:
                 if (tallies[tally] in self.env['iso_mts'][iso_zz]):
                     det['_sigma_a'] += det['DET' + tally][::-1, 10]
-
-            for tally in ["sigma_gamma_x", "sigma_2n_x"]:
-                det['_sigma_a'] += det['_' + tally]
+                elif '_'+tally in det:
+                    det['_sigma_a'] += det['_' + tally]
 
         return res, det
 

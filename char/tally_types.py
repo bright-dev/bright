@@ -15,6 +15,10 @@ mt_tallies = {"sigma_t": 1,
               }
 mt_tallies.update({"sigma_i{0}".format(i): i+50 for i in range(1, 41)})
 
+# Tallies, which if they exist, sum to make the absorption XS
+sigma_a_tallies = set(["sigma_f", "sigma_gamma", "sigma_gamma_x", "sigma_proton", 
+                       "sigma_d", "sigma_t", "sigma_He3", "sigma_alpha"])
+
 
 # MCNP sets
 mcnp_tallies = {}
@@ -36,7 +40,6 @@ mcnp_advanced = set(["sigma_t", "sigma_f", "nubar", "chi", "sigma_a", "sigma_e",
 serpent_tallies = {}
 serpent_tallies.update(mt_tallies)
 serpent_tallies.update({
-#    "sigma_t": -1, 
     "sigma_t": 1, 
     "sigma_a": 27, 
     "sigma_f": -6, 
@@ -70,6 +73,9 @@ serpent_default = set([
     "sigma_3n", 
     "sigma_alpha", 
     "sigma_proton", 
+    "sigma_d",
+    "sigma_t",
+    "sigma_He3",
     "sigma_gamma_x",
     "sigma_2n_x",
     ]) 
