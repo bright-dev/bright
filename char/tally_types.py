@@ -8,8 +8,8 @@ mt_tallies = {"sigma_t": 1,
               "sigma_a": 27, 
               "sigma_gamma": 102, 
               "sigma_proton": 103,
-              "sigma_d": 104,
-              "sigma_t": 105,
+              "sigma_deut": 104,
+              "sigma_trit": 105,
               "sigma_He3": 106,
               "sigma_alpha": 107,
               }
@@ -17,7 +17,7 @@ mt_tallies.update({"sigma_i{0}".format(i): i+50 for i in range(1, 41)})
 
 # Tallies, which if they exist, sum to make the absorption XS
 sigma_a_tallies = set(["sigma_f", "sigma_gamma", "sigma_gamma_x", "sigma_proton", 
-                       "sigma_d", "sigma_t", "sigma_He3", "sigma_alpha"])
+                       "sigma_deut", "sigma_trit", "sigma_He3", "sigma_alpha"])
 
 
 # MCNP sets
@@ -73,8 +73,8 @@ serpent_default = set([
     "sigma_3n", 
     "sigma_alpha", 
     "sigma_proton", 
-    "sigma_d",
-    "sigma_t",
+    "sigma_deut",
+    "sigma_trit",
     "sigma_He3",
     "sigma_gamma_x",
     "sigma_2n_x",

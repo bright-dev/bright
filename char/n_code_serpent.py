@@ -811,6 +811,12 @@ class NCodeSerpent(object):
         if 'sigma_proton' in tallies:
             xs_dict['sigma_proton'] = msnxs.sigma_reaction(iso, 'proton')
 
+        if 'sigma_deut' in tallies:
+            xs_dict['sigma_deut'] = msnxs.sigma_reaction(iso, 'deut')
+
+        if 'sigma_trit' in tallies:
+            xs_dict['sigma_trit'] = msnxs.sigma_reaction(iso, 'trit')
+
         if 'sigma_gamma_x' in tallies:
             xs_dict['sigma_gamma_x'] = msnxs.sigma_reaction(iso, 'gamma_x')
 
@@ -1417,7 +1423,7 @@ class NCodeSerpent(object):
         # Grab the tallies
         tallies = self.env['tallies']
 
-        # Write the tallies taht were not calculated from models
+        # Write the tallies that were not calculated from models
         for tally in tallies:
             if tally in xs_dict:
                 continue
