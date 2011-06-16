@@ -716,9 +716,9 @@ class NCodeSerpent(object):
             det['_sigma_a'] = np.zeros(len(E_g) - 1, dtype=float)
             for tally in tally_types.sigma_a_tallies:
                 if (tallies[tally] in self.env['iso_mts'][iso_zz]):
-                    det['_sigma_a'] += det['DET' + tally][::-1, 10]
+                    det['_sigma_a'] += det['DET' + tally][:, 10]
                 elif '_'+tally in det:
-                    det['_sigma_a'] += det['_' + tally]
+                    det['_sigma_a'] += det['_' + tally][::-1]
 
         return res, det
 
