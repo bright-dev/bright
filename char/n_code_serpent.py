@@ -1449,8 +1449,8 @@ class NCodeSerpent(object):
             tally_model_array = np.array(xs_dict[tally][::-1])
 
             # Make sure there are no NaNs
-            mask = np.isnan(tally_serp_array)
-            tally_serp_array[mask] = 0.0
+            mask = np.isnan(tally_model_array)
+            tally_model_array[mask] = 0.0
 
             tally_hdf5_array[n] = tally_model_array
 
