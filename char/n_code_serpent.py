@@ -19,6 +19,8 @@ from scipy.integrate import cumtrapz
 import tally_types
 from m2py import convert_res, convert_dep, convert_det
 
+# Hide warnings from numpy
+np.seterr(divide='ignore')
 
 # Setup serpent running
 try:
