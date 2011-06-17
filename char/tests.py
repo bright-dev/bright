@@ -68,7 +68,7 @@ def check_le(arr1, arr2, names=None):
             q = arr1 / arr2
             mask = np.isnan(q)
             assert_array_almost_equal(1.0, q[mask])
-            assert (q[mask-True] <= 1.0).all()
+            assert (q[mask-True] <= 1.0000001).all()
             return
         except AssertionError:
             pass
@@ -78,6 +78,7 @@ def check_le(arr1, arr2, names=None):
         print names[0] + ' = ' + repr(arr1)
         print names[1] + ' = ' + repr(arr2)
         msg = 'not ({0} <= {1})'.format(*names)
+        print (arr1 <= arr2)
         print msg
         raise AssertionError(msg)
 
