@@ -1418,6 +1418,8 @@ class NCodeSerpent(object):
         iso_zz = isoname.mixed_2_zzaaam(iso)
         iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
 
+        iso_is_fissionable = (86 <= iso_zz/10000)
+
         # Open a new hdf5 file 
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
@@ -1445,6 +1447,10 @@ class NCodeSerpent(object):
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
             tally_model_array = np.array(xs_dict[tally][::-1])
+
+            # Make sure there are no NaNs
+            mask = np.isnan(tally_serp_array)
+            tally_serp_array[mask] = 0.0
 
             tally_hdf5_array[n] = tally_model_array
 
