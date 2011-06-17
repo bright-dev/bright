@@ -724,6 +724,8 @@ class NCodeSerpent(object):
                 elif '_'+tally in det:
                     det['_sigma_a'] += det['_' + tally]
 
+            #print(tally + " = " + repr(det['_sigma_a']))
+
         return res, det
 
 
@@ -1288,8 +1290,11 @@ class NCodeSerpent(object):
             tally_hdf5_group = getattr(base_group, 'nubar')
             tally_hdf5_array = getattr(tally_hdf5_group, iso_LL)
 
-            sigma_f = det['DETsigma_f']
-            sigma_f = sigma_f[::-1, 10]
+            # Get fission XS
+            if 'DETsigma_f' in det:
+                sigma_f = det['DETsigma_f'][::-1, 10]
+            elif '_sigma_f' in det:
+                sigma_f = det['_sigma_f'][::-1]
 
             nubar_sigma_f = det['DETnubar_sigma_f']
             nubar_sigma_f = nubar_sigma_f[::-1, 10] 
