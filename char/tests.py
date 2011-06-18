@@ -197,7 +197,7 @@ def test_sigma_f():
             mask = (sig_f != 0.0)
             nu = nu_sig_f[mask] / sig_f[mask]
             yield check_le, 1.0, nu, ['1.0', 'nu(' + sig_f_arr._v_pathname + ')']
-            yield check_le, nu, 5.0, ['nu(' + sig_f_arr._v_pathname + ')', '5.0']
+            yield check_le, nu, 5.5, ['nu(' + sig_f_arr._v_pathname + ')', '5.5']
         else:
             yield check_eq, 0.0, sig_f, ['0.0', sig_f_arr._v_pathname]
             yield check_eq, 0.0, nu_sig_f, ['0.0', nu_sig_f_arr._v_pathname]

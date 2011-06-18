@@ -372,11 +372,16 @@ class NCodeSerpent(object):
         det['xsiso'] = "{0}.{1}".format(iso_serp, self.env['temp_flag'])
 
         if iso_zz in self.env['cool_form'].keys():
-            det['detector_mat'] = 'coolant' 
+            det['detector_mat'] = 'coolant'
+            #det['detector_density'] = self.serpent_fill['cool_density']
         elif iso_zz in self.env['clad_form'].keys():
             det['detector_mat'] = 'cladding' 
+            #det['detector_density'] = self.serpent_fill['clad_density']
         else:
             det['detector_mat'] = 'fuel' 
+            #det['detector_density'] = float(self.serpent_fill['fuel_density']) * self.IHM_weight / self.fuel_weight
+            #if 0.0 < self.ihm_stream.comp.get(iso_zz, 0.0): 
+            #    det['detector_density'] *= self.ihm_stream.comp[iso_zz]
 
         # Setup detectors to calculate XS for
         det['xsdet'] = ''
@@ -677,6 +682,12 @@ class NCodeSerpent(object):
             if (tallies[tally] not in self.env['iso_mts'][iso_zz]) and (tallies[tally] is not None):
                 if tally == 'sigma_f':
                     det['_sigma_f'] = msnxs.sigma_f(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                elif tally == 'nubar_sigma_f':
+                    if (tallies['sigma_f'] in self.env['iso_mts'][iso_zz]):
+                        sig_f = det['DETsigma_f'][:, 10]
+                    else:
+                        sig_f = msnxs.sigma_f(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                    det['_nubar_sigma_f'] = 2.5 * sig_f
                 elif tally == 'sigma_a':
                     # Do absorption later, after other XS have been calculated
                     pass 
@@ -1296,8 +1307,10 @@ class NCodeSerpent(object):
             elif '_sigma_f' in det:
                 sigma_f = det['_sigma_f'][::-1]
 
-            nubar_sigma_f = det['DETnubar_sigma_f']
-            nubar_sigma_f = nubar_sigma_f[::-1, 10] 
+            if 'DETnubar_sigma_f' in det:
+                nubar_sigma_f = det['DETnubar_sigma_f'][::-1, 10]
+            elif '_nubar_sigma_f' in det:
+                nubar_sigma_f = det['_nubar_sigma_f'][::-1]
 
             if iso_is_fissionable:
                 nubar = nubar_sigma_f / sigma_f

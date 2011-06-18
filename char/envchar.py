@@ -97,6 +97,12 @@ def serpent_xs_isos_available(xsdata):
 serpent_mt_always = set(range(-9, 3))
 """A set of MT numbers that is always available in Serpent."""
 
+serpent_mt_fission = set([-6, 18, 19, 20])
+"""A set of MT numbers for fission cross-sections in Serpent."""
+
+serpent_mt_nubar = set([-7])
+"""A set of MT numbers for the number of neutrons per fission times the fission cross-sections in Serpent."""
+
 def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
     """Finds the MT numbers available for each isotope.
 
@@ -133,8 +139,12 @@ def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
         # Get the MT numbers
         mts = ace.mt(*xsdata_dict[iso_serp_flag])
         iso_mt = (mts | serpent_mt_always)
+
         if (iso_zz, temp_flag) in restricted_tallies:
             iso_mt = iso_mt - restricted_tallies[(iso_zz, temp_flag)]
+
+        if 0 == len(iso_mt & serpent_mt_fission):
+            iso_mt = iso_mt - serpent_mt_nubar
 
         # Add this iso to the dict
         iso_mts[iso_zz] = iso_mt
