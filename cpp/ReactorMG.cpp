@@ -68,6 +68,7 @@ void ReactorMG::initialize(ReactorParameters rp)
     use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
     lattice_flag = rp.lattice_type;		//lattice_flagType (Planar || Spherical || Cylindrical)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
+    branch_ratio_cutoff = rp.branch_ratio_cutoff; // Cut-off for bateman chains
 
     // Calculates Volumes
     r_fuel = rp.fuel_radius;    // Fuel region radius
@@ -433,14 +434,38 @@ void ReactorMG::loadlib(std::string libfile)
             Eng_g = E_g[g];
 
             sig_t[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_t, 2.53e-08, xs_1g_thermal_array[l].sigma_t);
+            if (sig_t[g] < 0.0)
+                sig_t[g] = 0.0;
+
             sig_a[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_a, 2.53e-08, xs_1g_thermal_array[l].sigma_a);
+            if (sig_a[g] < 0.0)
+                sig_a[g] = 0.0;
+
             sig_f[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_f, 2.53e-08, xs_1g_thermal_array[l].sigma_f);
+            if (sig_f[g] < 0.0)
+                sig_f[g] = 0.0;
+
             nu_sig_f[g] = 2.5 * sig_f[g];
+
             sig_gamma[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_gamma, 2.53e-08, xs_1g_thermal_array[l].sigma_gamma);
+            if (sig_gamma[g] < 0.0)
+                sig_gamma[g] = 0.0;
+
             sig_2n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_2n, 2.53e-08, xs_1g_thermal_array[l].sigma_2n);
+            if (sig_2n[g] < 0.0)
+                sig_2n[g] = 0.0;
+
             sig_3n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_3n, 2.53e-08, xs_1g_thermal_array[l].sigma_3n);
+            if (sig_3n[g] < 0.0)
+                sig_3n[g] = 0.0;
+
             sig_alpha[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_alpha, 2.53e-08, xs_1g_thermal_array[l].sigma_alpha);
+            if (sig_alpha[g] < 0.0)
+                sig_alpha[g] = 0.0;
+
             sig_proton[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_proton, 2.53e-08, xs_1g_thermal_array[l].sigma_proton);
+            if (sig_proton[g] < 0.0)
+                sig_proton[g] = 0.0;
         };
 
         // Copy back the data to the XS library
@@ -1385,6 +1410,9 @@ double ReactorMG::bateman(int i, int j, double t)
         qnd = rnd;
     };
 
+    // Check trivial results
+    if ((B < branch_ratio_cutoff) || (alpha_num == 0.0))
+        return 0.0;
 
     int m;
     double alpha_den, sum_part;
@@ -1396,9 +1424,14 @@ double ReactorMG::bateman(int i, int j, double t)
         for (m = 0; m < N; m++)
         {
             rnd = K_ind[chain[m]];
+
+            // Debug for equal lambdas
+            //if (trans_consts[rnd] == trans_consts[qnd] && rnd != qnd)
+            //    std::cout << "    trans constants equal for " << chain[n] << ", " << chain[m] << " = " << trans_consts[qnd] << ", " << trans_consts[rnd] << "\n";
+
             if (n != m)
                 alpha_den *= (trans_consts[rnd] - trans_consts[qnd]);
-        };
+         };
 
         sum_part += (exp(-trans_consts[qnd] * t) / alpha_den);
     };
@@ -1599,9 +1632,21 @@ void ReactorMG::calc_transmutation()
                 continue;
             else
                 comp_next[jnd] += comp_prev[ind] * bateman(i, j, dt);
+
+            if (1.0 < comp_next[jnd])
+            {
+                std::cout << i << " --> " << j << " = " << comp_next[jnd] << "\n";
+                std::cout << "   " << i;
+                for (int tc = 1; tc < transmutation_chains[i][j].size(); tc++)
+                    std::cout  << " --> " << transmutation_chains[i][j][tc]; 
+                std::cout << "\n";
+                std::cout << "lamda_i = " << trans_consts[ind] << "   lamda_j = " << trans_consts[jnd] << "   branch = " << branch_ratios[ind][jnd] << "\n";
+                std::cout << "\n";
+            };
         };
     };
 
+    int a [1] = {100}; int b = a[42] * 1;
 
     // Copy this composition back to the tranmutuation matrix
     for (ind = 0; ind < K_num; ind++)

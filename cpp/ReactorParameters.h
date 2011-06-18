@@ -46,6 +46,7 @@ public:
     double open_slots;
     double total_slots;
 
+    double branch_ratio_cutoff;
 };
 
 

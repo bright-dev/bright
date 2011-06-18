@@ -213,6 +213,7 @@ cdef extern from "../../../cpp/ReactorParameters.h":
         bint use_disadvantage_factor
         std.string lattice_type
         bint rescale_hydrogen
+        double branch_ratio_cutoff
 
         double fuel_radius
         double void_radius
@@ -447,6 +448,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
         bint use_zeta
         std.string lattice_flag
         bint rescale_hydrogen_xs
+        double branch_ratio_cutoff
 
         double r_fuel
         double r_void

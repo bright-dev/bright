@@ -1363,6 +1363,8 @@ cdef class ReactorParameters:
 
           This is typically not done for fast reactors but is a useful correction 
           for LWRs.
+        * branch_ratio_cutoff (float): the cutoff value below which the bateman equations
+          are not solved.
         * radius (float): The radius of the fuel region.  In units of [cm].
         * pitch (float): The pitch or length of the unit fuel pin cell.  In units of [cm].
         * open_slots (float): The number of slots in a fuel assembly that are open.  
@@ -1524,6 +1526,16 @@ cdef class ReactorParameters:
 
         def __set__(self, bint value):
             self.rp_pointer.rescale_hydrogen = value
+
+
+    property branch_ratio_cutoff:
+        def __get__(self):
+            return self.rp_pointer.branch_ratio_cutoff
+
+        def __set__(self, double value):
+            self.rp_pointer.branch_ratio_cutoff = value
+
+
 
 
 
@@ -5316,6 +5328,14 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, bint value):
             self.rmg_pointer.rescale_hydrogen_xs = value
+
+
+    property branch_ratio_cutoff:
+        def __get__(self):
+            return self.rmg_pointer.branch_ratio_cutoff
+
+        def __set__(self, double value):
+            self.rmg_pointer.branch_ratio_cutoff = value
 
 
 

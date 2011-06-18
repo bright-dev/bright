@@ -103,6 +103,7 @@ public:
     bool use_zeta;              // Boolean value on whether or not the disadvantage factor should be used
     std::string lattice_flag;   // lattice_flag Type (Planar || Spherical || Cylindrical)
     bool rescale_hydrogen_xs;   // Rescale the Hydrogen-1 XS?
+    double branch_ratio_cutoff;
 
     double r_fuel;  // Fuel region radius
     double r_void;  // Void region radius
