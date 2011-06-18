@@ -97,7 +97,7 @@ def serpent_xs_isos_available(xsdata):
 serpent_mt_always = set(range(-9, 3))
 """A set of MT numbers that is always available in Serpent."""
 
-serpent_mt_fission = set([-6, 18, 19, 20])
+serpent_mt_fission = set([-6, 18, 19, 20, 21, 38])
 """A set of MT numbers for fission cross-sections in Serpent."""
 
 serpent_mt_nubar = set([-7])
@@ -143,7 +143,10 @@ def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
         if (iso_zz, temp_flag) in restricted_tallies:
             iso_mt = iso_mt - restricted_tallies[(iso_zz, temp_flag)]
 
-        if 0 == len(iso_mt & serpent_mt_fission):
+        if 0 == len(iso_mt & serpent_mt_fission - set([-6])):
+            # if isotopic fission not avilable, remove material 
+            # fission and nubar from avilable tallies
+            iso_mt = iso_mt - serpent_mt_fission
             iso_mt = iso_mt - serpent_mt_nubar
 
         # Add this iso to the dict
