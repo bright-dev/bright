@@ -1678,7 +1678,7 @@ void ReactorMG::calc_transmutation()
     double delta_BU = specific_power * (burn_times[bt_s + 1] - burn_times[bt_s]);
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
-    std::cout << "   mass = " << ms_next.mass << "\n";
+    std::cout << "   BU_t = " << BU_t[bt_s+1] << "\n";
 };
 
 
