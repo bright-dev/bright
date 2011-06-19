@@ -33,6 +33,30 @@ def run_serpent():
     res_xs = {}
     execfile(xs_file + '_res.py', {}, res_xs)
 
+    #
+    # Renomralize Mass
+    #
+    mw_conversion = 270.0 / (237.0 * dep_bu['TOT_VOLUME'] * 10.7)
+    mw = dep_bu['TOT_MASS'] * mw_conversion
+
+    iso_LL = {}
+    iso_index = {}
+    for iso_zz in dep_bu['ZAI']:
+        # Find valid isotope indeces
+        try:
+            iso_LL[iso_zz] = isoname.mixed_2_LLAAAM(int(iso_zz))
+        except:
+            continue
+        iso_index[iso_zz] = dep_bu['i{0}'.format(iso_zz)] - 1
+
+    # Caclulate actual mass of isotopes present
+    mass = mw[iso_index.values()].sum(axis=0)
+    mass = mass / mass[0]
+
+    dep_bu['mw'] = mw
+    dep_bu['mass'] = mass
+    dep_bu['iso_index'] = iso_index
+
     return res_bu, dep_bu, res_xs
 
 
@@ -93,18 +117,37 @@ def test_regression():
     rmg = run_reactormg()
     return rmg, res_bu, dep_bu, res_xs
 
+
+def calc_diff(r, s, name=""):
+    print "Summary for {0}:".format(name)
+    print "Reactor: "
+    print repr(r)
+    print "Serpent: "
+    print repr(s)
+    print "Fractional Diff: "
+    diff = 1.0 - r / s
+    print repr(diff)
+    print
+    return r, s, diff
+    
 if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
 
-    print "Reactor k: ", rmg.k_t
-    print "Serpent k: ", res_bu['SIX_FF_KEFF'][:, 0]
-    print "Fractional Diff: ", 1.0 - rmg.k_t / res_bu['SIX_FF_KEFF'][:, 0]
-    print
+    r_k, s_k, diff_k = calc_diff(rmg.k_t, res_bu['SIX_FF_KEFF'][:, 0], "k")
 
-    r_phi = rmg.phi_tg /rmg.phi_t
-    s_phi = res_bu['FLUX'][:, 2::2] / res_bu['FLUX'][:, np.newaxis, 0]
-    print "Normalized Reactor phi: ", r_phi
-    print "Normalized Serpent phi: ", s_phi
-    print "Fractional Diff: ", 1.0 - r_phi / s_phi
-    print
+    r_phi, s_phi, diff_phi = calc_diff(rmg.phi_tg / rmg.phi_t, 
+                                       res_bu['FLUX'][:, 2::2] / res_bu['FLUX'][:, np.newaxis, 0], 
+                                       "Normalized Flux")
+
+    r_total, s_total, diff_total = calc_diff(rmg.Sigma_t_fuel_tg[0], res_xs['TOTXS'][0, 2::2], "Total XS")
+    r_fiss, s_fiss, diff_fiss = calc_diff(rmg.Sigma_f_fuel_tg[0], res_xs['FISSXS'][0, 2::2], "Fission XS")
+    r_abs, s_abs, diff_abs = calc_diff(rmg.Sigma_a_fuel_tg[0], res_xs['ABSXS'][0, 2::2], "Absorption XS")
+    r_gamma, s_gamma, diff_gamma = calc_diff(rmg.Sigma_gamma_fuel_tg[0], res_xs['CAPTXS'][0, 2::2], "Capture XS")
+
+    T_it = rmg.T_it
+
+    r_U235, s_U235, diff_U235 = calc_diff(T_it[922350], dep_bu['mw'][dep_bu['iso_index'][922350]], "U235")
+    r_U238, s_U238, diff_U238 = calc_diff(T_it[922380], dep_bu['mw'][dep_bu['iso_index'][922380]], "U238")
+    r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390], dep_bu['mw'][dep_bu['iso_index'][942390]], "PU239")
+
 
