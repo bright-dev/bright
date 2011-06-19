@@ -1512,20 +1512,35 @@ void ReactorMG::calc_criticality()
     // Set the final flux values to the class members
     std::cout << "   k0 = " << k0 << "\n";
 
-    // Rescale flux
+    // Normalize the flux
     double phi1_tot = 0.0;
     for (g = 0; g < G; g++)
         phi1_tot += phi1[g];
-
-    //std::cout << "sum(phi1) = " << phi1_tot << "\n";
-
-    phi_t[bt_s] = 0.0;
     for (g = 0; g < G; g++)
-    {
-        //phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
-        phi_tg[bt_s][g] = flux * phi1[g] / phi1_tot;
-        phi_t[bt_s] += phi_tg[bt_s][g];
-    };
+        phi_tg[bt_s][g] = phi1[g] / phi1_tot;
+
+    double norm_fission_reaction_rate = 0.0;
+    for (g = 0; g < G; g++)
+        norm_fission_reaction_rate += (Sigma_f_fuel_tg[bt_s][g] * phi_tg[bt_s][g]);
+
+    // Rescale the flux
+    phi_t[bt_s] = specific_power * rho_fuel * 1E3 / (3.28446179835e-11 * norm_fission_reaction_rate);
+    for (g = 0; g < G; g++)
+        phi_tg[bt_s][g] *= phi_t[bt_s];
+
+    std::cout << "   nfrr = " << norm_fission_reaction_rate << "\n";
+    std::cout << "   flux = " << phi_t[bt_s] << "\n";
+
+    //double delta_BU = 1e-3 * specific_power * (burn_times[bt_s] - burn_times[bt_s-1]);
+    //BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
+
+    //phi_t[bt_s] = 0.0;
+    //for (g = 0; g < G; g++)
+    //{
+    //    //phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
+    //    phi_tg[bt_s][g] = flux * phi1[g] / phi1_tot;
+    //    phi_t[bt_s] += phi_tg[bt_s][g];
+    //};
 
     if (bt_s == 0)
         Phi_t[bt_s] = 0.0;
@@ -1632,21 +1647,8 @@ void ReactorMG::calc_transmutation()
                 continue;
             else
                 comp_next[jnd] += comp_prev[ind] * bateman(i, j, dt);
-
-            if (1.0 < comp_next[jnd])
-            {
-                std::cout << i << " --> " << j << " = " << comp_next[jnd] << "\n";
-                std::cout << "   " << i;
-                for (int tc = 1; tc < transmutation_chains[i][j].size(); tc++)
-                    std::cout  << " --> " << transmutation_chains[i][j][tc]; 
-                std::cout << "\n";
-                std::cout << "lamda_i = " << trans_consts[ind] << "   lamda_j = " << trans_consts[jnd] << "   branch = " << branch_ratios[ind][jnd] << "\n";
-                std::cout << "\n";
-            };
         };
     };
-
-    int a [1] = {100}; int b = a[42] * 1;
 
     // Copy this composition back to the tranmutuation matrix
     for (ind = 0; ind < K_num; ind++)
@@ -1664,14 +1666,16 @@ void ReactorMG::calc_transmutation()
         cd_next[i] = comp_next[ind];
     };
 
-    MassStream ms_prev (cd_prev);
-    MassStream act_prev = ms_prev.get_act();
+    //MassStream ms_prev (cd_prev);
+    //MassStream act_prev = ms_prev.get_act();
 
-    MassStream ms_next (cd_next);
-    MassStream act_next = ms_next.get_act();
+    //MassStream ms_next (cd_next);
+    //MassStream act_next = ms_next.get_act();
 
-    double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
+    //double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
+    //BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
+    double delta_BU = specific_power * (burn_times[bt_s + 1] - burn_times[bt_s]);
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
     std::cout << "   mass = " << ms_next.mass << "\n";
