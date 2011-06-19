@@ -764,7 +764,7 @@ class NCodeSerpent(object):
         n : perterbation step number.
         ms_n : Mass stream of isotopes in serpent at this step.
         """
-        self.env['logger'].info("Generating high resolution flux for use with non-serpent models.")
+        self.env['logger'].info("Generating high resolution flux for use with non-serpent models at at perturbation step {0}.".format(n))
 
         args_flux_g = "{0}_flux_g_{1} {2}".format(self.env['reactor'], n, self.mpi_flag)
 
