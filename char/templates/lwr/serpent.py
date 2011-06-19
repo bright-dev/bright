@@ -61,8 +61,8 @@ cell 300   0  fill 10   -3000
 cell 301   0  outside    3000
 
 % --- Graphs ---
-plot 3 800 800
-mesh 3 800 800
+%plot 3 800 800
+%mesh 3 800 800
 
 % --- Group Constant Generation ---
 
@@ -141,8 +141,8 @@ cell 300   0  fill 10   -3000
 cell 301   0  outside    3000
 
 % --- Graphs ---
-plot 3 800 800
-mesh 3 800 800
+%plot 3 800 800
+%mesh 3 800 800
 
 % Decay and fission yield libraries
  
