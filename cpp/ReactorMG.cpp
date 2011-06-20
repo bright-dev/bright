@@ -1396,6 +1396,14 @@ double ReactorMG::bateman(int i, int j, double t)
     int n;
     int N = chain.size();
 
+    if (i == 922380 && j == 942390)
+    {
+        std::cout << "    chain = " << chain[0];
+        for (n = 1; n < N; n++)
+            std::cout << " --> " << chain[n];
+        std::cout << "\n";
+    };
+
     int qnd, rnd;
     qnd = ind;
 
