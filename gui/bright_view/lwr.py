@@ -110,12 +110,12 @@ class _LightWaterReactorView(HasTraits):
             Group(
                 Group( Item('name', label="Component Name"), 
                        ), 
-                Item('burnup_plot',
-                    editor=ComponentEditor(),
-                    resizable=True, 
-                    springy=True,
-                    show_label=False, 
-                    ),
+                #Item('burnup_plot',
+                #    editor=ComponentEditor(),
+                #    resizable=True, 
+                #    springy=True,
+                #    show_label=False, 
+                #    ),
                 HGroup( Item('burnup', label="Burnup", width=0.7),
                        Item('batches', label='Batches', width=0.3),  
                        ), 
@@ -169,6 +169,8 @@ class _LightWaterReactorView(HasTraits):
                 ),
             ),
         )
+
+
 
     # IsosIn functions
 
