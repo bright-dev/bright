@@ -213,6 +213,7 @@ cdef extern from "../../../cpp/ReactorParameters.h":
         bint use_disadvantage_factor
         std.string lattice_type
         bint rescale_hydrogen
+        double branch_ratio_cutoff
 
         double fuel_radius
         double void_radius
@@ -447,6 +448,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
         bint use_zeta
         std.string lattice_flag
         bint rescale_hydrogen_xs
+        double branch_ratio_cutoff
 
         double r_fuel
         double r_void
@@ -463,10 +465,13 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         set[int] I
         set[int] J
-        vector[int] J_order
-        map[int, int] J_index
+        set[int] K
 
-        vector[vector[double]] decay_matrix
+        int K_num
+        vector[int] K_ord
+        map[int, int] K_ind
+
+#        vector[vector[double]] decay_matrix
         vector[vector[double]] thermal_yield_matrix
         vector[vector[double]] fast_yield_matrix
         vector[vector[vector[double]]] fission_product_yield_matrix
@@ -485,6 +490,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         map[int, vector[double]] Ti0
         map[int, vector[vector[double]]] sigma_t_pg
+        map[int, vector[vector[double]]] sigma_a_pg
         map[int, vector[vector[double]]] nubar_sigma_f_pg
         map[int, vector[vector[double]]] chi_pg
         map[int, vector[vector[vector[double]]]] sigma_s_pgh
@@ -522,6 +528,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
 
         map[int, vector[double]] T_it
         map[int, vector[vector[double]]] sigma_t_itg
+        map[int, vector[vector[double]]] sigma_a_itg
         map[int, vector[vector[double]]] nubar_sigma_f_itg
         map[int, vector[vector[double]]] chi_itg
         map[int, vector[vector[vector[double]]]] sigma_s_itgh
@@ -597,8 +604,8 @@ cdef extern from "../../../cpp/ReactorMG.h":
         vector[vector[vector[double]]] F_tgh
         vector[vector[vector[double]]] A_inv_tgh
         vector[vector[vector[double]]] A_inv_F_tgh
-        vector[vector[vector[double]]] T_int_tij
-        vector[vector[vector[double]]] M_tij
+#        vector[vector[vector[double]]] T_int_tij
+#        vector[vector[vector[double]]] M_tij
 
         vector[int] nearest_neighbors
 
@@ -629,6 +636,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
         void calc_mass_weights() except +
         void fold_mass_weights() except +
         void assemble_multigroup_matrices() except +
+        void assemble_transmutation_matrices() except +
         void calc_criticality() except +
         void calc_transmutation() except +
 

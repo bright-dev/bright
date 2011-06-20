@@ -5,6 +5,7 @@
 #define _Bright_ReactorMG_
 
 //C++ stdlib
+#include <math.h>
 #include <map>
 #include <set>
 #include <vector>
@@ -102,6 +103,7 @@ public:
     bool use_zeta;              // Boolean value on whether or not the disadvantage factor should be used
     std::string lattice_flag;   // lattice_flag Type (Planar || Spherical || Cylindrical)
     bool rescale_hydrogen_xs;   // Rescale the Hydrogen-1 XS?
+    double branch_ratio_cutoff; // Cut-off for bateman chains
 
     double r_fuel;  // Fuel region radius
     double r_void;  // Void region radius
@@ -122,16 +124,22 @@ public:
     // Attributes read in from data library
     iso_set I;   // Set of isotopes that may be in ms_feed.
     iso_set J;   // Set of isotopes that may be in ms_prod.
+    iso_set K;   // Set of isotopes that is the union of all isos in ms_feed and all isos in nuc_data
 
-    int J_size;
-    iso_vec J_order; // Lowest-to-highest order of J.
-    iso_map J_index; // Lowest-to-highest map of J into matrix position.
+    int K_num;
+    iso_vec K_ord; // Lowest-to-highest order of J.
+    iso_map K_ind; // Lowest-to-highest map of J into matrix position.
 
 
-    std::vector< std::vector<double> > decay_matrix;
-    std::vector< std::vector<double> > thermal_yield_matrix;
-    std::vector< std::vector<double> > fast_yield_matrix;
-    std::vector< std::vector< std::vector<double> > > fission_product_yield_matrix;
+    bright::SparseMatrix<double> decay_matrix;
+
+    bright::SparseMatrix<double> thermal_yield_matrix;
+    bright::SparseMatrix<double> fast_yield_matrix;
+    std::vector< bright::SparseMatrix<double> > fission_product_yield_matrix;
+
+    std::vector<double> trans_consts;
+    std::vector< std::vector<double> > branch_ratios;
+    std::map<int, std::map<int, std::vector<int> > > transmutation_chains;
 
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table
@@ -148,6 +156,7 @@ public:
 
     std::map<int, pert_data> Ti0;                  // Data library's transmutation vector
     std::map<int, pert_data_g> sigma_t_pg;         // Total cross section from data library
+    std::map<int, pert_data_g> sigma_a_pg;         // Absorption cross section from data library
     std::map<int, pert_data_g> nubar_sigma_f_pg;   // Neutrons per fission times Fission cross section from data library
     std::map<int, pert_data_g> chi_pg;             // Fission energy spectrum from data library
     std::map<int, pert_data_gh> sigma_s_pgh;       // Group to group scattering cross section from data library
@@ -189,6 +198,7 @@ public:
 
     iso_time_map T_it;               // Transformation Matrix [kg_i/kgIHM]
     iso_time_g sigma_t_itg;          // Total cross section as a function of isotope and burn_time
+    iso_time_g sigma_a_itg;          // Absorption cross section as a function of isotope and burn_time
     iso_time_g nubar_sigma_f_itg;    // Neutrons per fission times Fission cross section as a function of isotope and burn_time
     iso_time_g chi_itg;              // Fission neutron energy spectrum as a function of isotope and burn_time
     iso_time_gh sigma_s_itgh;        // Group to group scattering cross section as a function of isotope and burn_time
@@ -277,8 +287,8 @@ public:
     time_gh A_inv_tgh;   // Inverse of Absorprion Matrix, as a function of time
     time_gh A_inv_F_tgh; // Inverse of Absorprion Matrix mult by the Fission Matrix, as a function of time
 
-    time_gh T_int_tij;   // Energy Integral of the Transmutation Matrix, as a function of time
-    time_gh M_tij;       // Burnup Matrix, T_int Matrix plus the Decay Matrix, as a function of time
+    std::vector< bright::SparseMatrix<double> > T_int_tij;   // Energy Integral of the Transmutation Matrix, as a function of time
+    std::vector< bright::SparseMatrix<double> > M_tij;       // Burnup Matrix, T_int Matrix plus the Decay Matrix, as a function of time
 
 
 
@@ -325,6 +335,7 @@ public:
     void calc_mass_weights();
     void fold_mass_weights();
     void assemble_multigroup_matrices();
+    void assemble_transmutation_matrices();
     void calc_criticality();
     void calc_transmutation();
 
@@ -355,6 +366,10 @@ public:
     void lattice_E_cylindrical(double, double);
     void lattice_F_cylindrical(double, double);
     void calc_zeta();
+
+    // Transmutation chain functions
+    void add_transmutation_chains(std::vector<int>);
+    double bateman(int, int, double);
 };
 
 

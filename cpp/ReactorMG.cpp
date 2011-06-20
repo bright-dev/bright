@@ -2,6 +2,8 @@
 
 #include "ReactorMG.h"
 
+
+
 /***********************************************/
 /*** ReactorMG Component Class and Functions ***/
 /***********************************************/
@@ -66,6 +68,7 @@ void ReactorMG::initialize(ReactorParameters rp)
     use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
     lattice_flag = rp.lattice_type;		//lattice_flagType (Planar || Spherical || Cylindrical)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
+    branch_ratio_cutoff = rp.branch_ratio_cutoff; // Cut-off for bateman chains
 
     // Calculates Volumes
     r_fuel = rp.fuel_radius;    // Fuel region radius
@@ -113,12 +116,7 @@ void ReactorMG::loadlib(std::string libfile)
     // Load isos
     I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/load_isos_zz", H5::PredType::NATIVE_INT);
     J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
-
-    J_size = J.size();
-    J_order = std::vector<int> (J.begin(), J.end());
-    std::sort(J_order.begin(), J_order.end());
-    for (int j = 0; j < J_size; j++)
-        J_index[J_order[j]] = j;
+    K = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
 
     // Load perturbation table
     perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
@@ -154,6 +152,7 @@ void ReactorMG::loadlib(std::string libfile)
     // Clear transmutation vectors and cross sections before reading in
     Ti0.clear();
     sigma_t_pg.clear();
+    sigma_a_pg.clear();
     nubar_sigma_f_pg.clear();
     chi_pg.clear();
     sigma_s_pgh.clear();
@@ -179,6 +178,7 @@ void ReactorMG::loadlib(std::string libfile)
 
         // Add cross sections
         sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_t/" + iso_LL);
+        sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
         nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
         chi_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/chi/" + iso_LL);
         sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
@@ -219,6 +219,8 @@ void ReactorMG::loadlib(std::string libfile)
     //
     // Read in the decay data table as an array of FCComps::decay_iso_desc
     //
+    int i, j, k, ind, jnd, knd, l, g;
+
     H5::DataSet decay_data_set = nuc_data_h5.openDataSet("/decay");
     H5::DataSpace decay_data_space = decay_data_set.getSpace();
     int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
@@ -227,34 +229,43 @@ void ReactorMG::loadlib(std::string libfile)
     decay_data_set.read(decay_data_array, FCComps::decay_iso_desc);
 
 
-    // Make decay_martrix from this data.
-    decay_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+    // Finish initializing K, based on decay info    
+    for (l = 0; l < decay_data_length; l++)
+    {
+        K.insert(decay_data_array[l].from_iso_zz);
+        K.insert(decay_data_array[l].to_iso_zz);
+    };
 
-    int i, j, ind, jnd;
-    for (int l = 0; l < decay_data_length; l++)
+    K_num = K.size();
+    K_ord = std::vector<int> (K.begin(), K.end());
+    std::sort(K_ord.begin(), K_ord.end());
+    for (k = 0; k < K_num; k++)
+        K_ind[K_ord[k]] = k;
+
+    // Make decay_martrix from this data.
+    decay_matrix = bright::SparseMatrix<double>(2*decay_data_length, K_num, K_num);
+
+    for (l = 0; l < decay_data_length; l++)
     {
         i = decay_data_array[l].from_iso_zz;
         j = decay_data_array[l].to_iso_zz;
 
-        // skip non-element from-isos
-        if (J.count(i) < 1)
-            continue;
-
-        // skip non-element to-isos
-        if (J.count(j) < 1)
+        if (i == j)
             continue;
 
         // Get the indexes for these nulcides into the matrix
-        ind = J_index[i];
-        jnd = J_index[j];
+        ind = K_ind[i];
+        jnd = K_ind[j];
 
         // Add diagonal elements
-        decay_matrix[ind][ind] = -decay_data_array[l].decay_const;
+        decay_matrix.push_back(ind, ind, -decay_data_array[l].decay_const);
 
         // Add i,j element to matrix
         if (i != j)
-            decay_matrix[ind][jnd] = decay_data_array[l].branch_ratio * decay_data_array[l].decay_const;
+            decay_matrix.push_back(ind, jnd, decay_data_array[l].branch_ratio * decay_data_array[l].decay_const);
     };
+
+    decay_matrix.clean_up();
 
 
     //
@@ -274,14 +285,13 @@ void ReactorMG::loadlib(std::string libfile)
     std::map<int, std::vector<int> > fast_join;
 
     int ty, fy;
-    for (int l = 0; l < fission_length; l++)
+    for (l = 0; l < fission_length; l++)
     {
         i = fission_array[l].iso_zz;
 
         // skip non-element from-isos
-        if (J.count(i) < 1)
+        if (K.count(i) < 1)
             continue;
-
 
         // make thermal join
         ty = fission_array[l].thermal_yield;
@@ -289,8 +299,7 @@ void ReactorMG::loadlib(std::string libfile)
         if (thermal_join.count(ty) < 1)
             thermal_join[ty] = std::vector<int>();
 
-        thermal_join[ty].push_back(J_index[i]);
-
+        thermal_join[ty].push_back(K_ind[i]);
 
         // make fast join
         fy = fission_array[l].fast_yield;
@@ -298,7 +307,7 @@ void ReactorMG::loadlib(std::string libfile)
         if (fast_join.count(fy) < 1)
             fast_join[fy] = std::vector<int>();
 
-        fast_join[ty].push_back(J_index[i]);
+        fast_join[fy].push_back(K_ind[i]);
     };
 
 
@@ -312,17 +321,17 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     // Run through the array and make yield matrices
-    thermal_yield_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
-    fast_yield_matrix = std::vector< std::vector<double> > (J_size, std::vector<double>(J_size, 0.0) );
+    thermal_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
+    fast_yield_matrix = bright::SparseMatrix<double>(fp_yields_length, K_num, K_num);
 
     int index, tj, fj, TJ, FJ;
     double mf;
-    for (int l = 0; l < fp_yields_length; l++)
+    for (l = 0; l < fp_yields_length; l++)
     {
         // Get important data from struct
         index = fp_yields_array[l].index;
         j = fp_yields_array[l].to_iso_zz;
-        jnd = J_index[j];
+        jnd = K_ind[j];
         mf = fp_yields_array[l].mass_frac;
 
         // Add to thermal yields
@@ -332,7 +341,7 @@ void ReactorMG::loadlib(std::string libfile)
             for (tj = 0; tj < TJ; tj++)
             {
                 ind = thermal_join[index][tj];
-                thermal_yield_matrix[ind][jnd] = mf;
+                thermal_yield_matrix.push_back(ind, jnd, mf);
             };
         };
 
@@ -343,29 +352,161 @@ void ReactorMG::loadlib(std::string libfile)
             for (fj = 0; fj < FJ; fj++)
             {
                 ind = fast_join[index][fj];
-                fast_yield_matrix[ind][jnd] = mf;
+                fast_yield_matrix.push_back(ind, jnd, mf);
             };
         };
     };
+
+    thermal_yield_matrix.clean_up();
+    fast_yield_matrix.clean_up();
 
 
     // Make fission product yield matrix
-    fission_product_yield_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
-    for (ind = 0; ind < J_size; ind++)
+    fission_product_yield_matrix = std::vector< bright::SparseMatrix<double> > (G);
+
+    // Set the mass fraction between thermal and fast data.
+    // Do not interpolate here, you'll get negative masses...
+    for (g = 0; g < G; g++)
     {
-        for (jnd = 0; jnd < J_size; jnd++)
-        {
-            for (int g = 0; g < G; g++)
-            {
-                // Test which regime we are in
-                if (0.1 < E_g[g])
-                    fission_product_yield_matrix[ind][jnd][g] = fast_yield_matrix[ind][jnd];
-                else
-                    fission_product_yield_matrix[ind][jnd][g] = thermal_yield_matrix[ind][jnd];
-            };
-        };
+        
+        if (0.001 < E_g[g])
+            fission_product_yield_matrix[g] = fast_yield_matrix;
+        else
+            fission_product_yield_matrix[g] = thermal_yield_matrix;
     };
 
+
+    //
+    // Read in the one group cross sections
+    //
+    // Thermal
+    H5::DataSet xs_1g_thermal_set = nuc_data_h5.openDataSet("/neutron/xs_1g/Thermal");
+    H5::DataSpace xs_1g_thermal_space = xs_1g_thermal_set.getSpace();
+    int xs_1g_thermal_length = xs_1g_thermal_space.getSimpleExtentNpoints(); 
+
+    FCComps::xs_1g_struct * xs_1g_thermal_array = new FCComps::xs_1g_struct [xs_1g_thermal_length];
+    xs_1g_thermal_set.read(xs_1g_thermal_array, FCComps::xs_1g_desc);
+
+    // Fast
+    H5::DataSet xs_1g_fast_set = nuc_data_h5.openDataSet("/neutron/xs_1g/FissionSpectrumAve");
+    H5::DataSpace xs_1g_fast_space = xs_1g_fast_set.getSpace();
+    int xs_1g_fast_length = xs_1g_fast_space.getSimpleExtentNpoints(); 
+
+    FCComps::xs_1g_struct * xs_1g_fast_array = new FCComps::xs_1g_struct [xs_1g_fast_length];
+    xs_1g_fast_set.read(xs_1g_fast_array, FCComps::xs_1g_desc);
+
+    // Copy the data over
+    double Eng_g;
+    iso_set xs_isos;
+    std::vector<double> sig_t, sig_a, sig_f, nu_sig_f, sig_gamma, sig_2n, sig_3n, sig_alpha, sig_proton;
+    std::vector< std::vector<double> > zeros_pg;
+    std::vector< std::vector< std::vector<double> > > zeros_pgh;
+
+    zeros_pg = std::vector< std::vector<double> >(nperturbations, std::vector<double> (G,  0.0));
+    zeros_pgh =  std::vector< std::vector< std::vector<double> > >(nperturbations, std::vector< std::vector<double> > (G,  std::vector<double> (G, 0.0)));
+
+    for (l = 0; l < xs_1g_fast_length; l++)
+    {
+        i = xs_1g_thermal_array[l].iso_zz;
+
+        if (J.count(i) == 1)
+            continue;
+
+        if (K.count(i) == 0)
+            continue;
+
+        xs_isos.insert(i);
+
+        // Init the interpolation arrays
+        sig_t = std::vector<double>(G);
+        sig_a = std::vector<double>(G);
+        sig_f = std::vector<double>(G);
+        nu_sig_f = std::vector<double>(G);
+        sig_gamma = std::vector<double>(G);
+        sig_2n = std::vector<double>(G);
+        sig_3n = std::vector<double>(G);
+        sig_alpha = std::vector<double>(G);
+        sig_proton = std::vector<double>(G);
+
+        // Fill the ineterpolation array
+        for (g = 0; g < G; g++)
+        {
+            Eng_g = E_g[g];
+
+            sig_t[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_t, 2.53e-08, xs_1g_thermal_array[l].sigma_t);
+            if (sig_t[g] < 0.0)
+                sig_t[g] = 0.0;
+
+            sig_a[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_a, 2.53e-08, xs_1g_thermal_array[l].sigma_a);
+            if (sig_a[g] < 0.0)
+                sig_a[g] = 0.0;
+
+            sig_f[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_f, 2.53e-08, xs_1g_thermal_array[l].sigma_f);
+            if (sig_f[g] < 0.0)
+                sig_f[g] = 0.0;
+
+            nu_sig_f[g] = 2.5 * sig_f[g];
+
+            sig_gamma[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_gamma, 2.53e-08, xs_1g_thermal_array[l].sigma_gamma);
+            if (sig_gamma[g] < 0.0)
+                sig_gamma[g] = 0.0;
+
+            sig_2n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_2n, 2.53e-08, xs_1g_thermal_array[l].sigma_2n);
+            if (sig_2n[g] < 0.0)
+                sig_2n[g] = 0.0;
+
+            sig_3n[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_3n, 2.53e-08, xs_1g_thermal_array[l].sigma_3n);
+            if (sig_3n[g] < 0.0)
+                sig_3n[g] = 0.0;
+
+            sig_alpha[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_alpha, 2.53e-08, xs_1g_thermal_array[l].sigma_alpha);
+            if (sig_alpha[g] < 0.0)
+                sig_alpha[g] = 0.0;
+
+            sig_proton[g] = bright::SolveLine(Eng_g, 1.0, xs_1g_fast_array[l].sigma_proton, 2.53e-08, xs_1g_thermal_array[l].sigma_proton);
+            if (sig_proton[g] < 0.0)
+                sig_proton[g] = 0.0;
+        };
+
+        // Copy back the data to the XS library
+        sigma_t_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_t);
+        sigma_a_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_a);
+        sigma_f_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_f);
+        nubar_sigma_f_pg[i] = std::vector< std::vector<double> >(nperturbations, nu_sig_f);
+        sigma_gamma_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_gamma);
+        sigma_2n_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_2n);
+        sigma_3n_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_3n);
+        sigma_alpha_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_alpha);
+        sigma_proton_pg[i] = std::vector< std::vector<double> >(nperturbations, sig_proton);
+
+        // Fill in zeros is places where data is not avilable
+        chi_pg[i] = zeros_pg;
+        sigma_s_pgh[i] = zeros_pgh;
+        sigma_gamma_x_pg[i] = zeros_pg;
+        sigma_2n_x_pg[i] = zeros_pg;
+    };
+
+    // Zero out XS for isos present in decay but not XS data
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
+    {
+        i = *iso;
+        if ((xs_isos.count(i) == 1) || (J.count(i) == 1))
+            continue;
+
+        sigma_t_pg[i] = zeros_pg;
+        sigma_a_pg[i] = zeros_pg;
+        nubar_sigma_f_pg[i] = zeros_pg;
+        chi_pg[i] = zeros_pg;
+        sigma_f_pg[i] = zeros_pg;
+        sigma_s_pgh[i] = zeros_pgh;
+        sigma_gamma_pg[i] = zeros_pg;
+        sigma_2n_pg[i] = zeros_pg;
+        sigma_3n_pg[i] = zeros_pg;
+        sigma_alpha_pg[i] = zeros_pg;
+        sigma_proton_pg[i] = zeros_pg;
+        sigma_gamma_x_pg[i] = zeros_pg;
+        sigma_2n_x_pg[i] = zeros_pg;
+    };
 
     // close the nuc_data library
     nuc_data_h5.close();
@@ -578,13 +719,36 @@ void ReactorMG::interpolate_cross_sections()
     if (nn0["burn_times"] != nn1["burn_times"])
         x_factor = x_factor + ((burn_time - nn0["burn_times"])/(nn1["burn_times"] - nn0["burn_times"]));
 
+    // Let's flesh out this time step a bit
+    // for the nuclides not in the data library
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
+    {
+        if (J.count(*iso) == 1)
+            continue;
 
+        sigma_t_itg[*iso][bt_s] = sigma_t_pg[*iso][a0];
+        sigma_a_itg[*iso][bt_s] = sigma_a_pg[*iso][a0];
+        nubar_sigma_f_itg[*iso][bt_s] = nubar_sigma_f_pg[*iso][a0];
+        chi_itg[*iso][bt_s] = chi_pg[*iso][a0];
+        sigma_f_itg[*iso][bt_s] = sigma_f_pg[*iso][a0];
+        sigma_gamma_itg[*iso][bt_s] = sigma_gamma_pg[*iso][a0];
+        sigma_2n_itg[*iso][bt_s] = sigma_2n_pg[*iso][a0];
+        sigma_3n_itg[*iso][bt_s] = sigma_3n_pg[*iso][a0];
+        sigma_alpha_itg[*iso][bt_s] = sigma_alpha_pg[*iso][a0];
+        sigma_proton_itg[*iso][bt_s] = sigma_proton_pg[*iso][a0];
+        sigma_gamma_x_itg[*iso][bt_s] = sigma_gamma_x_pg[*iso][a0];
+        sigma_2n_x_itg[*iso][bt_s] = sigma_2n_x_pg[*iso][a0];
+
+        for (int g = 0; g < G; g++)
+            sigma_s_itgh[*iso][bt_s][g] = sigma_s_pgh[*iso][a0][g];
+    };
 
     // Now that we have found the x-factor, we get to do the actual interpolations. Oh Joy!
     for (iso_iter iso = J.begin(); iso != J.end(); iso++)
     {
         // Interpolate the cross-sections
         sigma_t_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_t_pg[*iso][a1], sigma_t_pg[*iso][a0]);
+        sigma_a_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_a_pg[*iso][a1], sigma_a_pg[*iso][a0]);
         nubar_sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, nubar_sigma_f_pg[*iso][a1], nubar_sigma_f_pg[*iso][a0]);
         chi_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, chi_pg[*iso][a1], chi_pg[*iso][a0]);
         sigma_f_itg[*iso][bt_s] = bright::y_x_factor_interpolation(x_factor, sigma_f_pg[*iso][a1], sigma_f_pg[*iso][a0]);
@@ -599,7 +763,6 @@ void ReactorMG::interpolate_cross_sections()
         for (int g = 0; g < G; g++)
             sigma_s_itgh[*iso][bt_s][g] = bright::y_x_factor_interpolation(x_factor, sigma_s_pgh[*iso][a1][g], sigma_s_pgh[*iso][a0][g]);
     };
-    
 };
 
 
@@ -619,7 +782,7 @@ void ReactorMG::calc_mass_weights()
     // First things first, let's calculate the atomic weight of the HM
     double inverse_A_HM = 0.0;
     double mass_HM = 0.0;
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         mass_HM += T_it[*iso][bt_s];
         inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso));
@@ -669,7 +832,7 @@ void ReactorMG::calc_mass_weights()
     {
         if ( (key->first) == "IHM")
         {
-            for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+            for (iso_iter iso = K.begin(); iso != K.end(); iso++)
                 n_fuel_it[*iso][bt_s] += chemical_form_fuel[key->first] * T_it[*iso][bt_s];
         }
         else
@@ -698,7 +861,7 @@ void ReactorMG::calc_mass_weights()
     //
     // Build the number density dictionaries
     //
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         // Fuel Number Density
         N_fuel_it[*iso][bt_s] = n_fuel_it[*iso][bt_s] * rho_fuel * (bright::N_A / MW_fuel_t[bt_s]);
@@ -719,7 +882,7 @@ void ReactorMG::calc_mass_weights()
     double relative_volume_clad = (rho_clad * MW_fuel_t[bt_s] * V_clad) / (rho_fuel * MW_clad_t[bt_s] * V_fuel);
     double relative_volume_cool = (rho_cool * MW_fuel_t[bt_s] * V_cool) / (rho_fuel * MW_cool_t[bt_s] * V_fuel);
 
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         iso_weight = isoname::nuc_weight(*iso);
 
@@ -750,7 +913,7 @@ void ReactorMG::fold_mass_weights()
     double N_clad_i_cm2pb = 0.0;
     double N_cool_i_cm2pb = 0.0;
 
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
         N_clad_i_cm2pb = bright::cm2_per_barn * N_clad_it[*iso][bt_s];
@@ -761,6 +924,7 @@ void ReactorMG::fold_mass_weights()
         for (g = 0; g < G; g++)
         {
             Sigma_t_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            Sigma_a_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             nubar_Sigma_f_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
             chi_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * chi_itg[*iso][bt_s][g];
             Sigma_f_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
@@ -773,6 +937,7 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_fuel_tg[bt_s][g] += N_fuel_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            Sigma_a_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             nubar_Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
             chi_clad_tg[bt_s][g] += N_clad_i_cm2pb * chi_itg[*iso][bt_s][g];
             Sigma_f_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
@@ -785,6 +950,7 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_clad_tg[bt_s][g] += N_clad_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
             Sigma_t_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_t_itg[*iso][bt_s][g];
+            Sigma_a_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_a_itg[*iso][bt_s][g];
             nubar_Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * nubar_sigma_f_itg[*iso][bt_s][g];
             chi_cool_tg[bt_s][g] += N_cool_i_cm2pb * chi_itg[*iso][bt_s][g];
             Sigma_f_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_f_itg[*iso][bt_s][g];
@@ -819,9 +985,23 @@ void ReactorMG::fold_mass_weights()
     };
     for (g = 0; g < G; g++)
     {
-        chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot; 
-        chi_clad_tg[bt_s][g] = chi_clad_tg[bt_s][g] / chi_clad_tot; 
-        chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot; 
+        // Normailze Fuel
+        if (chi_fuel_tot == 0.0)
+            chi_fuel_tg[bt_s][g] = 0.0;
+        else
+            chi_fuel_tg[bt_s][g] = chi_fuel_tg[bt_s][g] / chi_fuel_tot;
+
+        // Normailze Cladding
+        if (chi_clad_tot == 0.0)
+            chi_clad_tg[bt_s][g] = 0.0;
+        else
+            chi_clad_tg[bt_s][g] = chi_clad_tg[bt_s][g] / chi_clad_tot;
+
+        // Normailze Coolant
+        if (chi_cool_tot == 0.0)
+            chi_cool_tg[bt_s][g] = 0.0;
+        else
+            chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot;
     };
 
     // Calculate kappas as the inverse of the diffusion length
@@ -832,24 +1012,6 @@ void ReactorMG::fold_mass_weights()
         kappa_clad_tg[bt_s][g] = (3.0 * Sigma_t_clad_tg[bt_s][g]) - (2.0 * Sigma_s_clad_tgh[bt_s][g][g] / MW_clad_t[bt_s]); 
         kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
     };
-
-    // Get absorption XS estimate
-    for (g = 0; g < G; g++)
-    {
-        Sigma_a_fuel_tg[bt_s][g] = 1.0 * Sigma_t_fuel_tg[bt_s][g];
-        Sigma_a_clad_tg[bt_s][g] = 1.0 * Sigma_t_clad_tg[bt_s][g];
-        Sigma_a_cool_tg[bt_s][g] = 1.0 * Sigma_t_cool_tg[bt_s][g];
-
-        for (h = 0; h < G; h++)
-        {
-            std::cout << g << "  " << h <<  "  " << Sigma_a_fuel_tg[bt_s][g] << "\n";
-
-            Sigma_a_fuel_tg[bt_s][g] -= Sigma_s_fuel_tgh[bt_s][g][h];
-            Sigma_a_clad_tg[bt_s][g] -= Sigma_s_clad_tgh[bt_s][g][h];
-            Sigma_a_cool_tg[bt_s][g] -= Sigma_s_cool_tgh[bt_s][g][h];
-        };
-    };
-
 
     // Calculate the disadvantage factor, if required.
     if (use_zeta)
@@ -886,7 +1048,12 @@ void ReactorMG::fold_mass_weights()
     for (g = 0; g < G; g++)
         chi_tot += chi_tg[bt_s][g]; 
     for (g = 0; g < G; g++)
-        chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot; 
+        chi_tg[bt_s][g] = chi_tg[bt_s][g] / chi_tot;
+    if (chi_tot == 0.0)
+    {
+        for (g = 0; g < G; g++)
+            chi_tg[bt_s][g] = 0.0;
+    };
 };
 
 
@@ -919,10 +1086,14 @@ void ReactorMG::assemble_multigroup_matrices()
 
 
     // Assemble the F matrix
-//    F_fuel_tgh[bt_s] = bright::vector_outer_product(chi_fuel_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
-//    F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_tg[bt_s]);
-    F_fuel_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_fuel_tg[bt_s], chi_fuel_tg[bt_s]);
-    F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
+    F_fuel_tgh[bt_s] = bright::vector_outer_product(chi_fuel_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
+
+    //F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_tg[bt_s]);
+    //F_tgh[bt_s] = bright::vector_outer_product(chi_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
+    F_tgh[bt_s] = bright::vector_outer_product(chi_fuel_tg[bt_s], nubar_Sigma_f_fuel_tg[bt_s]);
+
+    //F_fuel_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_fuel_tg[bt_s], chi_fuel_tg[bt_s]);
+    //F_tgh[bt_s] = bright::vector_outer_product(nubar_Sigma_f_tg[bt_s], chi_tg[bt_s]);
 
     // Grab the inverse of the A matrix
     A_inv_fuel_tgh[bt_s] = bright::matrix_inverse(A_fuel_tgh[bt_s]);
@@ -934,106 +1105,345 @@ void ReactorMG::assemble_multigroup_matrices()
     A_inv_F_fuel_tgh[bt_s] = bright::matrix_multiplication(A_inv_fuel_tgh[bt_s], F_fuel_tgh[bt_s]);
     A_inv_F_tgh[bt_s] = bright::matrix_multiplication(A_inv_tgh[bt_s], F_tgh[bt_s]);
 
+};
+
+
+
+
+
+
+void ReactorMG::assemble_transmutation_matrices()
+{
     //
     // Assemble the energy integral of transmutation matrix
     //
     int g, i, j, ind, jnd;
-    std::vector< std::vector< std::vector<double> > > T_matrix = std::vector< std::vector< std::vector<double> > > (J_size, std::vector< std::vector<double> >(J_size, std::vector<double>(G, 0.0) ) );
+    std::vector< bright::SparseMatrix<double> > T_matrix = std::vector< bright::SparseMatrix<double> > (G,  bright::SparseMatrix<double>(fast_yield_matrix.size(), K_num, K_num));
+    std::vector< bright::sparse_matrix_entry<double> >::iterator fpy_iter, fpy_end;
     
-    // Add the fission yields first
-    for (ind = 0; ind < J_size; ind++)
-    {
-        for (jnd = 0; jnd < J_size; jnd++)
-        {
-            for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] = fission_product_yield_matrix[ind][jnd][g] * sigma_f_itg[J_order[ind]][bt_s][g];
-        };
-    };
-    // Add the other cross sections
+    
+    // Add the cross sections
+    double fpy, sig;
+    int fpy_ind;
+    int ind_PU239 = K_ind[942390];
     int j_gamma, j_2n, j_3n, j_alpha, j_proton, j_gamma_x, j_2n_x; 
-    for (ind = 0; ind < J_size; ind++)
+    int jnd_gamma, jnd_2n, jnd_3n, jnd_alpha, jnd_proton, jnd_gamma_x, jnd_2n_x;
+    for (ind = 0; ind < K_num; ind++)
     {
-        i = J_order[ind];
+        i = K_ord[ind];
 
-        // Get from isos
-        j_gamma = ((i/10) + 1) * 10;
-        j_2n = j_gamma - 20;
-        j_3n = j_2n - 10;
-        j_alpha = j_3n - 20010;
-        j_proton = j_gamma - 10010;
-        j_gamma_x = j_gamma + 1;
-        j_2n_x = j_2n + 1;
+        // Add diag entries
+        for (g = 0; g < G; g++)
+            T_matrix[g].push_back(ind, ind, -(sigma_f_itg[i][bt_s][g] + \
+                                              sigma_gamma_itg[i][bt_s][g] + \
+                                              sigma_2n_itg[i][bt_s][g] + \
+                                              sigma_3n_itg[i][bt_s][g] + \
+                                              sigma_alpha_itg[i][bt_s][g] + \
+                                              sigma_proton_itg[i][bt_s][g] + \
+                                              sigma_gamma_x_itg[i][bt_s][g] + \
+                                              sigma_2n_x_itg[i][bt_s][g]));
+
+        // Add the fission source
+        for (g = 0; g < G; g++)
+        {
+            sig = sigma_f_itg[i][bt_s][g];
+            if (sig == 0.0)
+                continue;
+
+            fpy_end = fission_product_yield_matrix[g].sm.end();
+            fpy_iter = bright::find_row(fission_product_yield_matrix[g].sm.begin(), fpy_end, ind);
+            fpy_ind = ind;
+
+            // Deafult to Pu239 FP if yields not available
+            if (fpy_iter == fpy_end)
+            {
+                fpy_iter = bright::find_row(fission_product_yield_matrix[g].sm.begin(), fpy_end, ind_PU239);
+                fpy_ind = ind_PU239;
+            };
+
+            while((*fpy_iter).row == fpy_ind)
+            {
+                jnd = (*fpy_iter).col;
+                fpy = (*fpy_iter).val;
+                T_matrix[g].push_back(ind, jnd, fpy * sig);
+                fpy_iter++;
+            };
+        };
 
         // Add the capture cross-section
-        if (0 < J.count(j_gamma))
+        j_gamma = ((i/10) + 1) * 10;
+        if (K.count(j_gamma) == 1)
         {
-            jnd = J_index[j_gamma];
+            jnd_gamma = K_ind[j_gamma];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_gamma_itg[i][bt_s][g];
+            {
+                sig = sigma_gamma_itg[i][bt_s][g];
+                if (sig == 0.0)
+                    continue;
+
+                T_matrix[g].push_back(ind, jnd_gamma, sig);
+            };
         };
 
         // Add the (n, 2n) cross-section
-        if (0 < J.count(j_2n))
+        j_2n = j_gamma - 20;
+        if (K.count(j_2n) == 1)
         {
-            jnd = J_index[j_2n];
+            jnd_2n = K_ind[j_2n];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_2n_itg[i][bt_s][g];
+            {
+                sig = sigma_2n_itg[i][bt_s][g];
+                if (sig == 0.0)
+                    continue;
+
+                T_matrix[g].push_back(ind, jnd_2n, sig);
+            };
         };
 
         // Add the (n, 3n) cross-section
-        if (0 < J.count(j_3n))
+        j_3n = j_2n - 10;
+        if (K.count(j_3n) == 1)
         {
-            jnd = J_index[j_3n];
+            jnd_3n = K_ind[j_3n];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_3n_itg[i][bt_s][g];
+            {
+                sig = sigma_3n_itg[i][bt_s][g];
+                if (sig == 0.0)
+                    continue;
+
+                T_matrix[g].push_back(ind, jnd_3n, sig);
+            };
         };
 
         // Add the (n, alpha) cross-section
-        if (0 < J.count(j_2n))
+        j_alpha = j_3n - 20010;
+        if (K.count(j_alpha) == 1)
         {
-            jnd = J_index[j_alpha];
+            jnd_alpha = K_ind[j_alpha];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_alpha_itg[i][bt_s][g];
+            {
+                sig = sigma_alpha_itg[i][bt_s][g];
+                if (sig == 0.0)
+                    continue;
+
+                T_matrix[g].push_back(ind, jnd_alpha, sig);
+            };
         };
 
         // Add the (n, proton) cross-section
-        if (0 < J.count(j_proton))
+        j_proton = j_gamma - 10010;
+        if (K.count(j_proton) == 1)
         {
-            jnd = J_index[j_2n];
+            jnd_proton = K_ind[j_proton];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_proton_itg[i][bt_s][g];
+            {
+                sig = sigma_proton_itg[i][bt_s][g];
+                if (sig == 0.0)
+                    continue;
+
+                T_matrix[g].push_back(ind, jnd_proton, sig);
+            };
         };
 
         // Add the capture (excited) cross-section
-        if (0 < J.count(j_gamma_x))
+        j_gamma_x = j_gamma + 1;
+        if (K.count(j_gamma_x) == 1)
         {
-            jnd = J_index[j_gamma_x];
+            jnd_gamma_x = K_ind[j_gamma_x];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_gamma_x_itg[i][bt_s][g];
+            {
+                sig = sigma_gamma_x_itg[i][bt_s][g];
+                if (sig == 0.0)
+                    continue;
+
+                T_matrix[g].push_back(ind, jnd_gamma_x, sig);
+            };
         };
 
         // Add the (n, 2n *) cross-section
-        if (0 < J.count(j_2n_x))
+        j_2n_x = j_2n + 1;
+        if (K.count(j_2n_x) == 1)
         {
-            jnd = J_index[j_2n_x];
+            jnd_2n_x = K_ind[j_2n_x];
             for (g = 0; g < G; g++)
-                T_matrix[ind][jnd][g] += sigma_2n_x_itg[i][bt_s][g];
+            {
+                sig = sigma_2n_x_itg[i][bt_s][g];
+                if (sig == 0.0)
+                    continue;
+
+                T_matrix[g].push_back(ind, jnd_2n_x, sig);
+            };
         };
     };
+
+    for (g = 0; g < G; g++)
+        T_matrix[g].clean_up();
+
+
 
     // Multiply by flux and integrate over energy
-    for (ind = 0; ind < J_size; ind++)
+    double adj_phi;
+    for (g = 0; g < G; g++)
     {
-        for (jnd = 0; jnd < J_size; jnd++)
+        // Adjust the flux value for burning
+        adj_phi = bright::cm2_per_barn * phi_tg[bt_s][g];
+
+        // Skip this group if there is no flux 
+        if (adj_phi == 0.0)
+            continue;
+
+        T_int_tij[bt_s] = T_int_tij[bt_s] + (T_matrix[g] * adj_phi);
+    };
+    
+
+    // Make the transmutation matrix for this time step
+    M_tij[bt_s] = (T_int_tij[bt_s] + decay_matrix);
+
+    // Add initial transmutatio chains
+    if (bt_s == 0)
+    {
+        std::vector< bright::sparse_matrix_entry<double> >::iterator M_iter, M_end;
+        M_iter = M_tij[bt_s].sm.begin();
+        M_end = M_tij[bt_s].sm.end();
+
+        // Initialize the chains container
+        for ( ; M_iter != M_end; M_iter++)
         {
-            for (g = 0; g < G; g++)
-                T_int_tij[bt_s][ind][jnd] += T_matrix[ind][jnd][g] * phi_tg[bt_s][g];
+            ind = (*M_iter).row;
+            i = K_ord[ind];
+
+            jnd = (*M_iter).col;
+            j = K_ord[jnd];
+
+            if (i == j)
+                continue;
+
+            if (transmutation_chains.count(i) == 0)
+                transmutation_chains[i] = std::map<int, std::vector<int> > ();
+
+            transmutation_chains[i][j] = std::vector<int>(2);
+            transmutation_chains[i][j][0] = i;
+            transmutation_chains[i][j][1] = j;
         };
     };
 
-    // Make the transmutation matrix for this time step
-    M_tij[bt_s] = bright::matrix_addition(T_int_tij[bt_s], decay_matrix);
 };
+
+
+
+
+
+void ReactorMG::add_transmutation_chains(std::vector<int> tc)
+{
+    int n;
+    int chain_len = tc.size();
+    int i = tc[0];
+    int j = tc[chain_len - 1];
+    int k, jnd, knd;
+    bool k_in_chain = false;
+
+    jnd = K_ind[j];
+
+    std::vector<int> next_chain;
+
+    for (knd = 0; knd < K_num; knd++)
+    {
+        if (branch_ratios[jnd][knd] == 0.0)
+            continue;
+
+        if (jnd == knd)
+            continue;
+
+        k = K_ord[knd];
+
+        if (transmutation_chains[i].count(k) == 1)
+            continue;
+
+        // Don't allow cyclic chains
+        k_in_chain = false;
+        for (n = 0; n < chain_len; n++)
+            if (k == tc[n])
+                k_in_chain = true;
+
+        if (k_in_chain)
+            continue;
+
+        // construct new chains
+        next_chain = tc;
+        next_chain.push_back(k);
+
+        // add new chains
+        transmutation_chains[i][k] = next_chain;
+        add_transmutation_chains(next_chain);
+    };
+
+};
+
+
+
+
+
+
+double ReactorMG::bateman(int i, int j, double t)
+{
+    // Solves the Bateman Equations for a unit mass of isotope i -> 
+    // decaying into isotope j.
+    int ind = K_ind[i];
+    int jnd = K_ind[j];
+    
+    std::vector<int> chain = transmutation_chains[i][j];
+
+    int n;
+    int N = chain.size();
+
+    int qnd, rnd;
+    qnd = ind;
+
+    double B = 1.0;
+    double alpha_num = 1.0;
+
+    for (n = 0; n < N - 1; n++)
+    {
+        rnd = K_ind[chain[n+1]];
+        B *= branch_ratios[qnd][rnd];
+        alpha_num *= trans_consts[qnd];
+        qnd = rnd;
+    };
+
+    // Check trivial results
+    if ((B < branch_ratio_cutoff) || (alpha_num == 0.0))
+        return 0.0;
+
+    int m;
+    double alpha_den, sum_part;
+    for (n = 0; n < N; n++)
+    {
+        qnd = K_ind[chain[n]];
+        alpha_den = 1.0;
+
+        for (m = 0; m < N; m++)
+        {
+            rnd = K_ind[chain[m]];
+
+            // Debug for equal lambdas
+            //if (trans_consts[rnd] == trans_consts[qnd] && rnd != qnd)
+            //    std::cout << "    trans constants equal for " << chain[n] << ", " << chain[m] << " = " << trans_consts[qnd] << ", " << trans_consts[rnd] << "\n";
+
+            if (n != m)
+                alpha_den *= (trans_consts[rnd] - trans_consts[qnd]);
+         };
+
+        sum_part += (exp(-trans_consts[qnd] * t) / alpha_den);
+    };
+
+    double mass_frac = B * alpha_num * sum_part;
+
+    // Sanity check
+    if (!(0.0 < mass_frac))
+        mass_frac = 0.0;
+
+    return mass_frac;
+}
 
 
 
@@ -1047,7 +1457,7 @@ void ReactorMG::calc_criticality()
 {
     // Init values
     int n = 0;
-    int N = 1;
+    int N = 100;
 
     float epsik = 1.0;
     float tmp_epsiphi; 
@@ -1069,18 +1479,7 @@ void ReactorMG::calc_criticality()
     while ((n < N) && ((epsilon < epsik) || (epsilon < epsiphi)))
     {
         // Calculate the next eigen-flux
-//        invPk = 1.0 / (P_NL * k0);
-//        phi1 = bright::scalar_matrix_vector_product(invPk, A_inv_F_tgh[bt_s], phi0);
         phi1 = bright::scalar_matrix_vector_product(1.0 / k0, A_inv_F_tgh[bt_s], phi0);
-
-/*
-        for (g = 0; g < G; g++)
-            std::cout << phi0[g] << "   ";
-        std::cout << "\n";
-        for (g = 0; g < G; g++)
-            std::cout << phi1[g] << "   ";
-        std::cout << "\n----------\n\n\n";
-*/
 
         // Calculate the next eigen-k
         nu_Sigma_f_phi0 = 0.0;
@@ -1091,8 +1490,6 @@ void ReactorMG::calc_criticality()
             nu_Sigma_f_phi1 += nubar_Sigma_f_tg[bt_s][g] * phi1[g]; 
         };
         k1 = k0 * nu_Sigma_f_phi1 / nu_Sigma_f_phi0;
-
-//        std::cout << k0 << "   " << k1 << "\n";
 
         // Calculate the epsilon value of k 
         epsik = fabs(1.0 - (k0/k1));
@@ -1112,19 +1509,43 @@ void ReactorMG::calc_criticality()
         n++;
     };
 
-//    std::cout << "N = " << N << "\n";
-
     // Set the final flux values to the class members
-    phi_tg[bt_s] = phi1;
+    std::cout << "   k0 = " << k0 << "\n";
 
-    phi_t[bt_s] = 0.0;
+    // Normalize the flux
+    double phi1_tot = 0.0;
     for (g = 0; g < G; g++)
-        phi_t[bt_s] += phi1[0];
+        phi1_tot += phi1[g];
+    for (g = 0; g < G; g++)
+        phi_tg[bt_s][g] = phi1[g] / phi1_tot;
+
+    double norm_fission_reaction_rate = 0.0;
+    for (g = 0; g < G; g++)
+        norm_fission_reaction_rate += (Sigma_f_fuel_tg[bt_s][g] * phi_tg[bt_s][g]);
+
+    // Rescale the flux
+    phi_t[bt_s] = specific_power * rho_fuel * 1E3 / (3.28446179835e-11 * norm_fission_reaction_rate);
+    for (g = 0; g < G; g++)
+        phi_tg[bt_s][g] *= phi_t[bt_s];
+
+    std::cout << "   nfrr = " << norm_fission_reaction_rate << "\n";
+    std::cout << "   flux = " << phi_t[bt_s] << "\n";
+
+    //double delta_BU = 1e-3 * specific_power * (burn_times[bt_s] - burn_times[bt_s-1]);
+    //BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
+
+    //phi_t[bt_s] = 0.0;
+    //for (g = 0; g < G; g++)
+    //{
+    //    //phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
+    //    phi_tg[bt_s][g] = flux * phi1[g] / phi1_tot;
+    //    phi_t[bt_s] += phi_tg[bt_s][g];
+    //};
 
     if (bt_s == 0)
         Phi_t[bt_s] = 0.0;
     else
-        Phi_t[bt_s] = phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s-1]) * bright::sec_per_day;
+        Phi_t[bt_s] = Phi_t[bt_s - 1] + (phi_t[bt_s] * (burn_times[bt_s] - burn_times[bt_s-1]) * bright::sec_per_day * bright::cm2_per_barn * 1E+3);
 
     // Calculate the multiplication factor, physically, and not from the eigenvalue
     double k_num = 0.0;
@@ -1147,93 +1568,122 @@ void ReactorMG::calc_criticality()
 
 
 
-
 void ReactorMG::calc_transmutation()
 {
     // Calculates a tranmutation step via the Pade method
+    int i, j, ind, jnd;
 
     // Get the transmutation matrix for this time delta
-    double dt = burn_times[bt_s] - burn_times[bt_s - 1];
-    std::vector< std::vector<double> > Mt = bright::scalar_matrix_product(dt, M_tij[bt_s]);
+    double dt = (burn_times[bt_s + 1] - burn_times[bt_s]) * bright::sec_per_day;
 
-    // Set Pade coefficients, for p = q = 6
-    double N_coef_n [7] = {1.00000000e+00,   5.00000000e-01,   1.13636364e-01, \
-                           1.51515152e-02,   1.26262626e-03,   6.31313131e-05, \
-                           1.50312650e-06};
-    double D_coef_n [7] = {1.00000000e+00,   5.00000000e-01,   1.13636364e-01, \
-                           1.51515152e-02,   1.26262626e-03,   6.31313131e-05, \
-                           1.50312650e-06};
-
-    // Init the new matrices
-    std::vector< std::vector< std::vector<double> > > Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) ) );
-    std::vector< std::vector< std::vector<double> > > neg_Mt_n = std::vector< std::vector< std::vector<double> > > (7, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) ) );
-    std::vector< std::vector<double> > N_pq = std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) );
-    std::vector< std::vector<double> > D_pq = std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0) );
-
-    int n, i, j, ind, jnd;
-    for (ind = 0; ind < J_size; ind++)
+    int knd, qnd;
+    trans_consts = std::vector<double>(K_num, 0.0);
+    branch_ratios = M_tij[bt_s].todense();
+    for (knd = 0; knd < K_num; knd++)
     {
-        Mt_n[0][ind][ind] = 1.0;
-        neg_Mt_n[0][ind][ind] = 1.0;
+        trans_consts[knd] = -branch_ratios[knd][knd];
+
+        if (trans_consts[knd] == 0.0)
+            continue;
+
+        branch_ratios[knd][knd] = 0.0;
+        for (qnd = 0; qnd < K_num; qnd++)
+            branch_ratios[knd][qnd] = branch_ratios[knd][qnd] / trans_consts[knd];
     };
 
-    // Calculate the exponential matrices
-    for (n = 1; n < 7; n++)
+
+    // Fill in the chains container with more than one-step values
+    if (bt_s == 0)
     {
-        Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], Mt);
-        neg_Mt_n[n] = bright::matrix_multiplication(Mt_n[n-1], bright::scalar_matrix_product(-1.0, Mt));
+        for (iso_iter iso = K.begin(); iso != K.end(); iso++)
+        {
+            i = (*iso);
+            ind = K_ind[i];
+
+            for (jnd = 0; jnd < K_num; jnd++)
+            {
+                if (branch_ratios[ind][jnd] == 0.0)
+                    continue;
+
+                j = K_ord[jnd];
+
+                add_transmutation_chains(transmutation_chains[i][j]);
+            };
+        };
     };
 
-    // Calculate the pade numerator and denom matrices
-    for (n = 0; n < 7; n++)
-    {
-        N_pq = bright::matrix_addition(N_pq, bright::scalar_matrix_product(N_coef_n[n], Mt_n[n]));
-        D_pq = bright::matrix_addition(D_pq, bright::scalar_matrix_product(D_coef_n[n], neg_Mt_n[n]));
-    };
 
-    // Invert the denominator
-    std::vector< std::vector<double> > inv_D_pq = bright::matrix_inverse(D_pq);
-
-    // Approximate the exponential e^(Mt) = D^-1 * N
-    std::vector< std::vector<double> > exp_Mt = bright::matrix_multiplication(inv_D_pq, N_pq);
 
     // Make mass vectors
-    std::vector<double> comp_prev (J_size, 0.0);
-    for (ind = 0; ind < J_size; ind++)
+    std::vector<double> comp_prev (K_num, 0.0);
+    for (ind = 0; ind < K_num; ind++)
     {
-        i = J_order[ind];
-        comp_prev[ind] = T_it[i][bt_s-1];
+        i = K_ord[ind];
+        comp_prev[ind] = T_it[i][bt_s];
     };
 
-    // Get the composition for the next time step
-    std::vector<double> comp_next = bright::scalar_matrix_vector_product(1.0, exp_Mt, comp_prev);
+
+    std::vector<double> comp_next (K_num, 0.0);
+    for (ind = 0; ind < K_num; ind++)
+    {
+        if (comp_prev[ind] == 0.0)
+            continue;
+
+        i = K_ord[ind];
+        if (J.count(i) == 0)
+            continue;
+
+        for (jnd = 0; jnd < K_num; jnd++)
+        {
+            j = K_ord[jnd];
+
+            //if (J.count(j) == 0)
+            //    continue;
+
+
+            if (i == j)
+                comp_next[ind] += comp_prev[ind] * exp(-trans_consts[ind] * dt);
+            else if (transmutation_chains[i].count(j) == 0)
+                continue;
+            else
+                comp_next[jnd] += comp_prev[ind] * bateman(i, j, dt);
+        };
+    };
 
     // Copy this composition back to the tranmutuation matrix
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
-        i = J_order[ind];
-        T_it[i][bt_s] = comp_next[ind];
+        i = K_ord[ind];
+        T_it[i][bt_s+1] = comp_next[ind];
     };
 
     // Calculate the burnup 
     CompDict cd_prev, cd_next;
-    for (ind = 0; ind < J_size; ind++)
+    for (ind = 0; ind < K_num; ind++)
     {
-        i = J_order[ind];
+        i = K_ord[ind];
         cd_prev[i] = comp_prev[ind];
         cd_next[i] = comp_next[ind];
     };
 
-    MassStream ms_prev (cd_prev);
-    MassStream act_prev = ms_prev.get_act();
+    //MassStream ms_prev (cd_prev);
+    //MassStream act_prev = ms_prev.get_act();
 
-    MassStream ms_next (cd_next);
-    MassStream act_next = ms_next.get_act();
+    //MassStream ms_next (cd_next);
+    //MassStream act_next = ms_next.get_act();
 
-    double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
+    //double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
+    //BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
-    BU_t[bt_s] = delta_BU + BU_t[bt_s - 1];
+    double delta_BU = specific_power * (burn_times[bt_s + 1] - burn_times[bt_s]);
+    BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
+
+    std::cout << "   BU_t = " << BU_t[bt_s+1] << "\n";
 };
+
+
+
+
 
 
 
@@ -1252,6 +1702,7 @@ void ReactorMG::burnup_core()
 
     // Also initialize the cross-section matrices as a function of time.
     sigma_t_itg.clear();
+    sigma_a_itg.clear();
     nubar_sigma_f_itg.clear();
     chi_itg.clear();
     sigma_s_itgh.clear();
@@ -1283,25 +1734,24 @@ void ReactorMG::burnup_core()
     phi_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0) );
     phi_t = std::vector<double>(S, -1.0);
     Phi_t = std::vector<double>(S, -1.0);
-    BU_t = std::vector<double>(S, -1.0);
+    BU_t = std::vector<double>(S, 0.0);
 
     zeta_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 1.0) );
     lattice_E_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
     lattice_F_tg = std::vector< std::vector<double> >(S, std::vector<double>(G, 0.0) );
 
 
-    for (iso_iter iso = J.begin(); iso != J.end(); iso++)
+    for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         // Init the transmutation matrix
-        T_it[*iso] = time_data(S, -1.0);
+        T_it[*iso] = time_data(S, 0.0);
 
         if (0 < ms_feed.comp.count(*iso))
             T_it[*iso][0] = ms_feed.comp[*iso];
-        else
-            T_it[*iso][0] = 0.0;
 
         // Init the cross-sections
         sigma_t_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
+        sigma_a_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         nubar_sigma_f_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         chi_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
         sigma_s_itgh[*iso] = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, -1.0)));
@@ -1405,8 +1855,8 @@ void ReactorMG::burnup_core()
     A_inv_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
     A_inv_F_tgh = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(G, std::vector<double>(G, 0.0)));
 
-    T_int_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
-    M_tij = std::vector< std::vector< std::vector<double> > >(S, std::vector< std::vector<double> >(J_size, std::vector<double>(J_size, 0.0)));
+    T_int_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (0, K_num, K_num));
+    M_tij = std::vector< bright::SparseMatrix<double> > (S,  bright::SparseMatrix<double> (0, K_num, K_num));
 
     // Init the multilplcation factpr
     k_t = std::vector<double>(S, -1.0);
@@ -1418,36 +1868,29 @@ void ReactorMG::burnup_core()
         bt_s = s;
         burn_time = burn_times[s];
 
-        std::cout << s << "\n";
+        if (2 <= FCComps::verbosity)
+            std::cout << "Time step " << s << " = " << burn_times[s] << " days\n";
 
         // Find the nearest neightbors for this time.
-        std::cout << "Nearest\n";
         calc_nearest_neighbors();
 
         // Interpolate cross section in preparation for 
         // criticality calculation.
-        std::cout << "Interpolate\n";
         interpolate_cross_sections();
 
         // Fold the mass weights for this time step
-        std::cout << "cmw\n";
         calc_mass_weights();
-        std::cout << "fmw\n";
         fold_mass_weights();
 
-        // Preform the criticality and burnup calulations
-        std::cout << "amm\n";
+        // Preform the criticality calulation
         assemble_multigroup_matrices();
-        std::cout << "cc\n";
         calc_criticality();
 
-        std::cout << "ct\n";
-        if (s == 0)
-            BU_t[0] = 0.0;
-        else        
-            calc_transmutation();
+        // Preform the burnup calulation
+        assemble_transmutation_matrices();
 
-        std::cout << "\n\n\n\n";
+        if (s != S - 1)
+            calc_transmutation();
     };
 
 };
@@ -2219,5 +2662,20 @@ void ReactorMG::calc_zeta()
         if (zeta_tg[bt_s][g] < 1.0)
             zeta_tg[bt_s][g] = 1.0;
     };
+
+    // try something else
+    for (g = 0; g < G; g++) 
+    {
+        if (g < g_therm)
+            zeta_tg[bt_s][g] = 1.0;
+        else
+            zeta_tg[bt_s][g] = 1.2;            
+    };
+
 };
 
+
+
+//template class bright::sparse_matrix_entry<double>;
+
+template class bright::SparseMatrix<double>;

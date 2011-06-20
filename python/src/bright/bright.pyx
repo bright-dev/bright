@@ -1363,6 +1363,8 @@ cdef class ReactorParameters:
 
           This is typically not done for fast reactors but is a useful correction 
           for LWRs.
+        * branch_ratio_cutoff (float): the cutoff value below which the bateman equations
+          are not solved.
         * radius (float): The radius of the fuel region.  In units of [cm].
         * pitch (float): The pitch or length of the unit fuel pin cell.  In units of [cm].
         * open_slots (float): The number of slots in a fuel assembly that are open.  
@@ -1524,6 +1526,16 @@ cdef class ReactorParameters:
 
         def __set__(self, bint value):
             self.rp_pointer.rescale_hydrogen = value
+
+
+    property branch_ratio_cutoff:
+        def __get__(self):
+            return self.rp_pointer.branch_ratio_cutoff
+
+        def __set__(self, double value):
+            self.rp_pointer.branch_ratio_cutoff = value
+
+
 
 
 
@@ -5318,6 +5330,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.rescale_hydrogen_xs = value
 
 
+    property branch_ratio_cutoff:
+        def __get__(self):
+            return self.rmg_pointer.branch_ratio_cutoff
+
+        def __set__(self, double value):
+            self.rmg_pointer.branch_ratio_cutoff = value
+
+
 
 
 
@@ -5430,26 +5450,47 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.J = conv.py_to_cpp_set_int(value)
 
 
-    property J_order:
+    property K:
         def __get__(self):
-            return conv.vector_to_array_1d_int(self.rmg_pointer.J_order)
+            return conv.cpp_to_py_set_int(self.rmg_pointer.K)
 
         def __set__(self, set value):
-            self.rmg_pointer.J_order = conv.array_to_vector_1d_int(value)
+            self.rmg_pointer.K = conv.py_to_cpp_set_int(value)
 
 
-    property J_index:
+
+
+
+
+
+    property K_num:
         def __get__(self):
-            return conv.map_to_dict_int_int(self.rmg_pointer.J_index)
+            return self.rmg_pointer.K_num
+
+        def __set__(self, int value):
+            self.rmg_pointer.K_num = value
+
+
+    property K_ord:
+        def __get__(self):
+            return conv.vector_to_array_1d_int(self.rmg_pointer.K_ord)
 
         def __set__(self, set value):
-            self.rmg_pointer.J_index = conv.dict_to_map_int_int(value)
+            self.rmg_pointer.K_ord = conv.array_to_vector_1d_int(value)
+
+
+    property K_ind:
+        def __get__(self):
+            return conv.map_to_dict_int_int(self.rmg_pointer.K_ind)
+
+        def __set__(self, set value):
+            self.rmg_pointer.K_ind = conv.dict_to_map_int_int(value)
 
 
 
 
 
-
+    """\
     property decay_matrix:
         def __get__(self):
             return conv.vector_to_array_2d_dbl(self.rmg_pointer.decay_matrix)
@@ -5481,6 +5522,7 @@ cdef class ReactorMG(FCComp):
         def __set__(self, value):
             self.rmg_pointer.fission_product_yield_matrix = conv.array_to_vector_3d_dbl(value)
 
+    """
 
 
 
@@ -5586,6 +5628,14 @@ cdef class ReactorMG(FCComp):
     
         def __set__(self, dict value):
             self.rmg_pointer.sigma_t_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+    
+    
+    property sigma_a_pg:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_pg)
+    
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_a_pg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
     
     
     property nubar_sigma_f_pg:
@@ -5852,6 +5902,14 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.sigma_t_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
 
 
+    property sigma_a_itg:
+        def __get__(self):
+            return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.sigma_a_itg)
+
+        def __set__(self, dict value):
+            self.rmg_pointer.sigma_a_itg = conv.dict_to_map_int_array_to_vector_2d_dbl(value)
+
+
     property nubar_sigma_f_itg:
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl(self.rmg_pointer.nubar_sigma_f_itg)
@@ -6051,7 +6109,7 @@ cdef class ReactorMG(FCComp):
             self.rmg_pointer.Sigma_2n_x_fuel_tg = conv.array_to_vector_2d_dbl(value)
 
 
-    property kappa_fuell_tg:
+    property kappa_fuel_tg:
         def __get__(self):
             return conv.vector_to_array_2d_dbl(self.rmg_pointer.kappa_fuel_tg)
 
@@ -6450,7 +6508,7 @@ cdef class ReactorMG(FCComp):
         def __set__(self, dict value):
             self.rmg_pointer.A_inv_F_tgh = conv.array_to_vector_3d_dbl(value)
 
-
+    """\
     property T_int_tij:
         def __get__(self):
             return conv.vector_to_array_3d_dbl(self.rmg_pointer.T_int_tij)
@@ -6466,6 +6524,7 @@ cdef class ReactorMG(FCComp):
         def __set__(self, dict value):
             self.rmg_pointer.M_tij = conv.array_to_vector_3d_dbl(value)
 
+    """
 
 
 
@@ -6785,6 +6844,12 @@ cdef class ReactorMG(FCComp):
         """Folds mass weight in with cross-sections for current time step.
         """
         self.rmg_pointer.assemble_multigroup_matrices()
+
+
+    def assemble_transmutation_matrices(self):
+        """Calculates the transmutation matrices for the current time step
+        """
+        self.rmg_pointer.assemble_transmutation_matrices()
 
 
     def calc_criticality(self):

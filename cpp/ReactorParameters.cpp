@@ -36,6 +36,8 @@ ReactorParameters::ReactorParameters()
 
     open_slots = 0.0;
     total_slots = 0.0;
+
+    branch_ratio_cutoff = 0.0;
 };
 
 
@@ -131,6 +133,8 @@ ReactorParameters fill_lwr_defaults ()
     lwrd.open_slots = 25.0;
     lwrd.total_slots = 289.0;
 
+    lwrd.branch_ratio_cutoff = 1E-20;
+
     return lwrd;
 };
 
@@ -175,6 +179,8 @@ ReactorParameters fill_fr_defaults ()
 
     frd.open_slots = 19.0;
     frd.total_slots = 163.0;
+
+    frd.branch_ratio_cutoff = 1E-20;
 
     return frd;
 };

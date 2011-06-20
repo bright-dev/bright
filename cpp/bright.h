@@ -7,6 +7,7 @@
 #include <string>
 #include <string.h>
 #include <sstream>
+#include <iostream>
 #include <cctype>
 #include <stdlib.h>
 #include <iostream>
@@ -15,6 +16,7 @@
 #include <sys/stat.h> 
 #include <vector>
 #include <algorithm>
+#include <typeinfo>
 
 /*** Macros ***/
 #define length_array(a) ( sizeof ( a ) / sizeof ( *a ) )
@@ -230,6 +232,531 @@ public:
 private:
     std::string errstr;
 };
+
+
+
+
+template <class T>
+class sparse_matrix_entry
+{
+public:
+    int row;
+    int col;
+    T val;
+
+    sparse_matrix_entry() {};
+    ~sparse_matrix_entry() {};
+
+    sparse_matrix_entry(int i, int j, T v)
+    {
+        row = i;
+        col = j;
+        val = v;
+    };
+};
+
+
+template <class T>
+bool cmp_by_row (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b) 
+{
+    if (a.row != b.row)
+        return (a.row < b.row);
+    else
+        return (a.col < b.col);
+};
+
+
+template <class T>
+bool cmp_by_col (sparse_matrix_entry<T> a,sparse_matrix_entry<T> b) 
+{
+    if (a.col != b.col)
+        return (a.col < b.col);
+    else
+        return (a.row < b.row);
+};
+
+
+template<class InputIterator, class T>
+InputIterator find_row( InputIterator first, InputIterator last, const T& value )
+{
+    for ( ;first!=last; first++) 
+    {
+        if ((*first).row == value) 
+            break;
+
+        if (value < (*first).row)
+            first = last - 1;
+    };
+
+    return first;
+};
+
+
+
+template<class InputIterator, class T>
+InputIterator find_col( InputIterator first, InputIterator last, const T& value )
+{
+    for ( ;first!=last; first++) 
+    {
+        if ((*first).col == value) 
+            break;
+
+        if (value < (*first).col) 
+            first = last - 1 ;
+    };
+
+    return first;
+};
+
+
+
+template <class T>
+class SparseMatrix
+{
+public:
+    int nrows, ncols;
+    std::vector< sparse_matrix_entry<T> > sm;
+
+    SparseMatrix(){};
+    ~SparseMatrix(){};
+
+    SparseMatrix(int N, int nr=0, int nc = 0)
+    {
+        nrows = nr;
+        ncols = nc;
+
+        sm = std::vector< sparse_matrix_entry <T> >();
+        sm.reserve(N);
+    };
+
+
+    int size()
+    {
+        return sm.size();
+    };
+
+
+
+
+    std::vector< std::vector<T> > todense()
+    {
+        int n;
+        int N = size();
+        typename std::vector< std::vector<T> > M = std::vector< std::vector<T> > (nrows, std::vector<T> (ncols, 0.0));
+        for (n = 0; n < N; n++)
+            M[sm[n].row][sm[n].col] = sm[n].val;
+        return M;
+    };
+
+
+
+
+    void push_back(int i, int j, T value)
+    {
+        sm.push_back(sparse_matrix_entry<T>(i, j, value));
+    };
+
+
+    T at(int i, int j)
+    {
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter = find_row(sm.begin(), sm.end(), i);
+        while (i == (*a_iter).row)
+        {
+            if (j == (*a_iter).col)
+                return (*a_iter).val;
+
+            a_iter++;
+        };
+        return 0.0;
+    };
+
+
+    void sort_by_row()
+    {
+        std::sort(sm.begin(), sm.end(), cmp_by_row<T>);
+    };
+
+
+    void sort_by_col()
+    {
+        std::sort(sm.begin(), sm.end(), cmp_by_col<T>);
+    };
+
+
+    void clean_up()
+    {
+        // First, get all of your ducks in a row
+        sort_by_row();
+
+        int n, N;
+        N = sm.size();
+        std::vector<int> bad_ind = std::vector<int>();
+
+        // Calculate indices to remove
+        for (n = N - 1; 0 <= n; n--)
+        {
+            if ((sm[n].row == sm[n-1].row) && (sm[n].col == sm[n-1].col))
+                bad_ind.push_back(n);
+            else if (sm[n].val == 0.0)
+                bad_ind.push_back(n);
+        }; 
+
+        // remove the offending indices
+        int p, P;
+        P = bad_ind.size();
+        for (p = 0; p < P; p++)
+            sm.erase(sm.begin()+bad_ind[p]);
+
+        // Save some space
+        sm.resize(sm.size());
+    };
+
+
+    friend std::ostream& operator<< (std::ostream& out, SparseMatrix<T> & A) 
+    {
+        int n = 0;
+        int N = A.size();
+        
+        out << "Sparse Matrix [" << A.nrows << ", " << A.ncols << "] (" << N << ")\n";
+        for (n = 0; n < N; n++)
+            out << "  (" << A.sm[n].row << ", " << A.sm[n].col << ") = " << A.sm[n].val << "\n";
+
+        return out;
+    };
+
+
+
+    double norm()
+    {
+        // Calculates the Frobenius norm for the sparse matrix
+        int n, N;
+        N = sm.size();
+        double frob = 0.0;
+
+        for (n = 0; n < N; n++)
+            frob += (sm[n].val * sm[n].val);
+
+        frob = sqrt(frob);
+        return frob;
+    };
+
+
+    double abs_max()
+    {
+        int n, N;
+        N = sm.size();
+        double m = 0.0;
+
+        for (n = 0; n < N; n++)
+            if (m < fabs(sm[n].val))
+                m = fabs(sm[n].val);
+
+        return m;
+    };
+
+
+    void prune(double precision = 1E-10)
+    {
+        int n, N;
+        N = sm.size();
+        double cutoff = precision * abs_max();
+
+        for (n = 0; n < N; n++)
+            if (fabs(sm[n].val) < cutoff)
+                sm[n].val = 0.0;
+
+        clean_up();
+    };
+
+
+    void find_inf()
+    {
+        // Calculates the Frobenius norm for the sparse matrix
+        int n, N;
+        N = sm.size();
+        double infin = 1.0 / 0.0;
+
+        for (n = 0; n < N; n++)
+            if (sm[n].val == infin)
+                std::cout << "  (" << sm[n].row << ", " << sm[n].col << ") = " << sm[n].val << "\n";
+    };
+
+
+
+
+    SparseMatrix<T> transpose()
+    {
+        int n;
+        int N = size();
+        SparseMatrix<T> B = SparseMatrix<T>(N, nrows, ncols);
+
+        for (n = 0; n < N; n++)
+            B.push_back(sm[n].col, sm[n].row, sm[n].val);
+
+        B.clean_up();
+        return B;
+    };
+
+
+
+    SparseMatrix<T> operator* (double s)
+    {
+        int n;
+        int N = size();
+        SparseMatrix<T> B = SparseMatrix<T>(N, nrows, ncols);
+
+        for (n = 0; n < N; n++)
+            B.push_back(sm[n].row, sm[n].col, sm[n].val * s);
+
+        B.clean_up();
+        return B;
+    };
+
+
+    std::vector<double> operator* (std::vector<double> vec)
+    {
+        int n, i, j;
+        int N = size();
+        int P = vec.size();
+
+        if (P != nrows && P != ncols)
+            throw VectorSizeError();
+
+        std::vector<double> new_vec = std::vector<double>(P, 0.0);
+
+        for (n = 0; n < N; n++)
+            new_vec[sm[n].row] += (sm[n].val * vec[sm[n].col]);
+
+        return new_vec;
+    };
+
+
+    SparseMatrix<T> operator* (SparseMatrix<T> B)
+    {
+        int i, j;
+        int N = size();
+
+        if (B.nrows != nrows && B.ncols != ncols)
+            throw VectorSizeError();
+
+        // Put B in col-order
+        B.sort_by_col();
+
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_stor, b_stor, a_beg, b_beg, a_end, b_end;
+        a_beg = sm.begin();
+        a_end = sm.end();
+        a_stor = a_beg;
+
+        b_beg = B.sm.begin();
+        b_end = B.sm.end();
+        b_stor = b_beg;
+
+        SparseMatrix<T> C = SparseMatrix<T>(N, nrows, ncols);
+
+        double dot_prod;
+        for (i = 0; i < C.nrows; i++)
+        {
+            for (j = 0; j < C.ncols; j++)
+            {
+                a_iter = find_row(a_stor, a_end, i);
+                b_iter = find_col(b_stor, b_end, j);
+
+//                std::cout << "(" << i << ", " << j << ") = a(" << (*a_iter).row << ", " << (*a_iter).col << ") = b(" << (*b_iter).row << ", " << (*b_iter).col << ")\n";
+
+                a_stor = a_iter;
+                b_stor = b_iter;
+
+                if ((a_iter == a_end) || (b_iter == b_end))
+                {
+                    if (a_iter == a_end)
+                        a_stor = a_beg;
+
+                    if (b_iter == b_end)
+                        b_stor = b_beg;
+
+                    continue;
+                };
+
+                dot_prod = 0.0;
+
+                while(((*a_iter).row == i) && ((*b_iter).col == j) && (a_iter != a_end) && (b_iter != b_end))
+                {
+                    if ((*a_iter).col == (*b_iter).row)
+                    {
+                        dot_prod += ((*a_iter).val * (*b_iter).val);
+                        a_iter++;
+                        b_iter++;
+                    }
+                    else if ((*a_iter).col < (*b_iter).row)
+                        a_iter++;
+                    else if ((*b_iter).row < (*a_iter).col)
+                        b_iter++;
+                    else
+                        break;
+                };
+
+                // Add entry, if not sparse
+                if (dot_prod != 0.0)
+                    C.push_back(i, j, dot_prod);
+
+                if ((a_iter == a_beg) || (a_iter == a_end) || (a_iter == a_end - 1))
+                    a_stor = a_beg;
+
+                if ((b_iter == b_beg) || (b_iter == b_end) || (b_iter == b_end - 1))
+                    b_stor = b_beg;
+            };
+        };
+
+        // Put B back in the right order
+        B.sort_by_row();
+
+        C.clean_up();
+        return C;
+    };
+
+
+
+    SparseMatrix<T> operator+ (SparseMatrix<T> B)
+    {
+        int i, j;
+        int N = size();
+
+        if (B.nrows != nrows && B.ncols != ncols)
+            throw VectorSizeError();
+
+        typename std::vector< sparse_matrix_entry<T> >::iterator a_iter, b_iter, a_end, b_end;
+        a_end = sm.end();
+        b_end = B.sm.end();
+
+        SparseMatrix<T> C = SparseMatrix<T>(N + B.size(), nrows, ncols);
+
+        double tmp_sum;
+        for (i = 0; i < C.nrows; i++)
+        {
+            a_iter = find_row(sm.begin(), a_end, i);
+            b_iter = find_row(B.sm.begin(), b_end, i);
+
+            // Cover the case where there are no a- or b-entries for row == i
+            if ((a_iter == a_end) && (b_iter == b_end))
+                continue;
+
+            // Cover the case where there are no b-entries for row == i
+            if ((a_iter != a_end) && (b_iter == b_end))
+            {
+                while((*a_iter).row == i)
+                {
+                    C.push_back(i, (*a_iter).col, (*a_iter).val);
+                    a_iter++;
+                };
+                continue;
+            };
+
+            // Cover the case where there are no a-entries for row == i
+            if ((a_iter == a_end) && (b_iter != b_end))
+            {
+                while((*b_iter).row == i)
+                {
+                    C.push_back(i, (*b_iter).col, (*b_iter).val);
+                    b_iter++;
+                };
+                continue;
+            };
+
+            // cover the case when there are both a and b entries for row == i
+            while(((*a_iter).row == i) || ((*b_iter).row == i))
+            {
+                if (((*a_iter).row == i) && ((*b_iter).row == i))
+                {
+                    if ((*a_iter).col == (*b_iter).col)
+                    {
+                        tmp_sum = ((*a_iter).val + (*b_iter).val);
+                        if (tmp_sum != 0.0)
+                            C.push_back(i, (*a_iter).col, tmp_sum);
+
+                        a_iter++;
+                        b_iter++;
+                    }
+                    else if ((*a_iter).col < (*b_iter).col)
+                    {
+                        C.push_back(i, (*a_iter).col, (*a_iter).val);
+                        a_iter++;
+                    }
+                    else
+                    {
+                        C.push_back(i, (*b_iter).col, (*b_iter).val);
+                        b_iter++;
+                    };
+                }
+                else if ((*a_iter).row == i)
+                {
+                    C.push_back(i, (*a_iter).col, (*a_iter).val);
+                    a_iter++;
+                }
+                else if ((*b_iter).row == i)
+                {
+                    C.push_back(i, (*b_iter).col, (*b_iter).val);
+                    b_iter++;
+                }
+                else
+                    break;
+            };
+        };
+
+        C.clean_up();
+        return C;
+    };
+
+
+    std::vector<double> exp (std::vector<double> vec, int max_iter = 10000, double epsilon = 1e-16)
+    {
+        int n, p;
+        int P = vec.size();
+        double ind_rel_err = 0.0;
+        double max_rel_err = 1.0;
+
+        if (P != nrows && P != ncols)
+            throw VectorSizeError();
+
+        // Init vectors
+        std::vector<double> new_vec = vec;
+        std::vector<double> new_vec_last = vec;
+
+        std::vector<double> V = ((*this) * new_vec);
+        for (p = 0; p < P; p++)
+            new_vec[p] = new_vec[p] + V[p];
+
+        n = 2;
+        while((n < max_iter) && (epsilon < max_rel_err))
+        {
+            max_rel_err = 0.0;
+
+            for (p = 0; p < P; p++)
+                V[p] /= n;
+            V = ((*this) * V);
+
+            for (p = 0; p < P; p++)
+            {
+                new_vec[p] += V[p];
+
+                // Calculate end contition
+                ind_rel_err = fabs(1.0 - fabs(new_vec_last[p] / new_vec[p]));
+                if (max_rel_err < ind_rel_err)
+                    max_rel_err = ind_rel_err;
+            };
+
+            std::cout << "  n = " << n << ", iso = " << new_vec[2812] << ", err = " << max_rel_err << "\n";
+
+            new_vec_last = new_vec;
+            n++;
+        };
+
+        std::cout << "  matrix exp found at iter = " << n << "\n";
+
+        return new_vec;
+    };
+
+};
+
 
 
 // End bright namespace
