@@ -139,7 +139,7 @@ public:
 
     std::vector<double> trans_consts;
     std::vector< std::vector<double> > branch_ratios;
-    std::map<int, std::map<int, std::vactor< std::vector<int> > > > transmutation_chains;
+    std::map<int, std::map<int, std::vector< std::vector<int> > > > transmutation_chains;
 
 
     h5wrap::HomogenousTypeTable<double> perturbations;  // Load perturbation table

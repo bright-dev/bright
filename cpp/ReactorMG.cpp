@@ -1376,7 +1376,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
         // chack if the chain is already present
         chain_present = false;
-        Nik = transmutation_chains[i][k].size()
+        Nik = transmutation_chains[i][k].size();
         for (nik = 0; nik < Nik; nik++)
         {
             if (next_chain.size() != transmutation_chains[i][k][nik].size())
@@ -1399,7 +1399,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
             };
         };
 
-        if (chain_present):
+        if (chain_present)
             continue;
 
         // add new chains
@@ -1650,7 +1650,8 @@ void ReactorMG::calc_transmutation()
 
                 j = K_ord[jnd];
 
-                add_transmutation_chains(transmutation_chains[i][j]);
+                for (int ncp = 0; ncp < transmutation_chains[i][j].size(); ncp++)
+                    add_transmutation_chains(transmutation_chains[i][j][ncp]);
             };
         };
     };
