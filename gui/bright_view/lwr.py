@@ -173,7 +173,7 @@ class _LightWaterReactorView(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = bright.MassStream()
+        IsosIn = mass_stream.MassStream()
         return IsosIn
 
     def _IsosIn_view_default(self):
@@ -187,7 +187,7 @@ class _LightWaterReactorView(HasTraits):
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = bright.MassStream()
+        IsosOut = mass_stream.MassStream()
         return IsosOut
 
     def _IsosOut_view_default(self):

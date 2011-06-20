@@ -46,7 +46,7 @@ def _create_display_scatter_plot_component(ind, z):
    
     return plot
 
-class _scatter_plot_view(HasTraits):
+class _ScatterPlotView(HasTraits):
     plot = Instance(Component)
 
     ind = Array
@@ -73,3 +73,9 @@ class _scatter_plot_view(HasTraits):
    
 def scatter_plot(ind, z):
     return 
+
+
+if __name__ == "__main__":
+    
+    _spview = _ScatterPlotView()
+    _spview.configure_traits()

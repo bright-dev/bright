@@ -59,7 +59,7 @@ def _fuel_cycle_plot_component(x, y, x_name, y_name):
    
     return plot
 
-class _fuel_cycle_plot_view(HasTraits):
+class _FuelCyclePlotView(HasTraits):
     plot = Instance(Component)
 
     file = File('fuel_cycle.h5')
@@ -181,3 +181,9 @@ class _fuel_cycle_plot_view(HasTraits):
    
 def fuel_cycle_plot():
     return 
+
+if __name__ == "__main__":
+       
+    
+    _fcpview = _FuelCyclePlotView ()
+    _fcpview.configure_traits()
