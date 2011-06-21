@@ -1343,14 +1343,48 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
     bool k_in_chain = false;
     bool chain_present = false;
     bool chain_ind_same = false;
+    double br_ij, br_ik;
+    double branch_ratio_cutoff_point;
 
     jnd = K_ind[j];
+
+/*
+    Nik = transmutation_chains[i][j].size();
+    for (nik = 0; nik < Nik; nik++)
+    {
+        if (chain_len == transmutation_chains[i][j][nik].size())
+        {
+            chain_ind_same = true;
+            for(int ncp = 0; ncp < transmutation_chains[i][j][nik].size(); ncp++)
+                chain_ind_same = chain_ind_same && (tc[ncp] == transmutation_chains[i][j][nik][ncp]);
+
+            chain_present = (chain_present || chain_ind_same);
+        };
+    };
+
+    if (chain_present)
+        return;
+*/
+
+    // I swear this 42 number is meaningful...
+    if (21 < chain_len)
+        return;
+
+    branch_ratio_cutoff_point = branch_ratios[K_ind[tc[0]]][K_ind[tc[1]]] * 5E-1;
+
+    br_ij = 1.0;
+    for (n = 1; n < chain_len; n++)
+        br_ij *= branch_ratios[K_ind[tc[n-1]]][K_ind[tc[n]]]; 
+
+    if (br_ij < branch_ratio_cutoff_point || br_ij < branch_ratio_cutoff)
+        return;
 
     std::vector<int> next_chain;
 
     for (knd = 0; knd < K_num; knd++)
     {
-        if (branch_ratios[jnd][knd] == 0.0)
+        br_ik = br_ij * branch_ratios[jnd][knd];
+        if (br_ik < branch_ratio_cutoff_point || br_ik < branch_ratio_cutoff)
             continue;
 
         if (jnd == knd)
@@ -1371,36 +1405,40 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
             continue;
 
         // construct new chains
-        next_chain = tc;
+        next_chain = std::vector<int>(tc);
         next_chain.push_back(k);
-
+        int next_chain_size = next_chain.size();
+    
         // chack if the chain is already present
         chain_present = false;
         Nik = transmutation_chains[i][k].size();
         for (nik = 0; nik < Nik; nik++)
         {
-            if (next_chain.size() != transmutation_chains[i][k][nik].size())
-                continue;
-
-            chain_ind_same = true;
-            for (int ncp = 0; ncp < next_chain.size(); ncp++)
+            if (next_chain_size == transmutation_chains[i][k][nik].size())
             {
-                if (next_chain[ncp] != transmutation_chains[i][k][nik][ncp])
+                int ncp  = 0;
+                chain_ind_same = true;
+                //while (chain_ind_same && ncp < next_chain_size)
+                for (ncp = 0; chain_ind_same && ncp < next_chain_size; ncp++)
                 {
-                    chain_ind_same = false;
-                    break;
+                    chain_ind_same = chain_ind_same && (next_chain[ncp] == transmutation_chains[i][k][nik][ncp]);
+//                    std::cout << "            chain = " << next_chain[ncp] << " --- " << transmutation_chains[i][k][nik][ncp] << "  " << chain_ind_same << "  " << ncp << "/" << next_chain_size << "\n";
+                    //ncp++;
                 };
-            };
 
-            if (chain_ind_same)
-            {
-                chain_present = true;
-                break;
+//                std::cout << "            ---------------\n";
+
+                chain_present = (chain_present || chain_ind_same);
             };
         };
 
         if (chain_present)
+        {
+            std::cout << "        Present chains = " << i << " --> " << j << " --> " << k << "  " << chain_present << "  " << chain_ind_same << "  " << next_chain_size << "  " << Nik << "\n";
             continue;
+        };
+
+        std::cout << "        Adding chains = " << i << " --> " << j << " --> " << k << "  " << chain_present << "  " << chain_ind_same << "  " << next_chain.size() << "  " << Nik << "\n";
 
         // add new chains
         transmutation_chains[i][k].push_back(next_chain);
@@ -1650,6 +1688,7 @@ void ReactorMG::calc_transmutation()
 
                 j = K_ord[jnd];
 
+                std::cout << "    Adding chains for " << i << " --> " << j << "\n";
                 for (int ncp = 0; ncp < transmutation_chains[i][j].size(); ncp++)
                     add_transmutation_chains(transmutation_chains[i][j][ncp]);
             };
