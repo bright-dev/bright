@@ -12,8 +12,11 @@ from char.m2py import convert_res, convert_dep
 
 
 def run_serpent():
-    bu_file = 'serp_bu'
-    xs_file = 'serp_xs'
+    #bu_file = 'serp_bu_10'
+    #xs_file = 'serp_xs_10'
+
+    bu_file = 'serp_bu_19'
+    xs_file = 'serp_xs_19'
 
     if (not os.path.exists(bu_file + '_res.py')) or (not os.path.exists(bu_file + '_dep.py')):
         serpent.main(bu_file)
@@ -135,7 +138,7 @@ if __name__ == "__main__":
 
     r_k, s_k, diff_k = calc_diff(rmg.k_t, res_bu['SIX_FF_KEFF'][:, 0], "k")
 
-    r_phi, s_phi, diff_phi = calc_diff(rmg.phi_tg / rmg.phi_t, 
+    r_phi, s_phi, diff_phi = calc_diff(rmg.phi_tg / rmg.phi_t[:, np.newaxis], 
                                        res_bu['FLUX'][:, 2::2] / res_bu['FLUX'][:, np.newaxis, 0], 
                                        "Normalized Flux")
 
@@ -149,5 +152,15 @@ if __name__ == "__main__":
     r_U235, s_U235, diff_U235 = calc_diff(T_it[922350], dep_bu['mw'][dep_bu['iso_index'][922350]], "U235")
     r_U238, s_U238, diff_U238 = calc_diff(T_it[922380], dep_bu['mw'][dep_bu['iso_index'][922380]], "U238")
     r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390], dep_bu['mw'][dep_bu['iso_index'][942390]], "PU239")
+    r_CM246, s_CM246, diff_CM246 = calc_diff(T_it[962460], dep_bu['mw'][dep_bu['iso_index'][962460]], "CM246")
 
+    r_KR85, s_KR85, diff_KR85 = calc_diff(T_it[360850], dep_bu['mw'][dep_bu['iso_index'][360850]], "KR85")
+    r_SR90, s_SR90, diff_SR90 = calc_diff(T_it[380900], dep_bu['mw'][dep_bu['iso_index'][380900]], "SR90")
+    r_ZR93, s_ZR93, diff_ZR93 = calc_diff(T_it[400930], dep_bu['mw'][dep_bu['iso_index'][400930]], "ZR93")
+    r_TC99, s_TC99, diff_TC99 = calc_diff(T_it[430990], dep_bu['mw'][dep_bu['iso_index'][430990]], "TC99")
 
+    r_I129, s_I129, diff_I129 = calc_diff(T_it[531290], dep_bu['mw'][dep_bu['iso_index'][531290]], "I129")
+
+    r_PD107, s_PD107, diff_PD107 = calc_diff(T_it[461070], dep_bu['mw'][dep_bu['iso_index'][461070]], "PD107")
+    r_CS135, s_CS135, diff_CS135 = calc_diff(T_it[551350], dep_bu['mw'][dep_bu['iso_index'][551350]], "CS135")
+    r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370], dep_bu['mw'][dep_bu['iso_index'][551370]], "CS137")
