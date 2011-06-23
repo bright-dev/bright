@@ -11,7 +11,7 @@ class ClassModel(HasTraits):
     instance_line = Str("{var} = {classname}()")
 
     def add_import(self):
-        return import_line.format(name=self.name)
+        return self.import_line.format(name=self.name)
 
     def add_instance(self):
-        return instance_line.format(var = self.var, classname = self.class_name)
+        return self.instance_line.format(var = self.var, classname = self.class_name)
