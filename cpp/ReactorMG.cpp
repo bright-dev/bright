@@ -1319,11 +1319,11 @@ void ReactorMG::assemble_transmutation_matrices()
                 continue;
 
             if (transmutation_chains.count(i) == 0)
-                transmutation_chains[i] = std::map<int, std::vector<int> > ();
+                transmutation_chains[i] = std::map<int, std::vector< std::vector<int> > > ();
 
-            transmutation_chains[i][j] = std::vector<int>(2);
-            transmutation_chains[i][j][0] = i;
-            transmutation_chains[i][j][1] = j;
+            transmutation_chains[i][j] = std::vector< std::vector<int> >(1,  std::vector<int>(2));
+            transmutation_chains[i][j][0][0] = i;
+            transmutation_chains[i][j][0][1] = j;
         };
     };
 
@@ -1335,20 +1335,56 @@ void ReactorMG::assemble_transmutation_matrices()
 
 void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 {
-    int n;
+    int n, nik, Nik;
     int chain_len = tc.size();
     int i = tc[0];
     int j = tc[chain_len - 1];
     int k, jnd, knd;
     bool k_in_chain = false;
+    bool chain_present = false;
+    bool chain_ind_same = false;
+    double br_ij, br_ik;
+    double branch_ratio_cutoff_point;
 
     jnd = K_ind[j];
+
+/*
+    Nik = transmutation_chains[i][j].size();
+    for (nik = 0; nik < Nik; nik++)
+    {
+        if (chain_len == transmutation_chains[i][j][nik].size())
+        {
+            chain_ind_same = true;
+            for(int ncp = 0; ncp < transmutation_chains[i][j][nik].size(); ncp++)
+                chain_ind_same = chain_ind_same && (tc[ncp] == transmutation_chains[i][j][nik][ncp]);
+
+            chain_present = (chain_present || chain_ind_same);
+        };
+    };
+
+    if (chain_present)
+        return;
+*/
+
+    // I swear this 42 number is meaningful...
+    if (21 < chain_len)
+        return;
+
+    branch_ratio_cutoff_point = branch_ratios[K_ind[tc[0]]][K_ind[tc[1]]] * 5E-1;
+
+    br_ij = 1.0;
+    for (n = 1; n < chain_len; n++)
+        br_ij *= branch_ratios[K_ind[tc[n-1]]][K_ind[tc[n]]]; 
+
+    if (br_ij < branch_ratio_cutoff_point || br_ij < branch_ratio_cutoff)
+        return;
 
     std::vector<int> next_chain;
 
     for (knd = 0; knd < K_num; knd++)
     {
-        if (branch_ratios[jnd][knd] == 0.0)
+        br_ik = br_ij * branch_ratios[jnd][knd];
+        if (br_ik < branch_ratio_cutoff_point || br_ik < branch_ratio_cutoff)
             continue;
 
         if (jnd == knd)
@@ -1356,8 +1392,8 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
         k = K_ord[knd];
 
-        if (transmutation_chains[i].count(k) == 1)
-            continue;
+        if (transmutation_chains[i].count(k) == 0)
+            transmutation_chains[i][k] = std::vector< std::vector<int> >();
 
         // Don't allow cyclic chains
         k_in_chain = false;
@@ -1369,11 +1405,43 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
             continue;
 
         // construct new chains
-        next_chain = tc;
+        next_chain = std::vector<int>(tc);
         next_chain.push_back(k);
+        int next_chain_size = next_chain.size();
+    
+        // chack if the chain is already present
+        chain_present = false;
+        Nik = transmutation_chains[i][k].size();
+        for (nik = 0; nik < Nik; nik++)
+        {
+            if (next_chain_size == transmutation_chains[i][k][nik].size())
+            {
+                int ncp  = 0;
+                chain_ind_same = true;
+                //while (chain_ind_same && ncp < next_chain_size)
+                for (ncp = 0; chain_ind_same && ncp < next_chain_size; ncp++)
+                {
+                    chain_ind_same = chain_ind_same && (next_chain[ncp] == transmutation_chains[i][k][nik][ncp]);
+//                    std::cout << "            chain = " << next_chain[ncp] << " --- " << transmutation_chains[i][k][nik][ncp] << "  " << chain_ind_same << "  " << ncp << "/" << next_chain_size << "\n";
+                    //ncp++;
+                };
+
+//                std::cout << "            ---------------\n";
+
+                chain_present = (chain_present || chain_ind_same);
+            };
+        };
+
+        if (chain_present)
+        {
+            std::cout << "        Present chains = " << i << " --> " << j << " --> " << k << "  " << chain_present << "  " << chain_ind_same << "  " << next_chain_size << "  " << Nik << "\n";
+            continue;
+        };
+
+        std::cout << "        Adding chains = " << i << " --> " << j << " --> " << k << "  " << chain_present << "  " << chain_ind_same << "  " << next_chain.size() << "  " << Nik << "\n";
 
         // add new chains
-        transmutation_chains[i][k] = next_chain;
+        transmutation_chains[i][k].push_back(next_chain);
         add_transmutation_chains(next_chain);
     };
 
@@ -1384,14 +1452,14 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
 
 
-double ReactorMG::bateman(int i, int j, double t)
+double ReactorMG::bateman_chain(int i, int j, int c, double t)
 {
     // Solves the Bateman Equations for a unit mass of isotope i -> 
     // decaying into isotope j.
     int ind = K_ind[i];
     int jnd = K_ind[j];
     
-    std::vector<int> chain = transmutation_chains[i][j];
+    std::vector<int> chain = transmutation_chains[i][j][c];
 
     int n;
     int N = chain.size();
@@ -1447,6 +1515,19 @@ double ReactorMG::bateman(int i, int j, double t)
 
 
 
+
+
+double ReactorMG::bateman(int i, int j, double t)
+{
+    int c, C;
+    double total_mass_frac = 0.0;
+
+    C = transmutation_chains[i][j].size();
+    for (c = 0; c < C; c++)
+        total_mass_frac += bateman_chain(i, j, c, t);
+
+    return total_mass_frac;
+};
 
 
 
@@ -1607,7 +1688,9 @@ void ReactorMG::calc_transmutation()
 
                 j = K_ord[jnd];
 
-                add_transmutation_chains(transmutation_chains[i][j]);
+                std::cout << "    Adding chains for " << i << " --> " << j << "\n";
+                for (int ncp = 0; ncp < transmutation_chains[i][j].size(); ncp++)
+                    add_transmutation_chains(transmutation_chains[i][j][ncp]);
             };
         };
     };
