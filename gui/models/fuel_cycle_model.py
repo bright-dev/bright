@@ -22,10 +22,7 @@ class FuelCycleModel(HasTraits):
 
     
         
-    def _variables_changed(self):
-        pass 
-
-
+    
     def add_instance(self, varname, class_name, data_dict = {}):
         # in-memory representation
         var = self.classes_available[class_name](var=varname, extra_data_parameter = data_dict) #class definition is stored in var
@@ -55,11 +52,13 @@ class FuelCycleModel(HasTraits):
     @on_trait_change ('script_imports, script_variables, script_execution')
     def update_script(self):
         self.script = self.script_imports + self.script_variables + self.script_execution
-        
+    
+    def calc_comp(self, varname, msname):
+        self.script_execution = self.script_execution + self.variables[varname].add_calc(msname) + '\n'
         
 if __name__ == "__main__":
     fcm = FuelCycleModel()
     fcm.add_instance("sr1","Storage")
     fcm.add_instance("ms1","MassStream",{922350:1.0})
-    fcm.add_instance("ms2","MassStream")  
+    fcm.calc_comp("sr1","ms1")  
     print fcm.script

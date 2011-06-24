@@ -7,6 +7,7 @@ class MassStream(ClassModel):
     class_name = Str("MassStream")
 
 
+    import_line = Str("from mass_stream import {name}")
     instance_line = Str("{var} = {classname}({mass_dict})")
 
 
