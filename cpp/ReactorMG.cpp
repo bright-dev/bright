@@ -1348,35 +1348,21 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
 
     jnd = K_ind[j];
 
-/*
-    Nik = transmutation_chains[i][j].size();
-    for (nik = 0; nik < Nik; nik++)
-    {
-        if (chain_len == transmutation_chains[i][j][nik].size())
-        {
-            chain_ind_same = true;
-            for(int ncp = 0; ncp < transmutation_chains[i][j][nik].size(); ncp++)
-                chain_ind_same = chain_ind_same && (tc[ncp] == transmutation_chains[i][j][nik][ncp]);
-
-            chain_present = (chain_present || chain_ind_same);
-        };
-    };
-
-    if (chain_present)
-        return;
-*/
 
     // I swear this 42 number is meaningful...
     if (21 < chain_len)
         return;
 
-    branch_ratio_cutoff_point = branch_ratios[K_ind[tc[0]]][K_ind[tc[1]]] * 5E-1;
+    if (j < 860000)
+        branch_ratio_cutoff_point = 1E-3;
+    else
+        branch_ratio_cutoff_point = 1E-5;
 
     br_ij = 1.0;
     for (n = 1; n < chain_len; n++)
         br_ij *= branch_ratios[K_ind[tc[n-1]]][K_ind[tc[n]]]; 
 
-    if (br_ij < branch_ratio_cutoff_point || br_ij < branch_ratio_cutoff)
+    if (br_ij < branch_ratio_cutoff_point)
         return;
 
     std::vector<int> next_chain;
@@ -1384,7 +1370,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
     for (knd = 0; knd < K_num; knd++)
     {
         br_ik = br_ij * branch_ratios[jnd][knd];
-        if (br_ik < branch_ratio_cutoff_point || br_ik < branch_ratio_cutoff)
+        if (br_ik < branch_ratio_cutoff_point)
             continue;
 
         if (jnd == knd)
@@ -1438,7 +1424,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
             continue;
         };
 
-        std::cout << "        Adding chains = " << i << " --> " << j << " --> " << k << "  " << chain_present << "  " << chain_ind_same << "  " << next_chain.size() << "  " << Nik << "\n";
+        std::cout << "        Adding chains = " << i << " --> " << j << " --> " << k << "  " << chain_present << "  " << chain_ind_same << "  " << next_chain.size() << "  " << Nik << "  " << branch_ratio_cutoff_point << "\n";
 
         // add new chains
         transmutation_chains[i][k].push_back(next_chain);
@@ -1524,7 +1510,10 @@ double ReactorMG::bateman(int i, int j, double t)
 
     C = transmutation_chains[i][j].size();
     for (c = 0; c < C; c++)
+    {
         total_mass_frac += bateman_chain(i, j, c, t);
+        //std::cout <<  i << " --> " << j << "  " << c << "/" << C << "   " << total_mass_frac << "\n";
+    };
 
     return total_mass_frac;
 };
