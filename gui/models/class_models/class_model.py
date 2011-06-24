@@ -6,7 +6,8 @@ class ClassModel(HasTraits):
     name = Str
     var = Str
     class_name = Str
-
+    extra_data_parameter = Dict
+    
     import_line = Str("from bright import {name}")
     instance_line = Str("{var} = {classname}()")
 
@@ -14,4 +15,4 @@ class ClassModel(HasTraits):
         return self.import_line.format(name=self.name)
 
     def add_instance(self):
-        return self.instance_line.format(var = self.var, classname = self.class_name)
+        return self.instance_line.format(var = self.var, classname = self.class_name, mass_dict = self.extra_data_parameter)

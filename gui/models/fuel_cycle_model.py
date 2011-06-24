@@ -1,4 +1,4 @@
-from traits.api import HasTraits, Str, Dict, Set
+from traits.api import HasTraits, Str, Dict, Set, on_trait_change
 from class_models.class_model import ClassModel
 
 
@@ -20,21 +20,25 @@ class FuelCycleModel(HasTraits):
     classes_available = Dict
     classes_imported = Set
 
-
+    
+        
     def _variables_changed(self):
         pass 
 
 
-    def add_instance(self, varname, class_name):
+    def add_instance(self, varname, class_name, data_dict = {}):
         # in-memory representation
-        var = self.classes_available[class_name](var=varname)
-        self.classes_imported.add(class_name)
-        self.variables[varname] = var
-       
+        var = self.classes_available[class_name](var=varname, extra_data_parameter = data_dict) #class definition is stored in var
+        self.classes_imported.add(class_name) #add the name of class selected to a set
+        self.variables[varname] = var #store in dictionary with varname as key and var as value
+        
+        
         # script representation
-        self.script_imports = self.script_imports + var.add_import() + '\n'
-
-
+        if class_name not in self.script_imports:
+            self.script_imports = self.script_imports + var.add_import() + '\n'
+        self.script_variables = self.script_variables + var.add_instance() + '\n'
+        
+        
     def register_classes_available(self):
         localdict = {}
         
@@ -47,9 +51,15 @@ class FuelCycleModel(HasTraits):
                 for key, value in localdict.items():     #check for a subclass of ClassModel
                     if issubclass(value, ClassModel) and value != ClassModel:
                        self.classes_available[key] = value   #append to classes_available dictionary
-
+    
+    @on_trait_change ('script_imports, script_variables, script_execution')
+    def update_script(self):
+        self.script = self.script_imports + self.script_variables + self.script_execution
+        
+        
 if __name__ == "__main__":
     fcm = FuelCycleModel()
     fcm.add_instance("sr1","Storage")
-   
-    print fcm.script_imports
+    fcm.add_instance("ms1","MassStream",{922350:1.0})
+    fcm.add_instance("ms2","MassStream")  
+    print fcm.script
