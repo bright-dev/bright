@@ -55,7 +55,7 @@ def run_reactormg():
     # Init reactor paramters
     rp = lwr_defaults()
     rp.batches = 4
-    rp.flux = 4*(10**14)
+    rp.flux = 4E+14
 
     rp.fuel_form = {"IHM": 1.0, "O16": 2.0}
     rp.cladding_form = {"ZR93": 0.5, "ZR95": 0.5}
@@ -71,6 +71,7 @@ def run_reactormg():
     rp.lattice_type = 'Spherical'
     rp.lattice_type = 'Planar'
     rp.rescale_hydrogen = True
+    rp.burnup_via_constant = 'flux'
 
     rp.fuel_radius = 0.409575
     rp.void_radius = 0.41783
@@ -80,7 +81,7 @@ def run_reactormg():
     rp.open_slots = 25
     rp.total_slots = 289
 
-    rp.burn_times = np.linspace(0.0, 500.0, 10)
+    rp.burn_times = np.linspace(0.0, 500.0, 50)
 
     # Init mass stream
     leu = MassStream({922340: 0.00032, 
@@ -128,3 +129,6 @@ if __name__ == "__main__":
     for key in nea_comp.keys():
         if key in rmg_comp:
             r_, n_, diff_ = calc_diff(rmg_comp[key], nea_comp[key], "Mass of " + isoname.zzaaam_2_LLAAAM(key))
+
+    mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in range(len(rmg.burn_times))]
+    masses = r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), 1.0, "Mass")

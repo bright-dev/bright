@@ -1363,6 +1363,7 @@ cdef class ReactorParameters:
 
           This is typically not done for fast reactors but is a useful correction 
           for LWRs.
+        * burnup_via_constant (str): Flag for constant "flux" or "power" calculations.
         * branch_ratio_cutoff (float): the cutoff value below which the bateman equations
           are not solved.
         * radius (float): The radius of the fuel region.  In units of [cm].
@@ -1526,6 +1527,15 @@ cdef class ReactorParameters:
 
         def __set__(self, bint value):
             self.rp_pointer.rescale_hydrogen = value
+
+
+    property burnup_via_constant:
+        def __get__(self):
+            cdef std.string value = self.rp_pointer.burnup_via_constant
+            return value.c_str()
+
+        def __set__(self, char * value):
+            self.rp_pointer.burnup_via_constant = std.string(value)
 
 
     property branch_ratio_cutoff:
@@ -5328,6 +5338,15 @@ cdef class ReactorMG(FCComp):
 
         def __set__(self, bint value):
             self.rmg_pointer.rescale_hydrogen_xs = value
+
+
+    property burnup_via_constant:
+        def __get__(self):
+            cdef std.string value = self.rmg_pointer.burnup_via_constant
+            return value.c_str()
+
+        def __set__(self, char * value):
+            self.rmg_pointer.burnup_via_constant = std.string(value)
 
 
     property branch_ratio_cutoff:

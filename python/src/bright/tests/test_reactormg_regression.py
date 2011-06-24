@@ -90,6 +90,7 @@ def run_reactormg():
     rp.lattice_type = 'Spherical'
     rp.lattice_type = 'Planar'
     rp.rescale_hydrogen = True
+    rp.burnup_via_constant = 'power'
 
     rp.fuel_radius = 0.412
     rp.void_radius = 0.4205

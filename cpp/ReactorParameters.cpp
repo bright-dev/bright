@@ -28,6 +28,7 @@ ReactorParameters::ReactorParameters()
     use_disadvantage_factor = false;
     lattice_type = std::string();
     rescale_hydrogen = false;
+    burnup_via_constant = "";
 
     fuel_radius = 0.0;
     void_radius = 0.0;
@@ -124,6 +125,7 @@ ReactorParameters fill_lwr_defaults ()
     lwrd.use_disadvantage_factor = true;
     lwrd.lattice_type = "Cylindrical";
     lwrd.rescale_hydrogen = true;
+    lwrd.burnup_via_constant = "power";
 
     lwrd.fuel_radius = 0.412;
     lwrd.void_radius = 0.4205;
@@ -171,6 +173,7 @@ ReactorParameters fill_fr_defaults ()
     frd.use_disadvantage_factor = false;
     frd.lattice_type = "Cylindrical";
     frd.rescale_hydrogen = false;
+    frd.burnup_via_constant = "power";
 
     frd.fuel_radius = 0.3115;
     frd.void_radius = 0.3115;

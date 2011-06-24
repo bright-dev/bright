@@ -68,6 +68,7 @@ void ReactorMG::initialize(ReactorParameters rp)
     use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
     lattice_flag = rp.lattice_type;		//lattice_flagType (Planar || Spherical || Cylindrical)
     rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
+    burnup_via_constant = rp.burnup_via_constant;  // power or flux
     branch_ratio_cutoff = rp.branch_ratio_cutoff; // Cut-off for bateman chains
 
     // Calculates Volumes
@@ -1589,28 +1590,30 @@ void ReactorMG::calc_criticality()
     for (g = 0; g < G; g++)
         phi_tg[bt_s][g] = phi1[g] / phi1_tot;
 
-    double norm_fission_reaction_rate = 0.0;
-    for (g = 0; g < G; g++)
-        norm_fission_reaction_rate += (Sigma_f_fuel_tg[bt_s][g] * phi_tg[bt_s][g]);
+    // Rescale t flux dependingon the burnup method used.
+    if (burnup_via_constant == "flux")
+    {
+        phi_t[bt_s] = flux;
+        for (g = 0; g < G; g++)
+            phi_tg[bt_s][g] *= flux;
+    }
+    else if (burnup_via_constant == "power")
+    {
+        double norm_fission_reaction_rate = 0.0;
+        for (g = 0; g < G; g++)
+            norm_fission_reaction_rate += (Sigma_f_fuel_tg[bt_s][g] * phi_tg[bt_s][g]);
 
-    // Rescale the flux
-    phi_t[bt_s] = specific_power * rho_fuel * 1E3 / (3.28446179835e-11 * norm_fission_reaction_rate);
-    for (g = 0; g < G; g++)
-        phi_tg[bt_s][g] *= phi_t[bt_s];
+        // Rescale the flux
+        phi_t[bt_s] = specific_power * rho_fuel * 1E3 / (3.28446179835e-11 * norm_fission_reaction_rate);
+        for (g = 0; g < G; g++)
+            phi_tg[bt_s][g] *= phi_t[bt_s];
 
-    std::cout << "   nfrr = " << norm_fission_reaction_rate << "\n";
-    std::cout << "   flux = " << phi_t[bt_s] << "\n";
+        std::cout << "   nfrr = " << norm_fission_reaction_rate << "\n";
+        std::cout << "   flux = " << phi_t[bt_s] << "\n";
+    }
+    else
+        std::cout << "burnup_via_constant is not setup properly\n";
 
-    //double delta_BU = 1e-3 * specific_power * (burn_times[bt_s] - burn_times[bt_s-1]);
-    //BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
-
-    //phi_t[bt_s] = 0.0;
-    //for (g = 0; g < G; g++)
-    //{
-    //    //phi_tg[bt_s][g] = 3.12075487e+16 * specific_power * phi1[g] / phi1_tot;
-    //    phi_tg[bt_s][g] = flux * phi1[g] / phi1_tot;
-    //    phi_t[bt_s] += phi_tg[bt_s][g];
-    //};
 
     if (bt_s == 0)
         Phi_t[bt_s] = 0.0;
@@ -1738,16 +1741,25 @@ void ReactorMG::calc_transmutation()
         cd_next[i] = comp_next[ind];
     };
 
-    //MassStream ms_prev (cd_prev);
-    //MassStream act_prev = ms_prev.get_act();
+    double delta_BU;
 
-    //MassStream ms_next (cd_next);
-    //MassStream act_next = ms_next.get_act();
+    if (burnup_via_constant == "flux")
+    {
+        MassStream ms_prev (cd_prev);
+        MassStream act_prev = ms_prev.get_act();
 
-    //double delta_BU = (act_prev.mass - act_next.mass) * 931.46;
-    //BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
+        MassStream ms_next (cd_next);
+        MassStream act_next = ms_next.get_act();
 
-    double delta_BU = specific_power * (burn_times[bt_s + 1] - burn_times[bt_s]);
+        delta_BU = (act_prev.mass - act_next.mass) * 931.46;
+    }
+    else if (burnup_via_constant == "power")
+    {
+        delta_BU = specific_power * (burn_times[bt_s + 1] - burn_times[bt_s]);
+    }
+    else
+        std::cout << "burnup_via_constant not set properly!\n";
+
     BU_t[bt_s+1] = delta_BU + BU_t[bt_s];
 
     std::cout << "   BU_t = " << BU_t[bt_s+1] << "\n";
@@ -2146,6 +2158,9 @@ double ReactorMG::batch_average_k(double BUd)
     {
         numerator   += (k_b[b] * phi_b[b]);
         denominator += phi_b[b];
+
+        //numerator   += (k_b[b] * fps[b].F);
+        //denominator += fps[b].F;
     };
 
     double batch_ave_k = numerator/denominator;
@@ -2163,7 +2178,7 @@ void ReactorMG::BUd_bisection_method()
     double BUd_a, k_a, sign_a;
     double BUd_b, k_b, sign_b;
     double BUd_c, k_c, sign_c;
-    
+
     //First Find a BUd that serves as an initial first guess
     while ( (tempk < S) && (1.0 < k_t[tempk]) )
         tempk = tempk + 1;

@@ -37,6 +37,7 @@ public:
     bool use_disadvantage_factor;
     std::string lattice_type;
     bool rescale_hydrogen;
+    std::string burnup_via_constant;
 
     double fuel_radius;
     double void_radius;
