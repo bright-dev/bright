@@ -55,10 +55,50 @@ class FuelCycleModel(HasTraits):
     
     def calc_comp(self, varname, msname):
         self.script_execution = self.script_execution + self.variables[varname].add_calc(msname) + '\n'
+    
+    def remove_variables(self, varname):
+        temp_reference = self.variables[varname]
+        instance_count = 0
+        classname_to_delete = ""
         
+        del self.variables[varname]
+        #.join and .splitlines
+        
+        for key in self.classes_available:
+            if isinstance(temp_reference, self.classes_available[key]):
+                temp_reference = self.classes_available[key]
+        
+        for key in self.variables:
+            if isinstance(self.variables[key],temp_reference):
+                instance_count = instance_count + 1
+
+        if instance_count == 0:
+            for key in self.classes_available:
+                if self.classes_available[key] == temp_reference:
+                    classname_to_delete = key
+            imports_set = self.script_imports.splitlines()
+            for i in imports_set:
+                if classname_to_delete in i:
+                    imports_set.remove(i)
+                    self.script_imports = "".join(imports_set) +'\n'
+        
+        variables_set = self.script_variables.splitlines()
+        for i in variables_set:
+            if varname in i:
+                variables_set.remove(i)
+                self.script_variables = "\n".join(variables_set)
+        
+        execution_set = self.script_execution.splitlines()
+        for i in execution_set:
+            if varname in i:
+                execution_set.remove(i)
+                self.script_execution = "\n".join(execution_set)
+                
+    
 if __name__ == "__main__":
     fcm = FuelCycleModel()
     fcm.add_instance("sr1","Storage")
+    fcm.add_instance("sr2","Storage")
     fcm.add_instance("ms1","MassStream",{922350:1.0})
     fcm.calc_comp("sr1","ms1")  
     print fcm.script
