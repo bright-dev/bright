@@ -80,7 +80,7 @@ def run_reactormg():
     rp.open_slots = 25
     rp.total_slots = 289
 
-    rp.burn_times = np.linspace(0.0, 1500.0, 10)
+    rp.burn_times = np.linspace(0.0, 500.0, 10)
 
     # Init mass stream
     leu = MassStream({922340: 0.00032, 
