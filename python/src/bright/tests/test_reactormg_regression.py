@@ -164,3 +164,7 @@ if __name__ == "__main__":
     r_PD107, s_PD107, diff_PD107 = calc_diff(T_it[461070], dep_bu['mw'][dep_bu['iso_index'][461070]], "PD107")
     r_CS135, s_CS135, diff_CS135 = calc_diff(T_it[551350], dep_bu['mw'][dep_bu['iso_index'][551350]], "CS135")
     r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370], dep_bu['mw'][dep_bu['iso_index'][551370]], "CS137")
+
+    mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in range(len(rmg.burn_times))]
+    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), 1.0, "Mass")
+

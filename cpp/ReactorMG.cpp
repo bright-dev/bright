@@ -1354,9 +1354,9 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
         return;
 
     if (j < 860000)
-        branch_ratio_cutoff_point = 1E-3;
+        branch_ratio_cutoff_point = 5E-2;
     else
-        branch_ratio_cutoff_point = 1E-5;
+        branch_ratio_cutoff_point = 1E-2;
 
     br_ij = 1.0;
     for (n = 1; n < chain_len; n++)
