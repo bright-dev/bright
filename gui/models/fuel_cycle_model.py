@@ -2,7 +2,7 @@ from traits.api import HasTraits, Str, Dict, Set, on_trait_change, Instance
 from class_models.class_model import ClassModel
 #rework code to use nodes, then convert nodes to script
 
-import networkx
+import networkx as nx
 import os
 import re
 
@@ -13,7 +13,7 @@ class FuelCycleModel(HasTraits):
         self.register_classes_available()
        
     #doc strings, other class models
-    graph = Instance(networkx.DiGraph)
+    graph = Instance(nx.DiGraph)
     script = Str
     script_bright_config = Str
     script_imports = Str("from bright import bright_config\n")
@@ -22,9 +22,12 @@ class FuelCycleModel(HasTraits):
     variables = Dict
     classes_available = Dict
     classes_imported = Set
+
+    def _graph_default(self):
+        return nx.DiGraph()
    
     
-    def add_instance(self, node_name, varname, class_name, data_dict = {}):
+    def add_instance(self, varname, class_name, data_dict = {}):
         """Add an instance of a class to the classes_imported dictionary as well as the script_imports string variable.
            
            Format:
@@ -40,6 +43,8 @@ class FuelCycleModel(HasTraits):
         #if class_name not in self.script_imports:
         #    self.script_imports = self.script_imports + var.add_import() + '\n'
         #self.script_variables = self.script_variables + var.add_instance() + '\n'
+
+        self.graph.add_node(var)
         
          
         
