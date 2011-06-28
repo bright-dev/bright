@@ -1,7 +1,8 @@
-from traits.api import HasTraits, Str, Dict, Set, on_trait_change
+from traits.api import HasTraits, Str, Dict, Set, on_trait_change, Instance
 from class_models.class_model import ClassModel
+#rework code to use nodes, then convert nodes to script
 
-
+import networkx
 import os
 import re
 
@@ -11,16 +12,19 @@ class FuelCycleModel(HasTraits):
         super(FuelCycleModel, self).__init__(*args, **kwargs)
         self.register_classes_available()
        
-    #doc strings, other class models, looping
+    #doc strings, other class models
+    graph = Instance(networkx.DiGraph)
     script = Str
-    script_imports = Str
+    script_bright_config = Str
+    script_imports = Str("from bright import bright_config\n")
     script_variables = Str
     script_execution = Str
     variables = Dict
     classes_available = Dict
     classes_imported = Set
-
-    def add_instance(self, varname, class_name, data_dict = {}):
+   
+    
+    def add_instance(self, node_name, varname, class_name, data_dict = {}):
         """Add an instance of a class to the classes_imported dictionary as well as the script_imports string variable.
            
            Format:
@@ -33,10 +37,11 @@ class FuelCycleModel(HasTraits):
         
         
         # script representation
-        if class_name not in self.script_imports:
-            self.script_imports = self.script_imports + var.add_import() + '\n'
-        self.script_variables = self.script_variables + var.add_instance() + '\n'
+        #if class_name not in self.script_imports:
+        #    self.script_imports = self.script_imports + var.add_import() + '\n'
+        #self.script_variables = self.script_variables + var.add_instance() + '\n'
         
+         
         
     def register_classes_available(self):
         """Check the class_models directory for all available models and record them into the classes_available dictionary."""
@@ -53,11 +58,11 @@ class FuelCycleModel(HasTraits):
                     if issubclass(value, ClassModel) and value != ClassModel:
                        self.classes_available[key] = value   #append to classes_available dictionary
     
-    @on_trait_change ('script_imports, script_variables, script_execution')
+    @on_trait_change ('script_imports, script_bright_config, script_variables, script_execution')
     def update_script(self):
-        """Update the script if any of its components (script_imports, script_variables, script_execution) change."""
+        """Update the script if any of its components (script_imports, script_bright_config, script_variables, script_execution) change."""
 
-        self.script = self.script_imports + self.script_variables + self.script_execution
+        self.script = self.script_imports + self.script_bright_config + self.script_variables + self.script_execution
     
     def calc_comp(self, varname, msname):
         """Inserts an execution line into the script.
@@ -113,14 +118,23 @@ class FuelCycleModel(HasTraits):
 
         #remove the varname from the variables dictionary                
         del self.variables[varname]
-    
+ 
+        #def configure_bright() put in b/t imports and variables, add from bright import bright_config by default,  
+    def configure_bright(self, **bright_options):
+        temp_script = ""
+        for key, value in bright_options.items():
+            temp_script = temp_script + "bright_config." + key + " = " + repr(value) + "\n"           
+        self.script_bright_config = temp_script
+           
 if __name__ == "__main__":
     fcm = FuelCycleModel()
     fcm.add_instance("sr1","Storage")
-    fcm.add_instance("sr2","Storage")
-    fcm.add_instance("enr1", "Enrichment")
-    fcm.add_instance("ms1","MassStream",{922350:1.0})
-    fcm.calc_comp("sr1","ms1")  
+    #fcm.add_instance("sr2","Storage")
+    #fcm.add_instance("enr1", "Enrichment")
+    #fcm.add_instance("ms1","MassStream",{922350:1.0})
+    #fcm.calc_comp("sr1","ms1")
+    #fcm.configure_bright(write_text = False, write_hdf5 = True)  
+    #fcm.configure_bright(track_isos = set([10010, 80160, 922380]))
     #fcm.remove_variable("sr1")
     #fcm.remove_variable("ms1")
-    print fcm.script
+    print fcm.graph.graph
