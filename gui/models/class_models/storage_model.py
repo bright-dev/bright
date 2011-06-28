@@ -1,4 +1,5 @@
-from class_model import ClassModel, Str
+from traits.api import Str
+from class_model import ClassModel
 
 
 class Storage(ClassModel):

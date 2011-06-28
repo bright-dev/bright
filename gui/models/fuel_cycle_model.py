@@ -79,9 +79,6 @@ class FuelCycleModel(HasTraits):
         instance_count = 0
         classname_to_delete = ""
                            
-        #temp_reference = self.variables[varname].__class__
-        
-        
         for key in self.variables:
             if self.variables[key].__class__ == self.variables[varname].__class__:
                 instance_count = instance_count + 1
@@ -121,6 +118,7 @@ if __name__ == "__main__":
     fcm = FuelCycleModel()
     fcm.add_instance("sr1","Storage")
     fcm.add_instance("sr2","Storage")
+    fcm.add_instance("enr1", "Enrichment")
     fcm.add_instance("ms1","MassStream",{922350:1.0})
     fcm.calc_comp("sr1","ms1")  
     #fcm.remove_variable("sr1")
