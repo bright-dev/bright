@@ -21,3 +21,9 @@ class ClassModel(HasTraits):
 
     def add_calc(self, msname):
         return self.calc_line.format(var = self.var, ms = msname)
+    
+    def __str__(self):
+        return self.var
+    
+    def __repr__(self):
+        return self.__str__()
