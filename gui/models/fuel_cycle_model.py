@@ -29,6 +29,11 @@ class FuelCycleModel(HasTraits):
         return dag
     
     def add_node (self, node):
+        """Adds a node to an existing graph.
+           
+           Format:
+           add_node([name of node])"""
+        
         self.graph.add_node(node)
         self.convert_to_script()
     
@@ -68,19 +73,25 @@ class FuelCycleModel(HasTraits):
     
     #l = [n**2 for n in range(10) if n%2 == 0] ==> list comprehension
     #
-    def add_edge(self, node1, node2, wght_value = None, flag = None, ms_value = None):
-        temp_set = []
-        weight_value = 0
-        if (wght_value or flag or ms_value) is not None: 
-            self.graph.add_edge(node1, node2, weight = wght_value, walked = flag, msname = ms_value)
-            for j,k in self.graph.edges():
-               temp_set.append(self.graph.get_edge_data(j,k)['weight'])
-            weight_value = max(temp_set) + 1
+    def add_edge(self, node1, node2, ms_value = None):
+        """Add an edge between two specified nodes.  If an additional mass stream name is provided, add_edge() will add
+           an attribute called msname in the edge.
+           Format:
+           add_edge([node1], [node2], [optional mass stream name]"""
+                   
+        #calculate the walk_value for edge
+        temp_list = [self.graph.get_edge_data(j,k)['walk_value'] for j,k in self.graph.edges()]
+        if len(temp_list) == 0:
+            walk_value = 1
         else:
-            self.graph.add_edge(node1, node2)
-        self.convert_to_script()
+            walk_value = max(temp_list) + 1
+
+        #create edge with calculated walk_value, walked flag, and msname        
+        self.graph.add_edge(node1, node2, walk_value=walk_value, walked=False, msname=ms_value)
         
-    def calc_comp(self, varname, msname, weight_val = None, flag = None, ms_value = None):
+        self.convert_to_script()
+
+    def calc_comp(self, varname, msname, ms_value = None):
         """Inserts an execution line into the script.
            
            Format:
@@ -89,8 +100,8 @@ class FuelCycleModel(HasTraits):
            Note: Both variable names MUST be defined previously."""
         
         #self.graph.add_edge(self.variables[varname], self.variables[msname])    
-        if (weight_val or flag or ms_value) is not None:
-            self.add_edge(self.variables[varname], self.variables[msname], weight_val, flag, ms_value)
+        if ms_value is not None:
+            self.add_edge(self.variables[varname], self.variables[msname], ms_value)
         else:
             self.add_edge(self.variables[varname], self.variables[msname])        
     
@@ -111,6 +122,11 @@ class FuelCycleModel(HasTraits):
 
     #def configure_bright() put in b/t imports and variables, add from bright import bright_config by default,  
     def configure_bright(self, **bright_options):
+        """Adds an additional bright configuration line to the script.
+           
+           Format:
+           configure_bright([bright_config attribute]=[custom value])"""
+        
         temp_script = ""
         for key, value in bright_options.items():
             temp_script = temp_script + "bright_config." + key + " = " + repr(value) + "\n"           
@@ -119,6 +135,8 @@ class FuelCycleModel(HasTraits):
     #only watch graph, remove all sets
     @on_trait_change ('graph')
     def convert_to_script (self):
+        
+            
         #import line
         temp_script = "from bright import bright_config\n"
         import_set = set()
@@ -147,8 +165,8 @@ if __name__ == "__main__":
     fcm.add_instance("sr2","Storage")
     #fcm.add_instance("enr1", "Enrichment")
     fcm.add_instance("ms1","MassStream",{922350:1.0})
-    fcm.calc_comp("sr1","ms1", 1, False, "ms_prod")
-    fcm.calc_comp("sr2","ms1")
+    fcm.calc_comp("sr1","ms1", "ms_prod")
+    fcm.calc_comp("sr2","ms1", "ms_prod")
     fcm.calc_comp("sr1","sr2")
     #fcm.configure_bright(write_text = False, write_hdf5 = True)  
     #fcm.configure_bright(track_isos = set([10010, 80160, 922380]))
