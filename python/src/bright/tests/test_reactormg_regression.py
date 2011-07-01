@@ -170,8 +170,8 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
 
     gkw['datalabel'] = "RMG"
     gkw['colorline'] = 'r-'
-    gwk['write'] = True 
-    gwk['name'] = name.split('[')[0].replace(' ', '_')
+    gkw['write'] = True 
+    gkw['name'] = name.split('[')[0].replace(' ', '_')
     StairStepEnergy(r, E_g, **gkw)    
 
     plt.hist(E_g[1:] - E_g[:-1], weights=diff, align='mid', color='g', rwidth=0.95)
