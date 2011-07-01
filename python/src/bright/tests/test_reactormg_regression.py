@@ -7,9 +7,14 @@ import isoname
 from mass_stream import MassStream
 
 import serpent
+import matplotlib.pyplot as plt
+from matplotlib import rc
+
+rc('text', usetex=True)
+rc('font', family='roman')
 
 from char.m2py import convert_res, convert_dep
-
+from metasci.graph import StairStepEnergy
 
 def run_serpent():
     #bu_file = 'serp_bu_10'
@@ -122,50 +127,122 @@ def test_regression():
     return rmg, res_bu, dep_bu, res_xs
 
 
-def calc_diff(r, s, name=""):
+def make_graphs(r, s, diff, serr=None, name=""):
+    global burn_times
+    plt.clf()
+
+    # make the compare plot
+    if serr is None:
+        plt.plot(burn_times, s, 'k-', label="Serpent")
+    else:
+        plt.errorbar(burn_times, s, serr, color='k', label="Serpent")
+    
+    plt.errorbar(burn_times, r, diff*r, color='r', label="RMG")
+
+    plt.xlabel("burn time [days]")
+    plt.ylabel(name)
+    plt.legend(loc=0)
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '.png')
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '.eps')
+    plt.clf()
+
+    plt.hist(burn_times, weights=diff, align='mid', color='g', rwidth=0.95)
+    plt.xlabel("burn time [days]")
+    plt.ylabel(name + " Relative Error")
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.png')
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.eps')
+    plt.clf()
+
+
+def make_flux_graphs(r, s, diff, serr=None, name=""):
+    global E_g
+    plt.clf()
+
+    # make the compare plot
+    gkw = {'datalabel': "Serpent",
+           'colorline': 'k-',
+           'scale': 'xlog',
+           'ylabel': name,
+           'write': False, 
+           'show': False, 
+           }
+    StairStepEnergy(s, E_g, **gkw)
+
+    gkw['datalabel'] = "RMG"
+    gkw['colorline'] = 'r-'
+    gwk['write'] = True 
+    gwk['name'] = name.split('[')[0].replace(' ', '_')
+    StairStepEnergy(r, E_g, **gkw)    
+
+    plt.hist(E_g[1:] - E_g[:-1], weights=diff, align='mid', color='g', rwidth=0.95)
+    plt.xlabel("Energy [MeV]")
+    plt.ylabel(name + " Relative Error")
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.png')
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.eps')
+    plt.clf()
+
+
+def calc_diff(r, s, serr=None, name=""):
     print "Summary for {0}:".format(name)
     print "Reactor: "
     print repr(r)
     print "Serpent: "
     print repr(s)
     print "Fractional Diff: "
-    diff = 1.0 - r / s
+    diff = r / s - 1.0
+    diff[np.isnan(diff)] = 0.0
     print repr(diff)
     print
+
+    try:
+        make_graphs(r, s, diff, serr, name)
+    except Exception as e:
+        print e
+
     return r, s, diff
     
 if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
 
-    r_k, s_k, diff_k = calc_diff(rmg.k_t, res_bu['SIX_FF_KEFF'][:, 0], "k")
+    burn_times = rmg.burn_times
+    E_g = rmg.E_g
 
-    r_phi, s_phi, diff_phi = calc_diff(rmg.phi_tg / rmg.phi_t[:, np.newaxis], 
-                                       res_bu['FLUX'][:, 2::2] / res_bu['FLUX'][:, np.newaxis, 0], 
-                                       "Normalized Flux")
+    r_k, s_k, diff_k = calc_diff(rmg.k_t, res_bu['SIX_FF_KEFF'][:, 0], res_bu['SIX_FF_KEFF'][:, 1], "k")
 
-    r_total, s_total, diff_total = calc_diff(rmg.Sigma_t_fuel_tg[0], res_xs['TOTXS'][0, 2::2], "Total XS")
-    r_fiss, s_fiss, diff_fiss = calc_diff(rmg.Sigma_f_fuel_tg[0], res_xs['FISSXS'][0, 2::2], "Fission XS")
-    r_abs, s_abs, diff_abs = calc_diff(rmg.Sigma_a_fuel_tg[0], res_xs['ABSXS'][0, 2::2], "Absorption XS")
-    r_gamma, s_gamma, diff_gamma = calc_diff(rmg.Sigma_gamma_fuel_tg[0], res_xs['CAPTXS'][0, 2::2], "Capture XS")
+    r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
+    s_norm_phi = res_bu['FLUX'][:, 2::2] / res_bu['FLUX'][:, np.newaxis, 0]
+    serr_phi = res_bu['FLUX'][:, 3::2] / res_bu['FLUX'][:, np.newaxis, 0]
+    r_phi, s_phi, diff_phi = calc_diff(r_norm_phi, s_norm_phi, "Normalized Flux")
+
+    for t in range(len(burn_times)):
+        make_flux_graphs(r_phi[t], s_phi[t], diff_phi[t], serr=serr_phi[t], name="Normalized Flux at {0} days".format(burn_times[t]))
+
+
+    r_total, s_total, diff_total = calc_diff(rmg.Sigma_t_fuel_tg[0], res_xs['TOTXS'][0, 2::2], res_xs['TOTXS'][0, 3::2], name="Total XS")
+    r_fiss, s_fiss, diff_fiss = calc_diff(rmg.Sigma_f_fuel_tg[0], res_xs['FISSXS'][0, 2::2], res_xs['FISSXS'][0, 3::2], "Fission XS")
+    r_abs, s_abs, diff_abs = calc_diff(rmg.Sigma_a_fuel_tg[0], res_xs['ABSXS'][0, 2::2], res_xs['ABSXS'][0, 3::2],"Absorption XS")
+    r_gamma, s_gamma, diff_gamma = calc_diff(rmg.Sigma_gamma_fuel_tg[0], res_xs['CAPTXS'][0, 2::2], res_xs['CAPTXS'][0, 3::2], "Capture XS")
 
     T_it = rmg.T_it
 
-    r_U235, s_U235, diff_U235 = calc_diff(T_it[922350], dep_bu['mw'][dep_bu['iso_index'][922350]], "U235")
-    r_U238, s_U238, diff_U238 = calc_diff(T_it[922380], dep_bu['mw'][dep_bu['iso_index'][922380]], "U238")
-    r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390], dep_bu['mw'][dep_bu['iso_index'][942390]], "PU239")
-    r_CM246, s_CM246, diff_CM246 = calc_diff(T_it[962460], dep_bu['mw'][dep_bu['iso_index'][962460]], "CM246")
+    r_U234, s_U234, diff_U234 = calc_diff(T_it[922340], dep_bu['mw'][dep_bu['iso_index'][922340]], name="U234")
+    r_U235, s_U235, diff_U235 = calc_diff(T_it[922350], dep_bu['mw'][dep_bu['iso_index'][922350]], name="U235")
+    r_U236, s_U236, diff_U236 = calc_diff(T_it[922360], dep_bu['mw'][dep_bu['iso_index'][922360]], name="U236")
+    r_U238, s_U238, diff_U238 = calc_diff(T_it[922380], dep_bu['mw'][dep_bu['iso_index'][922380]], name="U238")
+    r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390], dep_bu['mw'][dep_bu['iso_index'][942390]], name="PU239")
+    r_CM246, s_CM246, diff_CM246 = calc_diff(T_it[962460], dep_bu['mw'][dep_bu['iso_index'][962460]], name="CM246")
 
-    r_KR85, s_KR85, diff_KR85 = calc_diff(T_it[360850], dep_bu['mw'][dep_bu['iso_index'][360850]], "KR85")
-    r_SR90, s_SR90, diff_SR90 = calc_diff(T_it[380900], dep_bu['mw'][dep_bu['iso_index'][380900]], "SR90")
-    r_ZR93, s_ZR93, diff_ZR93 = calc_diff(T_it[400930], dep_bu['mw'][dep_bu['iso_index'][400930]], "ZR93")
-    r_TC99, s_TC99, diff_TC99 = calc_diff(T_it[430990], dep_bu['mw'][dep_bu['iso_index'][430990]], "TC99")
+    r_KR85, s_KR85, diff_KR85 = calc_diff(T_it[360850], dep_bu['mw'][dep_bu['iso_index'][360850]], name="KR85")
+    r_SR90, s_SR90, diff_SR90 = calc_diff(T_it[380900], dep_bu['mw'][dep_bu['iso_index'][380900]], name="SR90")
+    r_ZR93, s_ZR93, diff_ZR93 = calc_diff(T_it[400930], dep_bu['mw'][dep_bu['iso_index'][400930]], name="ZR93")
+    r_TC99, s_TC99, diff_TC99 = calc_diff(T_it[430990], dep_bu['mw'][dep_bu['iso_index'][430990]], name="TC99")
 
-    r_I129, s_I129, diff_I129 = calc_diff(T_it[531290], dep_bu['mw'][dep_bu['iso_index'][531290]], "I129")
+    r_I129, s_I129, diff_I129 = calc_diff(T_it[531290], dep_bu['mw'][dep_bu['iso_index'][531290]], name="I129")
 
-    r_PD107, s_PD107, diff_PD107 = calc_diff(T_it[461070], dep_bu['mw'][dep_bu['iso_index'][461070]], "PD107")
-    r_CS135, s_CS135, diff_CS135 = calc_diff(T_it[551350], dep_bu['mw'][dep_bu['iso_index'][551350]], "CS135")
-    r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370], dep_bu['mw'][dep_bu['iso_index'][551370]], "CS137")
+    r_PD107, s_PD107, diff_PD107 = calc_diff(T_it[461070], dep_bu['mw'][dep_bu['iso_index'][461070]], name="PD107")
+    r_CS135, s_CS135, diff_CS135 = calc_diff(T_it[551350], dep_bu['mw'][dep_bu['iso_index'][551350]], name="CS135")
+    r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370], dep_bu['mw'][dep_bu['iso_index'][551370]], name="CS137")
 
     mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in range(len(rmg.burn_times))]
-    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), 1.0, "Mass")
+    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), 1.0, name="Mass")
 

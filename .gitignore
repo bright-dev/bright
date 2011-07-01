@@ -23,3 +23,4 @@ python/src/bright/tests/*_dep.m
 python/src/bright/tests/*_dep.py
 python/src/bright/tests/*.seed
 python/src/bright/tests/*.png
+python/src/bright/tests/*.eps
