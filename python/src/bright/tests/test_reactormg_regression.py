@@ -165,20 +165,29 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
            'ylabel': name,
            'write': False, 
            'show': False, 
+           'ymin': 0.0,
+           'ymax': 0.25,
            }
-    StairStepEnergy(s, E_g, **gkw)
+    StairStepEnergy(s[::-1], E_g[::-1], **gkw)
 
     gkw['datalabel'] = "RMG"
     gkw['colorline'] = 'r-'
     gkw['write'] = True 
     gkw['name'] = name.split('[')[0].replace(' ', '_')
-    StairStepEnergy(r, E_g, **gkw)    
+    StairStepEnergy(r[::-1], E_g[::-1], **gkw)    
 
-    plt.hist(E_g[1:] - E_g[:-1], weights=diff, align='mid', color='g', rwidth=0.95)
+    plt.hist((E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1], align='mid', color='g', rwidth=0.95)
     plt.xlabel("Energy [MeV]")
     plt.ylabel(name + " Relative Error")
     plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.png')
     plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.eps')
+    plt.clf()
+
+    plt.hist((E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1] * r[::-1], align='mid', color='g', rwidth=0.95)
+    plt.xlabel("Energy [MeV]")
+    plt.ylabel(name + " Flux Weighted Relative Error")
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '_fw_rel_err.png')
+    plt.savefig(name.split('[')[0].replace(' ', '_') + '_fw_rel_err.eps')
     plt.clf()
 
 
@@ -215,7 +224,7 @@ if __name__ == "__main__":
     r_phi, s_phi, diff_phi = calc_diff(r_norm_phi, s_norm_phi, "Normalized Flux")
 
     for t in range(len(burn_times)):
-        make_flux_graphs(r_phi[t], s_phi[t], diff_phi[t], serr=serr_phi[t], name="Normalized Flux at {0} days".format(burn_times[t]))
+        make_flux_graphs(r_phi[t], s_phi[t], diff_phi[t], serr=serr_phi[t], name="Normalized Flux at {0} days".format(int(burn_times[t])))
 
 
     r_total, s_total, diff_total = calc_diff(rmg.Sigma_t_fuel_tg[0], res_xs['TOTXS'][0, 2::2], res_xs['TOTXS'][0, 3::2], name="Total XS")
