@@ -161,7 +161,7 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     # make the compare plot
     gkw = {'datalabel': "Serpent",
            'colorline': 'k-',
-           'scale': 'xlog',
+           'scale': 'log',
            'ylabel': name,
            'write': False, 
            'show': False, 
@@ -177,6 +177,7 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     StairStepEnergy(r[::-1], E_g[::-1], **gkw)    
 
     plt.hist((E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1], align='mid', color='g', rwidth=0.95)
+    plt.xscale('log')
     plt.xlabel("Energy [MeV]")
     plt.ylabel(name + " Relative Error")
     plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.png')
@@ -184,6 +185,7 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     plt.clf()
 
     plt.hist((E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1] * r[::-1], align='mid', color='g', rwidth=0.95)
+    plt.xscale('log')
     plt.xlabel("Energy [MeV]")
     plt.ylabel(name + " Flux Weighted Relative Error")
     plt.savefig(name.split('[')[0].replace(' ', '_') + '_fw_rel_err.png')
@@ -228,9 +230,16 @@ if __name__ == "__main__":
 
 
     r_total, s_total, diff_total = calc_diff(rmg.Sigma_t_fuel_tg[0], res_xs['TOTXS'][0, 2::2], res_xs['TOTXS'][0, 3::2], name="Total XS")
+    make_flux_graphs(r_total, s_total, diff_total, name="Total XS")
+
     r_fiss, s_fiss, diff_fiss = calc_diff(rmg.Sigma_f_fuel_tg[0], res_xs['FISSXS'][0, 2::2], res_xs['FISSXS'][0, 3::2], "Fission XS")
+    make_flux_graphs(r_fiss, s_fiss, diff_fiss, name="Fission XS")
+
     r_abs, s_abs, diff_abs = calc_diff(rmg.Sigma_a_fuel_tg[0], res_xs['ABSXS'][0, 2::2], res_xs['ABSXS'][0, 3::2],"Absorption XS")
+    make_flux_graphs(r_abs, s_abs, diff_abs, name="Absorption XS")
+
     r_gamma, s_gamma, diff_gamma = calc_diff(rmg.Sigma_gamma_fuel_tg[0], res_xs['CAPTXS'][0, 2::2], res_xs['CAPTXS'][0, 3::2], "Capture XS")
+    make_flux_graphs(r_gamma, s_gamma, diff_gamma, name="Capture XS")
 
     T_it = rmg.T_it
 
@@ -253,5 +262,5 @@ if __name__ == "__main__":
     r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370], dep_bu['mw'][dep_bu['iso_index'][551370]], name="CS137")
 
     mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in range(len(rmg.burn_times))]
-    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), 1.0, name="Mass")
+    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), np.ones(len(mss)), name="Mass")
 
