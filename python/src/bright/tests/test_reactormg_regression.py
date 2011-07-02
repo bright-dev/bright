@@ -176,7 +176,7 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     gkw['name'] = name.split('[')[0].replace(' ', '_')
     StairStepEnergy(r[::-1], E_g[::-1], **gkw)    
 
-    plt.hist((E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1], align='mid', color='g', rwidth=0.95)
+    plt.hist(-1 * (E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1], align='mid', color='g', rwidth=0.95)
     plt.xscale('log')
     plt.xlabel("Energy [MeV]")
     plt.ylabel(name + " Relative Error")
@@ -184,7 +184,7 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     plt.savefig(name.split('[')[0].replace(' ', '_') + '_rel_err.eps')
     plt.clf()
 
-    plt.hist((E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1] * r[::-1], align='mid', color='g', rwidth=0.95)
+    plt.hist(-1 * (E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1] * r[::-1], align='mid', color='g', rwidth=0.95)
     plt.xscale('log')
     plt.xlabel("Energy [MeV]")
     plt.ylabel(name + " Flux Weighted Relative Error")
