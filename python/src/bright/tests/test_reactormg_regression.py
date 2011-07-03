@@ -108,7 +108,7 @@ def run_reactormg():
     rp.burn_times = np.linspace(0.0, 365.0, 10)
 
     # Init mass stream
-    leu = MassStream({922350: 0.05, 922380: 0.95})
+    leu = MassStream({922340: 0.01, 922350: 0.05, 922380: 0.94})
 
     # Init ReactorMG
     rmg = ReactorMG(reactor_parameters=rp, name="rmg")
@@ -243,11 +243,15 @@ if __name__ == "__main__":
 
     T_it = rmg.T_it
 
+    bu_norm = np.array([sum([dep_bu['mw'][dep_bu['iso_index'][key]][n] for key in dep_bu['iso_index'].keys() if 860000 < key]) for n in range(dep_bu['mw'].shape[1])])
+    dep_bu['mw'] = dep_bu['mw'] / bu_norm[0]
+
     r_U234, s_U234, diff_U234 = calc_diff(T_it[922340], dep_bu['mw'][dep_bu['iso_index'][922340]], name="U234")
     r_U235, s_U235, diff_U235 = calc_diff(T_it[922350], dep_bu['mw'][dep_bu['iso_index'][922350]], name="U235")
     r_U236, s_U236, diff_U236 = calc_diff(T_it[922360], dep_bu['mw'][dep_bu['iso_index'][922360]], name="U236")
     r_U238, s_U238, diff_U238 = calc_diff(T_it[922380], dep_bu['mw'][dep_bu['iso_index'][922380]], name="U238")
     r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390], dep_bu['mw'][dep_bu['iso_index'][942390]], name="PU239")
+    r_PU240, s_PU240, diff_PU240 = calc_diff(T_it[942400], dep_bu['mw'][dep_bu['iso_index'][942400]], name="PU240")
     r_CM246, s_CM246, diff_CM246 = calc_diff(T_it[962460], dep_bu['mw'][dep_bu['iso_index'][962460]], name="CM246")
 
     r_KR85, s_KR85, diff_KR85 = calc_diff(T_it[360850], dep_bu['mw'][dep_bu['iso_index'][360850]], name="KR85")
