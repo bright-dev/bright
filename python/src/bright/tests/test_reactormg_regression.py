@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import tables as tb
 
 from bright import *
 import isoname
@@ -211,6 +212,34 @@ def calc_diff(r, s, serr=None, name=""):
         print e
 
     return r, s, diff
+
+def compare_1g_xs(rmg):
+    f = tb.openFile('benchmark_xs.h5', 'r')
+
+    isos_LL = f.root.transmute_isos_LL.read()
+    isos_zz = f.root.transmute_isos_zz.read()
+    isos = zip(isos_LL, isos_zz)
+
+    r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
+
+    reactions = ['sigma_t', 'sigma_f', 'sigma_gamma', 'sigma_2n', 'sigma_a', 'sigma_s', 
+                 'sigma_alpha', 'sigma_gamma_x', 'sigma_2n_x']
+
+    sig = {}
+    for rx in reactions:
+        r_sig = getattr(rmg, rx + '_itg')
+        s_sig = getattr(f.root, rx)
+
+        for iso_LL, iso_zz in isos:
+            r_xs = (r_sig[iso_zz] * r_norm_phi).sum(axis=1)
+            s_xs = (getattr(s_sig, iso_LL) * r_norm_phi).sum(axis=1)
+            diff = r_xs / s_xs - 1.0
+            diff[np.isnan(diff)] = 0.0
+            sig[rx, iso_LL] = (r_xs, s_xs, diff)
+
+    f.close()
+
+    return sig
     
 if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
@@ -243,8 +272,9 @@ if __name__ == "__main__":
 
     T_it = rmg.T_it
 
-    bu_norm = np.array([sum([dep_bu['mw'][dep_bu['iso_index'][key]][n] for key in dep_bu['iso_index'].keys() if 860000 < key]) for n in range(dep_bu['mw'].shape[1])])
-    dep_bu['mw'] = dep_bu['mw'] / bu_norm[0]
+    bu_mass_norm = np.array([sum([dep_bu['mw'][dep_bu['iso_index'][key]][n] for key in dep_bu['iso_index'].keys() if 860000 < key]) for n in range(dep_bu['mw'].shape[1])])
+    dep_bu['mw'] = dep_bu['mw'] / bu_mass_norm[0]
+    bu_mass_norm = bu_mass_norm / bu_mass_norm[0]
 
     r_U234, s_U234, diff_U234 = calc_diff(T_it[922340], dep_bu['mw'][dep_bu['iso_index'][922340]], name="U234")
     r_U235, s_U235, diff_U235 = calc_diff(T_it[922350], dep_bu['mw'][dep_bu['iso_index'][922350]], name="U235")
@@ -266,5 +296,6 @@ if __name__ == "__main__":
     r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370], dep_bu['mw'][dep_bu['iso_index'][551370]], name="CS137")
 
     mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in range(len(rmg.burn_times))]
-    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), np.ones(len(mss)), name="Mass")
+    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), bu_mass_norm, name="Mass")
 
+    #sig = compare_1g_xs(rmg)

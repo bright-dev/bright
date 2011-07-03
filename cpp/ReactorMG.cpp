@@ -1356,7 +1356,12 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
         return;
 
     if (j < 860000)
-        branch_ratio_cutoff_point = 5E-2;
+    {
+        if (i < 860000)
+            branch_ratio_cutoff_point = 1E-2;
+        else
+            branch_ratio_cutoff_point = 5E-2;
+    }
     else
         branch_ratio_cutoff_point = 5E-3;
 
@@ -1465,10 +1470,10 @@ double ReactorMG::bateman_chain(int i, int j, int c, double t)
         rnd = K_ind[chain[n+1]];
         B *= branch_ratios[qnd][rnd];
 
-        //if (trans_consts[qnd] < trans_cutoff)
-        //    alpha_num *= trans_consts[qnd];
+        if (trans_consts[qnd] < trans_cutoff)
+            alpha_num *= trans_consts[qnd];
+        //alpha_num *= trans_consts[qnd];
 
-        alpha_num *= trans_consts[qnd];
         qnd = rnd;
     };
 
@@ -1483,15 +1488,15 @@ double ReactorMG::bateman_chain(int i, int j, int c, double t)
         qnd = K_ind[chain[n]];
         alpha_den = 1.0;
 
-        //if (trans_cutoff < trans_consts[qnd])
-        //    continue;
+        if (trans_cutoff < trans_consts[qnd])
+            continue;
 
         for (m = 0; m < N; m++)
         {
             rnd = K_ind[chain[m]];
 
-            //if (trans_cutoff < trans_consts[rnd])
-            //    continue;
+            if (trans_cutoff < trans_consts[rnd])
+                continue;
 
             // Debug for equal lambdas
             //if (trans_consts[rnd] == trans_consts[qnd] && rnd != qnd)

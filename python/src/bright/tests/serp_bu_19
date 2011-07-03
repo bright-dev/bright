@@ -87,8 +87,8 @@ set nfg 19
 
 
 % Criticality calc
-%set pop 5000 130 30
-set pop 100 130 30
+set pop 5000 130 30
+%set pop 100 130 30
 
 
 % --- Geometry ---
@@ -301,4 +301,5 @@ set inventory
   982500
   982510
   982520
+
 

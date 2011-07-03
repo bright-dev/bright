@@ -90,8 +90,8 @@ set nfg 19
 
 
 % Criticality calc
-%set pop 5000 130 30
-set pop 100 130 30
+set pop 5000 130 30
+%set pop 100 130 30
 
 
 % --- Geometry ---
