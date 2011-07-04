@@ -1358,7 +1358,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
     if (j < 860000)
     {
         if (i < 860000)
-            branch_ratio_cutoff_point = 1E-2;
+            branch_ratio_cutoff_point = 5E-3;
         else
             branch_ratio_cutoff_point = 5E-2;
     }
@@ -1463,7 +1463,7 @@ double ReactorMG::bateman_chain(int i, int j, int c, double t)
     double B = 1.0;
     double alpha_num = 1.0;
 
-    double trans_cutoff = 1E+2;
+    double trans_cutoff = 1E+16;
 
     for (n = 0; n < N - 1; n++)
     {

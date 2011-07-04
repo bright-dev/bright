@@ -222,7 +222,7 @@ def compare_1g_xs(rmg):
 
     r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
 
-    reactions = ['sigma_t', 'sigma_f', 'sigma_gamma', 'sigma_2n', 'sigma_a', 'sigma_s', 
+    reactions = ['sigma_t', 'sigma_f', 'sigma_gamma', 'sigma_2n', 'sigma_a', #'sigma_s', 
                  'sigma_alpha', 'sigma_gamma_x', 'sigma_2n_x']
 
     sig = {}
@@ -240,6 +240,12 @@ def compare_1g_xs(rmg):
     f.close()
 
     return sig
+
+def sort_sig(sig):
+    key_func = lambda x: abs(x[1][2]).max()
+    s = sorted(sig.items(), key=key_func, reverse=True)
+    return s
+
     
 if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
@@ -298,4 +304,5 @@ if __name__ == "__main__":
     mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in range(len(rmg.burn_times))]
     r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), bu_mass_norm, name="Mass")
 
-    #sig = compare_1g_xs(rmg)
+    sig = compare_1g_xs(rmg)
+    u = sort_sig(sig)
