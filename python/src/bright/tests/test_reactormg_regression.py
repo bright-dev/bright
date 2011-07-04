@@ -17,6 +17,10 @@ rc('font', family='roman')
 from char.m2py import convert_res, convert_dep
 from metasci.graph import StairStepEnergy
 
+# Hack to use origen as burnup calculator
+from origen_reactormg import OrigenReactorMG
+ReactorMG = OrigenReactorMG
+
 def run_serpent():
     #bu_file = 'serp_bu_10'
     #xs_file = 'serp_xs_10'
