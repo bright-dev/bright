@@ -1,6 +1,7 @@
 from bright import ReactorMG, bright_config
 import metasci.nuke.origen as msno
 import subprocess
+import numpy as np
 
 
 class OrigenReactorMG(ReactorMG):
