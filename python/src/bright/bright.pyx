@@ -5896,7 +5896,7 @@ cdef class ReactorMG(FCComp):
         def __get__(self):
             return conv.vector_to_array_1d_dbl(self.rmg_pointer.BU_t)
 
-        def __set__(self, dict value):
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
             self.rmg_pointer.BU_t = conv.array_to_vector_1d_dbl(value)
 
 
