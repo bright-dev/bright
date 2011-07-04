@@ -16,6 +16,7 @@ class OrigenReactorMG(ReactorMG):
         self.init_core()
 
         # Loop through all time steps
+        #for s in range(1):
         for s in range(self.S):
             # Set the current time
             self.bt_s = s
@@ -99,8 +100,8 @@ class OrigenReactorMG(ReactorMG):
 
         # Parse origen output 
         res = msno.parse_tape6()
-        outvec = {key: value * 1E-3 for key, value in res['table_5']['summary']['data'].items() if key in K}
-        nullvec = {k: 0.0 for k in K if k not in res['table_5']['summary']['data']}
+        outvec = {key: value * 1E-3 for key, value in res['table_5']['summary']['data'].items() if (key in K) and not np.isnan(value)}
+        nullvec = {k: 0.0 for k in K if k not in outvec}
         outvec.update(nullvec)
 
         # update the transmutation matrix
