@@ -340,6 +340,7 @@ public:
     void calc_criticality();
     void calc_transmutation();
 
+    void init_core();
     void burnup_core();
 
     void calc_nearest_neighbors();

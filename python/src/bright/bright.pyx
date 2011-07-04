@@ -6889,6 +6889,14 @@ cdef class ReactorMG(FCComp):
 
 
 
+    def init_core(self):
+        """This method generates a time-dependent parameters from an reactor's initial conditions.
+        This includes all burnup and criticality calculations.  These time-dependent data
+        are then used to determine discharge compositions and other parameters.
+        """
+        self.rmg_pointer.init_core()
+
+
     def burnup_core(self):
         """This method generates a time-dependent parameters from an reactor's initial conditions.
         This includes all burnup and criticality calculations.  These time-dependent data

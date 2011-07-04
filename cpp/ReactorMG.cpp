@@ -1358,7 +1358,7 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
     if (j < 860000)
     {
         if (i < 860000)
-            branch_ratio_cutoff_point = 5E-3;
+            branch_ratio_cutoff_point = 5E-4;
         else
             branch_ratio_cutoff_point = 5E-2;
     }
@@ -1463,7 +1463,7 @@ double ReactorMG::bateman_chain(int i, int j, int c, double t)
     double B = 1.0;
     double alpha_num = 1.0;
 
-    double trans_cutoff = 1E+16;
+    double trans_cutoff = 1E+3 / t;
 
     for (n = 0; n < N - 1; n++)
     {
@@ -1794,7 +1794,7 @@ void ReactorMG::calc_transmutation()
 
 
 
-void ReactorMG::burnup_core()
+void ReactorMG::init_core()
 {
     // Burns up the core and fills in parameter values as we go.
 
@@ -1962,7 +1962,13 @@ void ReactorMG::burnup_core()
 
     // Init the multilplcation factpr
     k_t = std::vector<double>(S, -1.0);
+};
 
+void ReactorMG::burnup_core()
+{
+    // prep the core
+    init_core();
+    
     // Loop through all time steps
     for (int s = 0; s < S; s++)
     {
