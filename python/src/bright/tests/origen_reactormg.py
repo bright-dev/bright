@@ -93,15 +93,17 @@ class OrigenReactorMG(ReactorMG):
         ir_time = self.burn_times[s+1] - self.burn_times[s]
         ir_value = self.specific_power
         nlb = (219, 220, 221)
+        nes = (True, False, False)
+        cutoff = 1E-300
         otn = [5]
-        msno.write_tape5_irradiation(ir_type, ir_time, ir_value, nlb, out_table_num=otn)
+        msno.write_tape5_irradiation(ir_type, ir_time, ir_value, nlb, cut_off=cutoff, out_table_nes=nes, out_table_num=otn)
 
         # Run origen
         rtn = subprocess.check_call("o2_therm_linux.exe", shell=True)
 
         # Parse origen output 
         res = msno.parse_tape6()
-        outvec = {key: value * 1E-3 for key, value in res['table_5']['summary']['data'].items() if (key in K) and not np.isnan(value)}
+        outvec = {key: sum([v[-1] for v in value]) * 1E-3 for key, value in res['table_5']['nuclide']['data'].items() if (key in K) and not np.isnan(value).any()}
         nullvec = {k: 0.0 for k in K if k not in outvec}
         outvec.update(nullvec)
 

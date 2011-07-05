@@ -292,6 +292,7 @@ if __name__ == "__main__":
     r_U238, s_U238, diff_U238 = calc_diff(T_it[922380], dep_bu['mw'][dep_bu['iso_index'][922380]], name="U238")
     r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390], dep_bu['mw'][dep_bu['iso_index'][942390]], name="PU239")
     r_PU240, s_PU240, diff_PU240 = calc_diff(T_it[942400], dep_bu['mw'][dep_bu['iso_index'][942400]], name="PU240")
+    r_CM245, s_CM245, diff_CM245 = calc_diff(T_it[962450], dep_bu['mw'][dep_bu['iso_index'][962450]], name="CM245")
     r_CM246, s_CM246, diff_CM246 = calc_diff(T_it[962460], dep_bu['mw'][dep_bu['iso_index'][962460]], name="CM246")
 
     r_KR85, s_KR85, diff_KR85 = calc_diff(T_it[360850], dep_bu['mw'][dep_bu['iso_index'][360850]], name="KR85")
