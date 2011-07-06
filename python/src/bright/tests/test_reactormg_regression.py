@@ -94,7 +94,8 @@ def run_reactormg():
     rp.cladding_density = 5.87
     rp.coolant_density = 0.73
 
-    rp.pnl = 0.98
+    #rp.pnl = 0.98
+    rp.pnl = 0.95
     rp.BUt = 50.0
     rp.use_disadvantage_factor = True
     rp.lattice_type = 'Spherical'
@@ -111,7 +112,8 @@ def run_reactormg():
     rp.total_slots = 289
 
     bt = list(np.linspace(0.0, 365.0, 10))
-    bt.insert(1, 1.0)
+    #bt.insert(1, 1.0)
+    bt.insert(1, 4.0)
     bt = np.array(bt)
     rp.burn_times = bt
 
@@ -258,9 +260,10 @@ if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
 
     burn_times = rmg.burn_times
+    burn_times = burn_times[[0] + range(2, len(burn_times))]
     E_g = rmg.E_g
 
-    r_k, s_k, diff_k = calc_diff(rmg.k_t, res_bu['SIX_FF_KEFF'][:, 0], res_bu['SIX_FF_KEFF'][:, 1], "k")
+    r_k, s_k, diff_k = calc_diff(rmg.k_t[1:], res_bu['SIX_FF_KEFF'][1:, 0], res_bu['SIX_FF_KEFF'][1:, 1], "k")
 
     r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
     s_norm_phi = res_bu['FLUX'][:, 2::2] / res_bu['FLUX'][:, np.newaxis, 0]
