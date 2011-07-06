@@ -110,7 +110,10 @@ def run_reactormg():
     rp.open_slots = 25
     rp.total_slots = 289
 
-    rp.burn_times = np.linspace(0.0, 365.0, 10)
+    bt = list(np.linspace(0.0, 365.0, 10))
+    bt.insert(1, 1.0)
+    bt = np.array(bt)
+    rp.burn_times = bt
 
     # Init mass stream
     leu = MassStream({922340: 0.01, 922350: 0.05, 922380: 0.94})
@@ -311,3 +314,10 @@ if __name__ == "__main__":
 
     sig = compare_1g_xs(rmg)
     u = sort_sig(sig)
+
+    
+    print "Max fractional deviations"
+    for key, value in u[:20]:
+        rx, iso = key
+        r, s, diff = value
+        print iso, rx, max(abs(diff))
