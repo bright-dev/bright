@@ -168,6 +168,10 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     global E_g
     plt.clf()
 
+    u_g = np.log(E_g[0] / E_g)
+    u_diff = u_g[1:] - u_g[:-1]
+    u_norm = u_diff[0] / u_diff
+
     # make the compare plot
     gkw = {'datalabel': "Serpent",
            'colorline': 'k-',
@@ -178,15 +182,15 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
            'ymin': 0.0,
            'ymax': 0.25,
            }
-    StairStepEnergy(s[::-1], E_g[::-1], **gkw)
+    StairStepEnergy((s * u_norm)[::-1], E_g[::-1], **gkw)
 
     gkw['datalabel'] = "RMG"
     gkw['colorline'] = 'r-'
     gkw['write'] = True 
     gkw['name'] = name.split('[')[0].replace(' ', '_')
-    StairStepEnergy(r[::-1], E_g[::-1], **gkw)    
+    StairStepEnergy((r * u_norm)[::-1], E_g[::-1], **gkw)    
 
-    plt.hist(-1 * (E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1], align='mid', color='g', rwidth=0.95)
+    """plt.hist(-1 * (E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1], align='mid', color='g', rwidth=0.95)
     plt.xscale('log')
     plt.xlabel("Energy [MeV]")
     plt.ylabel(name + " Relative Error")
@@ -200,7 +204,7 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     plt.ylabel(name + " Flux Weighted Relative Error")
     plt.savefig(name.split('[')[0].replace(' ', '_') + '_fw_rel_err.png')
     plt.savefig(name.split('[')[0].replace(' ', '_') + '_fw_rel_err.eps')
-    plt.clf()
+    plt.clf()"""
 
 
 def calc_diff(r, s, serr=None, name=""):
@@ -260,15 +264,18 @@ if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
 
     burn_times = rmg.burn_times
-    burn_times = burn_times[[0] + range(2, len(burn_times))]
+    time_range = [0] + range(2, len(burn_times))
+    burn_times = burn_times[time_range]
+
     E_g = rmg.E_g
+    #E_g = np.log(10.0 / E_g)
 
     r_k, s_k, diff_k = calc_diff(rmg.k_t[1:], res_bu['SIX_FF_KEFF'][1:, 0], res_bu['SIX_FF_KEFF'][1:, 1], "k")
 
     r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
     s_norm_phi = res_bu['FLUX'][:, 2::2] / res_bu['FLUX'][:, np.newaxis, 0]
     serr_phi = res_bu['FLUX'][:, 3::2] / res_bu['FLUX'][:, np.newaxis, 0]
-    r_phi, s_phi, diff_phi = calc_diff(r_norm_phi, s_norm_phi, "Normalized Flux")
+    r_phi, s_phi, diff_phi = calc_diff(r_norm_phi[1:], s_norm_phi[1:], "Normalized Flux")
 
     for t in range(len(burn_times)):
         make_flux_graphs(r_phi[t], s_phi[t], diff_phi[t], serr=serr_phi[t], name="Normalized Flux at {0} days".format(int(burn_times[t])))
@@ -292,32 +299,31 @@ if __name__ == "__main__":
     dep_bu['mw'] = dep_bu['mw'] / bu_mass_norm[0]
     bu_mass_norm = bu_mass_norm / bu_mass_norm[0]
 
-    r_U234, s_U234, diff_U234 = calc_diff(T_it[922340], dep_bu['mw'][dep_bu['iso_index'][922340]], name="U234")
-    r_U235, s_U235, diff_U235 = calc_diff(T_it[922350], dep_bu['mw'][dep_bu['iso_index'][922350]], name="U235")
-    r_U236, s_U236, diff_U236 = calc_diff(T_it[922360], dep_bu['mw'][dep_bu['iso_index'][922360]], name="U236")
-    r_U238, s_U238, diff_U238 = calc_diff(T_it[922380], dep_bu['mw'][dep_bu['iso_index'][922380]], name="U238")
-    r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390], dep_bu['mw'][dep_bu['iso_index'][942390]], name="PU239")
-    r_PU240, s_PU240, diff_PU240 = calc_diff(T_it[942400], dep_bu['mw'][dep_bu['iso_index'][942400]], name="PU240")
-    r_CM245, s_CM245, diff_CM245 = calc_diff(T_it[962450], dep_bu['mw'][dep_bu['iso_index'][962450]], name="CM245")
-    r_CM246, s_CM246, diff_CM246 = calc_diff(T_it[962460], dep_bu['mw'][dep_bu['iso_index'][962460]], name="CM246")
+    r_U234, s_U234, diff_U234 = calc_diff(T_it[922340][time_range], dep_bu['mw'][dep_bu['iso_index'][922340]][time_range], name="U234")
+    r_U235, s_U235, diff_U235 = calc_diff(T_it[922350][time_range], dep_bu['mw'][dep_bu['iso_index'][922350]][time_range], name="U235")
+    r_U236, s_U236, diff_U236 = calc_diff(T_it[922360][time_range], dep_bu['mw'][dep_bu['iso_index'][922360]][time_range], name="U236")
+    r_U238, s_U238, diff_U238 = calc_diff(T_it[922380][time_range], dep_bu['mw'][dep_bu['iso_index'][922380]][time_range], name="U238")
+    r_PU239, s_PU239, diff_PU239 = calc_diff(T_it[942390][time_range], dep_bu['mw'][dep_bu['iso_index'][942390]][time_range], name="PU239")
+    r_PU240, s_PU240, diff_PU240 = calc_diff(T_it[942400][time_range], dep_bu['mw'][dep_bu['iso_index'][942400]][time_range], name="PU240")
+    r_CM245, s_CM245, diff_CM245 = calc_diff(T_it[962450][time_range], dep_bu['mw'][dep_bu['iso_index'][962450]][time_range], name="CM245")
+    r_CM246, s_CM246, diff_CM246 = calc_diff(T_it[962460][time_range], dep_bu['mw'][dep_bu['iso_index'][962460]][time_range], name="CM246")
 
-    r_KR85, s_KR85, diff_KR85 = calc_diff(T_it[360850], dep_bu['mw'][dep_bu['iso_index'][360850]], name="KR85")
-    r_SR90, s_SR90, diff_SR90 = calc_diff(T_it[380900], dep_bu['mw'][dep_bu['iso_index'][380900]], name="SR90")
-    r_ZR93, s_ZR93, diff_ZR93 = calc_diff(T_it[400930], dep_bu['mw'][dep_bu['iso_index'][400930]], name="ZR93")
-    r_TC99, s_TC99, diff_TC99 = calc_diff(T_it[430990], dep_bu['mw'][dep_bu['iso_index'][430990]], name="TC99")
+    r_KR85, s_KR85, diff_KR85 = calc_diff(T_it[360850][time_range], dep_bu['mw'][dep_bu['iso_index'][360850]][time_range], name="KR85")
+    r_SR90, s_SR90, diff_SR90 = calc_diff(T_it[380900][time_range], dep_bu['mw'][dep_bu['iso_index'][380900]][time_range], name="SR90")
+    r_ZR93, s_ZR93, diff_ZR93 = calc_diff(T_it[400930][time_range], dep_bu['mw'][dep_bu['iso_index'][400930]][time_range], name="ZR93")
+    r_TC99, s_TC99, diff_TC99 = calc_diff(T_it[430990][time_range], dep_bu['mw'][dep_bu['iso_index'][430990]][time_range], name="TC99")
 
-    r_I129, s_I129, diff_I129 = calc_diff(T_it[531290], dep_bu['mw'][dep_bu['iso_index'][531290]], name="I129")
+    r_I129, s_I129, diff_I129 = calc_diff(T_it[531290][time_range], dep_bu['mw'][dep_bu['iso_index'][531290]][time_range], name="I129")
 
-    r_PD107, s_PD107, diff_PD107 = calc_diff(T_it[461070], dep_bu['mw'][dep_bu['iso_index'][461070]], name="PD107")
-    r_CS135, s_CS135, diff_CS135 = calc_diff(T_it[551350], dep_bu['mw'][dep_bu['iso_index'][551350]], name="CS135")
-    r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370], dep_bu['mw'][dep_bu['iso_index'][551370]], name="CS137")
+    r_PD107, s_PD107, diff_PD107 = calc_diff(T_it[461070][time_range], dep_bu['mw'][dep_bu['iso_index'][461070]][time_range], name="PD107")
+    r_CS135, s_CS135, diff_CS135 = calc_diff(T_it[551350][time_range], dep_bu['mw'][dep_bu['iso_index'][551350]][time_range], name="CS135")
+    r_CS137, s_CS137, diff_CS137 = calc_diff(T_it[551370][time_range], dep_bu['mw'][dep_bu['iso_index'][551370]][time_range], name="CS137")
 
-    mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in range(len(rmg.burn_times))]
+    mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in time_range]
     r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), bu_mass_norm, name="Mass")
 
     sig = compare_1g_xs(rmg)
     u = sort_sig(sig)
-
     
     print "Max fractional deviations"
     for key, value in u[:20]:
