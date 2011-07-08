@@ -227,6 +227,7 @@ def calc_diff(r, s, serr=None, name=""):
     return r, s, diff
 
 def compare_1g_xs(rmg):
+    global time_range
     f = tb.openFile('benchmark_xs.h5', 'r')
 
     isos_LL = f.root.transmute_isos_LL.read()
@@ -234,6 +235,7 @@ def compare_1g_xs(rmg):
     isos = zip(isos_LL, isos_zz)
 
     r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
+    r_norm_phi = r_norm_phi[1:]
 
     reactions = ['sigma_t', 'sigma_f', 'sigma_gamma', 'sigma_2n', 'sigma_a', #'sigma_s', 
                  'sigma_alpha', 'sigma_gamma_x', 'sigma_2n_x']
@@ -244,7 +246,7 @@ def compare_1g_xs(rmg):
         s_sig = getattr(f.root, rx)
 
         for iso_LL, iso_zz in isos:
-            r_xs = (r_sig[iso_zz] * r_norm_phi).sum(axis=1)
+            r_xs = (r_sig[iso_zz][1:] * r_norm_phi).sum(axis=1)
             s_xs = (getattr(s_sig, iso_LL) * r_norm_phi).sum(axis=1)
             diff = r_xs / s_xs - 1.0
             diff[np.isnan(diff)] = 0.0
@@ -307,14 +309,14 @@ if __name__ == "__main__":
                 'AM241', 'AM242', 'AM243', 'CM242', 'CM243', 'CM244', 'CM245', 'CM246', 'KR81',  'KR85',  
                 'SR90',  'ZR90',  'ZR93',  'TC99',  'I129',  'PD107', 'CS134', 'CS135', 'CS137']
 
-
+    # Make mass fraction figures
     for nuc_LL in nuclides:
         nuc_zz = isoname.LLAAAM_2_zzaaam(nuc_LL)
         nuc_ind = dep_bu['iso_index'][nuc_zz]
         r_i, s_i, diff_i = calc_diff(T_it[nuc_zz][time_range], dep_bu['mw'][nuc_ind][time_range], name=nuc_LL + " Mass Fraction [kg/kgIHM]")
 
     mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in time_range]
-    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), bu_mass_norm, name="Mass")
+    r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), bu_mass_norm[time_range], name="Mass")
 
     sig = compare_1g_xs(rmg)
     u = sort_sig(sig)
