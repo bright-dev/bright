@@ -369,13 +369,14 @@ void ReactorMG::loadlib(std::string libfile)
     // Do not interpolate here, you'll get negative masses...
     for (g = 0; g < G; g++)
     {
-        
+        //fission_product_yield_matrix[g].push_back(0, 0, 0.0);
+/*
+*/
         if (0.001 < E_g[g])
             fission_product_yield_matrix[g] = fast_yield_matrix;
         else
             fission_product_yield_matrix[g] = thermal_yield_matrix;
     };
-
 
     //
     // Read in the one group cross sections
@@ -1355,9 +1356,14 @@ void ReactorMG::add_transmutation_chains(std::vector<int> tc)
         return;
 
     if (j < 860000)
-        branch_ratio_cutoff_point = 5E-2;
+    {
+        if (i < 860000)
+            branch_ratio_cutoff_point = 5E-4;
+        else
+            branch_ratio_cutoff_point = 5E-2;
+    }
     else
-        branch_ratio_cutoff_point = 1E-2;
+        branch_ratio_cutoff_point = 5E-3;
 
     br_ij = 1.0;
     for (n = 1; n < chain_len; n++)
@@ -1457,11 +1463,17 @@ double ReactorMG::bateman_chain(int i, int j, int c, double t)
     double B = 1.0;
     double alpha_num = 1.0;
 
+    double trans_cutoff = 1E+3 / t;
+
     for (n = 0; n < N - 1; n++)
     {
         rnd = K_ind[chain[n+1]];
         B *= branch_ratios[qnd][rnd];
-        alpha_num *= trans_consts[qnd];
+
+        if (trans_consts[qnd] < trans_cutoff)
+            alpha_num *= trans_consts[qnd];
+        //alpha_num *= trans_consts[qnd];
+
         qnd = rnd;
     };
 
@@ -1476,9 +1488,15 @@ double ReactorMG::bateman_chain(int i, int j, int c, double t)
         qnd = K_ind[chain[n]];
         alpha_den = 1.0;
 
+        if (trans_cutoff < trans_consts[qnd])
+            continue;
+
         for (m = 0; m < N; m++)
         {
             rnd = K_ind[chain[m]];
+
+            if (trans_cutoff < trans_consts[rnd])
+                continue;
 
             // Debug for equal lambdas
             //if (trans_consts[rnd] == trans_consts[qnd] && rnd != qnd)
@@ -1494,7 +1512,7 @@ double ReactorMG::bateman_chain(int i, int j, int c, double t)
     double mass_frac = B * alpha_num * sum_part;
 
     // Sanity check
-    if (!(0.0 < mass_frac))
+    if (!(0.0 < mass_frac) || 1.0 < mass_frac)
         mass_frac = 0.0;
 
     return mass_frac;
@@ -1776,7 +1794,7 @@ void ReactorMG::calc_transmutation()
 
 
 
-void ReactorMG::burnup_core()
+void ReactorMG::init_core()
 {
     // Burns up the core and fills in parameter values as we go.
 
@@ -1944,7 +1962,13 @@ void ReactorMG::burnup_core()
 
     // Init the multilplcation factpr
     k_t = std::vector<double>(S, -1.0);
+};
 
+void ReactorMG::burnup_core()
+{
+    // prep the core
+    init_core();
+    
     // Loop through all time steps
     for (int s = 0; s < S; s++)
     {

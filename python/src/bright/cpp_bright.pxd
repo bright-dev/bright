@@ -642,6 +642,7 @@ cdef extern from "../../../cpp/ReactorMG.h":
         void calc_criticality() except +
         void calc_transmutation() except +
 
+        void init_core() except +
         void burnup_core() except +
 
         void calc_nearest_neighbors() except +

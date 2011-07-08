@@ -87,8 +87,9 @@ set nfg 19
 
 
 % Criticality calc
+set pop 10000 130 30
 %set pop 5000 130 30
-set pop 100 130 30
+%set pop 100 130 30
 
 
 % --- Geometry ---
@@ -142,6 +143,7 @@ set powdens 0.04 % Fuel specific power [W/g]
 % Depletion cycle
 dep daytot
 
+    4.0
     40.5555555556
     81.1111111111
     121.666666667
@@ -167,6 +169,8 @@ set inventory
   280590
   280630
   340790
+  360810 % added
+  360830 % added
   360850
   380871
   380890
@@ -178,6 +182,7 @@ set inventory
   381030
   390910
   390930
+  400900 % added
   400930
   400950
   410910
@@ -186,6 +191,7 @@ set inventory
   410950
   410951
   420930
+  420950 % added
   430980
   430990
   441060
@@ -205,6 +211,7 @@ set inventory
   511260
   521251
   531290
+  541350 % added
   551340
   551341
   551350
@@ -220,6 +227,7 @@ set inventory
   561330
   561400
   561410
+  601430 % added
   611460
   611470
   621450
@@ -301,4 +309,5 @@ set inventory
   982500
   982510
   982520
+
 

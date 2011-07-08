@@ -5896,7 +5896,7 @@ cdef class ReactorMG(FCComp):
         def __get__(self):
             return conv.vector_to_array_1d_dbl(self.rmg_pointer.BU_t)
 
-        def __set__(self, dict value):
+        def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
             self.rmg_pointer.BU_t = conv.array_to_vector_1d_dbl(value)
 
 
@@ -6887,6 +6887,14 @@ cdef class ReactorMG(FCComp):
 
 
 
+
+
+    def init_core(self):
+        """This method generates a time-dependent parameters from an reactor's initial conditions.
+        This includes all burnup and criticality calculations.  These time-dependent data
+        are then used to determine discharge compositions and other parameters.
+        """
+        self.rmg_pointer.init_core()
 
 
     def burnup_core(self):
