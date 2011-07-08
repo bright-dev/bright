@@ -2,13 +2,15 @@
  
 import os
 from copy import deepcopy
-
+    
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.file_util import copy_file, move_file
 from distutils.dir_util import mkpath, remove_tree
 from Cython.Distutils import build_ext
 
+#from setuptools.command.develop import develop
+        
 import numpy as np
 
 from setup_data import INFO
@@ -142,7 +144,7 @@ elif os.name == 'nt':
 #
 # For bright
 #
-bright_ext = {'name': "bright"}
+bright_ext = {'name': "bright.bright"}
 
 bright_ext['sources'] = [
     'bright.cpp', 
@@ -260,15 +262,16 @@ setup(name="bright",
     author = 'Anthony Scopatz',
     author_email = 'scopatz@gmail.com',
     url = 'http://www.scopatz.com/',
-    packages = ['bright_data'],
+    packages = ['bright', 'bright_data', 'bright.gui', 'bright.gui.views', 'bright.gui.models', 'bright.gui.models.class_models'],
     package_dir = pack_dir,
     package_data = {'bright_data': bright_data_files},
     cmdclass = {'build_ext': build_ext}, 
-    ext_modules=[
-        Extension(**stlconv_ext), 
-        Extension(**isoname_ext), 
-        Extension(**mass_stream_ext),
-        Extension(**bright_ext), 
-        ],
+#    ext_modules=[
+#        Extension(**stlconv_ext), 
+#        Extension(**isoname_ext), 
+#        Extension(**mass_stream_ext),
+#        Extension(**bright_ext), 
+#       ],
+    scripts = ['src/scripts/bright_gui']
     )
 

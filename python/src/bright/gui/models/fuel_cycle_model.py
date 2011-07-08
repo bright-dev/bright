@@ -59,12 +59,12 @@ class FuelCycleModel(HasTraits):
         
         localdict = {}
         
-        dirlist = os.listdir('class_models')
+        dirlist = os.listdir(os.path.split(__file__)[0] + '/class_models')
         #Find all files within class_models directory
         for i in dirlist:
             match = re.search('(.+_model).py$', i)  #select models only
             if match:
-                exec('from class_models.{0} import *'.format(match.group(1)), {}, localdict)  #import all classes and store into a local dictionary
+                exec('from bright.gui.models.class_models.{0} import *'.format(match.group(1)), {}, localdict)  #import all classes and store into a local dictionary
                 for key, value in localdict.items():     #check for a subclass of ClassModel
                     if issubclass(value, ClassModel) and value != ClassModel:
                        self.classes_available[key] = value   #append to classes_available dictionary
@@ -219,7 +219,7 @@ class FuelCycleModel(HasTraits):
                 else:
                     node = self.graph.successors(node)[0]
             else:
-                '''if len(self.graph.successors(original_node)) > 1:
+                ''' if len(self.graph.successors(original_node)) > 1:
                     test = [self.graph.edge[original_node][i]['walked']for i in self.graph.successors(original_node)]
                     if False in test:
                         node = original_node'''    
