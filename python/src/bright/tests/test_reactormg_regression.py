@@ -1,4 +1,5 @@
 import os
+import re
 
 import numpy as np
 import tables as tb
@@ -16,6 +17,7 @@ rc('font', family='roman')
 
 from char.m2py import convert_res, convert_dep
 from metasci.graph import StairStepEnergy
+import metasci.nuke as msn
 
 # Hack to use origen as burnup calculator
 from origen_reactormg import OrigenReactorMG
@@ -294,6 +296,48 @@ def make_1g_xs_graphs(nuc, sig):
     plt.savefig(nuc + '_1g_xs.eps')
     plt.clf()
 
+
+def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0):
+    global hl, sig, u
+
+    if nuc_class == 'Actinide':
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and 860000 < isoname.LLAAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
+    elif nuc_class == 'Fission Product':
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and isoname.LLAAAAM_2_zzaaam(key[1]) < 860000 and hl_cutoff < hl[key[1]]]
+    else:
+        raise ValueError
+
+    latex_table = ("\\begin{table}[htbp]\n"
+                   "\\begin{center}\n"
+                   "\\caption{{Maximum {0} $\\{1}$ Relative Error}}\n".format(nuc_class, reaction)
+                   "\\label{{rank_{0}_{1}_table}}\n".format(nuc_class, reaction.replace(" ", "_"))
+                   "\\begin{tabular}{|l|c|}\n"
+                   "\\hline\n"
+                   "\\textbf{Nuclide} & \\textbf{$\\varepsilon$} \\\\\n"
+                   "\\hline\n"
+                   )
+
+    nuc_latex = "\\nuc{{{0}}}{{{1}}}"
+    nuc_pattern = re.compile("([A-Z]{1,2})(\d{1,3})(M?)")
+    for key, value in filt_u[:nrows]:
+        rx, nuc_LL = key
+        r, s, diff = value
+
+        z, a, m = nuc_patern.match(nuc_LL).groups()
+        nl = nuc_latex.format(z, a)
+        if 0 < len(m):
+            nl += "\\superscript{*}"
+        latex_table += nl + " & {0:.3} \\\\\n".format(value[2][abs(value[2]).argmax()])
+
+    latex_table += ("\\hline\n"
+                    "\\end{tabular}\n"
+                    "\\end{center}\n"
+                    "\\end{table}\n")
+
+    fname = "rank_table_{0}_{1}.tex".format(nuc_class, reaction.replace(" ", "_"))
+    with open(fname, 'w') as f:
+        f.write(latex_table)
+
     
 if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
@@ -368,3 +412,17 @@ if __name__ == "__main__":
         print "Making cross section figures for {0}".format(nuc)
         make_1g_xs_graphs(nuc, sig)
     
+
+    print 
+    print
+
+    # Load in half-lives
+    with tb.openFile(msn.nuc_data, 'r') as nd:
+        hl = {row['from_iso_LL']: row['half_life'] for row in nd.root.decay}
+
+    # make rank tables    
+    make_rank_table('sigma_s', 'Actinide')
+    make_rank_table('sigma_s', 'Fission Product')
+    make_rank_table('sigma_a', 'Actinide')
+    make_rank_table('sigma_a', 'Fission Product')
+    make_rank_table('sigma_f', 'Actinide')
