@@ -326,7 +326,7 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
         nl = nuc_latex.format(z.capitalize(), a)
         if 0 < len(m):
             nl += "\\superscript{*}"
-        latex_table += nl + " & {0:.3} \\\\\n".format(value[2][abs(value[2]).argmax()])
+        latex_table += nl + " & {0:+.4F} \\\\\n".format(value[2][abs(value[2]).argmax()])
 
     latex_table += ("\\hline\n"
                     "\\end{tabular}\n"
