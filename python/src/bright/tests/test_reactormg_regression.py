@@ -301,21 +301,20 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
     global hl, sig, u
 
     if nuc_class == 'Actinide':
-        filt_u = [(key, value) for key, value in u if key[0] == reaction and 860000 < isoname.LLAAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and 860000 < isoname.LLAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
     elif nuc_class == 'Fission Product':
-        filt_u = [(key, value) for key, value in u if key[0] == reaction and isoname.LLAAAAM_2_zzaaam(key[1]) < 860000 and hl_cutoff < hl[key[1]]]
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and isoname.LLAAAM_2_zzaaam(key[1]) < 860000 and hl_cutoff < hl[key[1]]]
     else:
         raise ValueError
 
     latex_table = ("\\begin{table}[htbp]\n"
-                   "\\begin{center}\n"
-                   "\\caption{{Maximum {0} $\\{1}$ Relative Error}}\n".format(nuc_class, reaction)
-                   "\\label{{rank_{0}_{1}_table}}\n".format(nuc_class, reaction.replace(" ", "_"))
-                   "\\begin{tabular}{|l|c|}\n"
+                   "\\begin{center}\n")
+    latex_table += "\\caption{{Maximum {0} $\\{1}$ Relative Error}}\n".format(nuc_class, reaction)
+    latex_table += "\\label{{rank_{0}_{1}_table}}\n".format(nuc_class.replace(" ", "_"), reaction)
+    latex_table +=("\\begin{tabular}{|l|c|}\n"
                    "\\hline\n"
                    "\\textbf{Nuclide} & \\textbf{$\\varepsilon$} \\\\\n"
-                   "\\hline\n"
-                   )
+                   "\\hline\n")
 
     nuc_latex = "\\nuc{{{0}}}{{{1}}}"
     nuc_pattern = re.compile("([A-Z]{1,2})(\d{1,3})(M?)")
@@ -323,8 +322,8 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
         rx, nuc_LL = key
         r, s, diff = value
 
-        z, a, m = nuc_patern.match(nuc_LL).groups()
-        nl = nuc_latex.format(z, a)
+        z, a, m = nuc_pattern.match(nuc_LL).groups()
+        nl = nuc_latex.format(z.capitalize(), a)
         if 0 < len(m):
             nl += "\\superscript{*}"
         latex_table += nl + " & {0:.3} \\\\\n".format(value[2][abs(value[2]).argmax()])
@@ -334,7 +333,7 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
                     "\\end{center}\n"
                     "\\end{table}\n")
 
-    fname = "rank_table_{0}_{1}.tex".format(nuc_class, reaction.replace(" ", "_"))
+    fname = "rank_table_{0}_{1}.tex".format(nuc_class.replace(" ", "_"), reaction)
     with open(fname, 'w') as f:
         f.write(latex_table)
 
