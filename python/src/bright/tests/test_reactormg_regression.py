@@ -151,6 +151,7 @@ def make_graphs(r, s, diff, serr=None, name=""):
 
     plt.xlabel("burn time [days]")
     plt.ylabel(name)
+    plt.ticklabel_format(scilimits=(-5, 5))
     plt.legend(loc=0)
     plt.savefig(name.split('[')[0].replace(' ', '_') + '.png')
     plt.savefig(name.split('[')[0].replace(' ', '_') + '.eps')
@@ -268,19 +269,27 @@ def sort_sig(sig):
 
 def make_1g_xs_graphs(nuc, sig):
     global burn_times
+    nuc_zz = isoname.LLAAAM_2_zzaaam(nuc)
     plt.clf()
 
-    reactions = ['sigma_t', 'sigma_a', 'sigma_f', 'sigma_s']
-    markers = ['-', '-o', '-s', '-x']
+    reactions = ['sigma_t', 'sigma_s', 'sigma_a', 'sigma_f']
+    markers = ['-', 'o', 's', 'x']
+    ncol = 2
+
+    if nuc_zz < 860000:
+        reactions = reactions[:-1]
+        markers = markers[:-1]
+        ncol = 3
 
     for reaction, marker in zip(reactions, markers):
-        s, r, diff = sig[reaction, nuc]
-        plt.plot(burn_times, s, color='k', marker=marker, label="Serpent $\\{0}$".format(reaction))
-        plt.errorbar(burn_times, r, diff*r, color='r', marker=marker, label="RMG $\\{0}$".fromat(reaction))
+        r, s, diff = sig[reaction, nuc]
+        plt.plot(burn_times, s, color='k', marker=marker, linestyle='-', label="Serpent $\\{0}$".format(reaction))
+        plt.errorbar(burn_times, r, diff*r, color='r', marker=marker, linestyle='-', label="RMG $\\{0}$".format(reaction))
 
     plt.xlabel("burn time [days]")
-    plt.ylabel(nuc + " Cross Sections [barns]")
-    plt.legend(loc=0)
+    plt.ylabel(nuc + " One-Group Cross Sections [barns]")
+    plt.ticklabel_format(scilimits=(-5, 5))
+    plt.legend(loc=0, ncol=ncol)
     plt.savefig(nuc + '_1g_xs.png')
     plt.savefig(nuc + '_1g_xs.eps')
     plt.clf()
@@ -330,8 +339,8 @@ if __name__ == "__main__":
     dep_bu['mw'][dep_bu['iso_index'][922380]] *= (0.94 / dep_bu['mw'][dep_bu['iso_index'][922380]][0])
 
     nuclides = ['U234',  'U235',  'U236',  'U238',  'NP237', 'PU238', 'PU239', 'PU240', 'PU241', 'PU242', 
-                'AM241', 'AM242', 'AM243', 'CM242', 'CM243', 'CM244', 'CM245', 'CM246', 'KR81',  'KR85',  
-                'SR90',  'ZR90',  'ZR93',  'TC99',  'I129',  'PD107', 'CS134', 'CS135', 'CS137']
+                'AM241', 'AM242', 'AM243', 'CM242', 'CM243', 'CM244', 'CM245', 'CM246', 'SE79',  'KR85',  
+                'SR90',  'ZR93',  'TC99',  'I129',  'PD107', 'CS134', 'CS135', 'CS137', 'SM151', 'EU155']
 
     # Make mass fraction figures
     for nuc_LL in nuclides:
@@ -350,6 +359,9 @@ if __name__ == "__main__":
         rx, iso = key
         r, s, diff = value
         print iso, rx, max(abs(diff))
+
+    print
+    print
 
     # Make 1g xs figs
     for nuc in nuclides:
