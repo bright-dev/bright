@@ -237,12 +237,16 @@ def compare_1g_xs(rmg):
     r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
     r_norm_phi = r_norm_phi[1:]
 
-    reactions = ['sigma_t', 'sigma_f', 'sigma_gamma', 'sigma_2n', 'sigma_a', #'sigma_s', 
+    reactions = ['sigma_t', 'sigma_f', 'sigma_gamma', 'sigma_2n', 'sigma_a', 'sigma_s', 
                  'sigma_alpha', 'sigma_gamma_x', 'sigma_2n_x']
 
     sig = {}
     for rx in reactions:
-        r_sig = getattr(rmg, rx + '_itg')
+        if rx == 'sigma_s':
+            r_sig = getattr(rmg, rx + '_itgh')
+            r_sig = {key: value.sum(axis=-1) for key, value in r_sig.items()}
+        else:
+            r_sig = getattr(rmg, rx + '_itg')
         s_sig = getattr(f.root, rx)
 
         for iso_LL, iso_zz in isos:
@@ -260,6 +264,26 @@ def sort_sig(sig):
     key_func = lambda x: abs(x[1][2]).max()
     s = sorted(sig.items(), key=key_func, reverse=True)
     return s
+
+
+def make_1g_xs_graphs(nuc, sig):
+    global burn_times
+    plt.clf()
+
+    reactions = ['sigma_t', 'sigma_a', 'sigma_f', 'sigma_s']
+    markers = ['-', '-o', '-s', '-x']
+
+    for reaction, marker in zip(reactions, markers):
+        s, r, diff = sig[reaction, nuc]
+        plt.plot(burn_times, s, color='k', marker=marker, label="Serpent $\\{0}$".format(reaction))
+        plt.errorbar(burn_times, r, diff*r, color='r', marker=marker, label="RMG $\\{0}$".fromat(reaction))
+
+    plt.xlabel("burn time [days]")
+    plt.ylabel(nuc + " Cross Sections [barns]")
+    plt.legend(loc=0)
+    plt.savefig(nuc + '_1g_xs.png')
+    plt.savefig(nuc + '_1g_xs.eps')
+    plt.clf()
 
     
 if __name__ == "__main__":
@@ -326,3 +350,9 @@ if __name__ == "__main__":
         rx, iso = key
         r, s, diff = value
         print iso, rx, max(abs(diff))
+
+    # Make 1g xs figs
+    for nuc in nuclides:
+        print "Making cross section figures for {0}".format(nuc)
+        make_1g_xs_graphs(nuc, sig)
+    
