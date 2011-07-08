@@ -655,7 +655,20 @@ class NCodeSerpent(object):
         # Add a differential mass of this isotope, if not otherwise present
         # Needed to capture sigma_s_gh effects via serpent.
         if (iso_zz not in ms.comp) or (ms.comp[iso_zz] == 0.0):
-            ms_iso = MassStream({iso_zz: 0.001})
+            # Grab the next (or prev) mass stream
+            o = n + 1
+            if (o == self.nperturbations) or (self.perturbations[o][-1] == 0.0):
+                o = n - 1
+            ms_o = MassStream()
+            ms_o.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", o)
+
+            # make a new mass weight guess
+            mw_iso = 0.001 * ms_o.comp[iso_zz]
+            if mw_iso == 0.0:
+                mw_iso = 0.001
+
+            # Change the mass weight for this iso
+            ms_iso = MassStream({iso_zz: mw_iso})
             ms = ms + ms_iso
 
         # Set the final mass stream
