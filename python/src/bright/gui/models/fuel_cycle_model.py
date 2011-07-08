@@ -213,14 +213,16 @@ class FuelCycleModel(HasTraits):
                 self.graph.edge[x][y]['walked'] = True
                 if y.add_calc(x.var, self.graph.edge[x][y]['msname']) not in temp_script3:
                     temp_script3 = temp_script3 + y.add_calc(x.var, self.graph.edge[x][y]['msname']) + '\n'
-                
+             
                 if len(self.graph.successors(node)) > 1:
                     node = y
                 else:
                     node = self.graph.successors(node)[0]
             else:
-                #test = [self.graph.edge[j][k]['walked'] for j,k in original_node]
-                #print test
+                '''if len(self.graph.successors(original_node)) > 1:
+                    test = [self.graph.edge[original_node][i]['walked']for i in self.graph.successors(original_node)]
+                    if False in test:
+                        node = original_node'''    
                 for j,k in self.graph.out_edges():
                     self.graph.edge[j][k]['walked'] = False
                 break
