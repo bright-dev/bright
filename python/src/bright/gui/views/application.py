@@ -16,9 +16,11 @@ class Application(HasTraits):
         fcm = FuelCycleModel()
         fcm.add_instance("nu", "MassStream", {922380:0.992745, 922350:0.0072, 922340:0.000055})
         fcm.add_instance("sr1", "Storage")
+        #fcm.calc_comp("sr1","ms1")
         return fcm
     
     def _graph_view_default(self):
+        m = self.model.graph
         return GraphView(graph = self.model.graph)
     
     @on_trait_change('model.graph')

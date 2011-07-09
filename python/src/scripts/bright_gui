@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+from bright.gui.app import main
+
+main()
