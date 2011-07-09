@@ -1,5 +1,5 @@
 from traits.api import HasTraits, Str, Dict, Set, on_trait_change, Instance, Property
-from class_models.class_model import ClassModel
+from bright.gui.models.class_models.class_model import ClassModel
 #rework code to use nodes, then convert nodes to script
 
 import networkx as nx
@@ -44,6 +44,7 @@ class FuelCycleModel(HasTraits):
            add_instance([variable name], [class name], {optional dictionary for additional data1}) """
            
         # in-memory representation
+     
         var = self.classes_available[class_name](var=varname, extra_data_parameter = data_dict) #class definition is stored in var
         self.classes_imported.add(class_name) #add the name of class selected to a set
         self.variables[varname] = var #store in dictionary with varname as key and var as value
@@ -58,8 +59,7 @@ class FuelCycleModel(HasTraits):
         """Check the class_models directory for all available models and record them into the classes_available dictionary."""
         
         localdict = {}
-        
-        dirlist = os.listdir(os.path.split(__file__)[0] + '/class_models')
+        dirlist = os.listdir(os.path.split(os.path.abspath(__file__))[0] + '/class_models')
         #Find all files within class_models directory
         for i in dirlist:
             match = re.search('(.+_model).py$', i)  #select models only
@@ -68,7 +68,7 @@ class FuelCycleModel(HasTraits):
                 for key, value in localdict.items():     #check for a subclass of ClassModel
                     if issubclass(value, ClassModel) and value != ClassModel:
                        self.classes_available[key] = value   #append to classes_available dictionary
-    
+ 
     @on_trait_change ('script_imports, script_bright_config, script_variables, script_execution')
     def update_script(self):
         """Update the script if any of its components (script_imports, script_bright_config, script_variables, script_execution) change."""
