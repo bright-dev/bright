@@ -14,13 +14,13 @@ class Application(HasTraits):
     
     def _model_default(self):
         fcm = FuelCycleModel()
-        fcm.add_instance("nu", "MassStream", {922380:0.992745, 922350:0.0072, 922340:0.000055})
+        fcm.add_instance("nu", "MassStream", {922380: 0.992745, 922350: 0.0072, 922340: 0.000055})
         fcm.add_instance("sr1", "Storage")
         fcm.calc_comp("sr1","nu")
         return fcm
     
     def _graph_view_default(self):
-        return GraphView(graph = self.model.graph)
+        return GraphView(graph=self.model.graph, layout='tree')
     
     @on_trait_change('model.graph')
     def update_graph_view(self):
