@@ -20,7 +20,6 @@ class Application(HasTraits):
         return fcm
     
     def _graph_view_default(self):
-        m = self.model.graph
         return GraphView(graph = self.model.graph)
     
     @on_trait_change('model.graph')
