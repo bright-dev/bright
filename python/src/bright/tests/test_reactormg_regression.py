@@ -303,7 +303,7 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
     if nuc_class == 'Actinide':
         filt_u = [(key, value) for key, value in u if key[0] == reaction and 890000 < isoname.LLAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
     elif nuc_class == 'Fission Product':
-        filt_u = [(key, value) for key, value in u if key[0] == reaction and isoname.LLAAAM_2_zzaaam(key[1]) < 890000 and hl_cutoff < hl[key[1]]]
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and 200000 < isoname.LLAAAM_2_zzaaam(key[1]) < 730000 and hl_cutoff < hl[key[1]]]
     else:
         raise ValueError
 
