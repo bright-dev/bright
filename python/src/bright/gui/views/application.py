@@ -14,17 +14,17 @@ class Application(HasTraits):
     
     def _model_default(self):
         fcm = FuelCycleModel()
+        print fcm.classes_available
         fcm.add_instance("nu", "MassStream", {922380: 0.992745, 922350: 0.0072, 922340: 0.000055})
         fcm.add_instance("sr1", "Storage")
-        #fcm.calc_comp("sr1","ms1")
-        print "Model = ", fcm
-        print "Graph = ", fcm.graph
-        print 
+        fcm.calc_comp("sr1","ms1")
         return fcm
     
     def _graph_view_default(self):
         print "Model = ", self.model
         print "Graph = ", self.model.graph
+        print "Nodes = ", self.model.graph.nodes()
+        print "Edges = ", self.model.graph.edges()
         print 
         return GraphView(graph=self.model.graph, layout='tree')
     
