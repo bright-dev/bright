@@ -37,7 +37,6 @@ class FuelCycleModel(HasTraits):
         
         self.graph.add_node(node)
         self.convert_to_script()
-        self.graph_changed_event = True
   
     def add_instance(self, varname, class_name, data_dict = {}):
         """Add an instance of a class to the classes_imported dictionary as well as the script_imports string variable.
@@ -52,6 +51,7 @@ class FuelCycleModel(HasTraits):
         self.variables[varname] = var #store in dictionary with varname as key and var as value
 
         self.add_node(var)
+        self.graph_changed_event = True
         
         '''\if self.graph.number_of_nodes() == 1:
             first_node = self.graph.nodes()[0]
@@ -102,6 +102,7 @@ class FuelCycleModel(HasTraits):
         #create edge with calculated walk_value, walked flag, and msname        
         self.graph.add_edge(node1, node2, walk_value=walk_value, walked=False, msname=ms_value)
         self.convert_to_script()
+        self.graph_changed_event = True
 
     def calc_comp(self, varname, msname, ms_value = None):
         """Inserts an execution line into the script.
@@ -116,6 +117,7 @@ class FuelCycleModel(HasTraits):
             self.add_edge(self.variables[msname], self.variables[varname], ms_value)
         else:
             self.add_edge(self.variables[msname], self.variables[varname])        
+        self.graph_changed_event = True
     
     def remove_variable(self, varname):
         """Deletes everything related to a specified variable from memory.
@@ -131,6 +133,7 @@ class FuelCycleModel(HasTraits):
         #remove the varname from the variables dictionary                
         del self.variables[varname]
         self.convert_to_script()
+        self.graph_changed_event = True
 
     #def configure_bright() put in b/t imports and variables, add from bright import bright_config by default,  
     def configure_bright(self, **bright_options):
@@ -188,6 +191,7 @@ class FuelCycleModel(HasTraits):
         for node in nodes:
             if (pred_len[node] == 0) and (success_len[node] > 0):
                 self.follow_path(node)
+
                 
     
     def follow_path(self, node):

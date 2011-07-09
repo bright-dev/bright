@@ -97,7 +97,7 @@ def run_reactormg():
     rp.coolant_density = 0.73
 
     #rp.pnl = 0.98
-    rp.pnl = 0.95
+    rp.pnl = 1.0
     rp.BUt = 50.0
     rp.use_disadvantage_factor = True
     rp.lattice_type = 'Spherical'

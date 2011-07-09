@@ -11,7 +11,7 @@ class Application(HasTraits):
     _container = DelegatesTo('graph_view')
     script = DelegatesTo('model')
     model_context = Dict
-    
+    #graph_changed_event = DelegatesTo('model')
 
     traits_view = View(
                     VGroup(
@@ -34,15 +34,17 @@ class Application(HasTraits):
 
     #@on_trait_event('model.graph_changed_event')
     def update_graph_view(self):
-        print "yo dudes i'm workin"
+        #print "yo dudes i'm workin"
         self.graph_view.graph = self.model.graph
+        self.graph_view._graph_changed(self.model.graph)
+        #self.graph_view = GraphView(graph =self.model.graph)
     
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
         return GraphView(graph = self.model.graph)
     
     def _model_context_default(self):
-        return {'fc':self.model}
+        return {'fc': self.model}
 
 if __name__ == '__main__':
     app = Application()
