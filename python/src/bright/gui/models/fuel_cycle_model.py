@@ -1,4 +1,4 @@
-from traits.api import HasTraits, Str, Dict, Set, on_trait_change, Instance, Property
+from traits.api import HasTraits, Str, Dict, Set, on_trait_change, Instance, Property, Event
 from bright.gui.models.class_models.class_model import ClassModel
 #rework code to use nodes, then convert nodes to script
 
@@ -23,6 +23,7 @@ class FuelCycleModel(HasTraits):
     classes_available = Dict
     classes_imported = Set
     edges_set = Set
+    graph_changed_event = Event
         
     def _graph_default(self):
         dag = nx.DiGraph()
@@ -36,7 +37,8 @@ class FuelCycleModel(HasTraits):
         
         self.graph.add_node(node)
         self.convert_to_script()
-    
+        self.graph_changed_event = True
+  
     def add_instance(self, varname, class_name, data_dict = {}):
         """Add an instance of a class to the classes_imported dictionary as well as the script_imports string variable.
            
