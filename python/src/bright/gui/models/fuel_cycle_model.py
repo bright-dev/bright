@@ -49,7 +49,7 @@ class FuelCycleModel(HasTraits):
         self.classes_imported.add(class_name) #add the name of class selected to a set
         self.variables[varname] = var #store in dictionary with varname as key and var as value
 
-        self.graph.add_node(var)
+        self.add_node(var)
         
         '''\if self.graph.number_of_nodes() == 1:
             first_node = self.graph.nodes()[0]
