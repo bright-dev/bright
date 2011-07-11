@@ -340,19 +340,22 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
 
 
 def make_nn_table(nnt, burn_times):
+    len_p = len(nnt[0])
+
     latex_table = ("\\begin{table}[htbp]\n"
                    "\\begin{center}\n")
     latex_table += "\\caption{Nearest Neighbors over Burn}\n"
     latex_table += "\\label{nn_table}\n"
-    latex_table += "\\begin{tabular}{|l|" + ("c|"*len(nnt[0])) + "}\n"
-    latex_table +=("\\hline\n"
-                   "\\textbf{burn times [days]} & \\textbf{$p^*$} \\\\\n"
-                   "\\hline\n")
+    latex_table += "\\tiny\n"
+    latex_table += "\\begin{tabular}{|l||" + ("c"*len_p) + "|}\n"
+    latex_table += "\\hline\n"
+    latex_table += "\\textbf{days} & \multicolumn{" + str(len_p) + "}{|c|}{\textbf{$p^*$}} \\\\\n"
+    latex_table += "\\hline\n"
 
     for s, bt in enumerate(burn_times):
         latex_table += "{0:.3G}".format(bt) + " & "
-        latex_table += "& ".join([str(p) for p in nnt[s]])
-        latex_table += "\\\\\n"
+        latex_table += " & ".join([str(p) for p in nnt[s]])
+        latex_table += " \\\\\n"
 
     latex_table += ("\\hline\n"
                     "\\end{tabular}\n"
