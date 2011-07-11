@@ -2779,8 +2779,10 @@ void ReactorMG::calc_zeta()
     {
         if (g < g_therm)
             zeta_tg[bt_s][g] = 1.0;
+        else if (G <= g + 1)
+            zeta_tg[bt_s][g] = 1.0;
         else
-            zeta_tg[bt_s][g] = 1.2;            
+            zeta_tg[bt_s][g] = 1.3;
     };
 
 };

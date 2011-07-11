@@ -96,8 +96,9 @@ def run_reactormg():
     rp.cladding_density = 5.87
     rp.coolant_density = 0.73
 
+    rp.pnl = 0.915
     #rp.pnl = 0.98
-    rp.pnl = 1.0
+    #rp.pnl = 1.0
     rp.BUt = 50.0
     rp.use_disadvantage_factor = True
     rp.lattice_type = 'Spherical'
@@ -337,6 +338,29 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
     with open(fname, 'w') as f:
         f.write(latex_table)
 
+
+def make_nn_table(nnt, burn_times):
+    latex_table = ("\\begin{table}[htbp]\n"
+                   "\\begin{center}\n")
+    latex_table += "\\caption{Nearest Neighbors over Burn}\n"
+    latex_table += "\\label{nn_table}\n"
+    latex_table += "\\begin{tabular}{|l|" + ("c|"*len(nnt[0])) + "}\n"
+    latex_table +=("\\hline\n"
+                   "\\textbf{burn times [days]} & \\textbf{$p^*$} \\\\\n"
+                   "\\hline\n")
+
+    for s, bt in enumerate(burn_times):
+        latex_table += "{0:.3G}".format(bt) + " & "
+        latex_table += "& ".join([str(p) for p in nnt[s]])
+        latex_table += "\\\\\n"
+
+    latex_table += ("\\hline\n"
+                    "\\end{tabular}\n"
+                    "\\end{center}\n"
+                    "\\end{table}\n")
+
+    with open("nearest_neighbor_table.tex", 'w') as f:
+        f.write(latex_table)
     
 if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
@@ -425,3 +449,13 @@ if __name__ == "__main__":
     make_rank_table('sigma_a', 'Actinide')
     make_rank_table('sigma_a', 'Fission Product')
     make_rank_table('sigma_f', 'Actinide')
+
+
+    # Nearest neighbor calc
+    nnt = np.array(rmg._nearest_neighbors[1:]) + 1
+
+    nnt[5 < nnt] += 10
+    nnt[nnt < 6] += 5
+    nnt = np.append(nnt, nnt-5, axis=1)
+
+    make_nn_table(nnt, burn_times)

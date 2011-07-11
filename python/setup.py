@@ -266,12 +266,12 @@ setup(name="bright",
     package_dir = pack_dir,
     package_data = {'bright_data': bright_data_files},
     cmdclass = {'build_ext': build_ext}, 
-#    ext_modules=[
-#        Extension(**stlconv_ext), 
-#        Extension(**isoname_ext), 
-#        Extension(**mass_stream_ext),
-#        Extension(**bright_ext), 
-#       ],
+    ext_modules=[
+        Extension(**stlconv_ext), 
+        Extension(**isoname_ext), 
+        Extension(**mass_stream_ext),
+        Extension(**bright_ext), 
+       ],
     scripts = ['src/scripts/bright_gui']
     )
 

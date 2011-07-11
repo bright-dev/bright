@@ -9,6 +9,7 @@ class OrigenReactorMG(ReactorMG):
 
     def __init__(self, *args, **kwargs):
         super(OrigenReactorMG, self).__init__(*args, **kwargs)
+        self._nearest_neighbors = []
 
     def burnup_core(self):
         """Overrides the burnup core functio so that we may intercept certain methods."""
@@ -28,6 +29,7 @@ class OrigenReactorMG(ReactorMG):
 
             # Find the nearest neightbors for this time.
             self.calc_nearest_neighbors()
+            self._nearest_neighbors.append(np.array(self.nearest_neighbors))
 
             # Interpolate cross section in preparation for 
             # criticality calculation.
