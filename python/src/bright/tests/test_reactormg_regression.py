@@ -96,7 +96,7 @@ def run_reactormg():
     rp.cladding_density = 5.87
     rp.coolant_density = 0.73
 
-    rp.pnl = 0.915
+    rp.pnl = 0.925
     #rp.pnl = 0.98
     #rp.pnl = 1.0
     rp.BUt = 50.0
@@ -349,7 +349,7 @@ def make_nn_table(nnt, burn_times):
     latex_table += "\\tiny\n"
     latex_table += "\\begin{tabular}{|l||" + ("c"*len_p) + "|}\n"
     latex_table += "\\hline\n"
-    latex_table += "\\textbf{days} & \multicolumn{" + str(len_p) + "}{|c|}{\textbf{$p^*$}} \\\\\n"
+    latex_table += "\\textbf{days} & \\multicolumn{" + str(len_p) + "}{|c|}{\\textbf{$p^*$}} \\\\\n"
     latex_table += "\\hline\n"
 
     for s, bt in enumerate(burn_times):
