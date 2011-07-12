@@ -96,7 +96,7 @@ def run_reactormg():
     rp.cladding_density = 5.87
     rp.coolant_density = 0.73
 
-    rp.pnl = 0.925
+    rp.pnl = 0.92
     #rp.pnl = 0.98
     #rp.pnl = 1.0
     rp.BUt = 50.0
@@ -301,8 +301,12 @@ def make_1g_xs_graphs(nuc, sig):
 def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0):
     global hl, sig, u
 
+    imp_acts = set(['U234',  'U235',  'U236',   'U238',  'NP237', 'PU238', 'PU239', 'PU240', 'PU241', 'PU242', 
+                    'AM241', 'AM242', 'AM242M', 'AM243', 'AM244', 'CM242', 'CM243', 'CM244', 'CM245', 'CM246', ])
+
     if nuc_class == 'Actinide':
-        filt_u = [(key, value) for key, value in u if key[0] == reaction and 890000 < isoname.LLAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
+        #filt_u = [(key, value) for key, value in u if key[0] == reaction and 890000 < isoname.LLAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and key[1] in imp_acts and hl_cutoff < hl[key[1]]]
     elif nuc_class == 'Fission Product':
         filt_u = [(key, value) for key, value in u if key[0] == reaction and 200000 < isoname.LLAAAM_2_zzaaam(key[1]) < 730000 and hl_cutoff < hl[key[1]]]
     else:
