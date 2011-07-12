@@ -101,7 +101,8 @@ def run_reactormg():
     #rp.pnl = 1.0
     rp.BUt = 50.0
     rp.use_disadvantage_factor = True
-    rp.lattice_type = 'Spherical'
+    #rp.lattice_type = 'Spherical'
+    rp.lattice_type = 'Cylindrical'
     rp.lattice_type = 'Planar'
     rp.rescale_hydrogen = True
     rp.burnup_via_constant = 'power'
@@ -248,7 +249,8 @@ def compare_1g_xs(rmg):
     for rx in reactions:
         if rx == 'sigma_s':
             r_sig = getattr(rmg, rx + '_itgh')
-            r_sig = {key: value.sum(axis=-1) for key, value in r_sig.items()}
+            #r_sig = {key: value.sum(axis=-1) for key, value in r_sig.items()}
+            r_sig = {key: value.sum(axis=-2) for key, value in r_sig.items()}
         else:
             r_sig = getattr(rmg, rx + '_itg')
         s_sig = getattr(f.root, rx)
