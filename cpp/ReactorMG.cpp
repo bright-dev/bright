@@ -915,12 +915,16 @@ void ReactorMG::fold_mass_weights()
     double N_clad_i_cm2pb = 0.0;
     double N_cool_i_cm2pb = 0.0;
 
+    double Sig_s_fuel_ig, Sig_s_clad_ig, Sig_s_cool_ig;
+    double AW_ig;
+
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         N_fuel_i_cm2pb = bright::cm2_per_barn * N_fuel_it[*iso][bt_s];
         N_clad_i_cm2pb = bright::cm2_per_barn * N_clad_it[*iso][bt_s];
         N_cool_i_cm2pb = bright::cm2_per_barn * N_cool_it[*iso][bt_s];
 
+        AW_ig = isoname::nuc_weight_zzaaam(*iso);
 
         // Loop over all groups
         for (g = 0; g < G; g++)
@@ -965,13 +969,64 @@ void ReactorMG::fold_mass_weights()
             Sigma_2n_x_cool_tg[bt_s][g] += N_cool_i_cm2pb * sigma_2n_x_itg[*iso][bt_s][g];
 
 
+            Sig_s_fuel_ig = 0.0;
+            Sig_s_clad_ig = 0.0;
+            Sig_s_cool_ig = 0.0;
+
             for (h =0; h < G; h++)
             {
                 Sigma_s_fuel_tgh[bt_s][g][h] += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_clad_tgh[bt_s][g][h] += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
                 Sigma_s_cool_tgh[bt_s][g][h] += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+
+                Sig_s_fuel_ig += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+                Sig_s_clad_ig += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+                Sig_s_cool_ig += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][h];
+
+/*
+                Sig_s_fuel_ig += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][g];
+                Sig_s_clad_ig += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][g];
+                Sig_s_cool_ig += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][g][g];
+
+                Sig_s_fuel_ig += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][h][h];
+                Sig_s_clad_ig += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][h][h];
+                Sig_s_cool_ig += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][h][h];
+
+                Sig_s_fuel_ig += N_fuel_i_cm2pb * sigma_s_itgh[*iso][bt_s][h][g];
+                Sig_s_clad_ig += N_clad_i_cm2pb * sigma_s_itgh[*iso][bt_s][h][g];
+                Sig_s_cool_ig += N_cool_i_cm2pb * sigma_s_itgh[*iso][bt_s][h][g];
+*/
             };
+
+            // Calculate kappas as the inverse of the diffusion length
+            // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
+/*
+            kappa_fuel_tg[bt_s][g] += (3.0 * N_fuel_i_cm2pb * sigma_t_itg[*iso][bt_s][g]) - (2.0 * Sig_s_fuel_ig / AW_ig); 
+            kappa_clad_tg[bt_s][g] += (3.0 * N_fuel_i_cm2pb * sigma_t_itg[*iso][bt_s][g]) - (2.0 * Sig_s_clad_ig / AW_ig); 
+            kappa_cool_tg[bt_s][g] += (3.0 * N_fuel_i_cm2pb * sigma_t_itg[*iso][bt_s][g]) - (2.0 * Sig_s_cool_ig / AW_ig); 
+*/
+
+            kappa_fuel_tg[bt_s][g] += (N_fuel_i_cm2pb * sigma_a_itg[*iso][bt_s][g]) * Sig_s_fuel_ig * (3.0 - (2.0 / AW_ig));
+            kappa_clad_tg[bt_s][g] += (N_clad_i_cm2pb * sigma_a_itg[*iso][bt_s][g]) * Sig_s_clad_ig * (3.0 - (2.0 / AW_ig));
+            kappa_cool_tg[bt_s][g] += (N_cool_i_cm2pb * sigma_a_itg[*iso][bt_s][g]) * Sig_s_cool_ig * (3.0 - (2.0 / AW_ig));
         };
+    };
+
+
+    // sqrt(kappa)
+    double leth_g; 
+    for (g=0; g < G; g++)
+    {
+/*
+        kappa_fuel_tg[bt_s][g] = sqrt(kappa_fuel_tg[bt_s][g]);
+        kappa_clad_tg[bt_s][g] = sqrt(kappa_clad_tg[bt_s][g]);
+        kappa_cool_tg[bt_s][g] = sqrt(kappa_cool_tg[bt_s][g]);
+*/
+
+        leth_g = (log(E_g[0] / E_g[1]) - 1.0) / (log(E_g[0] / E_g[g+1]) - log(E_g[0] / E_g[g]));
+        kappa_fuel_tg[bt_s][g] = sqrt(kappa_fuel_tg[bt_s][g]) * leth_g;
+        kappa_clad_tg[bt_s][g] = sqrt(kappa_clad_tg[bt_s][g]) * leth_g;
+        kappa_cool_tg[bt_s][g] = sqrt(kappa_cool_tg[bt_s][g]) * leth_g;
     };
 
     // Re-Normalize chi
@@ -1006,14 +1061,6 @@ void ReactorMG::fold_mass_weights()
             chi_cool_tg[bt_s][g] = chi_cool_tg[bt_s][g] / chi_cool_tot;
     };
 
-    // Calculate kappas as the inverse of the diffusion length
-    // k = 1 / D = 3 * Sigma_tr = 3 (Sigma_t - mu * Sigma_s_gg)
-    for (g = 0; g < G; g++)
-    {
-        kappa_fuel_tg[bt_s][g] = (3.0 * Sigma_t_fuel_tg[bt_s][g]) - (2.0 * Sigma_s_fuel_tgh[bt_s][g][g] / MW_fuel_t[bt_s]); 
-        kappa_clad_tg[bt_s][g] = (3.0 * Sigma_t_clad_tg[bt_s][g]) - (2.0 * Sigma_s_clad_tgh[bt_s][g][g] / MW_clad_t[bt_s]); 
-        kappa_cool_tg[bt_s][g] = (3.0 * Sigma_t_cool_tg[bt_s][g]) - (2.0 * Sigma_s_cool_tgh[bt_s][g][g] / MW_cool_t[bt_s]); 
-    };
 
     // Calculate the disadvantage factor, if required.
     if (use_zeta)
@@ -2703,6 +2750,7 @@ void ReactorMG::calc_zeta()
     {
         a = r_fuel;
         b = pitch / sqrt(bright::pi); // radius of cylinder with an equivilent cell volume
+//        b = pitch / 2.0; 
 
         lattice_E_cylindrical(a, b);
         lattice_F_cylindrical(a, b);
@@ -2726,6 +2774,7 @@ void ReactorMG::calc_zeta()
         if (0.0 == Sigma_a_cool_tg[bt_s][g])
             zeta_tg[bt_s][g] = 1.0;
         else
+            //zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (Sigma_a_fuel_tg[bt_s][g] * (lattice_E_tg[bt_s][g] - 1.0) / (Sigma_a_cool_tg[bt_s][g]));
             zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (Sigma_a_fuel_tg[bt_s][g] * V_fuel * (lattice_E_tg[bt_s][g] - 1.0) / (Sigma_a_cool_tg[bt_s][g] * V_cool));
     };
 
@@ -2750,6 +2799,7 @@ void ReactorMG::calc_zeta()
     // account for variations in fuel composition and fluenece.
 
     // Check if we are in the proper Fuel-to-Coolant Regime
+/*
     double f2c = V_fuel / V_cool;
     if (f2c < 0.1)
         return;
@@ -2779,11 +2829,12 @@ void ReactorMG::calc_zeta()
     {
         if (g < g_therm)
             zeta_tg[bt_s][g] = 1.0;
-        else if (G <= g + 1)
-            zeta_tg[bt_s][g] = 1.0;
+//        else if (G <= g + 1)
+//            zeta_tg[bt_s][g] = 1.0;
         else
             zeta_tg[bt_s][g] = 1.3;
     };
+*/
 
 };
 

@@ -103,7 +103,7 @@ def run_reactormg():
     rp.use_disadvantage_factor = True
     #rp.lattice_type = 'Spherical'
     rp.lattice_type = 'Cylindrical'
-    rp.lattice_type = 'Planar'
+    #rp.lattice_type = 'Planar'
     rp.rescale_hydrogen = True
     rp.burnup_via_constant = 'power'
 
@@ -380,6 +380,8 @@ if __name__ == "__main__":
 
     E_g = rmg.E_g
 
+    """\
+    """
     r_k, s_k, diff_k = calc_diff(rmg.k_t[1:], res_bu['SIX_FF_KEFF'][1:, 0], res_bu['SIX_FF_KEFF'][1:, 1], "k")
 
     r_norm_phi = rmg.phi_tg / rmg.phi_t[:, np.newaxis]
@@ -468,3 +470,4 @@ if __name__ == "__main__":
     nnt = np.append(nnt, nnt-5, axis=1)
 
     make_nn_table(nnt, burn_times)
+

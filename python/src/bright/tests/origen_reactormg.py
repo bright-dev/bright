@@ -37,6 +37,7 @@ class OrigenReactorMG(ReactorMG):
 
             # Fold the mass weights for this time step
             self.calc_mass_weights()
+            #import pdb; pdb.set_trace()
             self.fold_mass_weights()
 
             # Preform the criticality calulation
