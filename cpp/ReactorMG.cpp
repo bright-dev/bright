@@ -2741,8 +2741,8 @@ void ReactorMG::calc_zeta()
     else if (lattice_flag == "Cylindrical")
     {
         a = r_fuel;
+        //a = r_fuel + ((r_clad - r_fuel) / 2.0);
         b = pitch / sqrt(bright::pi); // radius of cylinder with an equivilent cell volume
-//        b = pitch / 2.0; 
 
         lattice_E_cylindrical(a, b);
         lattice_F_cylindrical(a, b);

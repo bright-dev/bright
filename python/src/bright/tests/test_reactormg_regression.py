@@ -96,7 +96,7 @@ def run_reactormg():
     rp.cladding_density = 5.87
     rp.coolant_density = 0.73
 
-    rp.pnl = 0.92
+    rp.pnl = 0.9525
     #rp.pnl = 0.98
     #rp.pnl = 1.0
     rp.BUt = 50.0
@@ -107,10 +107,15 @@ def run_reactormg():
     rp.rescale_hydrogen = True
     rp.burnup_via_constant = 'power'
 
-    rp.fuel_radius = 0.412
-    rp.void_radius = 0.4205
+    #rp.fuel_radius = 0.412
+    #rp.void_radius = 0.4205
+    #rp.clad_radius = 0.475
+    #rp.unit_cell_pitch = 1.33
+
+    rp.fuel_radius = 0.41
+    rp.void_radius = 0.4185
     rp.clad_radius = 0.475
-    rp.unit_cell_pitch = 1.33
+    rp.unit_cell_pitch = 1.3127
 
     rp.open_slots = 25
     rp.total_slots = 289
