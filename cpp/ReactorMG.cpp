@@ -1015,6 +1015,7 @@ void ReactorMG::fold_mass_weights()
 
     // sqrt(kappa)
     double leth_g; 
+    std::cout << "    leth_g = [";
     for (g=0; g < G; g++)
     {
 /*
@@ -1023,11 +1024,13 @@ void ReactorMG::fold_mass_weights()
         kappa_cool_tg[bt_s][g] = sqrt(kappa_cool_tg[bt_s][g]);
 */
 
-        leth_g = (log(E_g[0] / E_g[1]) - 1.0) / (log(E_g[0] / E_g[g+1]) - log(E_g[0] / E_g[g]));
+        leth_g = log(E_g[0] / E_g[1]) / (log(E_g[0] / E_g[g+1]) - log(E_g[0] / E_g[g]));
+        std::cout << leth_g << ", ";
         kappa_fuel_tg[bt_s][g] = sqrt(kappa_fuel_tg[bt_s][g]) * leth_g;
         kappa_clad_tg[bt_s][g] = sqrt(kappa_clad_tg[bt_s][g]) * leth_g;
         kappa_cool_tg[bt_s][g] = sqrt(kappa_cool_tg[bt_s][g]) * leth_g;
     };
+    std::cout << "]\n";
 
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
