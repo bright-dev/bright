@@ -1014,23 +1014,12 @@ void ReactorMG::fold_mass_weights()
 
 
     // sqrt(kappa)
-    double leth_g; 
-    std::cout << "    leth_g = [";
     for (g=0; g < G; g++)
     {
-/*
         kappa_fuel_tg[bt_s][g] = sqrt(kappa_fuel_tg[bt_s][g]);
         kappa_clad_tg[bt_s][g] = sqrt(kappa_clad_tg[bt_s][g]);
         kappa_cool_tg[bt_s][g] = sqrt(kappa_cool_tg[bt_s][g]);
-*/
-
-        leth_g = log(E_g[0] / E_g[1]) / (log(E_g[0] / E_g[g+1]) - log(E_g[0] / E_g[g]));
-        std::cout << leth_g << ", ";
-        kappa_fuel_tg[bt_s][g] = sqrt(kappa_fuel_tg[bt_s][g]) * leth_g;
-        kappa_clad_tg[bt_s][g] = sqrt(kappa_clad_tg[bt_s][g]) * leth_g;
-        kappa_cool_tg[bt_s][g] = sqrt(kappa_cool_tg[bt_s][g]) * leth_g;
     };
-    std::cout << "]\n";
 
     // Re-Normalize chi
     double chi_fuel_tot = 0.0;
@@ -2780,6 +2769,16 @@ void ReactorMG::calc_zeta()
             //zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (Sigma_a_fuel_tg[bt_s][g] * (lattice_E_tg[bt_s][g] - 1.0) / (Sigma_a_cool_tg[bt_s][g]));
             zeta_tg[bt_s][g] = lattice_F_tg[bt_s][g] + (Sigma_a_fuel_tg[bt_s][g] * V_fuel * (lattice_E_tg[bt_s][g] - 1.0) / (Sigma_a_cool_tg[bt_s][g] * V_cool));
     };
+
+    double leth_g; 
+    std::cout << "    leth_g = [";
+    for (g = 0; g < G; g++) 
+    {
+        leth_g = log(E_g[0] / E_g[1]) / (log(E_g[0] / E_g[g+1]) - log(E_g[0] / E_g[g]));
+        std::cout << leth_g << ", ";
+        zeta_tg[bt_s][g] = sqrt(zeta_tg[bt_s][g]) * leth_g;
+    };
+    std::cout << "]\n";
 
 
     // Unfortunately, the above formulation for the disadvantage factor is ONLY valid for a << b!!!
