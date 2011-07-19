@@ -1,6 +1,5 @@
 from traits.api import HasTraits, Str, Dict, Set, on_trait_change, Instance, Property, Event
 from bright.gui.models.class_models.class_model import ClassModel
-#rework code to use nodes, then convert nodes to script
 
 import networkx as nx
 import os
@@ -12,7 +11,6 @@ class FuelCycleModel(HasTraits):
         super(FuelCycleModel, self).__init__(*args, **kwargs)
         self.register_classes_available()
        
-    #doc strings, other class models
     graph = Instance(nx.DiGraph)
     script = Str
     script_bright_config = Str
@@ -125,10 +123,12 @@ class FuelCycleModel(HasTraits):
            Format:
            remove_variable([name of variable to be deleted])"""
         self.graph.remove_node(self.variables[varname])
-
-        ##################################################################
-        #now find a way to remove the class from the classes_imported set#
-        ##################################################################
+        
+        #removes the class of varname (should there be no other variables that share that class) 
+        #from classes_imported set 
+        for key,value in self.classes_available.items():
+            if isinstance(self.variables[varname], value):
+                self.classes_imported.remove(key)           
 
         #remove the varname from the variables dictionary                
         del self.variables[varname]
@@ -167,20 +167,6 @@ class FuelCycleModel(HasTraits):
             temp_script2 = temp_script2 + i.add_instance() + '\n'
         self.script_variables = temp_script2
                 
-        #self.script_execution = self.script_execution + self.variables[varname].add_calc(msname) + '\n'
-        #execution lines
-        '''/temp_script3 = ""
-        for key, value in self.graph.edges():
-            temp_script3 = temp_script3 + key.add_calc(value.var) + '\n'
-        self.script_execution = temp_script3'''
-
-        '''\ temp_list = []
-        for j,k in self.graph.edges():
-            temp_list.append(self.graph[j][k]['walk_value'])
-            temp_list.sort()
-            for i in temp_list:
-                for j,k in self.graph.edges():
-                    if self.graph[j][k]['walk_value'] == i:'''
         nodes = self.graph.nodes()
         pred = {node:self.graph.predecessors(node) for node in nodes}       
         pred_len = {node:len(pred[node]) for node in nodes}
@@ -195,16 +181,22 @@ class FuelCycleModel(HasTraits):
                 
     
     def follow_path(self, node):
+        '''Given a head node, follow_path will parse through all connecting nodes and translate the path into the
+           execution portion of the script. '''
+        #declare variables
         temp_script3 = ""    
         var = 1
         original_node = node
         cycle_element_used = set()
+
         while var == 1:
+            #check for edges that have been traversed and ignore them
             original_walked = [self.graph.edge[j][k]['walked'] for j,k in self.graph.out_edges(original_node)]
             edges = self.graph.out_edges(node)
             for j,k in edges:
                 if self.graph.edge[j][k]['walked'] == True:
                     edges.remove((j,k))
+                #if a loop is detected, parse through and translate everything into a for loop for the script
                 if len(nx.simple_cycles(self.graph)) > 0:
                    cycles_list = nx.simple_cycles(self.graph)[0]
                    if j in cycles_list and not cycle_element_used:
@@ -214,28 +206,34 @@ class FuelCycleModel(HasTraits):
                             temp_script3 = temp_script3 + "    " + cycles_list[i].add_calc(cycles_list[i-1].var, self.graph.edge[cycles_list[i-1]][cycles_list[i]]['msname']) + '\n'                             
                         cycle_element_used.add(j)
                         cycle_element_used.add(k)
+  
+            #move to the next node and add any lines of code that have not already been included in the script
             walk_list = {self.graph.edge[j][k]['walk_value']:(j,k) for j,k in edges}
             if len(walk_list) > 0:
                 x,y =  walk_list[min(walk_list)]
                 self.graph.edge[x][y]['walked'] = True
                 if y.add_calc(x.var, self.graph.edge[x][y]['msname']) not in temp_script3:
                     temp_script3 = temp_script3 + y.add_calc(x.var, self.graph.edge[x][y]['msname']) + '\n'
-             
+                #if there are more than one edges branching off of a node, take the one with the lowest walk_value
+                #else:simply take the edge and follow it to the next node
                 if len(self.graph.successors(node)) > 1:
                     node = y
                 else:
                     node = self.graph.successors(node)[0]
             
+            #if all edges down one path has been traveres, check the head node for any other paths and follow the one
+            #with the next least walk_value
             else:
                 node = original_node
+        
+            #if everything has been traversed, reset all walked values to False to ensure that the next runthrough 
+            #succeeds
             if False not in original_walked:
                 for j,k in self.graph.out_edges():
                     self.graph.edge[j][k]['walked'] = False
                 break
-            #else:
-             #   for j,k in self.graph.out_edges():
-              #      self.graph.edge[j][k]['walked'] = False
-               # break
+
+        #apply changes to the execution portion of the script
         self.script_execution = temp_script3
         
 
