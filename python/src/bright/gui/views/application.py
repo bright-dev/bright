@@ -38,7 +38,7 @@ class Application(HasTraits):
         self.graph_view.graph = self.model.graph
         self.graph_view._graph_changed(self.model.graph)
         #self.graph_view = GraphView(graph =self.model.graph)
-    
+           
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
         return GraphView(graph = self.model.graph)

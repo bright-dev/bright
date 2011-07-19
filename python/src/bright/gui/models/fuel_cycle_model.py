@@ -200,6 +200,7 @@ class FuelCycleModel(HasTraits):
         original_node = node
         cycle_element_used = set()
         while var == 1:
+            original_walked = [self.graph.edge[j][k]['walked'] for j,k in self.graph.out_edges(original_node)]
             edges = self.graph.out_edges(node)
             for j,k in edges:
                 if self.graph.edge[j][k]['walked'] == True:
@@ -224,14 +225,17 @@ class FuelCycleModel(HasTraits):
                     node = y
                 else:
                     node = self.graph.successors(node)[0]
+            
             else:
-                ''' if len(self.graph.successors(original_node)) > 1:
-                    test = [self.graph.edge[original_node][i]['walked']for i in self.graph.successors(original_node)]
-                    if False in test:
-                        node = original_node'''    
+                node = original_node
+            if False not in original_walked:
                 for j,k in self.graph.out_edges():
                     self.graph.edge[j][k]['walked'] = False
                 break
+            #else:
+             #   for j,k in self.graph.out_edges():
+              #      self.graph.edge[j][k]['walked'] = False
+               # break
         self.script_execution = temp_script3
         
 
@@ -250,11 +254,12 @@ if __name__ == "__main__":
     fcm.add_instance("sr6","Storage")
     fcm.add_instance("ms1","MassStream",{922350:1.0})
     fcm.calc_comp("sr1","ms1")
-    fcm.calc_comp("sr5","ms1")
     fcm.calc_comp("sr2","sr1", "ms_prod")
     fcm.calc_comp("sr3","sr2", "ms_tail")
     fcm.calc_comp("sr4","sr3", "ms_prod")
     fcm.calc_comp("sr2","sr4", "ms_prod23")
+    fcm.calc_comp("sr5","ms1")
+    fcm.calc_comp("sr6","sr5")
     #fcm.configure_bright(write_text = False, write_hdf5 = True)  
     #fcm.configure_bright(track_isos = set([10010, 80160, 922380]))
     #fcm.remove_variable("sr1")
