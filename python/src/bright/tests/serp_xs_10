@@ -6,10 +6,9 @@ set acelib "/usr/share/serpent/xsdata/endf7.xsdata"
 
 % Initial Fuel Stream
 mat fuel -10.7
-   8016.06c  -0.1186
-  92238.06c  -0.82861
-  92234.06c  -0.0087222
-  92235.06c  -0.04407
+   8016.06c  -0.11858
+  92238.06c  -0.84176
+  92235.06c  -0.039664
 
 
 % Cladding Stream

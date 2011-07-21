@@ -16,7 +16,7 @@ rc('text', usetex=True)
 rc('font', family='roman')
 
 from char.m2py import convert_res, convert_dep
-from metasci.graph import StairStepEnergy
+from metasci.graph import StairStepEnergy, stair_step
 import metasci.nuke as msn
 
 # Hack to use origen as burnup calculator
@@ -127,7 +127,7 @@ def run_reactormg():
     rp.burn_times = bt
 
     # Init mass stream
-    leu = MassStream({922340: 0.01, 922350: 0.05, 922380: 0.94})
+    leu = MassStream({922350: 0.045, 922380: 0.955})
 
     # Init ReactorMG
     rmg = ReactorMG(reactor_parameters=rp, name="rmg")
@@ -375,6 +375,26 @@ def make_nn_table(nnt, burn_times):
 
     with open("nearest_neighbor_table.tex", 'w') as f:
         f.write(latex_table)
+
+
+def make_zeta_fig(zeta_tg):
+    global E_g
+    plt.clf()
+
+    eng, bol = stair_step(E_g[::-1], zeta_tg[1, ::-1])
+    eng, eol = stair_step(E_g[::-1], zeta_tg[-1, ::-1])
+
+    plt.plot(eng, bol, 'k-',  label="BOL Total $\\zeta = {0:.3G}$".format(zeta_tg[1].prod()))
+    plt.plot(eng, eol, 'k-.', label="EOL Total $\\zeta = {0:.3G}$".format(zeta_tg[-1].prod()))
+    
+    plt.xscale('log')
+    plt.xlabel("Energy [MeV]")
+    plt.ylabel("$\\zeta_g$ Thermal Disdavantage Factor")
+    plt.legend(loc=0)
+    plt.savefig('zeta.png')
+    plt.savefig('zeta.eps')
+    plt.clf()
+
     
 if __name__ == "__main__":
     rmg, res_bu, dep_bu, res_xs = test_regression()
@@ -476,3 +496,4 @@ if __name__ == "__main__":
 
     make_nn_table(nnt, burn_times)
 
+    make_zeta_fig(rmg.zeta_tg)
