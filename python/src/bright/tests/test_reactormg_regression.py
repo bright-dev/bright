@@ -96,7 +96,7 @@ def run_reactormg():
     rp.cladding_density = 5.87
     rp.coolant_density = 0.73
 
-    rp.pnl = 0.9525
+    rp.pnl = 0.9425
     #rp.pnl = 0.98
     #rp.pnl = 1.0
     rp.BUt = 50.0
@@ -106,11 +106,6 @@ def run_reactormg():
     #rp.lattice_type = 'Planar'
     rp.rescale_hydrogen = True
     rp.burnup_via_constant = 'power'
-
-    #rp.fuel_radius = 0.412
-    #rp.void_radius = 0.4205
-    #rp.clad_radius = 0.475
-    #rp.unit_cell_pitch = 1.33
 
     rp.fuel_radius = 0.41
     rp.void_radius = 0.4185
@@ -377,15 +372,18 @@ def make_nn_table(nnt, burn_times):
         f.write(latex_table)
 
 
-def make_zeta_fig(zeta_tg):
+def make_zeta_fig(zeta_tg, phi_tg):
     global E_g
     plt.clf()
 
     eng, bol = stair_step(E_g[::-1], zeta_tg[1, ::-1])
     eng, eol = stair_step(E_g[::-1], zeta_tg[-1, ::-1])
 
-    plt.plot(eng, bol, 'k-',  label="BOL Total $\\zeta = {0:.3G}$".format(zeta_tg[1].prod()))
-    plt.plot(eng, eol, 'k-.', label="EOL Total $\\zeta = {0:.3G}$".format(zeta_tg[-1].prod()))
+    bol_tot = (zeta_tg[1] * phi_tg[1]).sum() / phi_tg[1].sum()
+    eol_tot = (zeta_tg[-1] * phi_tg[-1]).sum() / phi_tg[-1].sum()
+
+    plt.plot(eng, bol, 'k-',  label="BOL")
+    plt.plot(eng, eol, 'k-.', label="EOL")
     
     plt.xscale('log')
     plt.xlabel("Energy [MeV]")
@@ -394,6 +392,52 @@ def make_zeta_fig(zeta_tg):
     plt.savefig('zeta.png')
     plt.savefig('zeta.eps')
     plt.clf()
+
+
+
+def channel_error(nuc, sig):
+    ce = (sig['sigma_t', nuc][0] - sig['sigma_a', nuc][0] - sig['sigma_s', nuc][0]) / sig['sigma_t', nuc][0]
+    ce[np.isnan(ce)] = 0.0
+    return ce
+
+
+def make_missing_channel_table(sig, threshold=0.05, nrows=20):
+    nucs = set(key[1] for key in sig)
+    err = {nuc: channel_error(nuc, sig) for nuc in nucs}
+    sorted_err = sorted(err.items(), key=lambda i: max(i[1]), reverse=True)
+
+    latex_table = ("\\begin{table}[htbp]\n"
+                   "\\begin{center}\n")
+    latex_table += "\\caption{Missing Channel Fraction}\n"
+    latex_table += "\\label{missing_channel_fraction}\n"
+    latex_table +=("\\begin{tabular}{|l|c|}\n"
+                   "\\hline\n"
+                   "\\textbf{Nuclide} & \\textbf{$m_f$} \\\\\n"
+                   "\\hline\n")
+
+    nuc_latex = "\\nuc{{{0}}}{{{1}}}"
+    nuc_pattern = re.compile("([A-Z]{1,2})(\d{1,3})(M?)")
+    for key, value in sorted_err[:nrows]:
+        val = max(value)
+        if val < threshold:
+            break
+
+        z, a, m = nuc_pattern.match(key).groups()
+        nl = nuc_latex.format(z.capitalize(), a)
+        if 0 < len(m):
+            nl += "\\superscript{*}"
+        latex_table += nl + " & {0:+.4F} \\\\\n".format(val)
+
+    latex_table += ("\\hline\n"
+                    "\\end{tabular}\n"
+                    "\\end{center}\n"
+                    "\\end{table}\n")
+
+    fname = "missing_channel_fraction.tex"
+    with open(fname, 'w') as f:
+        f.write(latex_table)
+
+
 
     
 if __name__ == "__main__":
@@ -438,8 +482,8 @@ if __name__ == "__main__":
     bu_mass_norm = bu_mass_norm / bu_mass_norm[0]
 
     # Patch known isos
-    dep_bu['mw'][dep_bu['iso_index'][922340]] *= (0.01 / dep_bu['mw'][dep_bu['iso_index'][922340]][0])
-    dep_bu['mw'][dep_bu['iso_index'][922380]] *= (0.94 / dep_bu['mw'][dep_bu['iso_index'][922380]][0])
+    #dep_bu['mw'][dep_bu['iso_index'][922340]] *= (0.01 / dep_bu['mw'][dep_bu['iso_index'][922340]][0])
+    #dep_bu['mw'][dep_bu['iso_index'][922380]] *= (0.94 / dep_bu['mw'][dep_bu['iso_index'][922380]][0])
 
     nuclides = ['U234',  'U235',  'U236',  'U238',  'NP237', 'PU238', 'PU239', 'PU240', 'PU241', 'PU242', 
                 'AM241', 'AM242', 'AM243', 'CM242', 'CM243', 'CM244', 'CM245', 'CM246', 'SE79',  'KR85',  
@@ -489,11 +533,11 @@ if __name__ == "__main__":
 
     # Nearest neighbor calc
     nnt = np.array(rmg._nearest_neighbors[1:]) + 1
-
-    nnt[5 < nnt] += 10
-    nnt[nnt < 6] += 5
-    nnt = np.append(nnt, nnt-5, axis=1)
-
+    #nnt[5 < nnt] += 10
+    #nnt[nnt < 6] += 5
+    #nnt = np.append(nnt, nnt-5, axis=1)
     make_nn_table(nnt, burn_times)
 
-    make_zeta_fig(rmg.zeta_tg)
+    make_zeta_fig(rmg.zeta_tg, rmg.phi_tg)
+
+    make_missing_channel_table(sig, threshold=0.01)
