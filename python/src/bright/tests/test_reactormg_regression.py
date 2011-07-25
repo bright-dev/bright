@@ -151,7 +151,8 @@ def make_graphs(r, s, diff, serr=None, name=""):
     else:
         plt.errorbar(burn_times, s, serr, color='k', label="Serpent")
     
-    plt.errorbar(burn_times, r, diff*r, color='r', label="RMG")
+    #plt.errorbar(burn_times, r, diff*r, color='r', label="RMG")
+    plt.plot(burn_times, r, color='r', label="RMG")
 
     plt.xlabel("burn time [days]")
     plt.ylabel(name)
@@ -289,7 +290,8 @@ def make_1g_xs_graphs(nuc, sig):
     for reaction, marker in zip(reactions, markers):
         r, s, diff = sig[reaction, nuc]
         plt.plot(burn_times, s, color='k', marker=marker, linestyle='-', label="Serpent $\\{0}$".format(reaction))
-        plt.errorbar(burn_times, r, diff*r, color='r', marker=marker, linestyle='-', label="RMG $\\{0}$".format(reaction))
+        #plt.errorbar(burn_times, r, diff*r, color='r', marker=marker, linestyle='-', label="RMG $\\{0}$".format(reaction))
+        plt.plot(burn_times, r, color='r', marker=marker, linestyle='-', label="RMG $\\{0}$".format(reaction))
 
     plt.xlabel("burn time [days]")
     plt.ylabel(nuc + " One-Group Cross Sections [barns]")
@@ -350,10 +352,10 @@ def make_nn_table(nnt, burn_times):
 
     latex_table = ("\\begin{table}[htbp]\n"
                    "\\begin{center}\n")
-    latex_table += "\\caption{Nearest Neighbors over Burn}\n"
+    latex_table += "\\caption{Nearest Neighbors over Burn for Interpolating Cross Sections}\n"
     latex_table += "\\label{nn_table}\n"
     latex_table += "\\tiny\n"
-    latex_table += "\\begin{tabular}{|l||" + ("c"*len_p) + "|}\n"
+    latex_table += "\\begin{tabular}{|l||cc|" + ("c"*(len_p-2)) + "|}\n"
     latex_table += "\\hline\n"
     latex_table += "\\textbf{days} & \\multicolumn{" + str(len_p) + "}{|c|}{\\textbf{$p^*$}} \\\\\n"
     latex_table += "\\hline\n"
