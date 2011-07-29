@@ -4,6 +4,7 @@ from bright.gui.models.class_models.class_model import ClassModel
 import networkx as nx
 import os
 import re
+import ast
 
 class FuelCycleModel(HasTraits):
 
@@ -51,10 +52,6 @@ class FuelCycleModel(HasTraits):
         self.add_node(var)
         self.graph_changed_event = True
         
-        '''\if self.graph.number_of_nodes() == 1:
-            first_node = self.graph.nodes()[0]
-            print first_node'''
-          
     def register_classes_available(self):
         """Check the class_models directory for all available models and record them into the classes_available dictionary."""
         
@@ -75,8 +72,6 @@ class FuelCycleModel(HasTraits):
 
         self.script = self.script_imports + self.script_bright_config + self.script_variables + self.script_execution
     
-    #l = [n**2 for n in range(10) if n%2 == 0] ==> list comprehension
-    #
     def add_edge(self, node1, node2, ms_value = None):
         """Add an edge between two specified nodes.  If an additional mass stream name is provided, add_edge() will add
            an attribute called msname in the edge.
@@ -90,12 +85,6 @@ class FuelCycleModel(HasTraits):
             walk_value = max(temp_list) + 1
         else:
             walk_value = 1
-    
-        
-        '''\if len(temp_list) == 0:
-            walk_value = 1
-        else:
-            walk_value = max(temp_list) + 1'''
     
         #create edge with calculated walk_value, walked flag, and msname        
         self.graph.add_edge(node1, node2, walk_value=walk_value, walked=False, msname=ms_value)
@@ -135,7 +124,6 @@ class FuelCycleModel(HasTraits):
         self.convert_to_script()
         self.graph_changed_event = True
 
-    #def configure_bright() put in b/t imports and variables, add from bright import bright_config by default,  
     def configure_bright(self, **bright_options):
         """Adds an additional bright configuration line to the script.
            
@@ -147,7 +135,6 @@ class FuelCycleModel(HasTraits):
             temp_script = temp_script + "bright_config." + key + " = " + repr(value) + "\n"           
         self.script_bright_config = temp_script
     
-    #only watch graph, remove all sets
     @on_trait_change ('graph')
     def convert_to_script (self):
         
@@ -181,8 +168,8 @@ class FuelCycleModel(HasTraits):
                 
     
     def follow_path(self, node):
-        '''Given a head node, follow_path will parse through all connecting nodes and translate the path into the
-           execution portion of the script. '''
+        """Given a head node, follow_path will parse through all connecting nodes and translate the path into the
+           execution portion of the script. """
         #declare variables
         temp_script3 = ""    
         var = 1
@@ -198,10 +185,12 @@ class FuelCycleModel(HasTraits):
                     edges.remove((j,k))
                 #if a loop is detected, parse through and translate everything into a for loop for the script
                 if len(nx.simple_cycles(self.graph)) > 0:
-                   cycles_list = nx.simple_cycles(self.graph)[0]
-                   if j in cycles_list and not cycle_element_used:
+                    cycles_list = nx.simple_cycles(self.graph)[0]
+                    if j in cycles_list and not cycle_element_used:
                         temp_script3 = temp_script3 + "for n in range(10):\n"
-                        cycles_list.pop()
+                        
+                        #cycles_list.pop(), this was commented out due to the fact that the order of the cycle was incorrect
+                        cycles_list.remove(cycles_list[0])
                         for i in range(len(cycles_list)):
                             temp_script3 = temp_script3 + "    " + cycles_list[i].add_calc(cycles_list[i-1].var, self.graph.edge[cycles_list[i-1]][cycles_list[i]]['msname']) + '\n'                             
                         cycle_element_used.add(j)
@@ -214,6 +203,7 @@ class FuelCycleModel(HasTraits):
                 self.graph.edge[x][y]['walked'] = True
                 if y.add_calc(x.var, self.graph.edge[x][y]['msname']) not in temp_script3:
                     temp_script3 = temp_script3 + y.add_calc(x.var, self.graph.edge[x][y]['msname']) + '\n'
+
                 #if there are more than one edges branching off of a node, take the one with the lowest walk_value
                 #else:simply take the edge and follow it to the next node
                 if len(self.graph.successors(node)) > 1:
@@ -236,8 +226,61 @@ class FuelCycleModel(HasTraits):
         #apply changes to the execution portion of the script
         self.script_execution = temp_script3
         
+    def script_to_graph(self, fcm_script):
+        """Given a script (in string format), script_to_graph creates an instance of the ScriptToParser class to
+           parse through and convert the string into its graphical equivalent."""
+        
+        #create an instance of the parser class
+        stg = ScriptToGraphParser()
+
+        #convert the script to an abstract syntax tree
+        astrep = ast.parse(fcm_script)
+
+        #traverse through the nodes within the AST
+        stg.visit(astrep)
 
 
+        #print nx.simple_cycles(stg.graph_from_script)
+
+class ScriptToGraphParser (ast.NodeVisitor):
+    """The ScriptToGraphParser class takes any given script (in string format) and converts it into the proper
+       graphical representation.  More specifically, the class consists of methods that will break the script
+       into an abstract syntax tree and traverse through nodes relevant to the conversion process (i.e. variable
+       names, arguments within expressions, etc). """
+    
+    #create a new instance of a directed graph derived from networkx
+    graph_from_script = nx.DiGraph()
+
+    def __init__ (self):
+        pass
+    
+    #find all imports and print out what it is trying to import (possibly not needed if error checking is implemented)
+    def visit_ImportFrom (self, stmt_importfrom):
+        for alias in stmt_importfrom.names:
+            print alias.name
+    
+    #find all assignment statements and add a node using the variable name as a reference
+    def visit_Assign(self, stmt_assign):
+        for alias in stmt_assign.targets:
+            self.graph_from_script.add_node(alias.id)
+        
+        #print stmt_assign.value.func.id
+    
+    
+    #find all 'calc' lines and add an edge between them (may be uneeded if the script is always correct with error checking)
+    def visit_Expr(self, stmt_expr):
+        print stmt_expr.value.func.value.id, stmt_expr.value.func.attr
+        for i in stmt_expr.value.args:
+            self.graph_from_script.add_edge(i.id, stmt_expr.value.func.value.id)
+    
+    #find all for loops and extract its statements inside, making edges to the graph (once again, error checking implementation most likely needed)
+    def visit_For(self, stmt_for):
+        for n in stmt_for.body:
+            y = n.value.func.value.id
+            
+            for p in n.value.args:
+                x = p.value.id
+            self.graph_from_script.add_edge(x,y)
 
 
     
@@ -263,4 +306,5 @@ if __name__ == "__main__":
     #fcm.remove_variable("sr1")
     #fcm.remove_variable("sr2")
     #fcm.remove_variable("ms1")
+    fcm.script_to_graph("for n in range(10):\n    sr3.calc(sr2.ms_prod)\n    sr4.calc(sr3.ms_tail)\n    sr2.calc(sr4.ms_prod)")
     print fcm.script
