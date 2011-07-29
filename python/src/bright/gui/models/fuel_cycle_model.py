@@ -240,7 +240,9 @@ class FuelCycleModel(HasTraits):
         stg.visit(astrep)
 
 
-        #print nx.simple_cycles(stg.graph_from_script)
+        print "Loops: ", nx.simple_cycles(stg.graph_from_script), "\n"
+        print "Nodes: ", stg.graph_from_script.nodes(), "\n"
+        print "Edges: ", stg.graph_from_script.edges(), "\n"
 
 class ScriptToGraphParser (ast.NodeVisitor):
     """The ScriptToGraphParser class takes any given script (in string format) and converts it into the proper
@@ -256,23 +258,26 @@ class ScriptToGraphParser (ast.NodeVisitor):
     
     #find all imports and print out what it is trying to import (possibly not needed if error checking is implemented)
     def visit_ImportFrom (self, stmt_importfrom):
-        for alias in stmt_importfrom.names:
-            print alias.name
+        for i in stmt_importfrom.names:
+            print "Imports: ", i.name, "\n"
     
     #find all assignment statements and add a node using the variable name as a reference
     def visit_Assign(self, stmt_assign):
         for alias in stmt_assign.targets:
             self.graph_from_script.add_node(alias.id)
         
-        #print stmt_assign.value.func.id
+        #print stmt_assign.value.func.id (prints class that variable derives from)
     
     
     #find all 'calc' lines and add an edge between them (may be uneeded if the script is always correct with error checking)
     def visit_Expr(self, stmt_expr):
-        print stmt_expr.value.func.value.id, stmt_expr.value.func.attr
+        #print stmt_expr.value.func.attr
         for i in stmt_expr.value.args:
-            self.graph_from_script.add_edge(i.id, stmt_expr.value.func.value.id)
-    
+            if "Attribute" in repr(i):
+                self.graph_from_script.add_edge(i.value.id, stmt_expr.value.func.value.id)
+            else:
+                self.graph_from_script.add_edge(i.id, stmt_expr.value.func.value.id)
+
     #find all for loops and extract its statements inside, making edges to the graph (once again, error checking implementation most likely needed)
     def visit_For(self, stmt_for):
         for n in stmt_for.body:
@@ -306,5 +311,7 @@ if __name__ == "__main__":
     #fcm.remove_variable("sr1")
     #fcm.remove_variable("sr2")
     #fcm.remove_variable("ms1")
-    fcm.script_to_graph("for n in range(10):\n    sr3.calc(sr2.ms_prod)\n    sr4.calc(sr3.ms_tail)\n    sr2.calc(sr4.ms_prod)")
+    fcm.script_to_graph(fcm.script)
+
     print fcm.script
+
