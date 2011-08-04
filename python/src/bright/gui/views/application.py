@@ -1,10 +1,11 @@
-from traits.api import HasTraits, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button
-from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, CodeEditor, ShellEditor, FileEditor, SetEditor, TableEditor, ListEditor
-from traitsui.file_dialog import open_file
+from traits.api import HasTraits, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum
+from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor
+from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from graphcanvas.api import GraphView
-
+import os
+import re
 
 class Application(HasTraits):
     model = Instance(FuelCycleModel)
@@ -15,10 +16,23 @@ class Application(HasTraits):
     #graph_changed_event = DelegatesTo('model')
     #classes_available = Dict
     classes_list = List    
-    blah = List
+    variables_list = List
     file_name = File
+    file_name2 = File
     open = Button('Open')
     save = Button('Save')
+    class_title = Enum('Classes Available')
+    component_views = Dict
+
+
+def register_views(self):
+    localdict = {}
+    comp_list = os.listdir('component_views')
+    for i in dirlist:
+        if i != '__init.py':
+            exec('from bright.gui.views.component_views.{0} import *'.format(i), {}, localdict)
+    for key, value in localdict:
+        component_views[key] = value
 
     traits_view = View(
                     VGroup(
@@ -29,14 +43,13 @@ class Application(HasTraits):
                             
                               ),
                         HGroup(
-                            
-                            Item('classes_list', editor = ListEditor(), show_label = False, resizable = True, width =.25),
+                            Item('classes_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.25),
                             Item('_container', editor = ComponentEditor(), show_label = False, resizable = True, width =.25),
                             Item('script', editor = CodeEditor(), show_label = False, resizable = True, width = .50)
                             ),
                         HGroup(
-                            Item('blah', editor = ListEditor(), show_label = False, resizable = True, width =.15),
-                            Item('model_context', editor = ShellEditor(share = True), label = 'Shell')
+                            Item('variables_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.17),
+                            Item('model_context', editor = ShellEditor(share = True), show_label = False)
                               )
                           ),
                   resizable = True
@@ -70,7 +83,7 @@ class Application(HasTraits):
             list_temp.append(key)
         return list_temp
 
-    def _blah_default(self):
+    def _variables_list_default(self):
         temp_list = []    
         for key, value in self.model.variables.items():
             temp_list.append(key)
@@ -87,9 +100,14 @@ class Application(HasTraits):
         if file_name != '':
             self.file_name = file_name
 
+    def _save_changed(self):
+        file_name = save_file()
+        if file_name != '':
+            self.file_name2 = save_file
     
 if __name__ == '__main__':
     app = Application()
     app.configure_traits()
     
+
 
