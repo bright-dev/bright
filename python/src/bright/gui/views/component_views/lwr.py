@@ -15,7 +15,7 @@ import numpy as np
 from utils import _init_comp, _get_comp_pass_number, _get_lwr_data_path
 from mass_stream_views import _MassStreamView
 
-from views.burnup_criticality_estimator import _burnup_criticality_estimator_plot, _k_BU
+from bright.gui.views.component_views.views.burnup_criticality_estimator import _burnup_criticality_estimator_plot, _k_BU
 
 def LightWaterReactor(IsosIn, burnup, batches, radius, length, flux,
                     fuel_density, coolant_density, pnl, use_disadvantage,

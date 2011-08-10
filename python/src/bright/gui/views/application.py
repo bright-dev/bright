@@ -1,11 +1,32 @@
-from traits.api import HasTraits, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum
-from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor
+from traits.api import HasTraits, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool
+from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, Handler, ToolBar, Action, MenuBar, Menu
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from graphcanvas.api import GraphView
 import os
 import re
+
+class E_handler(Handler):
+    file_name = File
+    def save_file(self, info):
+        
+        if info.object.save == True:
+            info.object.save = False
+        else:
+            info.object.save = True
+        return
+    def open_file(self, info):
+        if info.object.open == True:
+            info.object.open = False
+        else:
+            info.object.open = True
+        return
+
+    save = Action(name = "Save", action = "save_file")
+    open = Action(name = "Open", action = "open_file")
+
+
 
 class Application(HasTraits):
     model = Instance(FuelCycleModel)
@@ -19,27 +40,35 @@ class Application(HasTraits):
     variables_list = List
     file_name = File
     file_name2 = File
-    open = Button('Open')
-    save = Button('Save')
+    open = Bool
+    save = Bool
     class_title = Enum('Classes Available')
     component_views = Dict
 
+    handle = E_handler()
 
-def register_views(self):
-    localdict = {}
-    comp_list = os.listdir('component_views')
-    for i in dirlist:
-        if i != '__init.py':
-            exec('from bright.gui.views.component_views.{0} import *'.format(i), {}, localdict)
-    for key, value in localdict:
-        component_views[key] = value
 
+    def register_views(self):
+        localdict = {}
+        comp_list = os.listdir('component_views/')
+        for i in comp_list:
+            print i
+            if 'init' not in i and 'util' not in i and 'lwr' not in i:
+                match = re.search('(.+).py',i)
+                vname_list = match.group(1).split("_")
+                for n in vname_list:
+                    vname_list[vname_list.index(n)] = n.capitalize()
+                vname = ''.join(vname_list)
+                exec('from bright.gui.views.component_views.{name} import _{view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
+        for key, value in localdict:
+            component_views[key] = value
+    
     traits_view = View(
                     VGroup(
                         HGroup(
-                            Item('open', show_label = False, width = .05),
-                            Item('save', show_label = False, width = .05),
-                            Item('file_name', show_label = False, width = .05)
+                            #Item('open', show_label = False, width = .05),
+                            #Item('save', show_label = False, width = .05),
+                            #Item('file_name', show_label = False, width = .05)
                             
                               ),
                         HGroup(
@@ -52,7 +81,9 @@ def register_views(self):
                             Item('model_context', editor = ShellEditor(share = True), show_label = False)
                               )
                           ),
-                  resizable = True
+                  resizable = True,
+                  handler = handle,
+                  menubar = MenuBar(Menu(handle.open, handle.save, name = "File"))
                     )
     
     def _model_default(self):
@@ -93,20 +124,30 @@ def register_views(self):
         temp_list = []
         for key, value in self.model.variables.items():
             temp_list.append(key)
-        self.blah = temp_list
+        self.variables_list  = temp_list
 
     def _open_changed(self):
         file_name = open_file()
         if file_name != '':
-            self.file_name = file_name
+            f = open(file_name, 'r')
+ 
+            #self.file_name = file_name
+        #self.open = False
 
     def _save_changed(self):
         file_name = save_file()
         if file_name != '':
-            self.file_name2 = save_file
+            with open(file_name, 'w') as f:
+                f.write(self.script)
+        #self.save = False
+        #if file_name != '':
+         #   self.file_name2 = save_file
     
+
+
 if __name__ == '__main__':
     app = Application()
+#    app.register_views()
     app.configure_traits()
     
 
