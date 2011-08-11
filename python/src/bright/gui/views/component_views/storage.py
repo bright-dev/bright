@@ -9,28 +9,6 @@ import bright
 from utils import _init_comp, _get_comp_pass_number
 from mass_stream_views import _MassStreamView
 
-def Storage(IsosIn):
-    """Storage:  
-    --------
-    This is a storage object that runs a decay calculation on a mass stream.
-    """
-    _init_comp()
-
-    _storageview = _StorageView(IsosIn=IsosIn)
-    _storageview.configure_traits()
-
-    IsosIn = _storageview.IsosIn
-    name = _storageview.name
-    decay_time = _storageview.decay_time
-
-    stor = bright.Storage(name)
-    stor.PassNum = _get_comp_pass_number(stor.natural_name)
-    stor.doCalc(IsosIn, decay_time)
-    stor.writeout()
-    IsosOut = stor.IsosOut
-    return IsosOut
-
-
 class _StorageView(HasTraits):
 
     IsosIn  = Instance(mass_stream.MassStream)

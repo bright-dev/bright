@@ -9,30 +9,6 @@ import bright
 from utils import _init_comp, _get_comp_pass_number
 from mass_stream_views import _MassStreamView
 
-def Enrichment(IsosIn):
-    """Enrichment:  
-    -----------
-    This is an enrichment object that enrichs a mass stream.
-    """
-    _init_comp()
-
-    _enrichmentview = _EnrichmentView(IsosIn = IsosIn)
-    _storageview.configure_traits()
-
-    IsosIn = _enrichmentview.IsosIn
-    enrichment = _enrichmentview.enrichment
-    name = _enrichmentview.name
-    
-    params = bright.UraniumEnrichmentDefaults()
-    params.xP_j = enrichment
-    enr = bright.Enrichment(params, name)
-    enr.PassNum = _get_comp_pass_number(enr.natural_name)
-    enr.doCalc(IsosIn)
-    enr.writeout()
-    IsosOut = enr.IsosOut
-    return IsosOut
-
-
 class _EnrichmentView(HasTraits):
 
     IsosIn  = Instance(mass_stream.MassStream)

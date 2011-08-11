@@ -44,13 +44,15 @@ class Application(HasTraits):
     save = Bool
     class_title = Enum('Classes Available')
     component_views = Dict
-
+    loaded_script = Str
     handle = E_handler()
 
 
     def register_views(self):
         localdict = {}
         comp_list = os.listdir('component_views/')
+        comp_list.remove('views')
+        comp_list.remove('__init__.py')
         for i in comp_list:
             print i
             if 'init' not in i and 'util' not in i and 'lwr' not in i:
@@ -60,9 +62,9 @@ class Application(HasTraits):
                     vname_list[vname_list.index(n)] = n.capitalize()
                 vname = ''.join(vname_list)
                 exec('from bright.gui.views.component_views.{name} import _{view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
-        for key, value in localdict:
-            component_views[key] = value
-    
+        for key, value in localdict.items():
+            self.component_views[key] = value
+        print self.component_views
     traits_view = View(
                     VGroup(
                         HGroup(
@@ -129,8 +131,7 @@ class Application(HasTraits):
     def _open_changed(self):
         file_name = open_file()
         if file_name != '':
-            f = open(file_name, 'r')
- 
+            self.loaded_script = file_name 
             #self.file_name = file_name
         #self.open = False
 
@@ -147,8 +148,8 @@ class Application(HasTraits):
 
 if __name__ == '__main__':
     app = Application()
-#    app.register_views()
-    app.configure_traits()
+    app.register_views()
+    #app.configure_traits()
     
 
 
