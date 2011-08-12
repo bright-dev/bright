@@ -7,15 +7,15 @@ import mass_stream
 import bright
 
 from utils import _init_comp, _get_comp_pass_number
-from mass_stream_views import _MassStreamView
+from mass_stream import MassStreamView
 
-class _EnrichmentView(HasTraits):
+class EnrichmentView(HasTraits):
 
     IsosIn  = Instance(mass_stream.MassStream)
     IsosOut = Instance(mass_stream.MassStream)
 
-    IsosIn_view  = Instance(_MassStreamView)
-    IsosOut_view = Instance(_MassStreamView)
+    IsosIn_view  = Instance(MassStreamView)
+    IsosOut_view = Instance(MassStreamView)
 
     name = Str("Enrichment")
 
@@ -56,7 +56,7 @@ class _EnrichmentView(HasTraits):
         return IsosIn
 
     def _IsosIn_view_default(self):
-        iiv = _MassStreamView(mass_stream=self.IsosIn)
+        iiv = MassStreamView(mass_stream=self.IsosIn)
         return iiv
 
     def _IsosIn_view_changed(self):
@@ -69,7 +69,7 @@ class _EnrichmentView(HasTraits):
         return IsosOut
 
     def _IsosOut_view_default(self):
-        iov = _MassStreamView(mass_stream=self.IsosOut)
+        iov = MassStreamView(mass_stream=self.IsosOut)
         return iov
 
     def _IsosOut_view_changed(self):
@@ -79,5 +79,5 @@ class _EnrichmentView(HasTraits):
 if __name__ == "__main__":
     nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
     
-    _enrichmentview = _EnrichmentView(IsosIn = nu, IsoOut = nu)
+    _enrichmentview = EnrichmentView(IsosIn = nu, IsoOut = nu)
     _enrichmentview.configure_traits() 

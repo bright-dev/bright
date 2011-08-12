@@ -61,7 +61,7 @@ class Application(HasTraits):
                 for n in vname_list:
                     vname_list[vname_list.index(n)] = n.capitalize()
                 vname = ''.join(vname_list)
-                exec('from bright.gui.views.component_views.{name} import _{view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
+                exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
         for key, value in localdict.items():
             self.component_views[key] = value
         print self.component_views
