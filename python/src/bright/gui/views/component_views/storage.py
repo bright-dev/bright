@@ -52,7 +52,7 @@ class StorageView(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = mass_stream.MassStream()
+        IsosIn = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
         return IsosIn
 
     def _IsosIn_view_default(self):
@@ -66,7 +66,7 @@ class StorageView(HasTraits):
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = mass_stream.MassStream()
+        IsosOut = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
         return IsosOut
 
     def _IsosOut_view_default(self):

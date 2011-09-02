@@ -6,6 +6,8 @@ from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from graphcanvas.api import GraphView
 import os
 import re
+from CustomNodeSelectionTool import CustomNodeSelectionTool
+
 
 class E_handler(Handler):
     file_name = File
@@ -46,7 +48,9 @@ class Application(HasTraits):
     component_views = Dict
     loaded_script = Str
     handle = E_handler()
-
+    
+    def __init__(self):
+        self.register_views()
 
     def register_views(self):
         localdict = {}
@@ -54,7 +58,7 @@ class Application(HasTraits):
         comp_list.remove('views')
         comp_list.remove('__init__.py')
         for i in comp_list:
-            print i
+            #print i
             if 'init' not in i and 'util' not in i and 'lwr' not in i:
                 match = re.search('(.+).py',i)
                 vname_list = match.group(1).split("_")
@@ -64,7 +68,6 @@ class Application(HasTraits):
                 exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
         for key, value in localdict.items():
             self.component_views[key] = value
-        print self.component_views
     traits_view = View(
                     VGroup(
                         HGroup(
@@ -104,7 +107,11 @@ class Application(HasTraits):
            
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
-        return GraphView(graph = self.model.graph)
+        gv = GraphView(graph = self.model.graph)
+        #import pdb; pdb.set_trace()
+        gv._canvas.tools.pop(0)
+        gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
+        return gv
     
     def _model_context_default(self):
         return {'fc': self.model}
@@ -148,8 +155,8 @@ class Application(HasTraits):
 
 if __name__ == '__main__':
     app = Application()
-    app.register_views()
-    #app.configure_traits()
+    #app.register_views()
+    app.configure_traits()
     
 
 
