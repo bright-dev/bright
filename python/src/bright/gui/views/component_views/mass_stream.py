@@ -76,7 +76,7 @@ mass_stream_editor = TableEditor(
 
 
 
-class MassStreamView(HasTraits):
+class _MassStream_View(HasTraits):
     """At last! A MassStream view."""
 
     mass_stream = Instance(mass_stream.MassStream)
@@ -250,11 +250,11 @@ def MassStream(ms_in):
     return ms_out
 
 
-class _MassStream_view(HasTraits):
+class MassStreamView(HasTraits):
 
     ms_out = Instance(mass_stream.MassStream)
 
-    ms_out_view = Instance(MassStreamView)
+    ms_out_view = Instance(_MassStream_View)
 
     traits_view = View(
         Item('ms_out_view',

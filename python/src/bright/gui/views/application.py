@@ -1,5 +1,5 @@
-from traits.api import HasTraits, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool
-from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, Handler, ToolBar, Action, MenuBar, Menu
+from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool, Event
+from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
@@ -7,10 +7,12 @@ from graphcanvas.api import GraphView
 import os
 import re
 from CustomNodeSelectionTool import CustomNodeSelectionTool
-
+from traits.trait_handlers import BaseTraitHandler, TraitHandler
+import random
 
 class E_handler(Handler):
     file_name = File
+
     def save_file(self, info):
         
         if info.object.save == True:
@@ -24,10 +26,9 @@ class E_handler(Handler):
         else:
             info.object.open = True
         return
-
+    
     save = Action(name = "Save", action = "save_file")
     open = Action(name = "Open", action = "open_file")
-
 
 
 class Application(HasTraits):
@@ -38,7 +39,7 @@ class Application(HasTraits):
     model_context = Dict
     #graph_changed_event = DelegatesTo('model')
     #classes_available = Dict
-    classes_list = List    
+    classes_list = List(Str)
     variables_list = List
     file_name = File
     file_name2 = File
@@ -48,9 +49,11 @@ class Application(HasTraits):
     component_views = Dict
     loaded_script = Str
     handle = E_handler()
-    
-    def __init__(self):
-        self.register_views()
+    something = Event    
+    activated_formation = Any
+    instancekey = Dict
+
+
 
     def register_views(self):
         localdict = {}
@@ -58,7 +61,6 @@ class Application(HasTraits):
         comp_list.remove('views')
         comp_list.remove('__init__.py')
         for i in comp_list:
-            #print i
             if 'init' not in i and 'util' not in i and 'lwr' not in i:
                 match = re.search('(.+).py',i)
                 vname_list = match.group(1).split("_")
@@ -68,8 +70,9 @@ class Application(HasTraits):
                 exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
         for key, value in localdict.items():
             self.component_views[key] = value
+        
     traits_view = View(
-                    VGroup(
+                     VGroup(
                         HGroup(
                             #Item('open', show_label = False, width = .05),
                             #Item('save', show_label = False, width = .05),
@@ -77,25 +80,34 @@ class Application(HasTraits):
                             
                               ),
                         HGroup(
-                            Item('classes_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.25),
+                            Item('classes_list', editor = ListStrEditor(activated = 'activated_formation', title = 'Classes Available', editable = False, operations = []), show_label = False, width =.25),
+                            #Item('classes_list', editor = ListEditor(trait_handler=instance_handler), style = 'readonly', show_label = False, resizable = True, width =.25),
                             Item('_container', editor = ComponentEditor(), show_label = False, resizable = True, width =.25),
                             Item('script', editor = CodeEditor(), show_label = False, resizable = True, width = .50)
                             ),
                         HGroup(
-                            Item('variables_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.17),
+                            Item('variables_list', editor = ListStrEditor(title = 'Variables In Use', editable = False), show_label = False, resizable = True, width =.17),
+                            #Item('variables_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.17),
                             Item('model_context', editor = ShellEditor(share = True), show_label = False)
                               )
                           ),
                   resizable = True,
                   handler = handle,
+                  title = "Fuel Cycle Model",
                   menubar = MenuBar(Menu(handle.open, handle.save, name = "File"))
                     )
     
+    def _activated_formation_changed(self):
+        self.model.add_instance(self.instancekey[self.activated_formation] + str(random.randint(0,9)), self.activated_formation) 
+        
+
+
     def _model_default(self):
         fcm = FuelCycleModel()
         fcm.add_instance("nu", "MassStream", {922380:0.992745, 922350:0.0072, 922340:0.000055})
         fcm.add_instance("sr1", "Storage")
         fcm.calc_comp("sr1","nu")
+        self.register_views()
         return fcm
 
     #@on_trait_event('model.graph_changed_event')
@@ -104,6 +116,9 @@ class Application(HasTraits):
         self.graph_view.graph = self.model.graph
         self.graph_view._graph_changed(self.model.graph)
         #self.graph_view = GraphView(graph =self.model.graph)
+        #gv = GraphView(graph = self.model.graph)
+
+        #gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
            
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
@@ -151,7 +166,11 @@ class Application(HasTraits):
         #if file_name != '':
          #   self.file_name2 = save_file
     
-
+    def _instancekey_default(self):
+        tempdict = {}
+        for i in self.classes_list:
+            tempdict[i] = i[0] + i[1] + i[2]
+        return tempdict
 
 if __name__ == '__main__':
     app = Application()
