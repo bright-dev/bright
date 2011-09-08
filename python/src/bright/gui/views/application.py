@@ -54,7 +54,9 @@ class Application(HasTraits):
 
     def register_views(self):
         localdict = {}
-        comp_list = os.listdir('component_views/')
+        file_dir = os.path.split(__file__)[0]
+        comp_dir = os.path.join(file_dir, 'component_views/')
+        comp_list = os.listdir(comp_dir)
         comp_list.remove('views')
         comp_list.remove('__init__.py')
         for i in comp_list:
