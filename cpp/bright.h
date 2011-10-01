@@ -29,6 +29,7 @@
 // Pyne includes
 #include <pyne.h>
 #include <nucname.h>
+#include <data.h>
 #include <material.h>
 
 
