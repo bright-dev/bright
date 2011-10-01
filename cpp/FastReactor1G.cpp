@@ -1,31 +1,31 @@
 // One-Group Fast Reactor Component Class
 
 #include "FastReactor1G.h"
-FastReactor1G::FastReactor1G() : Reactor1G(fr_defaults, fr_p2track)
+Fastbright::Reactor1G::FastReactor1G() : Reactor1G(fr_defaults, fr_p2track)
 {
 };
 
-FastReactor1G::FastReactor1G(std::string h5lib, std::string n) : Reactor1G(fr_defaults, fr_p2track, n)
-{
-    libfile = h5lib;
-    loadlib(h5lib);
-};
-
-FastReactor1G::FastReactor1G(ReactorParameters rp, std::string n) : Reactor1G(rp, fr_p2track, n)
-{
-};
-
-FastReactor1G::FastReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : Reactor1G(rp, fr_p2track, n)
+Fastbright::Reactor1G::FastReactor1G(std::string h5lib, std::string n) : Reactor1G(fr_defaults, fr_p2track, n)
 {
     libfile = h5lib;
     loadlib(h5lib);
 };
 
-FastReactor1G::~FastReactor1G() 
+Fastbright::Reactor1G::FastReactor1G(ReactorParameters rp, std::string n) : Reactor1G(rp, fr_p2track, n)
 {
 };
 
-void FastReactor1G::calc_params()
+Fastbright::Reactor1G::FastReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : Reactor1G(rp, fr_p2track, n)
+{
+    libfile = h5lib;
+    loadlib(h5lib);
+};
+
+Fastbright::Reactor1G::~FastReactor1G() 
+{
+};
+
+void Fastbright::Reactor1G::calc_params()
 {
     /** Sets relevent FR parameters.
      *  Overwrites standard, do-nothing calc_params() function.

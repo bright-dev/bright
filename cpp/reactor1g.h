@@ -47,8 +47,8 @@ namespace bright {
     Reactor1G ();
     Reactor1G (std::string);
     Reactor1G (std::set<std::string>, std::string = "");
-    Reactor1G (reactor_parameters, std::string = "");
-    Reactor1G (reactor_parameters, std::set<std::string>, std::string = "");
+    Reactor1G (ReactorParameters, std::string = "");
+    Reactor1G (ReactorParameters, std::set<std::string>, std::string = "");
     ~Reactor1G ();
     
     // Public data

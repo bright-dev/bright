@@ -1,31 +1,31 @@
 // One-Group Light Water Reactor Component Class
 
 #include "LightWaterReactor1G.h"
-LightWaterReactor1G::LightWaterReactor1G() : Reactor1G(lwr_defaults, lwr_p2track)
+LightWaterbright::Reactor1G::LightWaterReactor1G() : Reactor1G(lwr_defaults, lwr_p2track)
 {
 };
 
-LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, std::string n) : Reactor1G(lwr_defaults, lwr_p2track, n)
-{
-    libfile = h5lib;
-    loadlib(h5lib);
-};
-
-LightWaterReactor1G::LightWaterReactor1G(ReactorParameters rp, std::string n) : Reactor1G(rp, lwr_p2track, n)
-{
-};
-
-LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : Reactor1G(rp, lwr_p2track, n)
+LightWaterbright::Reactor1G::LightWaterReactor1G(std::string h5lib, std::string n) : Reactor1G(lwr_defaults, lwr_p2track, n)
 {
     libfile = h5lib;
     loadlib(h5lib);
 };
 
-LightWaterReactor1G::~LightWaterReactor1G() 
+LightWaterbright::Reactor1G::LightWaterReactor1G(ReactorParameters rp, std::string n) : Reactor1G(rp, lwr_p2track, n)
 {
 };
 
-void LightWaterReactor1G::calc_params()
+LightWaterbright::Reactor1G::LightWaterReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : Reactor1G(rp, lwr_p2track, n)
+{
+    libfile = h5lib;
+    loadlib(h5lib);
+};
+
+LightWaterbright::Reactor1G::~LightWaterReactor1G() 
+{
+};
+
+void LightWaterbright::Reactor1G::calc_params()
 {
     /** Sets relevent LWR parameters.
      *  Overwrites standard, do-nothing calc_params() function.
