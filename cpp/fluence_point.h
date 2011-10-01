@@ -1,12 +1,14 @@
 // FluencePoint.h
 // Header for Flunece point class that helps out reactors
 
-#if !defined(_Bright_FluencePoint_)
-#define _Bright_FluencePoint_
+#if !defined(_BRIGHT_FLUENCE_POINT_)
+#define _BRIGHT_FLUENCE_POINT_
 
-class FluencePoint
-{
-public:
+namespace bright {
+
+  class FluencePoint
+  {
+  public:
     // Constructors
     FluencePoint();
     ~FluencePoint();
@@ -15,6 +17,9 @@ public:
     int f;
     double F;
     double m;
+  };
+
+// end bright
 };
 
 #endif 

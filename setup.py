@@ -134,6 +134,9 @@ exts.append(cpp_ext("bright.lib.libbright_storage", ['storage.cpp'], ['bright', 
 # reactor parameters lib
 exts.append(cpp_ext("bright.lib.libbright_reactor_parameters", ['reactor_parameters.cpp'], None, False))
 
+# fluence point lib
+exts.append(cpp_ext("bright.lib.libbright_fluence_point", ['fluence_point.cpp'], None, False))
+
 
 
 ##########################
