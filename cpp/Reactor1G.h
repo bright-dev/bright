@@ -21,7 +21,7 @@
 
 // Bright Libs
 #include "FCComp.h"
-#include "MassStream.h"
+#include "pyne::Material.h"
 #include "isoname.h"
 
 #include "FluencePoint.h"
@@ -47,8 +47,8 @@ class Reactor1G : public FCComp
  */
 protected:
     //Protected data
-    IsoSet I;						//Set of isotopes that may be in ms_feed.
-    IsoSet J;						//Set of isotopes that may be in ms_prod.
+    IsoSet I;						//Set of isotopes that may be in mat_feed.
+    IsoSet J;						//Set of isotopes that may be in mat_prod.
 
     //Thermal XS data is read in from static KAERI Data
     //Only read in if the disadvantage factor will be used.
@@ -94,12 +94,12 @@ public:
     double A_IHM;							//Atomic weight of IHM
     double MWF;							//Fuel Molecular Weight
     double MWC;							//Coolant Molecular Weight
-    CompDict niF;							//Fuel Atom Number Weight
-    CompDict niC;							//Coolant Atom Number Weight
-    CompDict miF;							//Fuel Mass Weight
-    CompDict miC;							//Coolant Mass Weight
-    CompDict NiF;							//Fuel Number Density
-    CompDict NiC;							//Coolant Number Density
+    pyne::comp_map niF;							//Fuel Atom Number Weight
+    pyne::comp_map niC;							//Coolant Atom Number Weight
+    pyne::comp_map miF;							//Fuel Mass Weight
+    pyne::comp_map miC;							//Coolant Mass Weight
+    pyne::comp_map NiF;							//Fuel Number Density
+    pyne::comp_map NiC;							//Coolant Number Density
 
     Data_F_ dF_F_;							//Fuel Destuction Rate d^F(F)
     Data_F_ dC_F_;							//Coolant Destuction Rate d^C(F)
@@ -115,14 +115,14 @@ public:
     double BUd;							//Discharge Burnup
     double k;							//Multiplication factor 
 
-    MassStream ms_feed_u; 						//Input Uranium MassStream
-    MassStream ms_feed_tru; 						//Input Transuranic MassStream
-    MassStream ms_feed_lan; 						//Input Lanthinide MassStream
-    MassStream ms_feed_act; 						//Input Actinide MassStream
-    MassStream ms_prod_u; 						//Output Uranium MassStream
-    MassStream ms_prod_tru; 						//Output Transuranic MassStream
-    MassStream ms_prod_lan; 						//Output Lanthinide MassStream
-    MassStream ms_prod_act; 						//Output Actinide MassStream
+    pyne::Material mat_feed_u; 						//Input Uranium pyne::Material
+    pyne::Material mat_feed_tru; 						//Input Transuranic pyne::Material
+    pyne::Material mat_feed_lan; 						//Input Lanthinide pyne::Material
+    pyne::Material mat_feed_act; 						//Input Actinide pyne::Material
+    pyne::Material mat_prod_u; 						//Output Uranium pyne::Material
+    pyne::Material mat_prod_tru; 						//Output Transuranic pyne::Material
+    pyne::Material mat_prod_lan; 						//Output Lanthinide pyne::Material
+    pyne::Material mat_prod_act; 						//Output Actinide pyne::Material
 
     double deltaR;                          // The production rate subtracted by the destruction rate at target_BU
     double tru_cr;							//Transuranic Conversion Ratio
@@ -147,13 +147,13 @@ public:
     void         calc_Mj_F_();
     void         calc_Mj_Fd_();
 
-    void         calc_ms_prod();
+    void         calc_mat_prod();
     void         calcSubStreams();
     double       calc_tru_cr();
 
     double       calc_deltaR();
-    double       calc_deltaR(CompDict);
-    double       calc_deltaR(MassStream);
+    double       calc_deltaR(pyne::comp_map);
+    double       calc_deltaR(pyne::Material);
 
     FluencePoint fluence_at_BU(double);
     double       batch_average(double, std::string = "K");
@@ -162,9 +162,9 @@ public:
     void         run_P_NL(double);
     void         calibrate_P_NL_to_BUd();
 
-    MassStream   calc ();
-    MassStream   calc (CompDict);
-    MassStream   calc (MassStream);	
+    pyne::Material   calc ();
+    pyne::Material   calc (pyne::comp_map);
+    pyne::Material   calc (pyne::Material);	
 
     void lattice_E_planar(double, double);
     void lattice_F_planar(double, double);

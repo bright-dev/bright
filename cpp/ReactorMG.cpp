@@ -97,7 +97,7 @@ void ReactorMG::loadlib(std::string libfile)
     //Loads Apporiate Libraries for ReactorMG
 
     // Check that the file is there
-    if (!bright::FileExists(libfile))
+    if (!pyne::file_exists(libfile))
         throw bright::FileNotFound(libfile);
 
     //Check to see if the file is in HDF5 format.
@@ -172,7 +172,7 @@ void ReactorMG::loadlib(std::string libfile)
     for(std::set<int>::iterator iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
     {
         iso_zz = *iso_iter;
-        iso_LL = pyne::nucname::zzaaam_2_LLAAAM(iso_zz);
+        iso_LL = pyne::nucname::name(iso_zz);
 
         // Add transmutation vector
         Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
@@ -203,7 +203,7 @@ void ReactorMG::loadlib(std::string libfile)
     std::string nuc_data_file = bright::BRIGHT_DATA + "/nuc_data.h5";
 
     //Check to see if the file is in HDF5 format.
-    if (!bright::FileExists(nuc_data_file))
+    if (!pyne::file_exists(nuc_data_file))
         throw bright::FileNotFound(nuc_data_file);
 
     isH5 = H5::H5File::isHdf5(nuc_data_file);
@@ -576,11 +576,11 @@ void ReactorMG::calc_nearest_neighbors()
             iso_col = perturbations.cols[p];
             iso_LL = perturbations.cols[p];
             iso_LL.replace(0, 8, "");
-            iso_zz = pyne::nucname::LLAAAM_2_zzaaam(iso_LL);
+            iso_zz = pyne::nucname::zzaaam(iso_LL);
 
             // Determine the mass of the isotope in the feed
-            if (0 < ms_feed.comp.count(iso_zz))
-                iso_mass = ms_feed.comp[iso_zz];
+            if (0 < mat_feed.comp.count(iso_zz))
+                iso_mass = mat_feed.comp[iso_zz];
             else
                 iso_mass = 0.0;
 
@@ -704,11 +704,11 @@ void ReactorMG::interpolate_cross_sections()
             iso_col = perturbations.cols[p];
             iso_LL = perturbations.cols[p];
             iso_LL.replace(0, 8, "");
-            iso_zz = pyne::nucname::LLAAAM_2_zzaaam(iso_LL);
+            iso_zz = pyne::nucname::zzaaam(iso_LL);
 
             // Determine the mass of the isotope in the feed
-            if (0 < ms_feed.comp.count(iso_zz))
-                iso_mass = ms_feed.comp[iso_zz];
+            if (0 < mat_feed.comp.count(iso_zz))
+                iso_mass = mat_feed.comp[iso_zz];
             else
                 iso_mass = 0.0;
 
@@ -1790,7 +1790,7 @@ void ReactorMG::calc_transmutation()
     };
 
     // Calculate the burnup 
-    CompDict cd_prev, cd_next;
+    pyne::comp_map cd_prev, cd_next;
     for (ind = 0; ind < K_num; ind++)
     {
         i = K_ord[ind];
@@ -1802,11 +1802,11 @@ void ReactorMG::calc_transmutation()
 
     if (burnup_via_constant == "flux")
     {
-        MassStream ms_prev (cd_prev);
-        MassStream act_prev = ms_prev.get_act();
+        pyne::Material ms_prev (cd_prev);
+        pyne::Material act_prev = ms_prev.get_act();
 
-        MassStream ms_next (cd_next);
-        MassStream act_next = ms_next.get_act();
+        pyne::Material ms_next (cd_next);
+        pyne::Material act_next = ms_next.get_act();
 
         delta_BU = (act_prev.mass - act_next.mass) * 931.46;
     }
@@ -1838,7 +1838,7 @@ void ReactorMG::init_core()
     // Burns up the core and fills in parameter values as we go.
 
 
-    // Initialize the transmutation matrix with values from ms_feed
+    // Initialize the transmutation matrix with values from mat_feed
     T_it.clear();
 
     // Also initialize the cross-section matrices as a function of time.
@@ -1887,8 +1887,8 @@ void ReactorMG::init_core()
         // Init the transmutation matrix
         T_it[*iso] = time_data(S, 0.0);
 
-        if (0 < ms_feed.comp.count(*iso))
-            T_it[*iso][0] = ms_feed.comp[*iso];
+        if (0 < mat_feed.comp.count(*iso))
+            T_it[*iso][0] = mat_feed.comp[*iso];
 
         // Init the cross-sections
         sigma_t_itg[*iso] = std::vector< std::vector<double> >(S, std::vector<double>(G, -1.0));
@@ -2053,10 +2053,10 @@ void ReactorMG::burnup_core()
 void ReactorMG::calc_T_itd()
 {
     /** Calculates the output isotopics of Mj(Fd).
-     *  NOTE: Mj(Fd) is effectively the same variable as ms_prod before normalization!
+     *  NOTE: Mj(Fd) is effectively the same variable as mat_prod before normalization!
      */
 
-    CompDict tempOut;
+    pyne::comp_map tempOut;
 
     //Checks to see if the discharge index in at the end of the fluence table
     bool td_nLast = false;
@@ -2071,12 +2071,12 @@ void ReactorMG::calc_T_itd()
             tempOut[*j] = bright::SolveLine(Phid, Phi_t[td_n+1], T_it[*j][td_n+1], Phi_t[td_n], T_it[*j][td_n]);
     };
 
-    ms_prod = MassStream(tempOut);	
+    mat_prod = pyne::Material(tempOut);	
 };
 
 
 
-void ReactorMG::calc_ms_prod()
+void ReactorMG::calc_mat_prod()
 {
     //Wrapper to calculate discharge isotopics.
     calc_T_itd();
@@ -2092,40 +2092,40 @@ void ReactorMG::calcSubStreams()
     //Sets possibly relevant reactor input and output substreams.
 
     //Uranium
-    ms_feed_u  = ms_feed.get_u();
-    ms_prod_u = ms_prod.get_u();
+    mat_feed_u  = mat_feed.get_u();
+    mat_prod_u = mat_prod.get_u();
 
     //TRU
     try 
     {
-        ms_feed_tru = ms_feed.get_tru();
+        mat_feed_tru = mat_feed.get_tru();
     }
     catch (...)
     {
-        CompDict cd;
+        pyne::comp_map cd;
         cd[942390] = 1.0;
-        ms_feed_tru = MassStream(cd, 1.0);
-        ms_feed_tru.mass = 0.0;
+        mat_feed_tru = pyne::Material(cd, 1.0);
+        mat_feed_tru.mass = 0.0;
     };
-    ms_prod_tru = ms_prod.get_tru();
+    mat_prod_tru = mat_prod.get_tru();
 
     //Lanthanides
     try
     {
-        ms_feed_lan = ms_feed.get_lan();
+        mat_feed_lan = mat_feed.get_lan();
     }
     catch (...)
     {
-        CompDict cd;
+        pyne::comp_map cd;
         cd[581440] = 1.0;
-        ms_feed_lan  = MassStream(cd, 1.0);
-        ms_feed_lan.mass = 0.0;
+        mat_feed_lan  = pyne::Material(cd, 1.0);
+        mat_feed_lan.mass = 0.0;
     };
-    ms_prod_lan = ms_prod.get_lan();
+    mat_prod_lan = mat_prod.get_lan();
 
     //Actinides
-    ms_feed_act  = ms_feed.get_act();
-    ms_prod_act = ms_prod.get_act();
+    mat_feed_act  = mat_feed.get_act();
+    mat_prod_act = mat_prod.get_act();
 };
 
 
@@ -2134,7 +2134,7 @@ void ReactorMG::calcSubStreams()
 double ReactorMG::calc_tru_cr()
 {
     //Calculates the reactor's transuranic conversion ratio.
-    tru_cr = 1.0 - ((ms_feed_tru.mass - ms_prod_tru.mass) / (BUd/931.46));
+    tru_cr = 1.0 - ((mat_feed_tru.mass - mat_prod_tru.mass) / (BUd/931.46));
     return tru_cr;
 };
 
@@ -2434,7 +2434,7 @@ void ReactorMG::BUd_bisection_method()
 void ReactorMG::run_P_NL(double temp_pnl)
 {
     /** Does a reactor run for a specific P_NL.
-     *  Requires that ms_feed be (meaningfully) set.
+     *  Requires that mat_feed be (meaningfully) set.
      *  For use with calibrate_P_NL_to_BUd
      */
 
@@ -2554,32 +2554,32 @@ void ReactorMG::calibrate_P_NL_to_BUd()
 
 
 
-MassStream ReactorMG::calc()
+pyne::Material ReactorMG::calc()
 {
     // Finds BUd and output isotopics.
     burnup_core();
 
     BUd_bisection_method();
 
-    calc_ms_prod();
+    calc_mat_prod();
 
-    return ms_prod;
+    return mat_prod;
 };
 
 
-MassStream ReactorMG::calc (CompDict incomp)
+pyne::Material ReactorMG::calc (pyne::comp_map incomp)
 {
     // Finds BUd and output isotopics.
-    ms_feed = MassStream (incomp);
+    mat_feed = pyne::Material (incomp);
 
     return calc();
 };
 
 
-MassStream ReactorMG::calc (MassStream instream)
+pyne::Material ReactorMG::calc (pyne::Material instream)
 {
     // Finds BUd and output isotopics.
-    ms_feed = instream;
+    mat_feed = instream;
 
     return calc();
 };

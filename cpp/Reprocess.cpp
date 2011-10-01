@@ -77,41 +77,41 @@ Reprocess::~Reprocess ()
 
 void Reprocess::calc_params ()
 {
-    params_prior_calc["Mass"]  = ms_feed.mass;
-    params_after_calc["Mass"] = ms_prod.mass;	
+    params_prior_calc["Mass"]  = mat_feed.mass;
+    params_after_calc["Mass"] = mat_prod.mass;	
 }
 
-MassStream Reprocess::calc ()
+pyne::Material Reprocess::calc ()
 {
     //Does the Reprocessing
-    CompDict incomp  = ms_feed.mult_by_mass();
-    CompDict outcomp;
+    pyne::comp_map incomp  = mat_feed.mult_by_mass();
+    pyne::comp_map outcomp;
     for (CompIter i = incomp.begin(); i != incomp.end(); i++)
     {
         outcomp[i->first] = (i->second) * sepeff[i->first];
     }
-    ms_prod = MassStream (outcomp);
-    return ms_prod;
+    mat_prod = pyne::Material (outcomp);
+    return mat_prod;
 }
 
-MassStream Reprocess::calc (CompDict incomp)
+pyne::Material Reprocess::calc (pyne::comp_map incomp)
 {
     //Does the Reprocessing
-    //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to ms_feed.
-    ms_feed = MassStream (incomp);
-    CompDict outcomp;
+    //incomp = input component dictionary of all nuclides. Standard pyne::comp_map object. Assigns this to mat_feed.
+    mat_feed = pyne::Material (incomp);
+    pyne::comp_map outcomp;
     for (CompIter i = incomp.begin(); i != incomp.end(); i++)
     {
         outcomp[i->first] = (i->second) * sepeff[i->first];
     }
-    ms_prod = MassStream (outcomp);
-    return ms_prod;
+    mat_prod = pyne::Material (outcomp);
+    return mat_prod;
 }
 
-MassStream Reprocess::calc (MassStream instream)
+pyne::Material Reprocess::calc (pyne::Material instream)
 {
     //Does the Reprocessing
-    //instream = input stream of all nuclides. Standard MassStream object.
-    ms_feed = instream;
+    //instream = input stream of all nuclides. Standard pyne::Material object.
+    mat_feed = instream;
     return calc();
 }

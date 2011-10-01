@@ -14,27 +14,27 @@
 
 //Bright Libs
 #include "Reactor1G.h"
-#include "MassStream.h"
+#include "pyne::Material.h"
 #include "isoname.h"
 
 /***********************************************/
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/
 
-typedef std::map<std::string, MassStream *> MassStreams;
+typedef std::map<std::string, pyne::Material *> pyne::Materials;
 typedef std::map<std::string, double> MassWeights;
 typedef std::map<std::string, double> MassDeltaRs;
 
 namespace bright 
 {
     static std::set<std::string> empty_string_set;
-    std::set<std::string> make_fuel_fab_params_set(MassStreams *, std::set<std::string> = empty_string_set);
+    std::set<std::string> make_fuel_fab_params_set(pyne::Materials *, std::set<std::string> = empty_string_set);
 };
 
 class FuelFabrication : public FCComp
 {
 /** Fule Fabrication class
- *  Computes the value of different MassStreams inside of a reactor.  
+ *  Computes the value of different pyne::Materials inside of a reactor.  
  *  From here an optimum fuel for this reactor may be found.
  */
 protected:
@@ -44,12 +44,12 @@ public:
     FuelFabrication ();
     FuelFabrication (std::string);
     FuelFabrication (std::set<std::string>, std::string = "");
-    FuelFabrication (MassStreams, MassWeights, Reactor1G, std::string = "");
-    FuelFabrication (MassStreams, MassWeights, Reactor1G, std::set<std::string>, std::string = "");
+    FuelFabrication (pyne::Materials, MassWeights, Reactor1G, std::string = "");
+    FuelFabrication (pyne::Materials, MassWeights, Reactor1G, std::set<std::string>, std::string = "");
     ~FuelFabrication ();
     
     //Public data
-    MassStreams mass_streams;
+    pyne::Materials mass_streams;
     MassWeights mass_weights_in;
     MassWeights mass_weights_out;
     MassDeltaRs deltaRs;
@@ -57,15 +57,15 @@ public:
     Reactor1G reactor;
 
     //Public access functions
-    void initialize(MassStreams, MassWeights, Reactor1G);
+    void initialize(pyne::Materials, MassWeights, Reactor1G);
     void calc_params ();
 
     void calc_deltaRs();
-    MassStream calc_core_input();
+    pyne::Material calc_core_input();
     void calc_mass_ratios();
 
-    MassStream   calc ();
-    MassStream   calc (MassStreams, MassWeights, Reactor1G);
+    pyne::Material   calc ();
+    pyne::Material   calc (pyne::Materials, MassWeights, Reactor1G);
 
 };
 

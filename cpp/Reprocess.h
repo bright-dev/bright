@@ -8,7 +8,7 @@
 #include <string>
 #include <exception>
 #include "FCComp.h"
-#include "MassStream.h"
+#include "pyne::Material.h"
 #include "isoname.h"
 
 /**************************************************/
@@ -41,9 +41,9 @@ public:
     //Public access functions
     void initialize(SepEffDict);		//Initializes the constructors.
     void calc_params ();
-    MassStream calc ();
-    MassStream calc (CompDict);
-    MassStream calc (MassStream);	
+    pyne::Material calc ();
+    pyne::Material calc (pyne::comp_map);
+    pyne::Material calc (pyne::Material);	
 };
 
 #endif

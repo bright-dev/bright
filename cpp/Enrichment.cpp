@@ -105,14 +105,14 @@ Enrichment::~Enrichment ()
 
 void Enrichment::calc_params ()
 {
-    params_prior_calc["MassFeed"]  = ms_feed.mass;
+    params_prior_calc["MassFeed"]  = mat_feed.mass;
     params_after_calc["MassFeed"] = 0.0;	
 
     params_prior_calc["MassProduct"]  = 0.0;
-    params_after_calc["MassProduct"] = ms_prod.mass;	
+    params_after_calc["MassProduct"] = mat_prod.mass;	
 
     params_prior_calc["MassTails"]  = 0.0;
-    params_after_calc["MassTails"] = ms_tail.mass;	
+    params_after_calc["MassTails"] = mat_tail.mass;	
 
     params_prior_calc["N"]  = N;
     params_after_calc["N"] = N;	
@@ -133,26 +133,26 @@ void Enrichment::calc_params ()
     params_after_calc["SWUperProduct"] = SWUperProduct;	
 }
 
-MassStream Enrichment::calc ()
+pyne::Material Enrichment::calc ()
 {
     //Does the Enriching
     MstarOptimize();
-    return ms_prod;
+    return mat_prod;
 }
 
-MassStream Enrichment::calc (CompDict incomp)
+pyne::Material Enrichment::calc (pyne::comp_map incomp)
 {
     //Does the Enriching
-    //incomp = input component dictionary of all nuclides. Standard CompDict object. Assigns this to ms_feed.
-    ms_feed = MassStream (incomp);
+    //incomp = input component dictionary of all nuclides. Standard pyne::comp_map object. Assigns this to mat_feed.
+    mat_feed = pyne::Material (incomp);
     return calc();
 }
 
-MassStream Enrichment::calc (MassStream instream)
+pyne::Material Enrichment::calc (pyne::Material instream)
 {
     //Does the Enrichmenting
-    //instream = input stream of all nuclides. Standard MassStream object.
-    ms_feed = instream;
+    //instream = input stream of all nuclides. Standard pyne::Material object.
+    mat_feed = instream;
     return calc();
 }
 
@@ -193,8 +193,8 @@ void Enrichment::FindNM()
     double ooe = 7.0;
     double tolerance = pow(10.0, -ooe);
 
-    double PoF = PoverF(ms_feed.comp[j], xP_j, xW_j);
-    double WoF = WoverF(ms_feed.comp[j], xP_j, xW_j);
+    double PoF = PoverF(mat_feed.comp[j], xP_j, xW_j);
+    double WoF = WoverF(mat_feed.comp[j], xP_j, xW_j);
     double alphastar_j = get_alphastar_i(pyne::nucname::nuc_weight(j));
 
     // Save original state of N & M
@@ -204,9 +204,9 @@ void Enrichment::FindNM()
     if (2 < bright::verbosity)
         std::cout << "    <---- N = " << N << "\tM = " << M << "\n";     
 
-    double lhsP = PoF * xP_j / ms_feed.comp[j];
+    double lhsP = PoF * xP_j / mat_feed.comp[j];
     double rhsP = (pow(alphastar_j, M+1.0) - 1.0) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
-    double lhsW = WoF * xW_j / ms_feed.comp[j];
+    double lhsW = WoF * xW_j / mat_feed.comp[j];
     double rhsW = (1.0 - pow(alphastar_j, -N)) / (pow(alphastar_j, M+1.0) - pow(alphastar_j, -N));
 
     double n = 1.0;
@@ -263,16 +263,16 @@ void Enrichment::FindNM()
 double Enrichment::xP_i(int i)
 {
     double alphastar_i = get_alphastar_i(pyne::nucname::nuc_weight(i));
-    double numerator = ms_feed.comp[i]*(pow(alphastar_i, M+1.0) - 1.0);
-    double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(ms_feed.comp[j], xP_j, xW_j);
+    double numerator = mat_feed.comp[i]*(pow(alphastar_i, M+1.0) - 1.0);
+    double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(mat_feed.comp[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
 double Enrichment::xW_i(int i)
 {
     double alphastar_i = get_alphastar_i(pyne::nucname::nuc_weight(i));
-    double numerator = ms_feed.comp[i] * (1.0 - pow(alphastar_i, -N));
-	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(ms_feed.comp[j], xP_j, xW_j);
+    double numerator = mat_feed.comp[i] * (1.0 - pow(alphastar_i, -N));
+	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(mat_feed.comp[j], xP_j, xW_j);
     return numerator / denominator;
 };
 
@@ -287,17 +287,17 @@ void Enrichment::SolveNM()
 
     FindNM();
 
-    CompDict compP;
-    CompDict compW;
+    pyne::comp_map compP;
+    pyne::comp_map compW;
 
-    for (CompIter i = ms_feed.comp.begin(); i != ms_feed.comp.end(); i++)
+    for (CompIter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
     {
         compP[i->first] = xP_i(i->first);
         compW[i->first] = xW_i(i->first);
     };
 
-    ms_prod  = MassStream(compP);
-    ms_tail = MassStream(compW);
+    mat_prod  = pyne::Material(compP);
+    mat_tail = pyne::Material(compW);
 
     return;
 };
@@ -331,8 +331,8 @@ void Enrichment::Comp2UnitySecant()
     N = lastN;
     M = lastM;
     SolveNM();
-    double lastxP_j = ms_prod.comp[j];
-    double lastxW_j = ms_tail.comp[j];
+    double lastxP_j = mat_prod.comp[j];
+    double lastxW_j = mat_tail.comp[j];
     historyN.push_back(N);
     historyN.push_back(M);
 
@@ -340,8 +340,8 @@ void Enrichment::Comp2UnitySecant()
     N = currN;
     M = currM;
     SolveNM();
-    double currxP_j = ms_prod.comp[j];
-    double currxW_j = ms_tail.comp[j];
+    double currxP_j = mat_prod.comp[j];
+    double currxW_j = mat_tail.comp[j];
     historyN.push_back(N);
     historyN.push_back(M);
 
@@ -429,8 +429,8 @@ void Enrichment::Comp2UnitySecant()
         N = currN;
         M = currM;
         SolveNM();
-        currxP_j = ms_prod.comp[j];
-        currxW_j = ms_tail.comp[j];
+        currxP_j = mat_prod.comp[j];
+        currxW_j = mat_tail.comp[j];
 
         if (1 < bright::verbosity)
         {
@@ -458,8 +458,8 @@ void Enrichment::Comp2UnityOther()
     N = N0;
     M = M0;
 	SolveNM();
-    double massP = ms_prod.mass;
-    double massW = ms_tail.mass;
+    double massP = mat_prod.mass;
+    double massW = mat_tail.mass;
 
     while (tolerance < fabs(1.0 - massP) && tolerance < fabs(1.0 - massW) )
     {
@@ -500,8 +500,8 @@ void Enrichment::Comp2UnityOther()
 
         //Calculate new masses
         SolveNM();
-        massP = ms_prod.mass;
-        massW = ms_tail.mass;
+        massP = mat_prod.mass;
+        massW = mat_tail.mass;
     };
 
 	return;
@@ -554,21 +554,21 @@ void Enrichment::LoverF()
 
 	if (compConverged)
     {
-		double PoF = PoverF(ms_feed.comp[j], xP_j, xW_j);
-		double WoF = WoverF(ms_feed.comp[j], xP_j, xW_j);
+		double PoF = PoverF(mat_feed.comp[j], xP_j, xW_j);
+		double WoF = WoverF(mat_feed.comp[j], xP_j, xW_j);
 
 		//Matched Flow Ratios
-		double RF = ms_feed.comp[j]   / ms_feed.comp[k];
-		double RP = ms_prod.comp[j]  / ms_prod.comp[k];
-		double RW = ms_tail.comp[j] / ms_tail.comp[k];
+		double RF = mat_feed.comp[j]   / mat_feed.comp[k];
+		double RP = mat_prod.comp[j]  / mat_prod.comp[k];
+		double RW = mat_tail.comp[j] / mat_tail.comp[k];
 
 		double LtotalOverF = 0.0;
 		double SWUoverF = 0.0;
         double tempNumerator = 0.0; 
 
-		for (CompIter i = ms_feed.comp.begin(); i != ms_feed.comp.end(); i++)
+		for (CompIter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
         {
-			tempNumerator = (PoF*ms_prod.comp[i->first]*log(RP) + WoF*ms_tail.comp[i->first]*log(RW) - ms_feed.comp[i->first]*log(RF));
+			tempNumerator = (PoF*mat_prod.comp[i->first]*log(RP) + WoF*mat_tail.comp[i->first]*log(RW) - mat_feed.comp[i->first]*log(RF));
 			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first));
 			SWUoverF = SWUoverF + tempNumerator;
         };
@@ -587,8 +587,8 @@ void Enrichment::LoverF()
 		SWUperProduct = -1 * SWUoverF / PoF;	//This is the SWU for 1 kg of Product material.
 
         //Assign Isotopic streams the proper masses.
-        ms_prod.mass  = ms_feed.mass * PoF;
-        ms_tail.mass = ms_feed.mass * WoF;
+        mat_prod.mass  = mat_feed.mass * PoF;
+        mat_tail.mass = mat_feed.mass * WoF;
     };
 
     return;
