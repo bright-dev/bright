@@ -13,8 +13,7 @@ from Cython.Distutils import build_ext
         
 import numpy as np
 
-from setup_data import INFO
-
+INFO = {'version': '0.5'}
 
 
 
@@ -78,8 +77,8 @@ def cpp_ext(name, sources, libs=None, use_hdf5=False):
     ext['runtime_library_dirs'] = ['${ORIGIN}/lib', '${ORIGIN}', '${ORIGIN}/.']
     #ext['runtime_library_dirs'] = ['${ORIGIN}/lib', '${ORIGIN}', '${ORIGIN}/.'] + \
     #                              [os.path.abspath(p) for p in ext['library_dirs']] + \
-    #                              [os.path.abspath(p + '/pyne/lib') for p in sys.path] + \
-    #                              [os.path.abspath(p + '/pyne') for p in sys.path] + \
+    #                              [os.path.abspath(p + '/bright/lib') for p in sys.path] + \
+    #                              [os.path.abspath(p + '/bright') for p in sys.path] + \
     #                              [os.path.abspath(p) for p in sys.path]
 
 
@@ -106,107 +105,19 @@ def cpp_ext(name, sources, libs=None, use_hdf5=False):
 
 
 
-
-
-
-
-
 #
-# For stlconverters
+# For extensions
 # 
-stlconv_ext = {'name': "stlconverters"}
+exts = []
 
-stlconv_ext['sources'] = [os.path.join(src_dir, 'stlconverters.pyx')]
-stlconv_ext['include_dirs'] = [src_dir, cpp_dir, numpy_include]
-stlconv_ext['language'] = "c++"
-
-if os.name == 'posix':
-    #stlconv_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
-    stlconv_ext["undef_macros"] = ["NDEBUG"]
-elif os.name == 'nt':
-    stlconv_ext["extra_compile_args"] = ["/EHsc"]
-    stlconv_ext["define_macros"] = [("_WIN32", None)]
+# Pure C/C++ share libraries
+# pyne lib
+exts.append(cpp_ext("pyne.lib.libbright", ['bright.cpp']))
 
 
 
-#
-# For isoname
-# 
-isoname_ext = {'name': 'isoname'}
-                 
-isoname_ext['sources'] = [
-    'bright.cpp', 
-    'isoname.cpp', 
-    ]
-isoname_ext['sources'] = [os.path.join(cpp_dir, s) for s in isoname_ext['sources']] + \
-                         [os.path.join(src_dir, 'isoname', 'isoname.pyx')]
 
-isoname_ext['include_dirs'] = [os.path.join(src_dir, 'isoname', ''), 
-                               src_dir, cpp_dir, numpy_include]
-isoname_ext['language'] = "c++"
-
-
-if os.name == 'posix':
-    #isoname_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
-    isoname_ext["undef_macros"] = ["NDEBUG"]
-elif os.name == 'nt':
-    isoname_ext["extra_compile_args"] = ["/EHsc"]
-    isoname_ext["define_macros"] = [("_WIN32", None)]
-
-
-
-#
-# For MassStream
-#
-mass_stream_ext = {'name': "mass_stream"}
-
-mass_stream_ext['sources'] = [
-    'bright.cpp', 
-    'h5wrap.cpp',
-    'isoname.cpp', 
-    'MassStream.cpp',
-    ]
-mass_stream_ext['sources'] = [os.path.join(cpp_dir, s) for s in mass_stream_ext['sources']] + \
-                             [os.path.join(src_dir, 'mass_stream', 'mass_stream.pyx')]
-                  
-mass_stream_ext['include_dirs'] = [os.path.join(src_dir, 'mass_stream', ''),
-                                   os.path.join(src_dir, 'isoname', ''), 
-                                   src_dir, cpp_dir, numpy_include]
-mass_stream_ext['language'] = "c++"
-
-
-if os.name == 'posix':
-    #mass_stream_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
-    mass_stream_ext["undef_macros"] = ["NDEBUG"]
-    mass_stream_ext["libraries"] = [
-        "z", 
-        "m", 
-        "hdf5", 
-        "hdf5_hl", 
-        "hdf5_cpp", 
-        "hdf5_hl_cpp",
-        ] 
-elif os.name == 'nt':
-    mass_stream_ext["libraries"] = [
-        "/DEFAULTLIB:szip.lib",
-        "/DEFAULTLIB:zlib1.lib",
-
-        # For Dynamic Libs (dll)
-        "/DEFAULTLIB:hdf5dll.lib",
-        "/DEFAULTLIB:hdf5_hldll.lib",
-        "/DEFAULTLIB:hdf5_cppdll.lib",
-        "/DEFAULTLIB:hdf5_hl_cppdll.lib",
-        ] 
-
-    mass_stream_ext["extra_compile_args"] = ["/EHsc"]
-
-    mass_stream_ext["define_macros"] = [
-        ("_WIN32", None),
-        ("_HDF5USEDLL_", None),
-        ("HDF5CPP_USEDLL", None),
-        ]
-
-
+"""\
 #
 # For bright
 #
@@ -340,4 +251,51 @@ setup(name="bright",
        ],
     scripts = ['src/scripts/bright_gui']
     )
+"""
+
+##########################
+### Setup Package Data ###
+##########################
+packages = ['bright', 'bright.lib', 'bright.gui', 'bright.gui.models', 'bright.gui.models.class_models', 
+            'bright.gui.views', 'bright.gui.views.component_views', 'bright.gui.views.component_views.views',]
+
+pack_dir = {'bright': 'bright',}
+
+pack_data = {'bright': ['includes/*.h', 'includes/*.pxd'],
+            }
+
+ext_modules=[Extension(**ext) for ext in exts]
+
+# Utility scripts
+scripts=['scripts/bright_gui']
+
+###################
+### Call setup! ###
+###################
+if __name__ == "__main__":
+    # clean includes dir and recopy files over
+    if os.path.exists('bright/includes'):
+        remove_tree('bright/includes')
+    mkpath('bright/includes')
+    for header in (glob.glob('cpp/*.h') + glob.glob('bright/*.pxd')):
+        copy_file(header, 'bright/includes')
+
+    # call setup
+    setup(name="bright",
+        version = INFO['version'],
+        description = 'Bright Nuclear Fuel Cycle Components',
+        author = 'Anthony Scopatz',
+        author_email = 'scopatz@gmail.com',
+        url = 'http://bright-dev.github.com/bright/',
+        packages = packages,
+        package_dir = pack_dir,
+        package_data = pack_data,
+        cmdclass = {'build_ext': build_ext},
+        ext_modules=ext_modules,
+        scripts=scripts,
+        )
+
+    # Clean includes after setup has run
+    if os.path.exists('bright/includes'):
+        remove_tree('bright/includes')
 
