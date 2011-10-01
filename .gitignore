@@ -4,10 +4,7 @@ python/build/
 *.save
 
 # Ignore some Cython generated files
-python/src/stlconverters.cpp
-python/src/isoname/isoname.cpp
-python/src/mass_stream/mass_stream.cpp
-python/src/bright/bright.cpp
+bright/*.cpp
 
 
 cpp/test/particle.def
@@ -17,12 +14,13 @@ data/lwr_mg.h5
 data/nuc_data.h5
 
 # Regression test ignore
-python/src/bright/tests/*_res.m
-python/src/bright/tests/*_res.py
-python/src/bright/tests/*_dep.m
-python/src/bright/tests/*_dep.py
-python/src/bright/tests/*.seed
-python/src/bright/tests/*.png
-python/src/bright/tests/*.eps
-python/src/bright/tests/TAPE*
-python/src/bright/tests/*.tex
+bright/tests/*_res.m
+bright/tests/*_res.py
+bright/tests/*_dep.m
+bright/tests/*_dep.py
+bright/tests/*.seed
+bright/tests/*.png
+bright/tests/*.eps
+bright/tests/TAPE*
+bright/tests/*.tex
+bright/tests/*.h5
