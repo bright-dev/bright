@@ -1,320 +1,332 @@
 // One Group Reactor Component Class
 
-#include "Reactor1G.h"
+#include "reactor1g.h"
 
 /***********************************************/
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/
 
-Reactor1G::Reactor1G()
+bright::Reactor1G::Reactor1G()
 {
 };
 
-Reactor1G::Reactor1G(std::string n) : FCComp(n)
+
+bright::Reactor1G::Reactor1G(std::string n) : bright::FCComp(n)
 {
 };
 
-Reactor1G::Reactor1G(std::set<std::string> paramtrack, std::string n) : FCComp(paramtrack, n)
+
+bright::Reactor1G::Reactor1G(std::set<std::string> paramtrack, std::string n) : bright::FCComp(paramtrack, n)
 {
 };
 
-Reactor1G::Reactor1G(ReactorParameters rp, std::string n) : FCComp(n)
+
+bright::Reactor1G::Reactor1G(ReactorParameters rp, std::string n) : bright::FCComp(n)
 {
-    initialize(rp);
-};
-
-Reactor1G::Reactor1G(ReactorParameters rp, std::set<std::string> paramtrack, std::string n) : FCComp(paramtrack, n)
-{
-    initialize(rp);
-};
-
-Reactor1G::~Reactor1G()
-{
-};
-
-void Reactor1G::initialize(ReactorParameters rp)
-{
-    /** Sets reactor specific parameters.
-     *  Must be done once at the beginning of reactor object life.
-     */
-
-    B = rp.batches;				//Total number of fuel loading batches
-    phi = rp.flux;				//Flux used for Fluence
-    fuel_chemical_form = rp.fuel_form;		//Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
-    coolant_chemical_form = rp.coolant_form;	//Same a fuel chemical form but for coolant.  Should not have "IHM"
-    rhoF = rp.fuel_density;			//Fuel Density
-    rhoC = rp.coolant_density;		//Coolant Density
-    P_NL = rp.pnl;				//Non-Leakage Probability
-    target_BU = rp.BUt;			//Target Discharge Burnup, only used for graphing inside of this component
-    use_zeta = rp.use_disadvantage_factor;		//Boolean value on whether or not the disadvantage factor should be used
-    lattice_flag = rp.lattice_type;		//lattice_flagType (Planar || Spherical || Cylindrical)
-    rescale_hydrogen_xs = rp.rescale_hydrogen;	//Rescale the Hydrogen-1 XS?
-
-    //Calculates Volumes
-    r = rp.fuel_radius;			//Fuel region radius
-    l = rp.unit_cell_pitch;			//Unit cell side length
-
-    S_O = rp.open_slots;		//Number of open slots in fuel assembly
-    S_T = rp.total_slots;		//Total number of Fuel assembly slots.
-    //Fuel Volume
-    VF = ((bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T); 
-    //Coolant Volume
-    VC = ((l*l - bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T) + (S_O/S_T);
+  initialize(rp);
 };
 
 
-void Reactor1G::loadlib(std::string libfile)
+bright::Reactor1G::Reactor1G(ReactorParameters rp, std::set<std::string> paramtrack, std::string n) : bright::FCComp(paramtrack, n)
 {
-    //Loads Apporiate Libraries for Reactor and makes them into Burnup Parameters [F, pi(F), di(F), BUi(F), Tij(F)].
+  initialize(rp);
+};
 
-    //HDF5 types
-    hid_t  rlib;
-    herr_t rstat;
 
-    rlib = H5Fopen (libfile.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);		//Recator Library
+bright::Reactor1G::~Reactor1G()
+{
+};
 
-    //Initializes Burnup Parameters...
-    hsize_t dimFromIso[1];
-    hsize_t dimToIso[1];
 
-    rstat = H5LTget_dataset_info(rlib, "/FromIso_zz", dimFromIso, NULL, NULL);
-    rstat = H5LTget_dataset_info(rlib, "/ToIso_zz",   dimToIso,   NULL, NULL);
+void bright::Reactor1G::initialize(ReactorParameters rp)
+{
+  /** Sets reactor specific parameters.
+   *  Must be done once at the beginning of reactor object life.
+   */
 
-    #ifdef _WIN32
-        int * FromIso;
-        int * ToIso;
+  B = rp.batches;	// Total number of fuel loading batches
+  phi = rp.flux;	// Flux used for Fluence
 
-        FromIso = new int [dimFromIso[0]];
-        ToIso   = new int [dimToIso[0]];
-    #else
-        int FromIso [dimFromIso[0]];
-        int ToIso   [dimToIso[0]];
-    #endif
+  fuel_chemical_form = rp.fuel_form;		    // Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+  coolant_chemical_form = rp.coolant_form;	// Same a fuel chemical form but for coolant.  Should not have "IHM"
 
-    rstat = H5LTread_dataset_int(rlib, "/FromIso_zz", FromIso);		
-    rstat = H5LTread_dataset_int(rlib, "/ToIso_zz",   ToIso);		
+  rhoF = rp.fuel_density;     // Fuel Density
+  rhoC = rp.coolant_density;	// Coolant Density
 
-    I.clear();
-    I.insert(&FromIso[0], &FromIso[dimFromIso[0]]);
-    J.clear();
-    J.insert(&ToIso[0],   &ToIso[dimToIso[0]]);
+  P_NL = rp.pnl;      // Non-Leakage Probability
+  target_BU = rp.BUt;	// Target Discharge Burnup, only used for graphing inside of this component
+  use_zeta = rp.use_disadvantage_factor;  // Boolean value on whether or not the disadvantage factor should be used
+  lattice_flag = rp.lattice_type;         // lattice_flagType (Planar || Spherical || Cylindrical)
+  rescale_hydrogen_xs = rp.rescale_hydrogen; // Rescale the Hydrogen-1 XS?
+
+  // Calculates Volumes
+  r = rp.fuel_radius;     // Fuel region radius
+  l = rp.unit_cell_pitch; // Unit cell side length
+
+  S_O = rp.open_slots;	// Number of open slots in fuel assembly
+  S_T = rp.total_slots; // Total number of Fuel assembly slots.
+  VF = ((bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T);  // Fuel Volume
+  VC = ((l*l - bright::pi*r*r)/(l*l)) * (1.0 - S_O/S_T) + (S_O/S_T); // Coolant Volume
+};
+
+
+
+void bright::Reactor1G::loadlib(std::string libfile)
+{
+  // Loads Apporiate Libraries for Reactor and makes them into Burnup Parameters [F, pi(F), di(F), BUi(F), Tij(F)].
+
+  // HDF5 types
+  hid_t  rlib;
+  herr_t rstat;
+
+  rlib = H5Fopen (libfile.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);		//Recator Library
+
+  // Initializes Burnup Parameters...
+  hsize_t dimFromIso[1];
+  hsize_t dimToIso[1];
+
+  rstat = H5LTget_dataset_info(rlib, "/FromIso_zz", dimFromIso, NULL, NULL);
+  rstat = H5LTget_dataset_info(rlib, "/ToIso_zz",   dimToIso,   NULL, NULL);
+
+  #ifdef _WIN32
+    int * FromIso;
+    int * ToIso;
+
+    FromIso = new int [dimFromIso[0]];
+    ToIso   = new int [dimToIso[0]];
+  #else
+    int FromIso [dimFromIso[0]];
+    int ToIso   [dimToIso[0]];
+  #endif
+
+  rstat = H5LTread_dataset_int(rlib, "/FromIso_zz", FromIso);		
+  rstat = H5LTread_dataset_int(rlib, "/ToIso_zz",   ToIso);		
+
+  I.clear();
+  I.insert(&FromIso[0], &FromIso[dimFromIso[0]]);
+  J.clear();
+  J.insert(&ToIso[0],   &ToIso[dimToIso[0]]);
     
-    //Get Fluence Vector
-    hsize_t dimsF[1];							//Read in number of data points
-    rstat = H5LTget_dataset_info(rlib, "/Fluence", dimsF, NULL, NULL);
-    int lenF = dimsF[0];
+  // Get Fluence Vector
+  hsize_t dimsF[1]; // Read in number of data points
+  rstat = H5LTget_dataset_info(rlib, "/Fluence", dimsF, NULL, NULL);
+  int lenF = dimsF[0];
 
-    //Make temp array
+  // Make temp array
+  #ifdef _WIN32
+    float * tempF;
+    tempF = new float [lenF];
+  #else
+    float tempF [lenF];
+  #endif
+
+  rstat = H5LTread_dataset_float(rlib, "/Fluence", tempF);		
+  F.assign(&tempF[0], &tempF[lenF]);  // Fluence in [n/kb]
+
+  for (IsoIter i = I.begin(); i != I.end(); i++ )
+  {
+    std::string iso = pyne::nucname::name(*i);
+
+    // Build BUi_F_
     #ifdef _WIN32
-        float * tempF;
-        tempF = new float [lenF];
+      float * tempBUi;
+      tempBUi = new float [lenF];
     #else
-        float tempF [lenF];
+      float tempBUi [lenF];
     #endif
+    rstat = H5LTread_dataset_float(rlib, ("/Burnup/" + iso).c_str(), tempBUi);		
+    BUi_F_[*i].assign(&tempBUi[0], &tempBUi[lenF]);
 
-    rstat = H5LTread_dataset_float(rlib, "/Fluence", tempF);		
-    F.assign(&tempF[0], &tempF[lenF]);					//Fluence in [n/kb]
+    // Build pi_F_
+    #ifdef _WIN32
+      float * temppi;
+      temppi = new float [lenF];
+    #else
+      float temppi [lenF];
+    #endif
+    rstat = H5LTread_dataset_float(rlib, ("/Production/" + iso).c_str(), temppi);		
+    pi_F_[*i].assign(&temppi[0], &temppi[lenF]);
+    pi_F_[*i][0] = bright::SolveLine(0.0, F[2], pi_F_[*i][2], F[1], pi_F_[*i][1]);
 
-    for (IsoIter i = I.begin(); i != I.end(); i++ )
-    {
-        std::string iso = pyne::nucname::name(*i);
-
-        //Build BUi_F_
-        #ifdef _WIN32
-            float * tempBUi;
-            tempBUi = new float [lenF];
-        #else
-            float tempBUi [lenF];
-        #endif
-        rstat = H5LTread_dataset_float(rlib, ("/Burnup/" + iso).c_str(), tempBUi);		
-        BUi_F_[*i].assign(&tempBUi[0], &tempBUi[lenF]);
-
-        //Build pi_F_
-        #ifdef _WIN32
-            float * temppi;
-            temppi = new float [lenF];
-        #else
-            float temppi [lenF];
-        #endif
-        rstat = H5LTread_dataset_float(rlib, ("/Production/" + iso).c_str(), temppi);		
-        pi_F_[*i].assign(&temppi[0], &temppi[lenF]);
-        pi_F_[*i][0] = bright::SolveLine(0.0, F[2], pi_F_[*i][2], F[1], pi_F_[*i][1]);
-
-        //Build di_F_
-        #ifdef _WIN32
-            float * tempdi;
-            tempdi = new float [lenF];
-        #else
-            float tempdi [lenF];
-        #endif
-        rstat = H5LTread_dataset_float(rlib, ("/Destruction/" + iso).c_str(), tempdi);		
-        di_F_[*i].assign(&tempdi[0], &tempdi[lenF]);
-        di_F_[*i][0] = bright::SolveLine(0.0, F[2], di_F_[*i][2], F[1], di_F_[*i][1]);
+    // Build di_F_
+    #ifdef _WIN32
+      float * tempdi;
+      tempdi = new float [lenF];
+    #else
+      float tempdi [lenF];
+    #endif
+    rstat = H5LTread_dataset_float(rlib, ("/Destruction/" + iso).c_str(), tempdi);		
+    di_F_[*i].assign(&tempdi[0], &tempdi[lenF]);
+    di_F_[*i][0] = bright::SolveLine(0.0, F[2], di_F_[*i][2], F[1], di_F_[*i][1]);
         
-        //Build Tij_F_
-        for (int jn = 0; jn < dimToIso[0] ; jn++)
-        {
-            int j = ToIso[jn];
-            std::string jso = pyne::nucname::name(j);
-
-            #ifdef _WIN32
-                float * tempTij;
-                tempTij = new float [lenF];
-            #else
-                float tempTij [lenF];
-            #endif
-            rstat = H5LTread_dataset_float(rlib, ("/Transmutation/" + iso + "/" + jso).c_str(), tempTij);
-            Tij_F_[*i][j].assign(&tempTij[0], &tempTij[lenF]);
-        };
-    };
-    rstat = H5Fclose(rlib);
-
-    //Now get microscopic XS data from KAERI...
-    //...But only if the disadvantage factor is used.
-    if (!use_zeta)
-        return;
-
-    //HDF5 types
-    hid_t  kdblib;			//KaeriData.h5 file reference
-    herr_t kdbstat;			//File status
-
-    hsize_t xs_nfields, xs_nrows; 	//Number of rows and fields (named columns) in XS table
-
-    //open the file
-    kdblib = H5Fopen ( (bright::BRIGHT_DATA + "/KaeriData.h5").c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);	//KAERI Data Library
-
-    //Get Thermal Mawell Average Table & Field Data Dimensions 
-    kdbstat = H5TBget_table_info(kdblib, "/XS/ThermalMaxwellAve", &xs_nfields, &xs_nrows);
-
-    //Creating an empy array of character strings is tricky,
-    //because character strings are arrays themselves!
-    char ** xs_field_names = new char * [xs_nfields];
-    for (int n = 0; n < xs_nfields; n++)
-        xs_field_names[n] = new char [50]; 
-
-    #ifdef _WIN32
-        size_t * xs_field_sizes;
-        size_t * xs_field_offsets;
-
-        xs_field_sizes   = new size_t [xs_nfields];
-        xs_field_offsets = new size_t [xs_nfields];
-    #else
-        size_t xs_field_sizes   [xs_nfields];
-        size_t xs_field_offsets [xs_nfields];
-    #endif
-
-    size_t xs_type_size;
-    kdbstat = H5TBget_field_info(kdblib, "/XS/ThermalMaxwellAve", xs_field_names, xs_field_sizes, xs_field_offsets, &xs_type_size);
-
-    //Read the "isozz" column so that we can inteligently pick out our data
-    int isozz_n = bright::find_index_char( (char *) "isozz", xs_field_names, xs_nfields);
-    int * isozz = new int [xs_nrows];
-    #ifdef _WIN32
-        const size_t temp_xs_field_sizes_isozz_n [1] = {xs_field_sizes[isozz_n]};
-        kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, temp_xs_field_sizes_isozz_n, isozz);
-    #else
-        kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, (const size_t [1]) {xs_field_sizes[isozz_n]}, isozz);
-    #endif
-
-    //Now, load the XS that we need.
-    //NOTE: This maps metastable isotopes to their stable versions if they can't be found!
-    int sigma_a_n = bright::find_index_char( (char *) "sigma_a", xs_field_names, xs_nfields);
-    int sigma_s_n = bright::find_index_char( (char *) "sigma_s", xs_field_names, xs_nfields);
-
-    for (std::set<int>::iterator i = bright::track_isos.begin(); i != bright::track_isos.end(); i++)
+    // Build Tij_F_
+    for (int jn = 0; jn < dimToIso[0] ; jn++)
     {
-        int iso_n = bright::find_index<int>(*i, isozz, xs_nrows);
-        if (iso_n < 0)		
-            iso_n = bright::find_index<int>(10*((*i)/10), isozz);
-        if (iso_n < 0)
-        {
-            sigma_a_therm[*i] = 0.0;
-            sigma_s_therm[*i] = 0.0;
-            continue;
-        };
+      int j = ToIso[jn];
+      std::string jso = pyne::nucname::name(j);
 
-        double * iso_sig_a = new double [1];
-        double * iso_sig_s = new double [1];
-        #ifdef _WIN32
-            const size_t temp_xs_field_sizes_sigma_a_n [1] = {xs_field_sizes[sigma_a_n]};
-            const size_t temp_xs_field_sizes_sigma_s_n [1] = {xs_field_sizes[sigma_s_n]};
+      #ifdef _WIN32
+        float * tempTij;
+        tempTij = new float [lenF];
+      #else
+        float tempTij [lenF];
+      #endif
+      rstat = H5LTread_dataset_float(rlib, ("/Transmutation/" + iso + "/" + jso).c_str(), tempTij);
+      Tij_F_[*i][j].assign(&tempTij[0], &tempTij[lenF]);
+    };
+  };
+  rstat = H5Fclose(rlib);
 
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_a_n, iso_sig_a);
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_s_n, iso_sig_s);
-        #else
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_a_n]}, iso_sig_a);
-            kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_s_n]}, iso_sig_s);
-        #endif
-        sigma_a_therm[*i] = iso_sig_a[0];
-        sigma_s_therm[*i] = iso_sig_s[0];
+  // Now get microscopic XS data from KAERI...
+  // ...But only if the disadvantage factor is used.
+  if (!use_zeta)
+    return;
+
+  // HDF5 types
+  hid_t  kdblib;			// KaeriData.h5 file reference
+  herr_t kdbstat;			// File status
+
+  hsize_t xs_nfields, xs_nrows; // Number of rows and fields (named columns) in XS table
+
+  // open the file
+  kdblib = H5Fopen ( (bright::BRIGHT_DATA + "/KaeriData.h5").c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);	// KAERI Data Library
+
+  // Get Thermal Mawell Average Table & Field Data Dimensions 
+  kdbstat = H5TBget_table_info(kdblib, "/XS/ThermalMaxwellAve", &xs_nfields, &xs_nrows);
+
+  // Creating an empy array of character strings is tricky,
+  // because character strings are arrays themselves!
+  char ** xs_field_names = new char * [xs_nfields];
+  for (int n = 0; n < xs_nfields; n++)
+    xs_field_names[n] = new char [50]; 
+
+  #ifdef _WIN32
+    size_t * xs_field_sizes;
+    size_t * xs_field_offsets;
+
+    xs_field_sizes   = new size_t [xs_nfields];
+    xs_field_offsets = new size_t [xs_nfields];
+  #else
+    size_t xs_field_sizes   [xs_nfields];
+    size_t xs_field_offsets [xs_nfields];
+  #endif
+
+  size_t xs_type_size;
+  kdbstat = H5TBget_field_info(kdblib, "/XS/ThermalMaxwellAve", xs_field_names, xs_field_sizes, xs_field_offsets, &xs_type_size);
+
+  // Read the "isozz" column so that we can inteligently pick out our data
+  int isozz_n = bright::find_index_char( (char *) "isozz", xs_field_names, xs_nfields);
+  int * isozz = new int [xs_nrows];
+  #ifdef _WIN32
+    const size_t temp_xs_field_sizes_isozz_n [1] = {xs_field_sizes[isozz_n]};
+    kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, temp_xs_field_sizes_isozz_n, isozz);
+  #else
+    kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, (const size_t [1]) {xs_field_sizes[isozz_n]}, isozz);
+  #endif
+
+  // Now, load the XS that we need.
+  // NOTE: This maps metastable isotopes to their stable versions if they can't be found!
+  int sigma_a_n = bright::find_index_char( (char *) "sigma_a", xs_field_names, xs_nfields);
+  int sigma_s_n = bright::find_index_char( (char *) "sigma_s", xs_field_names, xs_nfields);
+
+  for (std::set<int>::iterator i = bright::track_isos.begin(); i != bright::track_isos.end(); i++)
+  {
+    int iso_n = bright::find_index<int>(*i, isozz, xs_nrows);
+
+    if (iso_n < 0)		
+      iso_n = bright::find_index<int>(10*((*i)/10), isozz);
+
+    if (iso_n < 0)
+    {
+      sigma_a_therm[*i] = 0.0;
+      sigma_s_therm[*i] = 0.0;
+      continue;
     };
 
-    kdbstat = H5Fclose(kdblib);
+    double * iso_sig_a = new double [1];
+    double * iso_sig_s = new double [1];
+    #ifdef _WIN32
+      const size_t temp_xs_field_sizes_sigma_a_n [1] = {xs_field_sizes[sigma_a_n]};
+      const size_t temp_xs_field_sizes_sigma_s_n [1] = {xs_field_sizes[sigma_s_n]};
 
-    return;
+      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_a_n, iso_sig_a);
+      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_s_n, iso_sig_s);
+    #else
+      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_a_n]}, iso_sig_a);
+      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_s_n]}, iso_sig_s);
+    #endif
+    sigma_a_therm[*i] = iso_sig_a[0];
+    sigma_s_therm[*i] = iso_sig_s[0];
+  };
+
+  kdbstat = H5Fclose(kdblib);
+
+  return;
 };
 
-void Reactor1G::fold_mass_weights()
+
+void bright::Reactor1G::fold_mass_weights()
 {
-    /** Multiplies the burnup parameters by the mass weights."
-     *  Calculates BU(F), P(F), D(F), and k(F)"
-     */
+  /** Multiplies the burnup parameters by the mass weights."
+   *  Calculates BU(F), P(F), D(F), and k(F)"
+   */
 
-    //First Things First, Let's calculate the atomic weight of the IHM
-    double inverseA_IHM = 0.0;
-    for (pyne::comp_iter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
+  // First Things First, Let's calculate the atomic weight of the IHM
+  double inverseA_IHM = 0.0;
+  for (pyne::comp_iter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
+  {
+    // Ensure that the isotope is officially allowed.
+    if (0 == I.count(iso->first))
+      continue;
+
+    inverseA_IHM = inverseA_IHM + (iso->second)/ pyne::nucname::nuc_weight(iso->first);
+  };
+  A_IHM = 1.0 / inverseA_IHM;
+
+  // Build the number density dictionaries
+  niF.clear();
+  niC.clear();
+
+  // now for the ni in the Fuel
+  for (std::map<std::string, double>::iterator key = fuel_chemical_form.begin(); key != fuel_chemical_form.end(); key++)
+  {
+    if ( (key->first) == "IHM")
     {
-        //Ensure that the isotope is officially allowed.
+      for (pyne::comp_iter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
+      {
+        // Ensure that the isotope is officially allowed.
         if (0 == I.count(iso->first))
-            continue;
+          continue;
 
-        inverseA_IHM = inverseA_IHM + (iso->second)/ pyne::nucname::nuc_weight(iso->first);
-    };
-    A_IHM = 1.0 / inverseA_IHM;
-
-    //Build the number density dictionaries
-    niF.clear();
-    niC.clear();
-    //now for the ni in the Fuel
-    for (std::map<std::string, double>::iterator key = fuel_chemical_form.begin(); key != fuel_chemical_form.end(); key++)
+        niF[iso->first] = fuel_chemical_form[key->first] * mat_feed.comp[iso->first];
+      };
+    } 
+    else
     {
-        if ( (key->first) == "IHM")
-        {
-            for (pyne::comp_iter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
-            {
-                //Ensure that the isotope is officially allowed.
-                if (0 == I.count(iso->first))
-                    continue;
+      int key_zz = pyne::nucname::zzaaam(key->first);
+      niF[key_zz] = fuel_chemical_form[key->first];
+    }
+  };
 
-                niF[iso->first] = fuel_chemical_form[key->first] * mat_feed.comp[iso->first];
-            };
-        }
-        else
-        {
-            int key_zz = pyne::nucname::zzaaam(key->first);
-            niF[key_zz] = fuel_chemical_form[key->first];
-        }
-    };
-    //Note that the ni in the coolant is just coolant_chemical_form
-    for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
-    {
-        int key_zz = pyne::nucname::zzaaam(key->first);
-        niC[key_zz] = coolant_chemical_form[key->first];		
-    };
+  // Note that the ni in the coolant is just coolant_chemical_form
+  for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
+  {
+    int key_zz = pyne::nucname::zzaaam(key->first);
+    niC[key_zz] = coolant_chemical_form[key->first];		
+  };
 
-    //Fuel mass weight
-    miF.clear(); 
-    for (pyne::comp_iter iso = niF.begin(); iso != niF.end(); iso++)
-    {
-        if (niF[iso->first] == 0.0)
-        {
-            continue;
-        }
-        else
-        {
-            miF[iso->first] = niF[iso->first] * pyne::nucname::nuc_weight(iso->first) / A_IHM;
-        }
-    };
+  // Fuel mass weight
+  miF.clear(); 
+  for (pyne::comp_iter iso = niF.begin(); iso != niF.end(); iso++)
+  {
+    if (niF[iso->first] == 0.0)
+      continue;
+    else
+      miF[iso->first] = niF[iso->first] * pyne::nucname::nuc_weight(iso->first) / A_IHM;
+  };
+
+>>> STOPPED HERE!!!
+
 
     //Coolant mass weight Calculation...requires MWF
     MWF = 0.0; 	//Fuel Molecular Weight
@@ -443,7 +455,7 @@ void Reactor1G::fold_mass_weights()
     };
 };
 
-void Reactor1G::calc_Mj_F_()
+void bright::Reactor1G::calc_Mj_F_()
 {
     //Generates the Mj(F) table.
     Mj_F_.clear();
@@ -463,7 +475,7 @@ void Reactor1G::calc_Mj_F_()
     };
 };
 
-void Reactor1G::calc_Mj_Fd_()
+void bright::Reactor1G::calc_Mj_Fd_()
 {
     /** Calculates the output isotopics of Mj(Fd).
      *  NOTE: Mj(Fd) is effectively the same variable as mat_prod before normalization!
@@ -487,14 +499,14 @@ void Reactor1G::calc_Mj_Fd_()
     mat_prod = pyne::Material(tempOut);	
 };
 
-void Reactor1G::calc_mat_prod()
+void bright::Reactor1G::calc_mat_prod()
 {
     //Wrapper to calculate discharge isotopics.
     calc_Mj_F_();
     calc_Mj_Fd_();
 };
 
-void Reactor1G::calcSubStreams()
+void bright::Reactor1G::calcSubStreams()
 {
     //Sets possibly relevant reactor input and output substreams.
 
@@ -536,7 +548,7 @@ void Reactor1G::calcSubStreams()
 };
 
 
-double Reactor1G::calc_deltaR()
+double bright::Reactor1G::calc_deltaR()
 {
     //Calculates the deltaR of the reactor with the current mat_feed
     fold_mass_weights();
@@ -544,14 +556,14 @@ double Reactor1G::calc_deltaR()
     return deltaR;
 };
 
-double Reactor1G::calc_deltaR(pyne::comp_map cd)
+double bright::Reactor1G::calc_deltaR(pyne::comp_map cd)
 {
     //Calculates the deltaR of the reactor with the current mat_feed
     mat_feed = pyne::Material (cd);
     return calc_deltaR();
 };
 
-double Reactor1G::calc_deltaR(pyne::Material ms)
+double bright::Reactor1G::calc_deltaR(pyne::Material ms)
 {
     //Calculates the deltaR of the reactor with the current mat_feed
     mat_feed = ms;
@@ -559,7 +571,7 @@ double Reactor1G::calc_deltaR(pyne::Material ms)
 };
 
 
-double Reactor1G::calc_tru_cr()
+double bright::Reactor1G::calc_tru_cr()
 {
     //Calculates the reactor's transuranic conversion ratio.
     tru_cr = 1.0 - ((mat_feed_tru.mass - mat_prod_tru.mass) / (BUd/931.46));
@@ -568,7 +580,7 @@ double Reactor1G::calc_tru_cr()
 
 
 
-FluencePoint Reactor1G::fluence_at_BU(double BU)
+FluencePoint bright::Reactor1G::fluence_at_BU(double BU)
 {
     /** Gives the fluence at which the burnup BU occurs.
      *  Data returned as FluenceIndex stucture:
@@ -600,7 +612,7 @@ FluencePoint Reactor1G::fluence_at_BU(double BU)
     return fp;
 };
 
-double Reactor1G::batch_average(double BUd, std::string PDk_flag)
+double bright::Reactor1G::batch_average(double BUd, std::string PDk_flag)
 {
     //Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
     std::string PDk = bright::ToUpper(PDk_flag); 
@@ -665,12 +677,12 @@ double Reactor1G::batch_average(double BUd, std::string PDk_flag)
     return numerator/denominator;
 };
 
-double Reactor1G::batch_average_k(double BUd) 
+double bright::Reactor1G::batch_average_k(double BUd) 
 {
         return batch_average(BUd, "K");
 };
 
-void Reactor1G::BUd_bisection_method()
+void bright::Reactor1G::BUd_bisection_method()
 {
     //Calculates the maximum discharge burnup via the Bisection Method.
     int tempk = 1;
@@ -856,7 +868,7 @@ void Reactor1G::BUd_bisection_method()
     return;
 };
 
-void Reactor1G::run_P_NL(double temp_pnl)
+void bright::Reactor1G::run_P_NL(double temp_pnl)
 {
     /** Does a reactor run for a specific P_NL.
      *  Requires that mat_feed be (meaningfully) set.
@@ -868,7 +880,7 @@ void Reactor1G::run_P_NL(double temp_pnl)
     BUd_bisection_method();
 };
 
-void Reactor1G::calibrate_P_NL_to_BUd()
+void bright::Reactor1G::calibrate_P_NL_to_BUd()
 {
     /** Calibrates the non-leakage probability of a reactors to hit a target burnup.
      *  Calibration proceeds by bisection method...
@@ -977,7 +989,7 @@ void Reactor1G::calibrate_P_NL_to_BUd()
 
 
 
-pyne::Material Reactor1G::calc ()
+pyne::Material bright::Reactor1G::calc ()
 {
     //Finds BUd and output isotopics.
     fold_mass_weights();
@@ -989,7 +1001,7 @@ pyne::Material Reactor1G::calc ()
     return mat_prod;
 };
 
-pyne::Material Reactor1G::calc (pyne::comp_map incomp)
+pyne::Material bright::Reactor1G::calc (pyne::comp_map incomp)
 {
     //Finds BUd and output isotopics.
     mat_feed = pyne::Material (incomp);
@@ -997,7 +1009,7 @@ pyne::Material Reactor1G::calc (pyne::comp_map incomp)
     return calc();
 };
 
-pyne::Material Reactor1G::calc (pyne::Material instream)
+pyne::Material bright::Reactor1G::calc (pyne::Material instream)
 {
     //Finds BUd and output isotopics.
     mat_feed = instream;
@@ -1006,7 +1018,7 @@ pyne::Material Reactor1G::calc (pyne::Material instream)
 };
 
 
-void Reactor1G::lattice_E_planar(double a, double b)
+void bright::Reactor1G::lattice_E_planar(double a, double b)
 {
     lattice_E_F_.clear();
         lattice_E_F_.assign( F.size(), 0.0 );
@@ -1021,7 +1033,7 @@ void Reactor1G::lattice_E_planar(double a, double b)
     return;
 };
 
-void Reactor1G::lattice_F_planar(double a, double b)
+void bright::Reactor1G::lattice_F_planar(double a, double b)
 {
     lattice_F_F_.clear();
         lattice_F_F_.assign( F.size(), 0.0 );
@@ -1036,7 +1048,7 @@ void Reactor1G::lattice_F_planar(double a, double b)
     return; 
 };
 
-void Reactor1G::lattice_E_spherical(double a, double b)
+void bright::Reactor1G::lattice_E_spherical(double a, double b)
 {
     lattice_E_F_.clear();
         lattice_E_F_.assign( F.size(), 0.0 );
@@ -1056,7 +1068,7 @@ void Reactor1G::lattice_E_spherical(double a, double b)
     return;
 };
     
-void Reactor1G::lattice_F_spherical(double a, double b)
+void bright::Reactor1G::lattice_F_spherical(double a, double b)
 {
     lattice_F_F_.clear();
         lattice_F_F_.assign( F.size(), 0.0 );
@@ -1071,7 +1083,7 @@ void Reactor1G::lattice_F_spherical(double a, double b)
     return; 
 };
 
-void Reactor1G::lattice_E_cylindrical(double a, double b)
+void bright::Reactor1G::lattice_E_cylindrical(double a, double b)
 {
     namespace bm = boost::math;
 
@@ -1095,7 +1107,7 @@ void Reactor1G::lattice_E_cylindrical(double a, double b)
     return;
 };
     
-void Reactor1G::lattice_F_cylindrical(double a, double b)
+void bright::Reactor1G::lattice_F_cylindrical(double a, double b)
 {
     namespace bm = boost::math;
 
@@ -1116,7 +1128,7 @@ void Reactor1G::lattice_F_cylindrical(double a, double b)
     return;
 };
 
-void Reactor1G::calc_zeta()
+void bright::Reactor1G::calc_zeta()
 {
     // Computes the thermal disadvantage factor
 
@@ -1293,21 +1305,21 @@ void Reactor1G::calc_zeta()
     return;
 };
 
-void Reactor1G::calc_zeta_planar()
+void bright::Reactor1G::calc_zeta_planar()
 {
     lattice_flag = "Planar";
     calc_zeta();
     return;
 };
 
-void Reactor1G::calc_zeta_spherical()
+void bright::Reactor1G::calc_zeta_spherical()
 {
     lattice_flag = "Spherical";
     calc_zeta();
     return;
 };
 
-void Reactor1G::calc_zeta_cylindrical()
+void bright::Reactor1G::calc_zeta_cylindrical()
 {
     lattice_flag = "Cylindrical";
     calc_zeta();
