@@ -128,6 +128,9 @@ exts.append(cpp_ext("bright.lib.libbright_enrichment", ['enrichment.cpp'], ['bri
 # reprocess lib
 exts.append(cpp_ext("bright.lib.libbright_reprocess", ['reprocess.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
 
+# storage lib
+exts.append(cpp_ext("bright.lib.libbright_storage", ['storage.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
+
 
 
 ##########################
