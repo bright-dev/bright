@@ -1,5 +1,5 @@
+build/
 doc/build/
-python/build/
 *.pyc
 *.save
 
