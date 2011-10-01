@@ -14,7 +14,7 @@ void Reprocess::initialize(SepEffDict sed)
 {
     //Initializes the reprocessing component with specific separation efficiencies.
     //sepeff = dictioanry of separation efficiencies.  Of form {aazzzm: 0.99}, eg {922350, 0.999, 942390: 0.99}
-    for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
+    for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
     {
         if (0 < sed.count(*iso))
             sepeff[*iso] = sed[*iso];
@@ -49,13 +49,13 @@ Reprocess::Reprocess (std::map<std::string, double> ssed, std::string n) : FCCom
     SepEffDict sed;
     for (std::map<std::string, double>::iterator i = ssed.begin(); i != ssed.end(); i++)
     {
-        if (0 < isoname::LLzz.count(i->first))
-            sed[isoname::LLzz[i->first]] = i->second;
+        if (0 < pyne::nucname::LLzz.count(i->first))
+            sed[pyne::nucname::LLzz[i->first]] = i->second;
         else
         {
             try
             {
-                sed[isoname::mixed_2_zzaaam(i->first)] = i->second;
+                sed[pyne::nucname::zzaaam(i->first)] = i->second;
             }
             catch (std::exception& e)
             {

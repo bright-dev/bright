@@ -117,7 +117,7 @@ void Reactor1G::loadlib(std::string libfile)
 
     for (IsoIter i = I.begin(); i != I.end(); i++ )
     {
-        std::string iso = isoname::zzaaam_2_LLAAAM(*i);
+        std::string iso = pyne::nucname::zzaaam_2_LLAAAM(*i);
 
         //Build BUi_F_
         #ifdef _WIN32
@@ -155,7 +155,7 @@ void Reactor1G::loadlib(std::string libfile)
         for (int jn = 0; jn < dimToIso[0] ; jn++)
         {
             int j = ToIso[jn];
-            std::string jso = isoname::zzaaam_2_LLAAAM(j);
+            std::string jso = pyne::nucname::zzaaam_2_LLAAAM(j);
 
             #ifdef _WIN32
                 float * tempTij;
@@ -221,7 +221,7 @@ void Reactor1G::loadlib(std::string libfile)
     int sigma_a_n = bright::find_index_char( (char *) "sigma_a", xs_field_names, xs_nfields);
     int sigma_s_n = bright::find_index_char( (char *) "sigma_s", xs_field_names, xs_nfields);
 
-    for (std::set<int>::iterator i = FCComps::track_isos.begin(); i != FCComps::track_isos.end(); i++)
+    for (std::set<int>::iterator i = bright::track_isos.begin(); i != bright::track_isos.end(); i++)
     {
         int iso_n = bright::find_index<int>(*i, isozz, xs_nrows);
         if (iso_n < 0)		
@@ -268,7 +268,7 @@ void Reactor1G::fold_mass_weights()
         if (0 == I.count(iso->first))
             continue;
 
-        inverseA_IHM = inverseA_IHM + (iso->second)/ isoname::nuc_weight(iso->first);
+        inverseA_IHM = inverseA_IHM + (iso->second)/ pyne::nucname::nuc_weight(iso->first);
     };
     A_IHM = 1.0 / inverseA_IHM;
 
@@ -291,14 +291,14 @@ void Reactor1G::fold_mass_weights()
         }
         else
         {
-            int key_zz = isoname::mixed_2_zzaaam(key->first);
+            int key_zz = pyne::nucname::zzaaam(key->first);
             niF[key_zz] = fuel_chemical_form[key->first];
         }
     };
     //Note that the ni in the coolant is just coolant_chemical_form
     for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
     {
-        int key_zz = isoname::mixed_2_zzaaam(key->first);
+        int key_zz = pyne::nucname::zzaaam(key->first);
         niC[key_zz] = coolant_chemical_form[key->first];		
     };
 
@@ -312,7 +312,7 @@ void Reactor1G::fold_mass_weights()
         }
         else
         {
-            miF[iso->first] = niF[iso->first] * isoname::nuc_weight(iso->first) / A_IHM;
+            miF[iso->first] = niF[iso->first] * pyne::nucname::nuc_weight(iso->first) / A_IHM;
         }
     };
 
@@ -324,15 +324,15 @@ void Reactor1G::fold_mass_weights()
             MWF = MWF + (fuel_chemical_form[key->first] * A_IHM);
         else
         {
-            int key_zz = isoname::mixed_2_zzaaam(key->first);
-            MWF = MWF + (fuel_chemical_form[key->first] * isoname::nuc_weight(key_zz));
+            int key_zz = pyne::nucname::zzaaam(key->first);
+            MWF = MWF + (fuel_chemical_form[key->first] * pyne::nucname::nuc_weight(key_zz));
         }
     };
     MWC = 0.0;	//Coolant Molecular Weight
     for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
     {
-        int key_zz = isoname::mixed_2_zzaaam(key->first);
-        MWC = MWC + (coolant_chemical_form[key->first] * isoname::nuc_weight(key_zz));
+        int key_zz = pyne::nucname::zzaaam(key->first);
+        MWC = MWC + (coolant_chemical_form[key->first] * pyne::nucname::nuc_weight(key_zz));
     };
     miC.clear();
     double rel_Vol_coef = (rhoC * MWF * VC) / (rhoF * MWC * VF);
@@ -341,7 +341,7 @@ void Reactor1G::fold_mass_weights()
         if (niC[iso->first] == 0.0)
             continue;
         else
-            miC[iso->first] = (niC[iso->first] * isoname::nuc_weight(iso->first) / A_IHM) * rel_Vol_coef;
+            miC[iso->first] = (niC[iso->first] * pyne::nucname::nuc_weight(iso->first) / A_IHM) * rel_Vol_coef;
     };
 
     //Fuel Number Density
@@ -645,7 +645,7 @@ double Reactor1G::batch_average(double BUd, std::string PDk_flag)
             PDks[b] = d;
         else
         {
-            if (1 < FCComps::verbosity) 
+            if (1 < bright::verbosity) 
             {
                 std::cout << "PDk flag is wrong: " << PDk << "\n";
                 std::cout << "Using default of k.\n";
@@ -706,7 +706,7 @@ void Reactor1G::BUd_bisection_method()
     else
         sign_b = (k_b - 1.0) / fabs(k_b - 1.0);
 
-    if (1 < FCComps::verbosity)
+    if (1 < bright::verbosity)
     {
         std::cout << "BUd_a = " << BUd_a << "\tk_a = " << k_a << "\tsign_a = " << sign_a << "\n";
         std::cout << "BUd_b = " << BUd_b << "\tk_b = " << k_b << "\tsign_b = " << sign_b << "\n";
@@ -724,7 +724,7 @@ void Reactor1G::BUd_bisection_method()
         else
             sign_b = (k_b - 1.0) / fabs(k_b - 1.0);
 
-        if (1 < FCComps::verbosity)
+        if (1 < bright::verbosity)
         {
             std::cout << "BUd_a = " << BUd_a << "\tk_a = " << k_a << "\tsign_a = " << sign_a << "\n";
             std::cout << "BUd_b = " << BUd_b << "\tk_b = " << k_b << "\tsign_b = " << sign_b << "\n";
@@ -769,7 +769,7 @@ void Reactor1G::BUd_bisection_method()
         }
         else
         {
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
             {
                 std::cout << "\n";
                 std::cout << "SOMEWHERE WHILE FINDING k SOMETHING WENT WRONG!!!\n";
@@ -785,7 +785,7 @@ void Reactor1G::BUd_bisection_method()
     //If c-set of variables wasn't altered, raise an exception.
     if ( (BUd_c == 0.0) && (k_c == 0.0) )
     {
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
         {
             std::cout << "\n";
             std::cout << "SOMEWHERE WHILE FINDING k SOMETHING WENT WRONG!!!\n";
@@ -799,7 +799,7 @@ void Reactor1G::BUd_bisection_method()
     };
 
     //print results, if desired.
-    if (0 < FCComps::verbosity)
+    if (0 < bright::verbosity)
     {
         std::cout << "Final Result of Burnup Bisection Method Calculation:\n";
         std::cout << "BUd_a = " << BUd_a << "\tk_a = " << k_a << "\tsign_a = " << sign_a << "\n";
@@ -826,26 +826,26 @@ void Reactor1G::BUd_bisection_method()
     }
     else
     {
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
             std::cout << "k did not converge with the Bisection Method to an accuracy of " << DoA << " in " << q << " iterations.\n";
 
         if ( (fabs(k_a - 1.0) < 0.01) && (fabs(k_a - 1.0) < fabs(k_b -1.0)) )
         {
             BUd = BUd_a;
             k = k_a;
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
                 std::cout << "However, k_a is within 1% of 1 and closer to 1 than k_b; using these values.\n";
         }
         else if ( (fabs(k_b - 1.0) < 0.01) && (fabs(k_b - 1.0) < fabs(k_a -1.0)) )
         {
             BUd = BUd_b;
             k = k_b;
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
                 std::cout << "However, k_b is within 1% of 1 and closer to 1 than k_a; using these values.\n";
         }
         else
         {
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
                 std::cout << "Alright.  It really didn't converge. Neither k_a nor k_b is within 1% of 1. Program will likely fail!\n";
         };
     };
@@ -949,7 +949,7 @@ void Reactor1G::calibrate_P_NL_to_BUd()
         }
         else
         {
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
             {
                 std::cout << "\n";
                 std::cout << "SOMEWHERE WHILE FINDING k SOMETHING WENT WRONG!!!\n";
@@ -962,7 +962,7 @@ void Reactor1G::calibrate_P_NL_to_BUd()
         };
     };
 
-    if (0 < FCComps::verbosity)
+    if (0 < bright::verbosity)
     {
         std::cout << "\n";
         std::cout << "Final Result P_NL Calibration to Burnup via Bisection Method Calculation:\n";
@@ -1144,7 +1144,7 @@ void Reactor1G::calc_zeta()
                 SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
                 SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nucname::nuc_weight(iso->first))) ) );
             }
             else
             {
@@ -1154,7 +1154,7 @@ void Reactor1G::calc_zeta()
                 SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * bright::cm2_per_barn);
 
                 SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * bright::cm2_per_barn * (sig_a + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nucname::nuc_weight(iso->first))) ) );
             };
         };
 
@@ -1186,7 +1186,7 @@ void Reactor1G::calc_zeta()
                 SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * bright::cm2_per_barn);
 
                 SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (di_F_[iso->first][f] + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nucname::nuc_weight(iso->first))) ) );
             }
             else
             {
@@ -1196,7 +1196,7 @@ void Reactor1G::calc_zeta()
                 SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * bright::cm2_per_barn);
 
                 SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * bright::cm2_per_barn * (sig_a + \
-                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*isoname::nuc_weight(iso->first))) ) );
+                    sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nucname::nuc_weight(iso->first))) ) );
             };
         };
 
@@ -1232,7 +1232,7 @@ void Reactor1G::calc_zeta()
     }
     else
     {
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
             std::cout << "Did not specify use of planar or spheical or cylindrical lattice functions! Assuming cylindrical...\n";
         
         a = r;

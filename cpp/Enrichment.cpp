@@ -195,13 +195,13 @@ void Enrichment::FindNM()
 
     double PoF = PoverF(ms_feed.comp[j], xP_j, xW_j);
     double WoF = WoverF(ms_feed.comp[j], xP_j, xW_j);
-    double alphastar_j = get_alphastar_i(isoname::nuc_weight(j));
+    double alphastar_j = get_alphastar_i(pyne::nucname::nuc_weight(j));
 
     // Save original state of N & M
     double origN = N;
     double origM = M;
 
-    if (2 < FCComps::verbosity)
+    if (2 < bright::verbosity)
         std::cout << "    <---- N = " << N << "\tM = " << M << "\n";     
 
     double lhsP = PoF * xP_j / ms_feed.comp[j];
@@ -225,7 +225,7 @@ void Enrichment::FindNM()
         };
 
         // print Summary
-        if (3 < FCComps::verbosity)
+        if (3 < bright::verbosity)
         {
             std::cout << "            N = " << N << "\tlhsP = " << lhsP << "\trhsP = " << rhsP << "\n";
             std::cout << "            M = " << M << "\tlhsW = " << lhsW << "\trhsW = " << rhsW << "\n";
@@ -237,7 +237,7 @@ void Enrichment::FindNM()
 			M = origM + n;
 			n = n + 1.0;
 
-            if (2 < FCComps::verbosity)
+            if (2 < bright::verbosity)
                 std::cout << "          N set n equal to " << n << "\n";
         };
 
@@ -247,22 +247,22 @@ void Enrichment::FindNM()
 			M = origM + n;
 			n = n + 1.0;
 
-            if (2 < FCComps::verbosity)
+            if (2 < bright::verbosity)
                 std::cout << "          M set n equal to " << n << "\n";
         };
 
-        if (2 < FCComps::verbosity)
+        if (2 < bright::verbosity)
             std::cout << "    ----- N = " << N << "\tM = " << M << "\n";     
     };
 
-    if (2 < FCComps::verbosity)
+    if (2 < bright::verbosity)
         std::cout << "    ----> N = " << N << "\tM = " << M << "\n";     
     return; 
 };
   
 double Enrichment::xP_i(int i)
 {
-    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
+    double alphastar_i = get_alphastar_i(pyne::nucname::nuc_weight(i));
     double numerator = ms_feed.comp[i]*(pow(alphastar_i, M+1.0) - 1.0);
     double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(ms_feed.comp[j], xP_j, xW_j);
     return numerator / denominator;
@@ -270,7 +270,7 @@ double Enrichment::xP_i(int i)
 
 double Enrichment::xW_i(int i)
 {
-    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
+    double alphastar_i = get_alphastar_i(pyne::nucname::nuc_weight(i));
     double numerator = ms_feed.comp[i] * (1.0 - pow(alphastar_i, -N));
 	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(ms_feed.comp[j], xP_j, xW_j);
     return numerator / denominator;
@@ -355,7 +355,7 @@ void Enrichment::Comp2UnitySecant()
 
     while (tolerance < fabs(xP_j - currxP_j) || tolerance < fabs(xW_j - currxW_j))
     {
-        if (1 < FCComps::verbosity)
+        if (1 < bright::verbosity)
             std::cout << "--------------------\n";
 
         if (tolerance <= fabs(xP_j - currxP_j))
@@ -370,7 +370,7 @@ void Enrichment::Comp2UnitySecant()
 			if (currN < 0.0)
             {
 				currN = (tempCurrN + tempLastN)/2.0;
-                if (1 < FCComps::verbosity)
+                if (1 < bright::verbosity)
                     std::cout << "    N < 0, resetting.\n";
             };
         };
@@ -387,7 +387,7 @@ void Enrichment::Comp2UnitySecant()
             if (M < 0.0)
             {
                 currM = (tempCurrM + tempLastM)/2.0;
-                if (1 < FCComps::verbosity)
+                if (1 < bright::verbosity)
                     std::cout << "    M < 0, resetting.\n";
             };
         };
@@ -397,7 +397,7 @@ void Enrichment::Comp2UnitySecant()
         {
             if (historyN[h] == currN && historyM[h] == currM)
             {
-                if (1 < FCComps::verbosity)
+                if (1 < bright::verbosity)
                     std::cout << "~~~ Infinite loop found and exception thrown! ~~~.\n";
                 throw EnrichmentInfiniteLoopError();
             };
@@ -413,7 +413,7 @@ void Enrichment::Comp2UnitySecant()
 
         if (10000 < counter)
         {
-            if (1 < FCComps::verbosity)
+            if (1 < bright::verbosity)
                 std::cout << "~~~ Secant method counter limit hit! ~~~.\n";
             throw EnrichmentIterationLimit();
         }
@@ -432,7 +432,7 @@ void Enrichment::Comp2UnitySecant()
         currxP_j = ms_prod.comp[j];
         currxW_j = ms_tail.comp[j];
 
-        if (1 < FCComps::verbosity)
+        if (1 < bright::verbosity)
         {
             std::cout << "Product Mass: " << currxP_j << "\tWaste Mass: " << currxW_j << "\n";
             std::cout << "====================\n";
@@ -517,8 +517,8 @@ double Enrichment::deltaU_i_OverG(int i)
     //To link to this article: DOI: 10.1081/SS-100100654
     //URL: http://dx.doi.org/10.1081/SS-100100654
 
-    double alphastar_i = get_alphastar_i(isoname::nuc_weight(i));
-	return log(pow( alpha_0, (Mstar - isoname::nuc_weight(j)) )) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
+    double alphastar_i = get_alphastar_i(pyne::nucname::nuc_weight(i));
+	return log(pow( alpha_0, (Mstar - pyne::nucname::nuc_weight(j)) )) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
 };
 
 void Enrichment::LoverF()
@@ -530,7 +530,7 @@ void Enrichment::LoverF()
 	try
     {
         //Try secant method first
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
             std::cout << "Attempting Secant Method in L/F Calculation...\n";
 		Comp2UnitySecant();
 		compConverged = true;
@@ -540,7 +540,7 @@ void Enrichment::LoverF()
 		try
         {
             //Then try other cr8zy method
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
                 std::cout << "Attempting Another Method in L/F Calculation...\n";
 			Comp2UnityOther();
     		compConverged = true;
@@ -572,7 +572,7 @@ void Enrichment::LoverF()
 			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first));
 			SWUoverF = SWUoverF + tempNumerator;
         };
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
             std::cout << "    L/F = " << LtotalOverF << "\n";        
 
 
@@ -640,7 +640,7 @@ void Enrichment::MstarOptimize()
     };
 
     //print points
-    if (0 < FCComps::verbosity)
+    if (0 < bright::verbosity)
     {
         std::cout << "Last Point: M* = " << lastMstar << "\tL/F = " << lastLoverF << "\n";
         std::cout << "Curr Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
@@ -662,7 +662,7 @@ void Enrichment::MstarOptimize()
         currLoverF = TotalPerFeed;
 
         //print Point
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
         {
             std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
         };
@@ -684,7 +684,7 @@ void Enrichment::MstarOptimize()
                 currLoverF = tempLoverF;
 
                 //print Point
-                if (0 < FCComps::verbosity)
+                if (0 < bright::verbosity)
                 {
                     std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
                 };
@@ -708,7 +708,7 @@ void Enrichment::MstarOptimize()
                     currLoverF = tempLoverF;
 
                     //print Point
-                    if (0 < FCComps::verbosity)
+                    if (0 < bright::verbosity)
                     {
                         std::cout << "Next Point: M* = " << currMstar << "\tL/F = " << currLoverF << "\n";
                     };

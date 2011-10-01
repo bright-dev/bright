@@ -172,7 +172,7 @@ void ReactorMG::loadlib(std::string libfile)
     for(std::set<int>::iterator iso_iter = J.begin(); iso_iter != J.end(); iso_iter++)
     {
         iso_zz = *iso_iter;
-        iso_LL = isoname::zzaaam_2_LLAAAM(iso_zz);
+        iso_LL = pyne::nucname::zzaaam_2_LLAAAM(iso_zz);
 
         // Add transmutation vector
         Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
@@ -218,7 +218,7 @@ void ReactorMG::loadlib(std::string libfile)
 
 
     //
-    // Read in the decay data table as an array of FCComps::decay_iso_desc
+    // Read in the decay data table as an array of bright::decay_iso_desc
     //
     int i, j, k, ind, jnd, knd, l, g;
 
@@ -226,8 +226,8 @@ void ReactorMG::loadlib(std::string libfile)
     H5::DataSpace decay_data_space = decay_data_set.getSpace();
     int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
 
-    FCComps::decay_iso_stuct * decay_data_array = new FCComps::decay_iso_stuct [decay_data_length];
-    decay_data_set.read(decay_data_array, FCComps::decay_iso_desc);
+    bright::decay_iso_stuct * decay_data_array = new bright::decay_iso_stuct [decay_data_length];
+    decay_data_set.read(decay_data_array, bright::decay_iso_desc);
 
 
     // Finish initializing K, based on decay info    
@@ -276,8 +276,8 @@ void ReactorMG::loadlib(std::string libfile)
     H5::DataSpace fission_space = fission_set.getSpace();
     int fission_length = fission_space.getSimpleExtentNpoints(); 
 
-    FCComps::fission_struct * fission_array = new FCComps::fission_struct [fission_length];
-    fission_set.read(fission_array, FCComps::fission_desc);
+    bright::fission_struct * fission_array = new bright::fission_struct [fission_length];
+    fission_set.read(fission_array, bright::fission_desc);
 
     // Run through the array and make join maps
     //  key = fission index
@@ -317,8 +317,8 @@ void ReactorMG::loadlib(std::string libfile)
     H5::DataSpace fp_yields_space = fp_yields_set.getSpace();
     int fp_yields_length = fp_yields_space.getSimpleExtentNpoints(); 
 
-    FCComps::fission_product_yields_struct * fp_yields_array = new FCComps::fission_product_yields_struct [fp_yields_length];
-    fp_yields_set.read(fp_yields_array, FCComps::fission_product_yields_desc);
+    bright::fission_product_yields_struct * fp_yields_array = new bright::fission_product_yields_struct [fp_yields_length];
+    fp_yields_set.read(fp_yields_array, bright::fission_product_yields_desc);
 
 
     // Run through the array and make yield matrices
@@ -386,16 +386,16 @@ void ReactorMG::loadlib(std::string libfile)
     H5::DataSpace xs_1g_thermal_space = xs_1g_thermal_set.getSpace();
     int xs_1g_thermal_length = xs_1g_thermal_space.getSimpleExtentNpoints(); 
 
-    FCComps::xs_1g_struct * xs_1g_thermal_array = new FCComps::xs_1g_struct [xs_1g_thermal_length];
-    xs_1g_thermal_set.read(xs_1g_thermal_array, FCComps::xs_1g_desc);
+    bright::xs_1g_struct * xs_1g_thermal_array = new bright::xs_1g_struct [xs_1g_thermal_length];
+    xs_1g_thermal_set.read(xs_1g_thermal_array, bright::xs_1g_desc);
 
     // Fast
     H5::DataSet xs_1g_fast_set = nuc_data_h5.openDataSet("/neutron/xs_1g/FissionSpectrumAve");
     H5::DataSpace xs_1g_fast_space = xs_1g_fast_set.getSpace();
     int xs_1g_fast_length = xs_1g_fast_space.getSimpleExtentNpoints(); 
 
-    FCComps::xs_1g_struct * xs_1g_fast_array = new FCComps::xs_1g_struct [xs_1g_fast_length];
-    xs_1g_fast_set.read(xs_1g_fast_array, FCComps::xs_1g_desc);
+    bright::xs_1g_struct * xs_1g_fast_array = new bright::xs_1g_struct [xs_1g_fast_length];
+    xs_1g_fast_set.read(xs_1g_fast_array, bright::xs_1g_desc);
 
     // Copy the data over
     double Eng_g;
@@ -576,7 +576,7 @@ void ReactorMG::calc_nearest_neighbors()
             iso_col = perturbations.cols[p];
             iso_LL = perturbations.cols[p];
             iso_LL.replace(0, 8, "");
-            iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
+            iso_zz = pyne::nucname::LLAAAM_2_zzaaam(iso_LL);
 
             // Determine the mass of the isotope in the feed
             if (0 < ms_feed.comp.count(iso_zz))
@@ -704,7 +704,7 @@ void ReactorMG::interpolate_cross_sections()
             iso_col = perturbations.cols[p];
             iso_LL = perturbations.cols[p];
             iso_LL.replace(0, 8, "");
-            iso_zz = isoname::LLAAAM_2_zzaaam(iso_LL);
+            iso_zz = pyne::nucname::LLAAAM_2_zzaaam(iso_LL);
 
             // Determine the mass of the isotope in the feed
             if (0 < ms_feed.comp.count(iso_zz))
@@ -787,7 +787,7 @@ void ReactorMG::calc_mass_weights()
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
         mass_HM += T_it[*iso][bt_s];
-        inverse_A_HM += (T_it[*iso][bt_s] / isoname::nuc_weight(*iso));
+        inverse_A_HM += (T_it[*iso][bt_s] / pyne::nucname::nuc_weight(*iso));
     };
     A_HM_t[bt_s] = mass_HM / inverse_A_HM;
 
@@ -804,23 +804,23 @@ void ReactorMG::calc_mass_weights()
             MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * A_HM_t[bt_s];
         else
         {
-            key_zz = isoname::mixed_2_zzaaam(key->first);
-            MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * isoname::nuc_weight(key_zz);
+            key_zz = pyne::nucname::zzaaam(key->first);
+            MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * pyne::nucname::nuc_weight(key_zz);
         };
     };
 
     // Cladding Molecular Weight
     for (std::map<std::string, double>::iterator key = chemical_form_clad.begin(); key != chemical_form_clad.end(); key++)
     {
-        key_zz = isoname::mixed_2_zzaaam(key->first);
-        MW_clad_t[bt_s] += chemical_form_clad[key->first] * isoname::nuc_weight(key_zz);
+        key_zz = pyne::nucname::zzaaam(key->first);
+        MW_clad_t[bt_s] += chemical_form_clad[key->first] * pyne::nucname::nuc_weight(key_zz);
     };
 
     // Coolant Molecular Weight
     for (std::map<std::string, double>::iterator key = chemical_form_cool.begin(); key != chemical_form_cool.end(); key++)
     {
-        key_zz = isoname::mixed_2_zzaaam(key->first);
-        MW_cool_t[bt_s] += chemical_form_cool[key->first] * isoname::nuc_weight(key_zz);
+        key_zz = pyne::nucname::zzaaam(key->first);
+        MW_cool_t[bt_s] += chemical_form_cool[key->first] * pyne::nucname::nuc_weight(key_zz);
     };
 
 
@@ -839,7 +839,7 @@ void ReactorMG::calc_mass_weights()
         }
         else
         {
-            key_zz = isoname::mixed_2_zzaaam(key->first);
+            key_zz = pyne::nucname::zzaaam(key->first);
             n_fuel_it[key_zz][bt_s] += chemical_form_fuel[key->first];
         }
     };
@@ -847,14 +847,14 @@ void ReactorMG::calc_mass_weights()
     // Note that the n_it in the cladding is just chemical_form_clad
     for (std::map<std::string, double>::iterator key = chemical_form_clad.begin(); key != chemical_form_clad.end(); key++)
     {
-        key_zz = isoname::mixed_2_zzaaam(key->first);
+        key_zz = pyne::nucname::zzaaam(key->first);
         n_clad_it[key_zz][bt_s] = chemical_form_clad[key->first];
     };
 
     // Note that the n_it in the coolant is just chemical_form_cool
     for (std::map<std::string, double>::iterator key = chemical_form_cool.begin(); key != chemical_form_cool.end(); key++)
     {
-        key_zz = isoname::mixed_2_zzaaam(key->first);
+        key_zz = pyne::nucname::zzaaam(key->first);
         n_cool_it[key_zz][bt_s] = chemical_form_cool[key->first];
     };
 
@@ -886,7 +886,7 @@ void ReactorMG::calc_mass_weights()
 
     for (iso_iter iso = K.begin(); iso != K.end(); iso++)
     {
-        iso_weight = isoname::nuc_weight(*iso);
+        iso_weight = pyne::nucname::nuc_weight(*iso);
 
         // Fuel mass weight
         m_fuel_it[*iso][bt_s] =  n_fuel_it[*iso][bt_s] * iso_weight / A_HM_t[bt_s];
@@ -924,7 +924,7 @@ void ReactorMG::fold_mass_weights()
         N_clad_i_cm2pb = bright::cm2_per_barn * N_clad_it[*iso][bt_s];
         N_cool_i_cm2pb = bright::cm2_per_barn * N_cool_it[*iso][bt_s];
 
-        AW_ig = isoname::nuc_weight_zzaaam(*iso);
+        AW_ig = pyne::nucname::nuc_weight_zzaaam(*iso);
 
         // Loop over all groups
         for (g = 0; g < G; g++)
@@ -2015,7 +2015,7 @@ void ReactorMG::burnup_core()
         bt_s = s;
         burn_time = burn_times[s];
 
-        if (2 <= FCComps::verbosity)
+        if (2 <= bright::verbosity)
             std::cout << "Time step " << s << " = " << burn_times[s] << " days\n";
 
         // Find the nearest neightbors for this time.
@@ -2270,7 +2270,7 @@ void ReactorMG::BUd_bisection_method()
     else
         sign_b = (k_b - 1.0) / fabs(k_b - 1.0);
 
-    if (1 < FCComps::verbosity)
+    if (1 < bright::verbosity)
     {
         std::cout << "BUd_a = " << BUd_a << "\tk_a = " << k_a << "\tsign_a = " << sign_a << "\n";
         std::cout << "BUd_b = " << BUd_b << "\tk_b = " << k_b << "\tsign_b = " << sign_b << "\n";
@@ -2289,7 +2289,7 @@ void ReactorMG::BUd_bisection_method()
         else
             sign_b = (k_b - 1.0) / fabs(k_b - 1.0);
 
-        if (1 < FCComps::verbosity)
+        if (1 < bright::verbosity)
         {
             std::cout << "BUd_a = " << BUd_a << "\tk_a = " << k_a << "\tsign_a = " << sign_a << "\n";
             std::cout << "BUd_b = " << BUd_b << "\tk_b = " << k_b << "\tsign_b = " << sign_b << "\n";
@@ -2334,7 +2334,7 @@ void ReactorMG::BUd_bisection_method()
         }
         else
         {
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
             {
                 std::cout << "\n";
                 std::cout << "SOMEWHERE WHILE FINDING k SOMETHING WENT WRONG!!!\n";
@@ -2350,7 +2350,7 @@ void ReactorMG::BUd_bisection_method()
     //If c-set of variables wasn't altered, raise an exception.
     if ( (BUd_c == 0.0) && (k_c == 0.0) )
     {
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
         {
             std::cout << "\n";
             std::cout << "SOMEWHERE WHILE FINDING k SOMETHING WENT WRONG!!!\n";
@@ -2364,7 +2364,7 @@ void ReactorMG::BUd_bisection_method()
     };
 
     //print results, if desired.
-    if (0 < FCComps::verbosity)
+    if (0 < bright::verbosity)
     {
         std::cout << "Final Result of Burnup Bisection Method Calculation:\n";
         std::cout << "BUd_a = " << BUd_a << "\tk_a = " << k_a << "\tsign_a = " << sign_a << "\n";
@@ -2391,26 +2391,26 @@ void ReactorMG::BUd_bisection_method()
     }
     else
     {
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
             std::cout << "k did not converge with the Bisection Method to an accuracy of " << DoA << " in " << q << " iterations.\n";
 
         if ( (fabs(k_a - 1.0) < 0.01) && (fabs(k_a - 1.0) < fabs(k_b -1.0)) )
         {
             BUd = BUd_a;
             k = k_a;
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
                 std::cout << "However, k_a is within 1% of 1 and closer to 1 than k_b; using these values.\n";
         }
         else if ( (fabs(k_b - 1.0) < 0.01) && (fabs(k_b - 1.0) < fabs(k_a -1.0)) )
         {
             BUd = BUd_b;
             k = k_b;
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
                 std::cout << "However, k_b is within 1% of 1 and closer to 1 than k_a; using these values.\n";
         }
         else
         {
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
                 std::cout << "Alright.  It really didn't converge. Neither k_a nor k_b is within 1% of 1. Program will likely fail!\n";
         };
     };
@@ -2526,7 +2526,7 @@ void ReactorMG::calibrate_P_NL_to_BUd()
         }
         else
         {
-            if (0 < FCComps::verbosity)
+            if (0 < bright::verbosity)
             {
                 std::cout << "\n";
                 std::cout << "SOMEWHERE WHILE FINDING k SOMETHING WENT WRONG!!!\n";
@@ -2539,7 +2539,7 @@ void ReactorMG::calibrate_P_NL_to_BUd()
         };
     };
 
-    if (0 < FCComps::verbosity)
+    if (0 < bright::verbosity)
     {
         std::cout << "\n";
         std::cout << "Final Result P_NL Calibration to Burnup via Bisection Method Calculation:\n";
@@ -2749,7 +2749,7 @@ void ReactorMG::calc_zeta()
     }
     else
     {
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
             std::cout << "Did not specify use of planar or spheical or cylindrical lattice functions! Assuming cylindrical...\n";
         
         a = r_fuel;
