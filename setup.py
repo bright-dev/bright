@@ -113,7 +113,7 @@ def cpp_ext(name, sources, libs=None, use_hdf5=True):
 # For extensions
 # 
 exts = []
-pyne_libs = ['pyne', 'pyne_nucname', 'pyne_material']
+pyne_libs = ['pyne', 'pyne_nucname', 'pyne_data', 'pyne_material']
 
 # Pure C/C++ share libraries
 # bright lib
@@ -121,6 +121,9 @@ exts.append(cpp_ext("bright.lib.libbright", ['bright.cpp'], pyne_libs))
 
 # fccomp lib
 exts.append(cpp_ext("bright.lib.libbright_fccomp", ['fccomp.cpp'], ['bright'] + pyne_libs))
+
+# enrichment lib
+exts.append(cpp_ext("bright.lib.libbright_enrichment", ['enrichment.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
 
 # reprocess lib
 exts.append(cpp_ext("bright.lib.libbright_reprocess", ['reprocess.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
