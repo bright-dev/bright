@@ -1,17 +1,19 @@
 // ReactorParameters.h
 // Header for ReactorParameters reactor helper class
 
-#if !defined(_Bright_ReactorParameters_)
-#define _Bright_ReactorParameters_
+#if !defined(_BRIGHT_REACTOR_PARAMETERS_)
+#define _BRIGHT_REACTOR_PARAMETERS_
 
 #include <math.h>
 #include <map>
 #include <vector>
 #include <string>
 
-class ReactorParameters
-{
-public:
+namespace bright {
+
+  class ReactorParameters
+  {
+  public:
     // Constructors
     ReactorParameters();
     ~ReactorParameters();
@@ -48,15 +50,17 @@ public:
     double total_slots;
 
     double branch_ratio_cutoff;
+  };
+
+
+  // Preset Defaults
+  ReactorParameters fill_lwr_defaults();
+  extern ReactorParameters lwr_defaults;
+
+  ReactorParameters fill_fr_defaults();
+  extern ReactorParameters fr_defaults;
+
+// end bright
 };
-
-
-// Preset Defaults
-
-ReactorParameters fill_lwr_defaults();
-extern ReactorParameters lwr_defaults;
-
-ReactorParameters fill_fr_defaults();
-extern ReactorParameters fr_defaults;
 
 #endif

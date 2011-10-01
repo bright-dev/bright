@@ -131,6 +131,9 @@ exts.append(cpp_ext("bright.lib.libbright_reprocess", ['reprocess.cpp'], ['brigh
 # storage lib
 exts.append(cpp_ext("bright.lib.libbright_storage", ['storage.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
 
+# reactor parameters lib
+exts.append(cpp_ext("bright.lib.libbright_reactor_parameters", ['reactor_parameters.cpp'], None, False))
+
 
 
 ##########################
