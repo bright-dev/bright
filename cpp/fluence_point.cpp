@@ -1,19 +1,19 @@
 // FluencePoint Reactor Helper Class
 
-#include "FluencePoint.h"
+#include "fluence_point.h"
 
 /**************************/
 /*** FulencePoint Class ***/
 /**************************/
 
-FluencePoint::FluencePoint()
+bright::FluencePoint::FluencePoint()
 {
-    f = 0;
-    F = 0.0;
-    m = 0.0;
+  f = 0;
+  F = 0.0;
+  m = 0.0;
 };
 
 
-FluencePoint::~FluencePoint()
+bright::FluencePoint::~FluencePoint()
 {
 };
