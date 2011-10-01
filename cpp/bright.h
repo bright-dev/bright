@@ -17,7 +17,7 @@
 #include <vector>
 #include <algorithm>
 #include <typeinfo>
-
+#include <pyne.h>
 
 namespace bright {
 
