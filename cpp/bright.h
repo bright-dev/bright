@@ -29,6 +29,7 @@
 // Pyne includes
 #include <pyne.h>
 #include <nucname.h>
+#include <material.h>
 
 
 namespace bright {

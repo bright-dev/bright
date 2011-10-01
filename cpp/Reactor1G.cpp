@@ -117,7 +117,7 @@ void Reactor1G::loadlib(std::string libfile)
 
     for (IsoIter i = I.begin(); i != I.end(); i++ )
     {
-        std::string iso = pyne::nucname::zzaaam_2_LLAAAM(*i);
+        std::string iso = pyne::nucname::name(*i);
 
         //Build BUi_F_
         #ifdef _WIN32
@@ -155,7 +155,7 @@ void Reactor1G::loadlib(std::string libfile)
         for (int jn = 0; jn < dimToIso[0] ; jn++)
         {
             int j = ToIso[jn];
-            std::string jso = pyne::nucname::zzaaam_2_LLAAAM(j);
+            std::string jso = pyne::nucname::name(j);
 
             #ifdef _WIN32
                 float * tempTij;
@@ -262,7 +262,7 @@ void Reactor1G::fold_mass_weights()
 
     //First Things First, Let's calculate the atomic weight of the IHM
     double inverseA_IHM = 0.0;
-    for (CompIter iso = ms_feed.comp.begin(); iso != ms_feed.comp.end(); iso++)
+    for (CompIter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
     {
         //Ensure that the isotope is officially allowed.
         if (0 == I.count(iso->first))
@@ -280,13 +280,13 @@ void Reactor1G::fold_mass_weights()
     {
         if ( (key->first) == "IHM")
         {
-            for (CompIter iso = ms_feed.comp.begin(); iso != ms_feed.comp.end(); iso++)
+            for (CompIter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
             {
                 //Ensure that the isotope is officially allowed.
                 if (0 == I.count(iso->first))
                     continue;
 
-                niF[iso->first] = fuel_chemical_form[key->first] * ms_feed.comp[iso->first];
+                niF[iso->first] = fuel_chemical_form[key->first] * mat_feed.comp[iso->first];
             };
         }
         else
@@ -450,7 +450,7 @@ void Reactor1G::calc_Mj_F_()
     for (IsoIter j = J.begin(); j != J.end(); j++ )
     {
         Mj_F_[*j].assign( F.size(), 0.0 );
-        for(CompIter i = ms_feed.comp.begin(); i != ms_feed.comp.end(); i++)
+        for(CompIter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
         {
             if (0 < I.count(i->first))
             {
@@ -466,10 +466,10 @@ void Reactor1G::calc_Mj_F_()
 void Reactor1G::calc_Mj_Fd_()
 {
     /** Calculates the output isotopics of Mj(Fd).
-     *  NOTE: Mj(Fd) is effectively the same variable as ms_prod before normalization!
+     *  NOTE: Mj(Fd) is effectively the same variable as mat_prod before normalization!
      */
 
-    CompDict tempOut;
+    pyne::comp_map tempOut;
 
     //Checks to see if the discharge index in at the end of the fluence table
     bool fdLast = false;
@@ -484,10 +484,10 @@ void Reactor1G::calc_Mj_Fd_()
             tempOut[*j] = bright::SolveLine(Fd, F[fd+1], Mj_F_[*j][fd+1], F[fd], Mj_F_[*j][fd]);
     };
 
-    ms_prod = MassStream(tempOut);	
+    mat_prod = pyne::Material(tempOut);	
 };
 
-void Reactor1G::calc_ms_prod()
+void Reactor1G::calc_mat_prod()
 {
     //Wrapper to calculate discharge isotopics.
     calc_Mj_F_();
@@ -499,62 +499,62 @@ void Reactor1G::calcSubStreams()
     //Sets possibly relevant reactor input and output substreams.
 
     //Uranium
-    ms_feed_u  = ms_feed.get_u();
-    ms_prod_u = ms_prod.get_u();
+    mat_feed_u  = mat_feed.get_u();
+    mat_prod_u = mat_prod.get_u();
 
     //TRU
     try 
     {
-        ms_feed_tru = ms_feed.get_tru();
+        mat_feed_tru = mat_feed.get_tru();
     }
     catch (...)
     {
-        CompDict cd;
+        pyne::comp_map cd;
         cd[942390] = 1.0;
-        ms_feed_tru = MassStream(cd, 1.0);
-        ms_feed_tru.mass = 0.0;
+        mat_feed_tru = pyne::Material(cd, 1.0);
+        mat_feed_tru.mass = 0.0;
     };
-    ms_prod_tru = ms_prod.get_tru();
+    mat_prod_tru = mat_prod.get_tru();
 
     //Lanthanides
     try
     {
-        ms_feed_lan = ms_feed.get_lan();
+        mat_feed_lan = mat_feed.get_lan();
     }
     catch (...)
     {
-        CompDict cd;
+        pyne::comp_map cd;
         cd[581440] = 1.0;
-        ms_feed_lan  = MassStream(cd, 1.0);
-        ms_feed_lan.mass = 0.0;
+        mat_feed_lan  = pyne::Material(cd, 1.0);
+        mat_feed_lan.mass = 0.0;
     };
-    ms_prod_lan = ms_prod.get_lan();
+    mat_prod_lan = mat_prod.get_lan();
 
     //Actinides
-    ms_feed_act  = ms_feed.get_act();
-    ms_prod_act = ms_prod.get_act();
+    mat_feed_act  = mat_feed.get_act();
+    mat_prod_act = mat_prod.get_act();
 };
 
 
 double Reactor1G::calc_deltaR()
 {
-    //Calculates the deltaR of the reactor with the current ms_feed
+    //Calculates the deltaR of the reactor with the current mat_feed
     fold_mass_weights();
     deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D");
     return deltaR;
 };
 
-double Reactor1G::calc_deltaR(CompDict cd)
+double Reactor1G::calc_deltaR(pyne::comp_map cd)
 {
-    //Calculates the deltaR of the reactor with the current ms_feed
-    ms_feed = MassStream (cd);
+    //Calculates the deltaR of the reactor with the current mat_feed
+    mat_feed = pyne::Material (cd);
     return calc_deltaR();
 };
 
-double Reactor1G::calc_deltaR(MassStream ms)
+double Reactor1G::calc_deltaR(pyne::Material ms)
 {
-    //Calculates the deltaR of the reactor with the current ms_feed
-    ms_feed = ms;
+    //Calculates the deltaR of the reactor with the current mat_feed
+    mat_feed = ms;
     return calc_deltaR();
 };
 
@@ -562,7 +562,7 @@ double Reactor1G::calc_deltaR(MassStream ms)
 double Reactor1G::calc_tru_cr()
 {
     //Calculates the reactor's transuranic conversion ratio.
-    tru_cr = 1.0 - ((ms_feed_tru.mass - ms_prod_tru.mass) / (BUd/931.46));
+    tru_cr = 1.0 - ((mat_feed_tru.mass - mat_prod_tru.mass) / (BUd/931.46));
     return tru_cr;
 };
 
@@ -859,7 +859,7 @@ void Reactor1G::BUd_bisection_method()
 void Reactor1G::run_P_NL(double temp_pnl)
 {
     /** Does a reactor run for a specific P_NL.
-     *  Requires that ms_feed be (meaningfully) set.
+     *  Requires that mat_feed be (meaningfully) set.
      *  For use with calibrate_P_NL_to_BUd
      */
 
@@ -977,30 +977,30 @@ void Reactor1G::calibrate_P_NL_to_BUd()
 
 
 
-MassStream Reactor1G::calc ()
+pyne::Material Reactor1G::calc ()
 {
     //Finds BUd and output isotopics.
     fold_mass_weights();
 
     BUd_bisection_method();
 
-    calc_ms_prod();
+    calc_mat_prod();
 
-    return ms_prod;
+    return mat_prod;
 };
 
-MassStream Reactor1G::calc (CompDict incomp)
+pyne::Material Reactor1G::calc (pyne::comp_map incomp)
 {
     //Finds BUd and output isotopics.
-    ms_feed = MassStream (incomp);
+    mat_feed = pyne::Material (incomp);
 
     return calc();
 };
 
-MassStream Reactor1G::calc (MassStream instream)
+pyne::Material Reactor1G::calc (pyne::Material instream)
 {
     //Finds BUd and output isotopics.
-    ms_feed = instream;
+    mat_feed = instream;
 
     return calc();
 };

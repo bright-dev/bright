@@ -47,7 +47,7 @@ nt_hdf5_macros = [("_WIN32", None), ("_HDF5USEDLL_", None), ("HDF5CPP_USEDLL", N
 
 
 
-def cpp_ext(name, sources, libs=None, use_hdf5=False):
+def cpp_ext(name, sources, libs=None, use_hdf5=True):
     """Helper function for setting up extension dictionary.
 
     Parameters
@@ -74,10 +74,11 @@ def cpp_ext(name, sources, libs=None, use_hdf5=False):
     # may need to be more general
     ext['library_dirs'] = ['build/lib/bright/lib',
                            'build/lib.{0}-{1}/bright/lib'.format(get_platform(), get_python_version()),
+                           pyne_lib,
                            ]
     # perfectly general, thanks to dynamic runtime linking of $ORIGIN
     #ext['runtime_library_dirs'] = ['${ORIGIN}/lib', '${ORIGIN}']
-    ext['runtime_library_dirs'] = ['${ORIGIN}/lib', '${ORIGIN}', '${ORIGIN}/.']
+    ext['runtime_library_dirs'] = ['${ORIGIN}/lib', '${ORIGIN}', '${ORIGIN}/.', pyne_lib]
     #ext['runtime_library_dirs'] = ['${ORIGIN}/lib', '${ORIGIN}', '${ORIGIN}/.'] + \
     #                              [os.path.abspath(p) for p in ext['library_dirs']] + \
     #                              [os.path.abspath(p + '/bright/lib') for p in sys.path] + \
@@ -112,149 +113,16 @@ def cpp_ext(name, sources, libs=None, use_hdf5=False):
 # For extensions
 # 
 exts = []
+pyne_libs = ['pyne', 'pyne_nucname', 'pyne_material']
 
 # Pure C/C++ share libraries
-# pyne lib
-exts.append(cpp_ext("bright.lib.libbright", ['bright.cpp']))
+# bright lib
+exts.append(cpp_ext("bright.lib.libbright", ['bright.cpp'], pyne_libs))
+
+# fccomp lib
+exts.append(cpp_ext("bright.lib.libbright_fccomp", ['fccomp.cpp'], ['bright'] + pyne_libs))
 
 
-
-
-"""\
-#
-# For bright
-#
-bright_ext = {'name': "bright.bright"}
-
-bright_ext['sources'] = [
-    'bright.cpp', 
-    'h5wrap.cpp',
-    'isoname.cpp', 
-    'MassStream.cpp', 
-    'FCComps.cpp', 
-    'FCComp.cpp', 
-    'Enrichment.cpp', 
-    'FuelFabrication.cpp', 
-    'Reprocess.cpp', 
-    'Storage.cpp', 
-    'FluencePoint.cpp', 
-    'ReactorParameters.cpp', 
-    'Reactor1G.cpp', 
-    'LightWaterReactor1G.cpp', 
-    'FastReactor1G.cpp', 
-    'ReactorMG.cpp', 
-    ]
-bright_ext['sources'] = [os.path.join(cpp_dir, s) for s in bright_ext['sources']] + \
-                        [os.path.join(src_dir, 'bright', 'bright.pyx')]
-                  
-bright_ext['include_dirs'] = [os.path.join(src_dir, 'bright', ''),
-                              os.path.join(src_dir, 'mass_stream', ''),
-                              os.path.join(src_dir, 'isoname', ''), 
-                              src_dir, cpp_dir, numpy_include]
-bright_ext['language'] = "c++"
-
-
-if os.name == 'posix':
-    #bright_ext["extra_compile_args"] = ["-Wno-strict-prototypes"]
-    bright_ext["undef_macros"] = ["NDEBUG"]
-    bright_ext["libraries"] = [
-        "z", 
-        "m", 
-        "hdf5", 
-        "hdf5_hl", 
-        "hdf5_cpp", 
-        "hdf5_hl_cpp", 
-        ] 
-
-elif os.name == 'nt':
-    bright_ext["libraries"] = [
-        "/DEFAULTLIB:szip.lib",
-        "/DEFAULTLIB:zlib1.lib",
-
-        # For Dynamic Libs (dll)
-        "/DEFAULTLIB:hdf5dll.lib",
-        "/DEFAULTLIB:hdf5_hldll.lib",
-        "/DEFAULTLIB:hdf5_cppdll.lib",
-        "/DEFAULTLIB:hdf5_hl_cppdll.lib"
-        ] 
-
-    bright_ext["extra_compile_args"] = ["/EHsc"]
-
-    bright_ext["define_macros"] = [
-        ("_WIN32", None),
-        ("_HDF5USEDLL_", None),
-        ("HDF5CPP_USEDLL", None),        
-        ]
-
-
-##########################
-### Setup Package Data ###
-##########################
-bright_data_files = [
-    'nuc_data.h5', 
-    'decay.h5', 
-    'KaeriData.h5', 
-    'FR.h5', 
-    'LWR.h5',
-    'lwr_mg.h5',
-    ]
-        
-pack_dlls_hdf5  = [
-    "szip.dll",
-    "zlib1.dll",
-    "hdf5dll.dll",
-    "hdf5_cppdll.dll",
-    "hdf5_hldll.dll",
-    "hdf5_hl_cppdll.dll",
-    ]
-
-
-pack_dir = {
-    'isoname': os.path.join('src', 'isoname'),
-    'mass_stream': os.path.join('src', 'mass_stream'), 
-    'bright': os.path.join('src', 'bright'), 
-#    'bright_data': os.path.join('src', 'bright_data'),
-    'bright_data': os.path.join('..', 'data'),
-    }
-    
-pack_data = {'bright': [], 'mass_stream': []}
-
-
-if os.name == 'posix':
-    pack_data['bright'].extend(bright_data_files)
-elif os.name == "nt":
-    pack_data['mass_stream'].extend(pack_dlls_boost)
-    pack_data['mass_stream'].extend(pack_dlls_hdf5)
-
-    pack_data['bright'].extend(bright_data_files)
-    pack_data['bright'].extend(pack_dlls_boost)
-    pack_data['bright'].extend(pack_dlls_hdf5)
-
-
-
-
-###################
-### Call setup! ###
-###################
-setup(name="bright",
-    version = INFO['version'],
-    description = 'Bright/Python',
-    author = 'Anthony Scopatz',
-    author_email = 'scopatz@gmail.com',
-    url = 'http://www.scopatz.com/',
-    packages = ['bright', 'bright_data', 'bright.gui', 'bright.gui.views', 'bright.gui.views.component_views', 'bright.gui.views.component_views.views', 'bright.gui.models', 'bright.gui.models.class_models'],
-    package_dir = pack_dir,
-    package_data = {'bright_data': bright_data_files},
-    cmdclass = {'build_ext': build_ext}, 
-    ext_modules=[
-        Extension(**stlconv_ext), 
-        Extension(**isoname_ext), 
-        Extension(**mass_stream_ext),
-        Extension(**bright_ext), 
-       ],
-    scripts = ['src/scripts/bright_gui']
-    )
-"""
 
 ##########################
 ### Setup Package Data ###

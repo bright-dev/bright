@@ -36,20 +36,20 @@ void LightWaterReactor1G::calc_params()
     params_prior_calc["BUd"]  = 0.0;
     params_after_calc["BUd"] = BUd;
 
-    params_prior_calc["U"]  = ms_feed_u.mass;
-    params_after_calc["U"] = ms_prod_u.mass;
+    params_prior_calc["U"]  = mat_feed_u.mass;
+    params_after_calc["U"] = mat_prod_u.mass;
 
-    params_prior_calc["TRU"]  = ms_feed_tru.mass;
-    params_after_calc["TRU"] = ms_prod_tru.mass;
+    params_prior_calc["TRU"]  = mat_feed_tru.mass;
+    params_after_calc["TRU"] = mat_prod_tru.mass;
 
-    params_prior_calc["ACT"]  = ms_feed_act.mass;
-    params_after_calc["ACT"] = ms_prod_act.mass;
+    params_prior_calc["ACT"]  = mat_feed_act.mass;
+    params_after_calc["ACT"] = mat_prod_act.mass;
 
-    params_prior_calc["LAN"]  = ms_feed_lan.mass;
-    params_after_calc["LAN"] = ms_prod_lan.mass;
+    params_prior_calc["LAN"]  = mat_feed_lan.mass;
+    params_after_calc["LAN"] = mat_prod_lan.mass;
 
-    params_prior_calc["FP"]  = 1.0 - ms_feed_act.mass  - ms_feed_lan.mass;
-    params_after_calc["FP"] = 1.0 - ms_prod_act.mass - ms_prod_lan.mass;
+    params_prior_calc["FP"]  = 1.0 - mat_feed_act.mass  - mat_feed_lan.mass;
+    params_after_calc["FP"] = 1.0 - mat_prod_act.mass - mat_prod_lan.mass;
 
     return;
 };

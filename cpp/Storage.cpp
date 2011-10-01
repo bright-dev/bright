@@ -157,11 +157,11 @@ Storage::~Storage ()
 
 void Storage::calc_params()
 {
-    params_prior_calc["Mass"]  = ms_feed.mass;
-    params_after_calc["Mass"] = ms_prod.mass;
+    params_prior_calc["Mass"]  = mat_feed.mass;
+    params_after_calc["Mass"] = mat_prod.mass;
 }
 
-MassStream Storage::calc()
+pyne::Material Storage::calc()
 {
     //Main part of the cooling code.
     //	instream is a mass stream of nuclides as the keys with the mass as a float as the value.
@@ -169,8 +169,8 @@ MassStream Storage::calc()
     //	bright::track_isos throws out any values not in the list before returning vector
 
     //Initialize the components.
-    CompDict cdin, cdout;
-    cdin = ms_feed.mult_by_mass();
+    pyne::comp_map cdin, cdout;
+    cdin = mat_feed.mult_by_mass();
 
     //Adds decay chains to isochains set that aren't already there.
     for (CompIter ci = cdin.begin(); ci != cdin.end(); ci++)
@@ -196,38 +196,38 @@ MassStream Storage::calc()
                 cdout[daughter] = bateman(daughter, cdin[mom], *icsi);
         }
     }
-    ms_prod = MassStream (cdout);
-    return ms_prod;
+    mat_prod = pyne::Material (cdout);
+    return mat_prod;
 }
 
-MassStream Storage::calc(CompDict cd)
+pyne::Material Storage::calc(pyne::comp_map cd)
 {
-    ms_feed = MassStream (cd);
+    mat_feed = pyne::Material (cd);
     return calc();
 }
 
-MassStream Storage::calc(MassStream ms)
+pyne::Material Storage::calc(pyne::Material ms)
 {
-    ms_feed = ms;
+    mat_feed = ms;
     return calc();
 }
 
-MassStream Storage::calc(double t)
+pyne::Material Storage::calc(double t)
 {
     decay_time = t;
     return calc();
 }
 
-MassStream Storage::calc(CompDict cd, double t)
+pyne::Material Storage::calc(pyne::comp_map cd, double t)
 {
     decay_time = t;
-    ms_feed = MassStream (cd);
+    mat_feed = pyne::Material (cd);
     return calc();
 }
 
-MassStream Storage::calc(MassStream ms, double t)
+pyne::Material Storage::calc(pyne::Material ms, double t)
 {
     decay_time = t;
-    ms_feed = ms;
+    mat_feed = ms;
     return calc();
 }

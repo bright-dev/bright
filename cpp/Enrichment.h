@@ -10,7 +10,7 @@
 #include <exception>
 #include <math.h>
 #include "FCComp.h"
-#include "MassStream.h"
+#include "pyne::Material.h"
 #include "isoname.h"
 
 /************************************************/
@@ -68,10 +68,10 @@ public:
     double alpha_0;         //specify on init.
     double Mstar_0;         //specify on init.
     double Mstar;           //Current Mstar
-    MassStream ms_tail;    //Waste Stream
+    pyne::Material mat_tail;    //Waste Stream
 
     //key isotopic info
-    int j;          //The jth isotope is the key, in zzaaam form, must be in ms_feed.
+    int j;          //The jth isotope is the key, in zzaaam form, must be in mat_feed.
     int k;          //The kth isotope is the other key to separate j away from.
     double xP_j;    //Product enrichment of jth isotope
     double xW_j;    //Waste/Tails enrichment of the jth isotope
@@ -91,9 +91,9 @@ public:
     //Public access functions
     void initialize(EnrichmentParameters);		//Initializes the constructors.
     void calc_params ();
-    MassStream calc ();
-    MassStream calc (CompDict);
-    MassStream calc (MassStream);	
+    pyne::Material calc ();
+    pyne::Material calc (pyne::comp_map);
+    pyne::Material calc (pyne::Material);	
 
     double PoverF (double, double, double);
     double WoverF (double, double, double);

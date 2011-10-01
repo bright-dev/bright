@@ -4,11 +4,11 @@
 
 /*** Common Function ***/
 
-std::set<std::string> bright::make_fuel_fab_params_set(MassStreams * mss, std::set<std::string> orig_set)
+std::set<std::string> bright::make_fuel_fab_params_set(pyne::Materials * mss, std::set<std::string> orig_set)
 {
     std::set<std::string> new_set (orig_set);
 
-    for ( MassStreams::iterator ms=(*mss).begin() ; ms != (*mss).end(); ms++ )
+    for ( pyne::Materials::iterator ms=(*mss).begin() ; ms != (*mss).end(); ms++ )
     {
         new_set.insert( "Weight_" + (*ms).first );
         new_set.insert( "deltaR_" + (*ms).first );
@@ -33,14 +33,14 @@ FuelFabrication::FuelFabrication(std::set<std::string> paramtrack, std::string n
 {
 };
 
-FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws_in, Reactor1G r, std::string n) : \
+FuelFabrication::FuelFabrication(pyne::Materials mss, MassWeights mws_in, Reactor1G r, std::string n) : \
     FCComp(bright::make_fuel_fab_params_set(&mss), n)
 {
     initialize(mss, mws_in, r);
 };
 
 
-FuelFabrication::FuelFabrication(MassStreams mss, MassWeights mws_in, Reactor1G r, std::set<std::string> paramtrack, std::string n) : \
+FuelFabrication::FuelFabrication(pyne::Materials mss, MassWeights mws_in, Reactor1G r, std::set<std::string> paramtrack, std::string n) : \
     FCComp(bright::make_fuel_fab_params_set(&mss, paramtrack), n)
 {
     initialize(mss, mws_in, r);
@@ -53,7 +53,7 @@ FuelFabrication::~FuelFabrication()
 
 
 
-void FuelFabrication::initialize(MassStreams mss, MassWeights mws_in, Reactor1G r)
+void FuelFabrication::initialize(pyne::Materials mss, MassWeights mws_in, Reactor1G r)
 {
     /** Sets the fuel fabrication specific parameters.
      *  Must be done once at the beginning of fuel fabrication object life.
@@ -72,9 +72,9 @@ void FuelFabrication::initialize(MassStreams mss, MassWeights mws_in, Reactor1G 
 void FuelFabrication::calc_deltaRs()
 {
     // Calculates the deltaR for each mass stream
-    for (MassStreams::iterator mss = mass_streams.begin(); mss != mass_streams.end(); mss++)
+    for (pyne::Materials::iterator mss = mass_streams.begin(); mss != mass_streams.end(); mss++)
     {
-        MassStream ms = (*(*mss).second);
+        pyne::Material ms = (*(*mss).second);
         ms.normalize();
 
         double dR = reactor.calc_deltaR(ms);
@@ -85,10 +85,10 @@ void FuelFabrication::calc_deltaRs()
 };
 
 
-MassStream FuelFabrication::calc_core_input()
+pyne::Material FuelFabrication::calc_core_input()
 {
-    CompDict cd;
-    MassStream core_input (cd, 0.0);
+    pyne::comp_map cd;
+    pyne::Material core_input (cd, 0.0);
 
     for (MassWeights::iterator mws = mass_weights_out.begin(); mws != mass_weights_out.end(); mws++)
     {
@@ -127,12 +127,12 @@ void FuelFabrication::calc_mass_ratios()
     };
 
     // deltaR for key a
-    MassStream ms_a = *mass_streams[key_a];
+    pyne::Material ms_a = *mass_streams[key_a];
     ms_a.normalize();
     double dR_a = reactor.calc_deltaR( ms_a );
 
     // deltaR for key b
-    MassStream ms_b = *mass_streams[key_b];
+    pyne::Material ms_b = *mass_streams[key_b];
     ms_b.normalize();
     double dR_b = reactor.calc_deltaR( ms_b );
 
@@ -152,7 +152,7 @@ void FuelFabrication::calc_mass_ratios()
     };
 
     double dR_guess;
-    MassStream core_input;
+    pyne::Material core_input;
 
     double k_a, k_b;
     double sign_a, sign_b;
@@ -217,15 +217,15 @@ void FuelFabrication::calc_mass_ratios()
 };
 
 
-MassStream FuelFabrication::calc()
+pyne::Material FuelFabrication::calc()
 {
     calc_mass_ratios();
-    ms_prod = calc_core_input();
-    return ms_prod;
+    mat_prod = calc_core_input();
+    return mat_prod;
 };
 
 
-MassStream FuelFabrication::calc(MassStreams mss, MassWeights mws_in, Reactor1G r)
+pyne::Material FuelFabrication::calc(pyne::Materials mss, MassWeights mws_in, Reactor1G r)
 {
     initialize(mss, mws_in, r);
     return calc();

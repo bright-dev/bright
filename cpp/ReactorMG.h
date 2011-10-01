@@ -25,7 +25,7 @@
 
 //Bright Libs
 #include "FCComp.h"
-#include "MassStream.h"
+#include "pyne::Material.h"
 #include "isoname.h"
 
 #include "FluencePoint.h"
@@ -123,9 +123,9 @@ public:
 
 
     // Attributes read in from data library
-    iso_set I;   // Set of isotopes that may be in ms_feed.
-    iso_set J;   // Set of isotopes that may be in ms_prod.
-    iso_set K;   // Set of isotopes that is the union of all isos in ms_feed and all isos in nuc_data
+    iso_set I;   // Set of isotopes that may be in mat_feed.
+    iso_set J;   // Set of isotopes that may be in mat_prod.
+    iso_set K;   // Set of isotopes that is the union of all isos in mat_feed and all isos in nuc_data
 
     int K_num;
     iso_vec K_ord; // Lowest-to-highest order of J.
@@ -312,14 +312,14 @@ public:
 
 
     // Results of calc_sub_streams()
-    MassStream ms_feed_u;   // Input Uranium MassStream
-    MassStream ms_feed_tru; // Input Transuranic MassStream
-    MassStream ms_feed_lan; // Input Lanthinide MassStream
-    MassStream ms_feed_act; // Input Actinide MassStream
-    MassStream ms_prod_u;   // Output Uranium MassStream
-    MassStream ms_prod_tru; // Output Transuranic MassStream
-    MassStream ms_prod_lan; // Output Lanthinide MassStream
-    MassStream ms_prod_act; // Output Actinide MassStream
+    pyne::Material mat_feed_u;   // Input Uranium pyne::Material
+    pyne::Material mat_feed_tru; // Input Transuranic pyne::Material
+    pyne::Material mat_feed_lan; // Input Lanthinide pyne::Material
+    pyne::Material mat_feed_act; // Input Actinide pyne::Material
+    pyne::Material mat_prod_u;   // Output Uranium pyne::Material
+    pyne::Material mat_prod_tru; // Output Transuranic pyne::Material
+    pyne::Material mat_prod_lan; // Output Lanthinide pyne::Material
+    pyne::Material mat_prod_act; // Output Actinide pyne::Material
 
 
     // The production rate subtracted by the destruction rate at target_BU
@@ -346,7 +346,7 @@ public:
     void calc_nearest_neighbors();
 
     void         calc_T_itd();
-    void         calc_ms_prod();
+    void         calc_mat_prod();
     void         calcSubStreams();
     double       calc_tru_cr();
 
@@ -356,9 +356,9 @@ public:
     void         run_P_NL(double);
     void         calibrate_P_NL_to_BUd();
 
-    MassStream   calc ();
-    MassStream   calc (CompDict);
-    MassStream   calc (MassStream);	
+    pyne::Material   calc ();
+    pyne::Material   calc (pyne::comp_map);
+    pyne::Material   calc (pyne::Material);	
 
     // Lattice functions
     void lattice_E_planar(double, double);

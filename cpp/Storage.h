@@ -9,7 +9,7 @@
 #include <math.h>
 #include <string.h>
 #include "isoname.h"
-#include "MassStream.h"
+#include "pyne::Material.h"
 #include "FCComp.h"
 #include "hdf5.h"
 
@@ -76,12 +76,12 @@ public:
 
     //Public Functions
     void calc_params();
-    MassStream calc ();
-    MassStream calc (CompDict);
-    MassStream calc (MassStream);
-    MassStream calc (double);
-    MassStream calc (CompDict, double);
-    MassStream calc (MassStream, double);
+    pyne::Material calc ();
+    pyne::Material calc (pyne::comp_map);
+    pyne::Material calc (pyne::Material);
+    pyne::Material calc (double);
+    pyne::Material calc (pyne::comp_map, double);
+    pyne::Material calc (pyne::Material, double);
 };
 
 #endif
