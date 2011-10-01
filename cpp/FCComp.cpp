@@ -23,23 +23,23 @@ void FCComp::initialize (std::set<std::string> ptrack, std::string n)
     
     pass_num = 0;
 
-    if (FCComps::write_text)
+    if (bright::write_text)
         initialize_Text();
 
-    if (FCComps::write_hdf5)
+    if (bright::write_hdf5)
         initialize_HDF5();
 }
     
 void FCComp::initialize_Text ()
 {
     //Initialize the Isotopic tracking file
-    if (!FCComps::track_isos.empty())
+    if (!bright::track_isos.empty())
     {
         std::ofstream isofile ( (name + "Isos.txt").c_str() );
         isofile << "Isotope\n";
-        for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
+        for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
         {
-            isofile << isoname::zzaaam_2_LLAAAM(*iso) << "\n"; 
+            isofile << pyne::nucname::zzaaam_2_LLAAAM(*iso) << "\n"; 
         }
         isofile.close();
     }
@@ -71,10 +71,10 @@ void FCComp::initialize_HDF5 ()
 
     //Create new/open datafile.
     H5::H5File dbFile;
-    if (bright::FileExists(FCComps::output_filename))
-        dbFile = H5::H5File(FCComps::output_filename, H5F_ACC_RDWR);
+    if (bright::FileExists(bright::output_filename))
+        dbFile = H5::H5File(bright::output_filename, H5F_ACC_RDWR);
     else
-        dbFile = H5::H5File(FCComps::output_filename, H5F_ACC_TRUNC);
+        dbFile = H5::H5File(bright::output_filename, H5F_ACC_TRUNC);
 
     //Modify dataset creation properties.
     H5::DSetCreatPropList double_params;
@@ -101,7 +101,7 @@ void FCComp::initialize_HDF5 ()
         { gFCComp = dbFile.createGroup(comp_path); }
 
     //Initialize the IsoStreams 
-    if (!FCComps::track_isos.empty())
+    if (!bright::track_isos.empty())
     {
         // Open/Create ms_feed group
         H5::Group gms_feed;
@@ -134,9 +134,9 @@ void FCComp::initialize_HDF5 ()
         // Open/Create /Isos[In|Out]/iso Datasets
         H5::DataSet dsms_feedIso;
         H5::DataSet dsms_prodIso;
-        for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
+        for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
         {
-            std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
+            std::string isoLL = pyne::nucname::zzaaam_2_LLAAAM(*iso);
 
             try
                 { dsms_feedIso = dbFile.openDataSet(comp_path + "/ms_feed/" + isoLL); }
@@ -255,7 +255,7 @@ void FCComp::write_ms_pass ()
         {
             try
             {
-                int isoInLine = isoname::LLAAAM_2_zzaaam(isoflag);
+                int isoInLine = pyne::nucname::LLAAAM_2_zzaaam(isoflag);
                 if (0 < ms_feed.comp.count(isoInLine) )
                     isobuf << "\t" << ms_feed.comp[isoInLine];
             
@@ -343,18 +343,18 @@ void FCComp::write_hdf5 ()
     hsize_t ext_size[1] = {pass_num};
         
     //Open the HDF5 file
-    H5::H5File dbFile (FCComps::output_filename, H5F_ACC_RDWR);
+    H5::H5File dbFile (bright::output_filename, H5F_ACC_RDWR);
     std::string comp_path ("/" + natural_name);
 
     //Write the isotopic component input and output streams
-    if (!FCComps::track_isos.empty())
+    if (!bright::track_isos.empty())
     {
         appendHDF5array(&dbFile, comp_path + "/ms_feed/Mass",  &(ms_feed.mass),  &RANK, dims, offset, ext_size);
         appendHDF5array(&dbFile, comp_path + "/ms_prod/Mass", &(ms_prod.mass), &RANK, dims, offset, ext_size);
 
-        for (std::set<int>::iterator iso = FCComps::track_isos.begin(); iso != FCComps::track_isos.end(); iso++)
+        for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
         {
-            std::string isoLL = isoname::zzaaam_2_LLAAAM(*iso);
+            std::string isoLL = pyne::nucname::zzaaam_2_LLAAAM(*iso);
             appendHDF5array(&dbFile, comp_path + "/ms_feed/"  + isoLL, &(ms_feed.comp[*iso]),  &RANK, dims, offset, ext_size);
             appendHDF5array(&dbFile, comp_path + "/ms_prod/" + isoLL, &(ms_prod.comp[*iso]), &RANK, dims, offset, ext_size);
         }
@@ -384,10 +384,10 @@ void FCComp::write ()
         calc_params();
 
     //Writes the output table files.
-    if (FCComps::write_text)
+    if (bright::write_text)
         write_text();
     
-    if (FCComps::write_hdf5)
+    if (bright::write_hdf5)
         write_hdf5();
 }
 

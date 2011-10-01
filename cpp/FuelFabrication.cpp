@@ -192,7 +192,7 @@ void FuelFabrication::calc_mass_ratios()
     
     k = reactor.batch_average_k( reactor.target_BU );
     n = 0;
-    if (0 < FCComps::verbosity)
+    if (0 < bright::verbosity)
         std::cout << n << ") " << k << " "; 
 
     while (0.001 < fabs(1.0 - k) && n < 10)
@@ -207,11 +207,11 @@ void FuelFabrication::calc_mass_ratios()
         dR_guess = reactor.calc_deltaR( core_input );
         k = reactor.batch_average_k( reactor.target_BU );
         n = n+1;
-        if (0 < FCComps::verbosity)
+        if (0 < bright::verbosity)
             std::cout << k << " ";
     };
 
-    if (0 < FCComps::verbosity)
+    if (0 < bright::verbosity)
         std::cout << "\n\n";
     
 };
