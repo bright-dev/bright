@@ -290,7 +290,7 @@ void Enrichment::SolveNM()
     pyne::comp_map compP;
     pyne::comp_map compW;
 
-    for (CompIter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
+    for (pyne::comp_iter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
     {
         compP[i->first] = xP_i(i->first);
         compW[i->first] = xW_i(i->first);
@@ -566,7 +566,7 @@ void Enrichment::LoverF()
 		double SWUoverF = 0.0;
         double tempNumerator = 0.0; 
 
-		for (CompIter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
+		for (pyne::comp_iter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
         {
 			tempNumerator = (PoF*mat_prod.comp[i->first]*log(RP) + WoF*mat_tail.comp[i->first]*log(RW) - mat_feed.comp[i->first]*log(RF));
 			LtotalOverF = LtotalOverF + (tempNumerator / deltaU_i_OverG(i->first));

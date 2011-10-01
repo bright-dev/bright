@@ -173,7 +173,7 @@ pyne::Material Storage::calc()
     cdin = mat_feed.mult_by_mass();
 
     //Adds decay chains to isochains set that aren't already there.
-    for (CompIter ci = cdin.begin(); ci != cdin.end(); ci++)
+    for (pyne::comp_iter ci = cdin.begin(); ci != cdin.end(); ci++)
     {
         IsoChain ic (1, ci->first);
         if (0 == isochains.count(ic))
