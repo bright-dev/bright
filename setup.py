@@ -122,6 +122,9 @@ exts.append(cpp_ext("bright.lib.libbright", ['bright.cpp'], pyne_libs))
 # fccomp lib
 exts.append(cpp_ext("bright.lib.libbright_fccomp", ['fccomp.cpp'], ['bright'] + pyne_libs))
 
+# reprocess lib
+exts.append(cpp_ext("bright.lib.libbright_reprocess", ['reprocess.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
+
 
 
 ##########################

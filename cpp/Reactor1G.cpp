@@ -262,7 +262,7 @@ void Reactor1G::fold_mass_weights()
 
     //First Things First, Let's calculate the atomic weight of the IHM
     double inverseA_IHM = 0.0;
-    for (CompIter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
+    for (pyne::comp_iter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
     {
         //Ensure that the isotope is officially allowed.
         if (0 == I.count(iso->first))
@@ -280,7 +280,7 @@ void Reactor1G::fold_mass_weights()
     {
         if ( (key->first) == "IHM")
         {
-            for (CompIter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
+            for (pyne::comp_iter iso = mat_feed.comp.begin(); iso != mat_feed.comp.end(); iso++)
             {
                 //Ensure that the isotope is officially allowed.
                 if (0 == I.count(iso->first))
@@ -304,7 +304,7 @@ void Reactor1G::fold_mass_weights()
 
     //Fuel mass weight
     miF.clear(); 
-    for (CompIter iso = niF.begin(); iso != niF.end(); iso++)
+    for (pyne::comp_iter iso = niF.begin(); iso != niF.end(); iso++)
     {
         if (niF[iso->first] == 0.0)
         {
@@ -336,7 +336,7 @@ void Reactor1G::fold_mass_weights()
     };
     miC.clear();
     double rel_Vol_coef = (rhoC * MWF * VC) / (rhoF * MWC * VF);
-    for (CompIter iso = niC.begin(); iso != niC.end(); iso++)
+    for (pyne::comp_iter iso = niC.begin(); iso != niC.end(); iso++)
     {
         if (niC[iso->first] == 0.0)
             continue;
@@ -346,21 +346,21 @@ void Reactor1G::fold_mass_weights()
 
     //Fuel Number Density
     NiF.clear();
-    for (CompIter iso = niF.begin(); iso != niF.end(); iso++)
+    for (pyne::comp_iter iso = niF.begin(); iso != niF.end(); iso++)
     {
         NiF[iso->first] = niF[iso->first] * rhoF * (bright::N_A) / MWF;
     };
 
     //Coolant Number Density
     NiC.clear();
-    for (CompIter iso = niC.begin(); iso != niC.end(); iso++)	{
+    for (pyne::comp_iter iso = niC.begin(); iso != niC.end(); iso++)	{
         NiC[iso->first] = niC[iso->first] * rhoC * (bright::N_A) / MWC;
     };
 
     //BU(F)
     BU_F_.clear();
     BU_F_.assign( F.size(), 0.0 ); //re-initialize BU(F)
-    for (CompIter i = miF.begin(); i != miF.end(); i++)
+    for (pyne::comp_iter i = miF.begin(); i != miF.end(); i++)
     {
         for (int f = 0; f < BU_F_.size(); f++)
         {
@@ -371,7 +371,7 @@ void Reactor1G::fold_mass_weights()
     //P(F)
     P_F_.clear();
     P_F_.assign( F.size(), 0.0 );
-    for (CompIter i = miF.begin(); i != miF.end(); i++)
+    for (pyne::comp_iter i = miF.begin(); i != miF.end(); i++)
     {
         for (int f = 0; f < P_F_.size(); f++)
         {
@@ -382,7 +382,7 @@ void Reactor1G::fold_mass_weights()
     //d^F(F)
     dF_F_.clear();
     dF_F_.assign( F.size(), 0.0 );
-    for (CompIter i = miF.begin(); i != miF.end(); i++)
+    for (pyne::comp_iter i = miF.begin(); i != miF.end(); i++)
     {
         for (int f = 0; f < dF_F_.size(); f++)
         {
@@ -393,7 +393,7 @@ void Reactor1G::fold_mass_weights()
     //d^C(F)
     dC_F_.clear();
     dC_F_.assign( F.size(), 0.0 );
-    for (CompIter i = miC.begin(); i != miC.end(); i++)
+    for (pyne::comp_iter i = miC.begin(); i != miC.end(); i++)
     {
         if (rescale_hydrogen_xs && (i->first) == 10010)
         {
@@ -450,7 +450,7 @@ void Reactor1G::calc_Mj_F_()
     for (IsoIter j = J.begin(); j != J.end(); j++ )
     {
         Mj_F_[*j].assign( F.size(), 0.0 );
-        for(CompIter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
+        for(pyne::comp_iter i = mat_feed.comp.begin(); i != mat_feed.comp.end(); i++)
         {
             if (0 < I.count(i->first))
             {
@@ -1135,7 +1135,7 @@ void Reactor1G::calc_zeta()
         //Calculate the following...
         //	* Macroscopic abspobtion XS in Fuel
         //	* Macroscopic transport XS in Fuel
-        for(CompIter iso = niF.begin(); iso != niF.end(); iso++)
+        for(pyne::comp_iter iso = niF.begin(); iso != niF.end(); iso++)
         {
             //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
             //Else use KAERI Data for sigma_a
@@ -1177,7 +1177,7 @@ void Reactor1G::calc_zeta()
         //Calculate the following...
         //	* Macroscopic abspobtion XS in Coolant
         //	* Macroscopic transport XS in Coolant
-        for(CompIter iso = niC.begin(); iso != niC.end(); iso++)
+        for(pyne::comp_iter iso = niC.begin(); iso != niC.end(); iso++)
         {
             //If Lanthanide or Actinide, use ORIGEN Data as sigma_a
             //Else use KAERI Data for sigma_a
