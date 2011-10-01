@@ -1,12 +1,15 @@
 #!/usr/bin/env python
  
 import os
+import glob
 from copy import deepcopy
     
 from distutils.core import setup
+from distutils.util import get_platform
 from distutils.extension import Extension
 from distutils.file_util import copy_file, move_file
 from distutils.dir_util import mkpath, remove_tree
+from distutils.sysconfig import get_python_version
 from Cython.Distutils import build_ext
 
 #from setuptools.command.develop import develop
@@ -112,7 +115,7 @@ exts = []
 
 # Pure C/C++ share libraries
 # pyne lib
-exts.append(cpp_ext("pyne.lib.libbright", ['bright.cpp']))
+exts.append(cpp_ext("bright.lib.libbright", ['bright.cpp']))
 
 
 
@@ -272,7 +275,9 @@ scripts=['scripts/bright_gui']
 ###################
 ### Call setup! ###
 ###################
-if __name__ == "__main__":
+def main():
+    """Perform the Bright setup."""
+
     # clean includes dir and recopy files over
     if os.path.exists('bright/includes'):
         remove_tree('bright/includes')
@@ -299,3 +304,5 @@ if __name__ == "__main__":
     if os.path.exists('bright/includes'):
         remove_tree('bright/includes')
 
+if __name__ == "__main__":
+    main()
