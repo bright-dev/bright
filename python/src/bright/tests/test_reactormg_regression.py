@@ -3,6 +3,7 @@ import re
 
 import numpy as np
 import tables as tb
+from scipy.stats import linregress
 
 from bright import *
 import isoname
@@ -11,6 +12,7 @@ from mass_stream import MassStream
 import serpent
 import matplotlib.pyplot as plt
 from matplotlib import rc
+from matplotlib.text import Text
 
 rc('text', usetex=True)
 rc('font', family='roman')
@@ -141,7 +143,7 @@ def test_regression():
     return rmg, res_bu, dep_bu, res_xs
 
 
-def make_graphs(r, s, diff, serr=None, name=""):
+def make_graphs(r, s, diff, serr=None, name="", r2=False):
     global burn_times
     plt.clf()
 
@@ -170,13 +172,18 @@ def make_graphs(r, s, diff, serr=None, name=""):
     plt.clf()
 
 
-def make_flux_graphs(r, s, diff, serr=None, name=""):
+def make_flux_graphs(r, s, diff, serr=None, name="", r2=False):
     global E_g
     plt.clf()
 
     u_g = np.log(E_g[0] / E_g)
     u_diff = u_g[1:] - u_g[:-1]
     u_norm = u_diff[0] / u_diff
+
+    if r2:
+        slope, intercept, r_value, p_value, std_err = linregress(r, s)
+        r_squared = r_value**2
+        plt.figtext(0.7, 0.2, '$R^2={0:.3G}$'.format(r_squared))
 
     # make the compare plot
     gkw = {'datalabel': "Serpent",
@@ -195,6 +202,8 @@ def make_flux_graphs(r, s, diff, serr=None, name=""):
     gkw['write'] = True 
     gkw['name'] = name.split('[')[0].replace(' ', '_')
     StairStepEnergy((r * u_norm)[::-1], E_g[::-1], **gkw)    
+
+    
 
     """plt.hist(-1 * (E_g[1:] - E_g[:-1])[::-1], weights=diff[::-1], align='mid', color='g', rwidth=0.95)
     plt.xscale('log')
@@ -462,7 +471,10 @@ if __name__ == "__main__":
 
     for t in range(len(burn_times)):
         print "Making flux figure for time t = {0}".format(t)
-        make_flux_graphs(r_phi[t], s_phi[t], diff_phi[t], serr=serr_phi[t], name="Normalized Flux at {0} days".format(int(burn_times[t])))
+        make_flux_graphs(r_phi[t], s_phi[t], diff_phi[t], serr=serr_phi[t], name="Normalized Flux at {0} days".format(int(burn_times[t])), r2=True)
+        slope, intercept, r_value, p_value, std_err = linregress(r_phi[t], s_phi[t])
+        r_squared = r_value**2
+        print "for t = {0} the fluxes have an R^2 = {1}\n".format(t, r_squared)
 
 
     r_total, s_total, diff_total = calc_diff(rmg.Sigma_t_fuel_tg[0], res_xs['TOTXS'][0, 2::2], res_xs['TOTXS'][0, 3::2], name="Total XS")
