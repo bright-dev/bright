@@ -8,7 +8,7 @@
 #include "boost/math/special_functions/bessel.hpp"
 
 // Bright Libs
-#include "bright.h"
+#include "fccomp.h"
 #include "fluence_point.h"
 #include "reactor_parameters.h"
 
@@ -19,7 +19,7 @@ namespace bright {
   /***********************************************/
 
   typedef std::map<int, std::vector<double> > nuc_fluence_dict;
-  typedef IsoFluenceDict::iterator nuc_fluence_iter;
+  typedef nuc_fluence_dict::iterator nuc_fluence_iter;
 
   typedef std::vector<double> data_F_;
 
@@ -73,10 +73,10 @@ namespace bright {
 
     std::string libfile;    // Path where the reactor's HDF5 library
     std::vector<double> F;  // Fluence in [n/kb]
-    IsoFluenceDict BUi_F_;  // Burnup [MWd/kgIHM]
-    IsoFluenceDict pi_F_;   // Production rate [n/s]
-    IsoFluenceDict di_F_;   // Destruction rate [n/s]
-    std::map<int, IsoFluenceDict> Tij_F_; //T ransformation Matrix [kg_i/kgIHM]
+    nuc_fluence_dict BUi_F_;  // Burnup [MWd/kgIHM]
+    nuc_fluence_dict pi_F_;   // Production rate [n/s]
+    nuc_fluence_dict di_F_;   // Destruction rate [n/s]
+    std::map<int, nuc_fluence_dict> Tij_F_; //T ransformation Matrix [kg_i/kgIHM]
 
     double A_IHM; // Atomic weight of IHM
     double MWF;   // Fuel Molecular Weight
