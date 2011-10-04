@@ -141,6 +141,12 @@ exts.append(cpp_ext("bright.lib.libbright_fluence_point", ['fluence_point.cpp'],
 exts.append(cpp_ext("bright.lib.libbright_reactor1g", ['reactor1g.cpp'], 
             ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point'] + pyne_libs))
 
+# light_water_reactor1g lib
+exts.append(cpp_ext("bright.lib.libbright_light_water_reactor1g", ['light_water_reactor1g.cpp'], 
+            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
+            'bright_reactor1g'] + pyne_libs))
+
+
 
 ##########################
 ### Setup Package Data ###
