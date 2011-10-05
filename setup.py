@@ -151,6 +151,11 @@ exts.append(cpp_ext("bright.lib.libbright_fast_reactor1g", ['fast_reactor1g.cpp'
             ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
             'bright_reactor1g'] + pyne_libs))
 
+# fuel fabrication lib
+exts.append(cpp_ext("bright.lib.libbright_fuel_fabrication", ['fuel_fabrication.cpp'], 
+            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
+            'bright_reactor1g'] + pyne_libs))
+
 
 
 ##########################
