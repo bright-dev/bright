@@ -23,9 +23,6 @@ namespace bright {
 
   typedef std::vector<double> data_F_;
 
-  typedef std::set<int> nuc_set;
-  typedef nuc_set::iterator nuc_iter;
-
   class Reactor1G : public FCComp
   {
   /** Reactor class
