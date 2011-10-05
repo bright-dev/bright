@@ -54,6 +54,10 @@ namespace bright {
 
   extern std::string output_filename;
 
+  // Some useful typedefs...
+  typedef std::set<int> nuc_set;
+  typedef nuc_set::iterator nuc_iter;
+
   // Some HDF5 helpers
   extern H5::StrType iso_LL_type;
 
