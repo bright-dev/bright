@@ -171,7 +171,7 @@ pyne::Material bright::Storage::calc()
   // Main part of the cooling code.
   // instream is a mass stream of nuclides as the keys with the mass as a float as the value.
   // decay_time is a float value for the time in seconds.
-  // bright::track_isos throws out any values not in the list before returning vector
+  // bright::track_nucs throws out any values not in the list before returning vector
 
   // Initialize the components.
   pyne::comp_map cdin, cdout;
@@ -193,7 +193,7 @@ pyne::Material bright::Storage::calc()
   {
     mom = (*ncsi)[0];
     daughter = (*ncsi)[(*ncsi).size()-1];
-    if ( (0 < cdin.count(mom)) && (0 < bright::track_isos.count(daughter)) )
+    if ( (0 < cdin.count(mom)) && (0 < bright::track_nucs.count(daughter)) )
     {
       if (0 < cdout.count(daughter))
         cdout[daughter] = cdout[daughter] + bateman(daughter, cdin[mom], *ncsi);

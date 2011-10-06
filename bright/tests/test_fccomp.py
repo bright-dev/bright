@@ -160,7 +160,7 @@ class TestFCCompMethods(TestCase):
         assert_equal(fcc.params_after_calc["Mass"], 0.0)
 
     def test_write_ms_pass(self):
-        bright_config.track_isos = set([922350])
+        bright_config.track_nucs = set([922350])
         fcc = FCComp()
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
@@ -172,7 +172,7 @@ class TestFCCompMethods(TestCase):
         fcc.write_params_pass()
 
     def test_write_text(self):
-        bright_config.track_isos = set([922350])
+        bright_config.track_nucs = set([922350])
         fcc = FCComp(set(["Mass"]))
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
@@ -180,7 +180,7 @@ class TestFCCompMethods(TestCase):
         fcc.write_text()
 
     def test_write_hdf5_1(self):
-        bright_config.track_isos = set([922350])
+        bright_config.track_nucs = set([922350])
         bright_config.write_hdf5 = True
         fcc = FCComp(set(), 'fcc')
         fcc.ms_feed  = MassStream({922350: 1.0})
@@ -189,7 +189,7 @@ class TestFCCompMethods(TestCase):
         fcc.write_hdf5()
 
     def test_write_hdf5_2(self):
-        bright_config.track_isos = set([922350])
+        bright_config.track_nucs = set([922350])
         bright_config.write_hdf5 = True
         fcc = FCComp(set(["Mass"]), 'fcc')
         fcc.ms_feed  = MassStream({922350: 1.0})
@@ -200,7 +200,7 @@ class TestFCCompMethods(TestCase):
 
     def test_write_1(self):
         """Text only."""
-        bright_config.track_isos = set([922350])
+        bright_config.track_nucs = set([922350])
         fcc = FCComp(set(["Mass"]))
         fcc.ms_feed  = MassStream({922350: 1.0})
         fcc.ms_prod = MassStream({922350: 0.5})
@@ -208,7 +208,7 @@ class TestFCCompMethods(TestCase):
     
     def test_write_2(self):
         """HDF5 only."""
-        bright_config.track_isos = set([922350])
+        bright_config.track_nucs = set([922350])
         bright_config.write_hdf5 = True
         bright_config.write_text = False
         fcc = FCComp(set(["Mass"]), 'fcc')
@@ -218,7 +218,7 @@ class TestFCCompMethods(TestCase):
 
     def test_write_3(self):
         """HDF5 & Text output."""
-        bright_config.track_isos = set([922350])
+        bright_config.track_nucs = set([922350])
         bright_config.write_hdf5 = True
         bright_config.write_text = True
         fcc = FCComp(set(["Mass"]), 'fcc')

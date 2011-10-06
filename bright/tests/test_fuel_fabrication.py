@@ -182,7 +182,7 @@ class TestFuelFabricationAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
 
         r1g = Reactor1G(reactor_parameters=default_rp)
         r1g.loadlib(libfile)
@@ -236,7 +236,7 @@ class TestFuelFabricationMethodss(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
 
         r1g = Reactor1G(reactor_parameters=default_rp)
         r1g.loadlib(libfile)

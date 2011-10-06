@@ -358,7 +358,7 @@ class TestReactor1GBasicDataAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G()
         cls.r1g.loadlib(libfile)
 
@@ -411,7 +411,7 @@ class TestReactor1GBasicDataAttributes(TestCase):
 
     def test_Tij_F_(self):
         Tij_F_ = self.r1g.Tij_F_
-        jsos   = bright_config.track_isos
+        jsos   = bright_config.track_nucs
         for i in Tij_F_.keys():
             for j in jsos:
                 assert_equal(len(self.r1g.F), len(Tij_F_[i][j]))
@@ -429,7 +429,7 @@ class TestReactor1GCalculatedWeightAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -484,7 +484,7 @@ class TestReactor1GCalculatedDataAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -573,7 +573,7 @@ class TestReactor1GDischargeAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -606,7 +606,7 @@ class TestReactor1GSubStreamAndtru_crAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -658,7 +658,7 @@ class TestReactor1GThermalDisadvantageFactorAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -712,7 +712,7 @@ class TestReactor1GInitializationMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -761,7 +761,7 @@ class TestReactor1GTransmutationMatrixMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -802,7 +802,7 @@ class TestReactor1GBasicCalculationMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -861,7 +861,7 @@ class TestReactor1GBurnupMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -914,7 +914,7 @@ class TestReactor1GBurnupMethods2(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -939,7 +939,7 @@ class TestReactor1GBurnupMethods3(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -965,7 +965,7 @@ class TestReactor1GBurnupMethods4(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -990,7 +990,7 @@ class TestReactor1GLatticeMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
         cls.r1g.loadlib(libfile)
         cls.r1g.ms_feed = MassStream({922350: 0.5, 922380: 0.5})

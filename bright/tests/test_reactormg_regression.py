@@ -78,7 +78,7 @@ def run_serpent():
 def run_reactormg():
     # Init bright
     libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
-    load_track_isos_hdf5(libfile)
+    load_track_nucs_hdf5(libfile)
     bright_config.write_text = False
     bright_config.write_hdf5 = False
     bright_config.verbosity = 100

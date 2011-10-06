@@ -284,7 +284,7 @@ class TestReactorMGBasicDataAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG()
         cls.rmg.loadlib(libfile)
 
@@ -448,7 +448,7 @@ class TestReactorMGBasicDataAttributes(TestCase):
 
     def test_Tij_F_(self):
         Tij_F_ = self.rmg.Tij_F_
-        jsos   = bright_config.track_isos
+        jsos   = bright_config.track_nucs
         for i in Tij_F_.keys():
             for j in jsos:
                 assert_equal(len(self.rmg.F), len(Tij_F_[i][j]))
@@ -471,7 +471,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.05, 922380: 0.95})
@@ -684,7 +684,7 @@ class TestReactorMGCalculatedWeightAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -739,7 +739,7 @@ class TestReactorMGCalculatedDataAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -828,7 +828,7 @@ class TestReactorMGDischargeAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -860,7 +860,7 @@ class TestReactorMGSubStreamAndtru_crAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -912,7 +912,7 @@ class TestReactorMGThermalDisadvantageFactorAttributes(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -966,7 +966,7 @@ class TestReactorMGInitializationMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -1015,7 +1015,7 @@ class TestReactorMGTransmutationMatrixMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -1056,7 +1056,7 @@ class TestReactorMGBasicCalculationMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -1115,7 +1115,7 @@ class TestReactorMGBurnupMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -1168,7 +1168,7 @@ class TestReactorMGBurnupMethods2(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -1193,7 +1193,7 @@ class TestReactorMGBurnupMethods3(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -1219,7 +1219,7 @@ class TestReactorMGBurnupMethods4(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
@@ -1243,7 +1243,7 @@ class TestReactorMGLatticeMethods(TestCase):
     @classmethod
     def setup_class(cls):
         libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
-        bright.load_track_isos_hdf5(libfile)
+        bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
         cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})

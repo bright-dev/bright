@@ -87,7 +87,7 @@ FCComp Attributes
 
     A list (C set) of strings that holds the keys of :attr:`params_prior_calc` and :attr:`params_after_calc`.
     Every component type has its own set of parameters it is able to track.  This is why 
-    :attr:`track_params` is a component-specific attribute, while :func:`track_isos` is a module-level
+    :attr:`track_params` is a component-specific attribute, while :func:`track_nucs` is a module-level
     object.
 
     This attribute is set during initialization and is protected.

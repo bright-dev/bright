@@ -232,7 +232,7 @@ class TestFastReactor1GMethods(TestCase):
 
     def test_calc_params(self):
         lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-        bright.load_track_isos_hdf5(lf)
+        bright.load_track_nucs_hdf5(lf)
         rp = bright.fr_defaults()
         rp.BUt = 140.0
         fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')

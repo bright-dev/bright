@@ -257,7 +257,7 @@ class TestEnrichmentMethods(TestCase):
 
     @classmethod
     def setup_class(cls):
-        bright_config.track_isos = set([922350, 922360, 922380])
+        bright_config.track_nucs = set([922350, 922360, 922380])
         bright_config.verbosity = 0
 
     @classmethod
@@ -340,7 +340,7 @@ class TestEnrichmentBenchmarks(TestCase):
 
     @classmethod
     def setup_class(cls):
-        bright_config.track_isos = set([922320, 922340, 922350, 922360, 922380])
+        bright_config.track_nucs = set([922320, 922340, 922350, 922360, 922380])
         bright_config.verbosity = 0
 
     @classmethod

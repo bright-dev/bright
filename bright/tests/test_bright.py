@@ -54,12 +54,12 @@ def test_bright_start():
     os.environ["BRIGHT_DATA"] = current
 
 
-def test_track_isos():
-    old_isolist = bright_conf.track_isos
+def test_track_nucs():
+    old_isolist = bright_conf.track_nucs
     new_isolist = [922350, 10010]
-    bright_conf.track_isos = set(new_isolist)
-    assert_equal(bright_conf.track_isos, set([10010, 922350]))
-    bright_conf.track_isos = old_isolist
+    bright_conf.track_nucs = set(new_isolist)
+    assert_equal(bright_conf.track_nucs, set([10010, 922350]))
+    bright_conf.track_nucs = old_isolist
 
 def test_verbosity():
     old_verbosity = bright_conf.verbosity
@@ -90,54 +90,54 @@ def test_output_filename():
         
 
 @with_setup(setup_h5)
-def test_load_track_isos_hdf5_1():
-    old_isos = bright_conf.track_isos
-    bright_conf.track_isos = set([80160])
-    bright.load_track_isos_hdf5('isos.h5')
-    assert_equal(bright_conf.track_isos, set([10010, 80160, 922350, 922380]))
-    bright_conf.track_isos = old_isos
+def test_load_track_nucs_hdf5_1():
+    old_isos = bright_conf.track_nucs
+    bright_conf.track_nucs = set([80160])
+    bright.load_track_nucs_hdf5('isos.h5')
+    assert_equal(bright_conf.track_nucs, set([10010, 80160, 922350, 922380]))
+    bright_conf.track_nucs = old_isos
 
 
 @with_setup(setup_h5)
-def test_load_track_isos_hdf5_2():
-    old_isos = bright_conf.track_isos
-    bright_conf.track_isos = set([80160])
-    bright.load_track_isos_hdf5('isos.h5', '/NotIsos')
-    assert_equal(bright_conf.track_isos, set([10010, 80160, 922350, 922380]))
-    bright_conf.track_isos = old_isos
+def test_load_track_nucs_hdf5_2():
+    old_isos = bright_conf.track_nucs
+    bright_conf.track_nucs = set([80160])
+    bright.load_track_nucs_hdf5('isos.h5', '/NotIsos')
+    assert_equal(bright_conf.track_nucs, set([10010, 80160, 922350, 922380]))
+    bright_conf.track_nucs = old_isos
 
 @with_setup(setup_h5)
-def test_load_track_isos_hdf5_3():
-    old_isos = bright_conf.track_isos
-    bright_conf.track_isos = set([80160])
-    bright.load_track_isos_hdf5('isos.h5', '', True)
-    assert_equal(bright_conf.track_isos, set([10010, 922350, 922380]))
-    bright_conf.track_isos = old_isos
+def test_load_track_nucs_hdf5_3():
+    old_isos = bright_conf.track_nucs
+    bright_conf.track_nucs = set([80160])
+    bright.load_track_nucs_hdf5('isos.h5', '', True)
+    assert_equal(bright_conf.track_nucs, set([10010, 922350, 922380]))
+    bright_conf.track_nucs = old_isos
     
 @with_setup(setup_h5, teardown_h5)
-def test_load_track_isos_hdf5_4():
-    old_isos = bright_conf.track_isos
-    bright_conf.track_isos = set([80160])
-    bright.load_track_isos_hdf5('isos.h5', '/NotIsos', True)
-    assert_equal(bright_conf.track_isos, set([10010, 922350, 922380]))
-    bright_conf.track_isos = old_isos
+def test_load_track_nucs_hdf5_4():
+    old_isos = bright_conf.track_nucs
+    bright_conf.track_nucs = set([80160])
+    bright.load_track_nucs_hdf5('isos.h5', '/NotIsos', True)
+    assert_equal(bright_conf.track_nucs, set([10010, 922350, 922380]))
+    bright_conf.track_nucs = old_isos
 
 
 @with_setup(setup_txt)
-def test_load_track_isos_text_1():
-    old_isos = bright_conf.track_isos
-    bright_conf.track_isos = set([80160])
-    bright.load_track_isos_text('isos.txt')
-    assert_equal(bright_conf.track_isos, set([10010, 80160, 922350, 922380]))
-    bright_conf.track_isos = old_isos
+def test_load_track_nucs_text_1():
+    old_isos = bright_conf.track_nucs
+    bright_conf.track_nucs = set([80160])
+    bright.load_track_nucs_text('isos.txt')
+    assert_equal(bright_conf.track_nucs, set([10010, 80160, 922350, 922380]))
+    bright_conf.track_nucs = old_isos
 
 @with_setup(setup_txt, teardown_txt)
-def test_load_track_isos_text_2():
-    old_isos = bright_conf.track_isos
-    bright_conf.track_isos = set([80160])
-    bright.load_track_isos_text('isos.txt', True)
-    assert_equal(bright_conf.track_isos, set([10010, 922350, 922380]))
-    bright_conf.track_isos = old_isos
+def test_load_track_nucs_text_2():
+    old_isos = bright_conf.track_nucs
+    bright_conf.track_nucs = set([80160])
+    bright.load_track_nucs_text('isos.txt', True)
+    assert_equal(bright_conf.track_nucs, set([10010, 922350, 922380]))
+    bright_conf.track_nucs = old_isos
 
 
 if __name__ == "__main__":

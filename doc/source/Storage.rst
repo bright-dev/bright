@@ -102,7 +102,7 @@ Storage Methods
 
     As usual, :meth:`calc` sets up the Storage component's input stream and calculates the corresponding 
     output :class:`MassStream`.  Here, this amounts to calling :meth:`bateman` for every nuclide in 
-    :attr:`ms_feed <bright.FCComp.ms_feed>`, for each chain that ends with a nuclide in :meth:`BriPy.track_isos`.
+    :attr:`ms_feed <bright.FCComp.ms_feed>`, for each chain that ends with a nuclide in :meth:`BriPy.track_nucs`.
 
     This method is public and accessible from Python.
 
