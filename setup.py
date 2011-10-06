@@ -167,6 +167,9 @@ exts.append(cpp_ext("bright.lib.libbright_reactormg", ['reactormg.cpp'],
 # bright_config
 exts.append(cpp_ext("bright.bright_config", ['bright_config.pyx'], ['bright'] + pyne_libs))
 
+# fccomp
+exts.append(cpp_ext("bright.fccomp", ['fccomp.pyx'], ['bright', 'bright_fccomp'] + pyne_libs))
+
 
 
 

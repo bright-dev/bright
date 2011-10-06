@@ -1,4 +1,4 @@
-"""C++ wrapper for isoname library."""
+"""Cython header for bright library."""
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.vector cimport vector
