@@ -162,16 +162,27 @@ exts.append(cpp_ext("bright.lib.libbright_reactormg", ['reactormg.cpp'],
 
 
 
+# Bright extensions
+
+# bright_config
+exts.append(cpp_ext("bright.bright_config", ['bright_config.pyx'], ['bright'] + pyne_libs))
+
+
+
 
 ##########################
 ### Setup Package Data ###
 ##########################
 packages = ['bright', 'bright.lib', 'bright.gui', 'bright.gui.models', 'bright.gui.models.class_models', 
-            'bright.gui.views', 'bright.gui.views.component_views', 'bright.gui.views.component_views.views',]
+            'bright.gui.views', 'bright.gui.views.component_views', 'bright.gui.views.component_views.views',
+            'bright.data']
 
-pack_dir = {'bright': 'bright',}
+pack_dir = {'bright': 'bright',
+            'bright.data': 'data',
+            }
 
-pack_data = {'bright': ['includes/*.h', 'includes/*.pxd'],
+pack_data = {'bright': ['includes/*.h', 'includes/bright/*.pxd'],
+             'bright.data': ['*.h5'],
             }
 
 ext_modules=[Extension(**ext) for ext in exts]
@@ -188,9 +199,14 @@ def main():
     # clean includes dir and recopy files over
     if os.path.exists('bright/includes'):
         remove_tree('bright/includes')
+
     mkpath('bright/includes')
-    for header in (glob.glob('cpp/*.h') + glob.glob('bright/*.pxd')):
+    for header in glob.glob('cpp/*.h') + glob.glob('bright/*.pxd'):
         copy_file(header, 'bright/includes')
+
+    mkpath('bright/includes/bright')
+    for header in glob.glob('bright/*.pxd'):
+        copy_file(header, 'bright/includes/bright')
 
     # call setup
     setup(name="bright",
