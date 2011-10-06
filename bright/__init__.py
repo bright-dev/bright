@@ -1,1 +1,1 @@
-from .bright import *
+from bright.bright_config import *
