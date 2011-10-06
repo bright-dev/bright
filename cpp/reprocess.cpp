@@ -14,7 +14,7 @@ void bright::Reprocess::initialize(sep_eff_dict sed)
 {
   // Initializes the reprocessing component with specific separation efficiencies.
   // sepeff = dictioanry of separation efficiencies.  Of form {aazzzm: 0.99}, eg {922350, 0.999, 942390: 0.99}
-  for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
+  for (std::set<int>::iterator iso = bright::track_nucs.begin(); iso != bright::track_nucs.end(); iso++)
   {
     if (0 < sed.count(*iso))
       sepeff[*iso] = sed[*iso];

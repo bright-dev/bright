@@ -34,11 +34,11 @@ void bright::FCComp::initialize (std::set<std::string> ptrack, std::string n)
 void bright::FCComp::initialize_text()
 {
   // Initialize the Isotopic tracking file
-  if (!bright::track_isos.empty())
+  if (!bright::track_nucs.empty())
   {
     std::ofstream isofile ( (name + "Isos.txt").c_str() );
     isofile << "Isotope\n";
-    for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
+    for (std::set<int>::iterator iso = bright::track_nucs.begin(); iso != bright::track_nucs.end(); iso++)
       isofile << pyne::nucname::name(*iso) << "\n"; 
     isofile.close();
   };
@@ -98,7 +98,7 @@ void bright::FCComp::initialize_hdf5 ()
     { gFCComp = dbFile.createGroup(comp_path); }
 
   // Initialize the IsoStreams 
-  if (!bright::track_isos.empty())
+  if (!bright::track_nucs.empty())
   {
     // Open/Create mat_feed group
     H5::Group gmat_feed;
@@ -131,7 +131,7 @@ void bright::FCComp::initialize_hdf5 ()
     // Open/Create /Isos[In|Out]/iso Datasets
     H5::DataSet dsmat_feedIso;
     H5::DataSet dsmat_prodIso;
-    for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
+    for (std::set<int>::iterator iso = bright::track_nucs.begin(); iso != bright::track_nucs.end(); iso++)
     {
       std::string isoLL = pyne::nucname::name(*iso);
 
@@ -356,12 +356,12 @@ void bright::FCComp::write_hdf5 ()
   std::string comp_path ("/" + natural_name);
 
   // Write the isotopic component input and output streams
-  if (!bright::track_isos.empty())
+  if (!bright::track_nucs.empty())
   {
     appendHDF5array(&dbFile, comp_path + "/mat_feed/Mass",  &(mat_feed.mass),  &RANK, dims, offset, ext_size);
     appendHDF5array(&dbFile, comp_path + "/mat_prod/Mass", &(mat_prod.mass), &RANK, dims, offset, ext_size);
 
-    for (std::set<int>::iterator iso = bright::track_isos.begin(); iso != bright::track_isos.end(); iso++)
+    for (std::set<int>::iterator iso = bright::track_nucs.begin(); iso != bright::track_nucs.end(); iso++)
     {
       std::string isoLL = pyne::nucname::name(*iso);
       appendHDF5array(&dbFile, comp_path + "/mat_feed/"  + isoLL, &(mat_feed.comp[*iso]),  &RANK, dims, offset, ext_size);

@@ -24,12 +24,12 @@ void bright::bright_start()
 
 #ifdef _WIN32
   int null_set [1] = {922350};
-  std::set<int> bright::track_isos (null_set, null_set+1);
-  std::vector<int> bright::track_isos_order (null_set, null_set+1);
+  std::set<int> bright::track_nucs (null_set, null_set+1);
+  std::vector<int> bright::track_nucs_order (null_set, null_set+1);
 #else
   int null_set [0] = {};
-  std::set<int> bright::track_isos (null_set, null_set+0);
-  std::vector<int> bright::track_isos_order (null_set, null_set+0);
+  std::set<int> bright::track_nucs (null_set, null_set+0);
+  std::vector<int> bright::track_nucs_order (null_set, null_set+0);
 #endif
 
 int bright::verbosity  = 0;
@@ -39,25 +39,25 @@ int bright::write_hdf5 = 0;
 std::string bright::output_filename = "fuel_cycle.h5";
 
 
-void bright::sort_track_isos()
+void bright::sort_track_nucs()
 {
-  track_isos_order = std::vector<int> (track_isos.begin(), track_isos.end());
-  std::sort(track_isos_order.begin(), track_isos_order.end());
+  track_nucs_order = std::vector<int> (track_nucs.begin(), track_nucs.end());
+  std::sort(track_nucs_order.begin(), track_nucs_order.end());
 };
 
 
 
-void bright::load_track_isos_hdf5(std::string filename, std::string datasetname, bool clear_prev)
+void bright::load_track_nucs_hdf5(std::string filename, std::string datasetname, bool clear_prev)
 {
   // Check that the file is there
   if (!pyne::file_exists(filename))
     throw pyne::FileNotFound(filename);
 
-  //Load values into track_isos from an hdf5 file.
+  //Load values into track_nucs from an hdf5 file.
   //If the dataspace name is not given, try some defaults.
   int dslen = 14;
   std::string defaultsets [14] = {
-    "/track_isos",
+    "/track_nucs",
     "/Isos2Track",
     "/isostrack",   
     "/IsosTrack",
@@ -100,7 +100,7 @@ void bright::load_track_isos_hdf5(std::string filename, std::string datasetname,
       n++;
     };
     if (n == dslen)
-      throw H5::FileIException("load_track_isos", "Dataset not found!");
+      throw H5::FileIException("load_track_nucs", "Dataset not found!");
   };
 
   //Read in isos from dataset.
@@ -121,17 +121,17 @@ void bright::load_track_isos_hdf5(std::string filename, std::string datasetname,
 
   //Clear previous entries
   if (clear_prev)
-    track_isos.clear();
+    track_nucs.clear();
 
-  //load into track_isos
+  //load into track_nucs
   for(int n = 0; n < isolen[0]; n++)
-    track_isos.insert(pyne::nucname::zzaaam(iso_out_int[n]));
+    track_nucs.insert(pyne::nucname::zzaaam(iso_out_int[n]));
 
   // Sort the results
-  sort_track_isos();
+  sort_track_nucs();
 };
 
-void bright::load_track_isos_text(std::string filename, bool clear_prev)
+void bright::load_track_nucs_text(std::string filename, bool clear_prev)
 {
   // Check that the file is there
   if (!pyne::file_exists(filename))
@@ -139,7 +139,7 @@ void bright::load_track_isos_text(std::string filename, bool clear_prev)
 
   //Clear previous entries
   if (clear_prev)
-    track_isos.clear();
+    track_nucs.clear();
 
   //open file
   std::fstream isofile;
@@ -153,14 +153,14 @@ void bright::load_track_isos_text(std::string filename, bool clear_prev)
     isofile >> isoraw;
     isostr.assign(isoraw);
     isostr = pyne::remove_characters(isostr, "()[],.;{}!#|");
-    track_isos.insert(pyne::nucname::zzaaam(isostr));
+    track_nucs.insert(pyne::nucname::zzaaam(isostr));
   };
 
   //close file
   isofile.close();
 
   // Sort the results
-  sort_track_isos();
+  sort_track_nucs();
 };
 
 

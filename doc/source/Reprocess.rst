@@ -53,7 +53,7 @@ The following is a listing of the additional attributes specific to this class.
 
 .. attribute:: Reprocess.sepeff
 
-    This is a dictionary or map representing the separation efficiencies of each isotope in :func:`bright.track_isos`.
+    This is a dictionary or map representing the separation efficiencies of each isotope in :func:`bright.track_nucs`.
     Therefore it has zzaaam-integer keys and float (double) values.  During initialization, other SE dictionaries are converted 
     to this standard form::
 
@@ -98,7 +98,7 @@ Reprocess Methods
     The :meth:`initialize` function calculates the :attr:`sepeff` from an integer-keyed dictionary
     of separation efficiencies.  The difference is that `sepdict` may contain either elemental or
     isotopic keys and need not contain every isotope tracked.  On the other hand, :attr:`sepeff`
-    must have only zzaaam keys that match exactly the isotopes in :func:`bright.track_isos`.
+    must have only zzaaam keys that match exactly the isotopes in :func:`bright.track_nucs`.
 
     Args:
         * `sepdict` (dict): Integer valued dictionary of SE to be converted to :attr:`sepeff`.

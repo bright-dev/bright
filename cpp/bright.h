@@ -40,13 +40,13 @@ namespace bright {
 
   extern std::string BRIGHT_DATA;
 
-  extern std::set<int> track_isos;          // Set of isotopes to track for all components.
-  extern std::vector<int> track_isos_order; // Vector of isotopes to track for all components.
+  extern std::set<int> track_nucs;          // Set of isotopes to track for all components.
+  extern std::vector<int> track_nucs_order; // Vector of isotopes to track for all components.
 
-  extern void load_track_isos_hdf5(std::string, std::string = "", bool = false);  //Load isotopic tracking list from HDF5 file.
-  extern void load_track_isos_text(std::string, bool = false);                    //Load isotopic tracking list from text file.
+  extern void load_track_nucs_hdf5(std::string, std::string = "", bool = false);  //Load isotopic tracking list from HDF5 file.
+  extern void load_track_nucs_text(std::string, bool = false);                    //Load isotopic tracking list from text file.
 
-  extern void sort_track_isos(); // Sets the isotopic tracking by zzaaam from lowest to highest and stores it in track_isos_order
+  extern void sort_track_nucs(); // Sets the isotopic tracking by zzaaam from lowest to highest and stores it in track_nucs_order
 
   extern int verbosity;			//How much should the components talk to us? 0 = None, 1 = a little, 2 = a lot!, etc.
   extern int write_text;

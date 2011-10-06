@@ -63,13 +63,13 @@ All other attributes are public and may be retrieved and modified from via the P
 
     This is an zzaaam-integer isotopic set representing all of the nuclides that are valid inputs to the core.  This
     includes not just the heavy metal, but also coolant and cladding material as well.  :attr:`I` is typically 
-    indexed by ``i``.  This is usually a strict subset of :func:`bright.track_isos`.
+    indexed by ``i``.  This is usually a strict subset of :func:`bright.track_nucs`.
 
 .. attribute:: Reactor1G.J
 
     This is an zzaaam-integer isotopic set representing all of the nuclides that are valid outputs from the core.  This
     encompasses all actinides and fission products.  :attr:`J` is typically 
-    indexed by ``j``.  This is usually equivalent to :func:`bright.track_isos`.
+    indexed by ``j``.  This is usually equivalent to :func:`bright.track_nucs`.
 
 
 .. attribute:: Reactor1G.sigma_a_therm

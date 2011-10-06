@@ -229,7 +229,7 @@ void bright::Reactor1G::loadlib(std::string libfile)
   int sigma_a_n = bright::find_index_char( (char *) "sigma_a", xs_field_names, xs_nfields);
   int sigma_s_n = bright::find_index_char( (char *) "sigma_s", xs_field_names, xs_nfields);
 
-  for (std::set<int>::iterator i = bright::track_isos.begin(); i != bright::track_isos.end(); i++)
+  for (std::set<int>::iterator i = bright::track_nucs.begin(); i != bright::track_nucs.end(); i++)
   {
     int iso_n = bright::find_index<int>(*i, isozz, xs_nrows);
 
