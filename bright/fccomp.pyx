@@ -12,9 +12,11 @@ import numpy as np
 
 from pyne cimport std
 from pyne cimport nucname
-from pyne cimport cpp_material
-from pyne cimport material
 from pyne cimport stlconverters as conv
+
+cimport pyne.cpp_material
+cimport pyne.material
+import pyne.material
 
 cimport cpp_fccomp
 
@@ -73,7 +75,7 @@ cdef class FCComp:
 
     property mat_feed:
         def __get__(self):
-            cdef material._Material pymat = material.Material()
+            cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = self.fccomp_pointer.mat_feed
             return pymat
 
@@ -83,7 +85,7 @@ cdef class FCComp:
 
     property mat_prod:
         def __get__(self):
-            cdef material._Material pymat = material.Material()
+            cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = self.fccomp_pointer.mat_prod
             return pymat
 
@@ -256,7 +258,7 @@ cdef class FCComp:
             * output (MassStream): mat_prod.
 
         """
-        cdef material._Material pymat = material.Material()
+        cdef pyne.material._Material pymat = pyne.material.Material()
         pymat.mat_pointer[0] = self.fccomp_pointer.calc()
         return pymat
 

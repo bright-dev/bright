@@ -95,7 +95,7 @@ def run_reactormg():
 
     # Run the reactor
     rmg.calc(leu)
-    #rmg.ms_feed = leu
+    #rmg.mat_feed = leu
     #rmg.burnup_core()
     return rmg
 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     r_BU, n_BU, diff_BU = calc_diff(rmg.BUd, 40.0, "Burnup")
 
-    rmg_comp = rmg.ms_prod.mult_by_mass()
+    rmg_comp = rmg.mat_prod.mult_by_mass()
     nea_comp = ms_nea.mult_by_mass()
 
     for key in nea_comp.keys():

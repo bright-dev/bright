@@ -130,7 +130,7 @@ def run_reactormg():
 
     # Run the reactor
     #rmg.calc(leu)
-    rmg.ms_feed = leu
+    rmg.mat_feed = leu
     rmg.burnup_core()
     return rmg
 

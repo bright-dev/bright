@@ -205,26 +205,26 @@ class TestEnrichmentAttributes(TestCase):
         e.Mstar = 235.5
         assert_equal(e.Mstar, 235.5)
 
-    def test_ms_feed(self):
+    def test_mat_feed(self):
         e = Enrichment()
         ms = MassStream({922380: 0.5})        
-        e.ms_feed = ms
-        assert_equal(e.ms_feed.mass, 0.5)
-        assert_equal(e.ms_feed.comp[922380], 1.0)
+        e.mat_feed = ms
+        assert_equal(e.mat_feed.mass, 0.5)
+        assert_equal(e.mat_feed.comp[922380], 1.0)
 
-    def test_ms_prod(self):
+    def test_mat_prod(self):
         e = Enrichment()
         ms = MassStream({922380: 0.5})        
-        e.ms_prod = ms
-        assert_equal(e.ms_prod.mass, 0.5)
-        assert_equal(e.ms_prod.comp[922380], 1.0)
+        e.mat_prod = ms
+        assert_equal(e.mat_prod.mass, 0.5)
+        assert_equal(e.mat_prod.comp[922380], 1.0)
 
-    def test_ms_tail(self):
+    def test_mat_tail(self):
         e = Enrichment()
         ms = MassStream({922380: 0.5})        
-        e.ms_tail = ms
-        assert_equal(e.ms_tail.mass, 0.5)
-        assert_equal(e.ms_tail.comp[922380], 1.0)    
+        e.mat_tail = ms
+        assert_equal(e.mat_tail.mass, 0.5)
+        assert_equal(e.mat_tail.comp[922380], 1.0)    
 
     def test_N(self):
         e = Enrichment()
@@ -283,23 +283,23 @@ class TestEnrichmentMethods(TestCase):
 
     def test_calc_1(self):
         e = Enrichment()
-        e.ms_feed = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
+        e.mat_feed = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
         e.calc()
-        assert_almost_equal(e.ms_prod.comp[922350],  0.05,   6) 
-        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 6)
+        assert_almost_equal(e.mat_prod.comp[922350],  0.05,   6) 
+        assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 6)
 
     def test_calc_2(self):
         e = Enrichment()
         e.calc({922350: 0.01, 922380: 0.985, 922360: 0.005})
-        assert_almost_equal(e.ms_prod.comp[922350],  0.05,   6) 
-        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 6)
+        assert_almost_equal(e.mat_prod.comp[922350],  0.05,   6) 
+        assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 6)
 
     def test_calc_3(self):
         e = Enrichment()
         ms = MassStream({922350: 0.01, 922380: 0.985, 922360: 0.005})
         e.calc(ms)
-        assert_almost_equal(e.ms_prod.comp[922350],  0.05,   6) 
-        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 6)
+        assert_almost_equal(e.mat_prod.comp[922350],  0.05,   6) 
+        assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 6)
 
     def test_calc_params(self):
         e = Enrichment()
@@ -307,14 +307,14 @@ class TestEnrichmentMethods(TestCase):
         e.calc(ms)
         e.calc_params()
 
-        assert_equal(e.params_prior_calc["MassFeed"],  e.ms_feed.mass)
+        assert_equal(e.params_prior_calc["MassFeed"],  e.mat_feed.mass)
         assert_equal(e.params_after_calc["MassFeed"], 0.0)
 
         assert_equal(e.params_prior_calc["MassProduct"],  0.0)
-        assert_equal(e.params_after_calc["MassProduct"], e.ms_prod.mass)
+        assert_equal(e.params_after_calc["MassProduct"], e.mat_prod.mass)
 
         assert_equal(e.params_prior_calc["MassTails"],  0.0)
-        assert_equal(e.params_after_calc["MassTails"], e.ms_tail.mass)
+        assert_equal(e.params_after_calc["MassTails"], e.mat_tail.mass)
 
         assert_equal(e.params_prior_calc["N"],  e.N)
         assert_equal(e.params_after_calc["N"], e.N)
@@ -361,12 +361,12 @@ class TestEnrichmentBenchmarks(TestCase):
             })
         e.calc(ms)
 
-        assert_almost_equal(e.ms_prod.comp[922350],  0.06,   5) 
-        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 5)
+        assert_almost_equal(e.mat_prod.comp[922350],  0.06,   5) 
+        assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 5)
 
-        assert_almost_equal(e.ms_feed.mass   / 1.0,                 1.0)
-        assert_almost_equal(e.ms_prod.mass  / 0.11652173913043479, 1.0)
-        assert_almost_equal(e.ms_tail.mass / 0.88347826086956527, 1.0)
+        assert_almost_equal(e.mat_feed.mass   / 1.0,                 1.0)
+        assert_almost_equal(e.mat_prod.mass  / 0.11652173913043479, 1.0)
+        assert_almost_equal(e.mat_tail.mass / 0.88347826086956527, 1.0)
 
         assert_almost_equal(e.N / 26.92681830762287,  1.0, 4)
         assert_almost_equal(e.M / 16.677607227634965, 1.0, 4)
@@ -388,12 +388,12 @@ class TestEnrichmentBenchmarks(TestCase):
             })
         e.calc(ms)
 
-        assert_almost_equal(e.ms_prod.comp[922350],  0.05,   5) 
-        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 5)
+        assert_almost_equal(e.mat_prod.comp[922350],  0.05,   5) 
+        assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 5)
 
-        assert_almost_equal(e.ms_feed.mass   / 1.0,             1.0)
-        assert_almost_equal(e.ms_prod.mass  / 0.0989473684211, 1.0)
-        assert_almost_equal(e.ms_tail.mass / 0.901052631579,  1.0)
+        assert_almost_equal(e.mat_feed.mass   / 1.0,             1.0)
+        assert_almost_equal(e.mat_prod.mass  / 0.0989473684211, 1.0)
+        assert_almost_equal(e.mat_tail.mass / 0.901052631579,  1.0)
 
         assert_almost_equal(e.N / 27.245874769544688, 1.0, 4)
         assert_almost_equal(e.M / 13.420267151618368, 1.0, 4)
@@ -416,12 +416,12 @@ class TestEnrichmentBenchmarks(TestCase):
             })
         e.calc(ms)
 
-        assert_almost_equal(e.ms_prod.comp[922350],  0.055,   5) 
-        assert_almost_equal(e.ms_tail.comp[922350], 0.0025, 5)
+        assert_almost_equal(e.mat_prod.comp[922350],  0.055,   5) 
+        assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 5)
 
-        assert_almost_equal(e.ms_feed.mass   / 1.0,                 1.0)
-        assert_almost_equal(e.ms_prod.mass  / 0.10830030583196934, 1.0)
-        assert_almost_equal(e.ms_tail.mass / 0.89169969416803063, 1.0)
+        assert_almost_equal(e.mat_feed.mass   / 1.0,                 1.0)
+        assert_almost_equal(e.mat_prod.mass  / 0.10830030583196934, 1.0)
+        assert_almost_equal(e.mat_tail.mass / 0.89169969416803063, 1.0)
 
         assert_almost_equal(e.N / 27.38162850698868, 1.0, 2)
         assert_almost_equal(e.M / 15.09646512546496, 1.0, 2)
@@ -458,12 +458,12 @@ class TestEnrichmentBenchmarks(TestCase):
             })
         e.calc(ms)
 
-        assert_almost_equal(e.ms_prod.comp[741800],  0.5109,  5) 
-        assert_almost_equal(e.ms_tail.comp[741800], 0.00014, 5)
+        assert_almost_equal(e.mat_prod.comp[741800],  0.5109,  5) 
+        assert_almost_equal(e.mat_tail.comp[741800], 0.00014, 5)
 
-        assert_almost_equal(e.ms_feed.mass   / 1.0,                   1.0)
-        assert_almost_equal(e.ms_prod.mass  / 0.0024669120526274574, 1.0)
-        assert_almost_equal(e.ms_tail.mass / 0.99753308794737272,   1.0)
+        assert_almost_equal(e.mat_feed.mass   / 1.0,                   1.0)
+        assert_almost_equal(e.mat_prod.mass  / 0.0024669120526274574, 1.0)
+        assert_almost_equal(e.mat_tail.mass / 0.99753308794737272,   1.0)
 
         assert_almost_equal(e.N / 43.557515688533513, 1.0, 2)
         assert_almost_equal(e.M / 11.49556481009056,  1.0, 2)
