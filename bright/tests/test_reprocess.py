@@ -105,17 +105,17 @@ class TestReprocessMethods(TestCase):
     def test_calc_1(self):
         bright_config.track_nucs = set([922350, 922380, 942390])
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
-        r.ms_feed = MassStream({942390: 1.0})
+        r.mat_feed = MassStream({942390: 1.0})
         r.calc()
-        assert_equal(r.ms_prod.mass, 0.99)
-        assert_equal(r.ms_prod.comp[942390], 1.0) # Recall ms.comp is normalized
+        assert_equal(r.mat_prod.mass, 0.99)
+        assert_equal(r.mat_prod.comp[942390], 1.0) # Recall ms.comp is normalized
 
     def test_calc_2(self):
         bright_config.track_nucs = set([922350, 922380, 942390])
         r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
         r.calc(MassStream({942390: 1.0}))
-        assert_equal(r.ms_prod.mass, 0.99)
-        assert_equal(r.ms_prod.comp[942390], 1.0) # Recall ms.comp is normalized
+        assert_equal(r.mat_prod.mass, 0.99)
+        assert_equal(r.mat_prod.comp[942390], 1.0) # Recall ms.comp is normalized
 
     def test_initialize_1(self):
         bright_config.track_nucs = set()

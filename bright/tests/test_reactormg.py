@@ -474,8 +474,8 @@ class TestReactorMGMutliGroupMethods(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.05, 922380: 0.95})
-#        cls.rmg.ms_feed = MassStream({922350: 0.03, 922380: 0.97})
+        cls.rmg.mat_feed = MassStream({922350: 0.05, 922380: 0.95})
+#        cls.rmg.mat_feed = MassStream({922350: 0.03, 922380: 0.97})
         cls.rmg.burnup_core()
         cls.rmg.burn_time = 0.0
         cls.rmg.bt_s = 0
@@ -687,7 +687,7 @@ class TestReactorMGCalculatedWeightAttributes(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.fold_mass_weights()
 
     @classmethod
@@ -742,7 +742,7 @@ class TestReactorMGCalculatedDataAttributes(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.fold_mass_weights()
 
     @classmethod
@@ -831,7 +831,7 @@ class TestReactorMGDischargeAttributes(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.calc()
 
     @classmethod
@@ -863,7 +863,7 @@ class TestReactorMGSubStreamAndtru_crAttributes(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.calc()
         cls.rmg.calcSubStreams()
 
@@ -871,33 +871,33 @@ class TestReactorMGSubStreamAndtru_crAttributes(TestCase):
     def teardown_class(cls):
         general_teardown()
 
-    def test_ms_feed_u(self):
-        assert_equal(self.rmg.ms_feed_u.mass, 1.0)
+    def test_mat_feed_u(self):
+        assert_equal(self.rmg.mat_feed_u.mass, 1.0)
 
-    def test_ms_feed_tru(self):
-        assert_equal(self.rmg.ms_feed_tru.mass, 0.0)
+    def test_mat_feed_tru(self):
+        assert_equal(self.rmg.mat_feed_tru.mass, 0.0)
 
-    def test_ms_feed_lan(self):
-        assert_equal(self.rmg.ms_feed_lan.mass, 0.0)
+    def test_mat_feed_lan(self):
+        assert_equal(self.rmg.mat_feed_lan.mass, 0.0)
 
-    def test_ms_feed_act(self):
-        assert_equal(self.rmg.ms_feed_act.mass, 1.0)
+    def test_mat_feed_act(self):
+        assert_equal(self.rmg.mat_feed_act.mass, 1.0)
 
-    def test_ms_prod_u(self):
-        assert(self.rmg.ms_prod_u.mass < 1.0)
+    def test_mat_prod_u(self):
+        assert(self.rmg.mat_prod_u.mass < 1.0)
 
-    def test_ms_prod_tru(self):
-        assert(0.0 < self.rmg.ms_prod_tru.mass)
+    def test_mat_prod_tru(self):
+        assert(0.0 < self.rmg.mat_prod_tru.mass)
 
-    def test_ms_prod_lan(self):
-        assert(0.0 < self.rmg.ms_prod_lan.mass)
+    def test_mat_prod_lan(self):
+        assert(0.0 < self.rmg.mat_prod_lan.mass)
 
-    def test_ms_prod_act(self):
-        assert(self.rmg.ms_prod_act.mass < 1.0)
+    def test_mat_prod_act(self):
+        assert(self.rmg.mat_prod_act.mass < 1.0)
 
     def test_tru_cr(self):
         self.rmg.calc_tru_cr()
-        tmp_tru_cr = 1.0 - (self.rmg.ms_feed_tru.mass - self.rmg.ms_prod_tru.mass) / (self.rmg.BUd / 931.46)
+        tmp_tru_cr = 1.0 - (self.rmg.mat_feed_tru.mass - self.rmg.mat_prod_tru.mass) / (self.rmg.BUd / 931.46)
         assert_almost_equal(self.rmg.tru_cr / tmp_tru_cr, 1.0)
 
     def test_deltaR(self):
@@ -915,7 +915,7 @@ class TestReactorMGThermalDisadvantageFactorAttributes(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.fold_mass_weights()
 
     @classmethod
@@ -969,7 +969,7 @@ class TestReactorMGInitializationMethods(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.fold_mass_weights()
 
     @classmethod
@@ -1002,7 +1002,7 @@ class TestReactorMGInitializationMethods(TestCase):
     def test_fold_mass_weights(self):
         prevkey = self.rmg.miF.keys()
         assert(922380 in self.rmg.miF.keys())
-        self.rmg.ms_feed = MassStream({922350: 0.5})
+        self.rmg.mat_feed = MassStream({922350: 0.5})
         self.rmg.fold_mass_weights()
         assert(922380 not in self.rmg.miF.keys())
 
@@ -1018,7 +1018,7 @@ class TestReactorMGTransmutationMatrixMethods(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.fold_mass_weights()
 
     @classmethod
@@ -1033,7 +1033,7 @@ class TestReactorMGTransmutationMatrixMethods(TestCase):
         for j in Mj_F_.keys():
             for f in range(len(self.rmg.F)):
                 tmp_Mj = 0.0
-                for i in self.rmg.ms_feed.comp.keys():
+                for i in self.rmg.mat_feed.comp.keys():
                     tmp_Mj = tmp_Mj + (self.rmg.miF[i] * Tij_F_[i][j][f])
                 if tmp_Mj == 0.0:
                     assert_almost_equal(Mj_F_[j][f], 0.0, 4)
@@ -1044,8 +1044,8 @@ class TestReactorMGTransmutationMatrixMethods(TestCase):
         self.rmg.BUd_bisection_method()
         self.rmg.calc_Mj_F_()
         self.rmg.calc_Mj_Fd_()
-        assert(0.0 < self.rmg.ms_prod.mass)
-        assert(self.rmg.ms_prod.mass < 1.0)
+        assert(0.0 < self.rmg.mat_prod.mass)
+        assert(self.rmg.mat_prod.mass < 1.0)
 
 
 
@@ -1059,35 +1059,35 @@ class TestReactorMGBasicCalculationMethods(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.fold_mass_weights()
 
     @classmethod
     def teardown_class(cls):
         general_teardown()
 
-    def test_calc_ms_prod(self):
+    def test_calc_mat_prod(self):
         self.rmg.BUd_bisection_method()
-        self.rmg.calc_ms_prod()
-        assert(0.0 < self.rmg.ms_prod.mass)
-        assert(self.rmg.ms_prod.mass < 1.0)
+        self.rmg.calc_mat_prod()
+        assert(0.0 < self.rmg.mat_prod.mass)
+        assert(self.rmg.mat_prod.mass < 1.0)
 
 
     def test_calcSubStreams(self):
         self.rmg.calc()
         self.rmg.calcSubStreams()
-        assert_equal(self.rmg.ms_feed_u.mass, 1.0)
-        assert_equal(self.rmg.ms_feed_tru.mass, 0.0)
-        assert_equal(self.rmg.ms_feed_lan.mass, 0.0)
-        assert_equal(self.rmg.ms_feed_act.mass, 1.0)
-        assert(self.rmg.ms_prod_u.mass < 1.0)
-        assert(0.0 < self.rmg.ms_prod_tru.mass)
-        assert(0.0 < self.rmg.ms_prod_lan.mass)
-        assert(self.rmg.ms_prod_act.mass < 1.0)
+        assert_equal(self.rmg.mat_feed_u.mass, 1.0)
+        assert_equal(self.rmg.mat_feed_tru.mass, 0.0)
+        assert_equal(self.rmg.mat_feed_lan.mass, 0.0)
+        assert_equal(self.rmg.mat_feed_act.mass, 1.0)
+        assert(self.rmg.mat_prod_u.mass < 1.0)
+        assert(0.0 < self.rmg.mat_prod_tru.mass)
+        assert(0.0 < self.rmg.mat_prod_lan.mass)
+        assert(self.rmg.mat_prod_act.mass < 1.0)
 
     def test_calc_tru_cr(self):
         self.rmg.calc()
-        tmp_tru_cr = 1.0 - (self.rmg.ms_feed_tru.mass - self.rmg.ms_prod_tru.mass) / (self.rmg.BUd / 931.46)
+        tmp_tru_cr = 1.0 - (self.rmg.mat_feed_tru.mass - self.rmg.mat_prod_tru.mass) / (self.rmg.BUd / 931.46)
         assert_almost_equal(self.rmg.calc_tru_cr() / tmp_tru_cr, 1.0)
 
     def test_deltaR1(self):
@@ -1118,7 +1118,7 @@ class TestReactorMGBurnupMethods(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.calc()
 
     @classmethod
@@ -1151,13 +1151,13 @@ class TestReactorMGBurnupMethods(TestCase):
 
     def test_calc_1(self):
         self.rmg.calc()
-        assert(self.rmg.ms_prod.mass < 1.0)
-        assert(self.rmg.ms_prod.comp[922350] < 0.5) 
+        assert(self.rmg.mat_prod.mass < 1.0)
+        assert(self.rmg.mat_prod.comp[922350] < 0.5) 
 
     def test_calc_2(self):
         self.rmg.calc(MassStream({942390: 0.05, 922380: 0.95}))
-        assert(self.rmg.ms_prod.mass < 1.0)
-        assert(self.rmg.ms_prod.comp[942390] < 1.0) 
+        assert(self.rmg.mat_prod.mass < 1.0)
+        assert(self.rmg.mat_prod.comp[942390] < 1.0) 
 
 
 
@@ -1171,7 +1171,7 @@ class TestReactorMGBurnupMethods2(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.calc()
 
     @classmethod
@@ -1196,7 +1196,7 @@ class TestReactorMGBurnupMethods3(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.calc()
 
     @classmethod
@@ -1222,7 +1222,7 @@ class TestReactorMGBurnupMethods4(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.calc()
 
     @classmethod
@@ -1246,7 +1246,7 @@ class TestReactorMGLatticeMethods(TestCase):
         bright.load_track_nucs_hdf5(libfile)
         cls.rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
         cls.rmg.loadlib(libfile)
-        cls.rmg.ms_feed = MassStream({922350: 0.5, 922380: 0.5})
+        cls.rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
         cls.rmg.calc()
 
     @classmethod
