@@ -41,14 +41,15 @@ cdef class FCComp:
         cdef cpp_set[std.string] param_set
 
         if params is None:
-            self.fccomp_pointer = new cpp_fccomp.FCComp(std.string(name))
+            self._inst = new cpp_fccomp.FCComp(std.string(name))
         else:
             param_set = conv.py_to_cpp_set_str(params)
-            self.fccomp_pointer = new cpp_fccomp.FCComp(param_set, std.string(name))
+            self._inst = new cpp_fccomp.FCComp(param_set, std.string(name))
 
 
     def __dealloc__(self):
-        del self.fccomp_pointer
+        #del self._inst
+        free(self._inst)
 
 
     #
@@ -57,72 +58,72 @@ cdef class FCComp:
 
     property name:
         def __get__(self):
-            cdef std.string n = self.fccomp_pointer.name
+            cdef std.string n = (<cpp_fccomp.FCComp *> self._inst).name
             return n.c_str()
 
         def __set__(self, char * n):
-            self.fccomp_pointer.name = std.string(n)
+            (<cpp_fccomp.FCComp *> self._inst).name = std.string(n)
 
 
     property natural_name:
         def __get__(self):
-            cdef std.string n = self.fccomp_pointer.natural_name
+            cdef std.string n = (<cpp_fccomp.FCComp *> self._inst).natural_name
             return n.c_str()
 
         def __set__(self, char * n):
-            self.fccomp_pointer.natural_name = std.string(n)
+            (<cpp_fccomp.FCComp *> self._inst).natural_name = std.string(n)
 
 
     property mat_feed:
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
-            pymat.mat_pointer[0] = self.fccomp_pointer.mat_feed
+            pymat.mat_pointer[0] = (<cpp_fccomp.FCComp *> self._inst).mat_feed
             return pymat
 
         def __set__(self, pyne.material._Material mat):
-            self.fccomp_pointer.mat_feed = <pyne.cpp_material.Material> mat.mat_pointer[0]
+            (<cpp_fccomp.FCComp *> self._inst).mat_feed = <pyne.cpp_material.Material> mat.mat_pointer[0]
 
 
     property mat_prod:
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
-            pymat.mat_pointer[0] = self.fccomp_pointer.mat_prod
+            pymat.mat_pointer[0] = (<cpp_fccomp.FCComp *> self._inst).mat_prod
             return pymat
 
         def __set__(self, pyne.material._Material mat):
-            self.fccomp_pointer.mat_prod = <pyne.cpp_material.Material> mat.mat_pointer[0]
+            (<cpp_fccomp.FCComp *> self._inst).mat_prod = <pyne.cpp_material.Material> mat.mat_pointer[0]
 
 
     property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fccomp_pointer.params_prior_calc)
+            return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_prior_calc)
 
         def __set__(self, dict pi):
-            self.fccomp_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
+            (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
     property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.fccomp_pointer.params_after_calc)
+            return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_after_calc)
 
         def __set__(self, dict po):
-            self.fccomp_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
+            (<cpp_fccomp.FCComp *> self._inst).params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property pass_num:
         def __get__(self):
-            return self.fccomp_pointer.pass_num
+            return (<cpp_fccomp.FCComp *> self._inst).pass_num
 
         def __set__(self, int pn):
-            self.fccomp_pointer.pass_num = pn
+            (<cpp_fccomp.FCComp *> self._inst).pass_num = pn
 
 
     property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str(self.fccomp_pointer.track_params)
+            return conv.cpp_to_py_set_str((<cpp_fccomp.FCComp *> self._inst).track_params)
 
         def __set__(self, set p2t):
-            self.fccomp_pointer.track_params = conv.py_to_cpp_set_str(p2t)
+            (<cpp_fccomp.FCComp *> self._inst).track_params = conv.py_to_cpp_set_str(p2t)
 
     #
     # Class Methods
@@ -172,7 +173,7 @@ cdef class FCComp:
             PU240   0.000000E+00    2.114728E-03
 
         """
-        self.fccomp_pointer.write_mat_pass()
+        (<cpp_fccomp.FCComp *> self._inst).write_mat_pass()
 
 
     def write_params_pass(self):
@@ -188,7 +189,7 @@ cdef class FCComp:
             Mass    9.985828E-01    9.975915E-01
 
         """
-        self.fccomp_pointer.write_params_pass()
+        (<cpp_fccomp.FCComp *> self._inst).write_params_pass()
         
 
     def write_text(self):
@@ -196,7 +197,7 @@ cdef class FCComp:
         write_params_pass().  This is convience function for producing 
         text-based output.  However, using write() is recommended.
         """
-        self.fccomp_pointer.write_text()
+        (<cpp_fccomp.FCComp *> self._inst).write_text()
 
 
     def write_hdf5(self):
@@ -204,7 +205,7 @@ cdef class FCComp:
         Then, if available, it also writes parameter data as well.  
         Using write() instead is recommended.
         """
-        self.fccomp_pointer.write_hdf5()
+        (<cpp_fccomp.FCComp *> self._inst).write_hdf5()
 
 
     def write(self):
@@ -219,7 +220,7 @@ cdef class FCComp:
         This is what is most often used to write Bright output.  Therefore it is
         seen as the last step for every component in each pass.
         """
-        self.fccomp_pointer.write()
+        (<cpp_fccomp.FCComp *> self._inst).write()
 
 
     # Virtual methods
@@ -237,7 +238,7 @@ cdef class FCComp:
                 self.params_after_calc["Mass"] = self.mat_prod.mass
                 return
         """
-        self.fccomp_pointer.calc_params()
+        (<cpp_fccomp.FCComp *> self._inst).calc_params()
 
 
     def calc(self):
@@ -259,6 +260,6 @@ cdef class FCComp:
 
         """
         cdef pyne.material._Material pymat = pyne.material.Material()
-        pymat.mat_pointer[0] = self.fccomp_pointer.calc()
+        pymat.mat_pointer[0] = (<cpp_fccomp.FCComp *> self._inst).calc()
         return pymat
 

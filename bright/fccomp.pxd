@@ -15,6 +15,6 @@ from pyne cimport material
 cimport cpp_fccomp
 
 cdef class FCComp:
-    cdef cpp_fccomp.FCComp * fccomp_pointer
+    cdef void * _inst
 
 

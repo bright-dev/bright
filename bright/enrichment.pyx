@@ -140,13 +140,10 @@ cdef class Enrichment(fccomp.FCComp):
         cdef EnrichmentParameters enr_par
 
         if enrich_params is None:
-            self.e_pointer = new cpp_enrichment.Enrichment(std.string(name))
+            self._inst = new cpp_enrichment.Enrichment(std.string(name))
         elif isinstance(enrich_params, EnrichmentParameters):
             enr_par = enrich_params
-            self.e_pointer = new cpp_enrichment.Enrichment(<cpp_enrichment.EnrichmentParameters> enr_par.ep_pointer[0], std.string(name))
-
-    def __dealloc__(self):
-        del self.e_pointer
+            self._inst = new cpp_enrichment.Enrichment(<cpp_enrichment.EnrichmentParameters> enr_par.ep_pointer[0], std.string(name))
 
 
     #
@@ -157,196 +154,124 @@ cdef class Enrichment(fccomp.FCComp):
 
     property alpha_0:
         def __get__(self):
-            return self.e_pointer.alpha_0
+            return (<cpp_enrichment.Enrichment *> self._inst).alpha_0
 
         def __set__(self, value):
-            self.e_pointer.alpha_0 = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).alpha_0 = <double> value
 
 
     property Mstar_0:
         def __get__(self):
-            return self.e_pointer.Mstar_0
+            return (<cpp_enrichment.Enrichment *> self._inst).Mstar_0
 
         def __set__(self, value):
-            self.e_pointer.Mstar_0 = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).Mstar_0 = <double> value
 
 
     property Mstar:
         def __get__(self):
-            return self.e_pointer.Mstar
+            return (<cpp_enrichment.Enrichment *> self._inst).Mstar
 
         def __set__(self, value):
-            self.e_pointer.Mstar = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).Mstar = <double> value
 
 
     property mat_tail:
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
-            pymat.mat_pointer[0] = self.e_pointer.mat_tail
+            pymat.mat_pointer[0] = (<cpp_enrichment.Enrichment *> self._inst).mat_tail
             return pymat
 
         def __set__(self, pyne.material._Material mat):
-            self.e_pointer.mat_tail = <pyne.cpp_material.Material> mat.mat_pointer[0]
+            (<cpp_enrichment.Enrichment *> self._inst).mat_tail = <pyne.cpp_material.Material> mat.mat_pointer[0]
 
 
     property j:
         def __get__(self):
-            return self.e_pointer.j
+            return (<cpp_enrichment.Enrichment *> self._inst).j
 
         def __set__(self, value):
-            self.e_pointer.j = <int> value
+            (<cpp_enrichment.Enrichment *> self._inst).j = <int> value
 
 
     property k:
         def __get__(self):
-            return self.e_pointer.k
+            return (<cpp_enrichment.Enrichment *> self._inst).k
 
         def __set__(self, value):
-            self.e_pointer.k = <int> value
+            (<cpp_enrichment.Enrichment *> self._inst).k = <int> value
 
 
     property xP_j:
         def __get__(self):
-            return self.e_pointer.xP_j
+            return (<cpp_enrichment.Enrichment *> self._inst).xP_j
 
         def __set__(self, value):
-            self.e_pointer.xP_j = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).xP_j = <double> value
 
 
     property xW_j:
         def __get__(self):
-            return self.e_pointer.xW_j
+            return (<cpp_enrichment.Enrichment *> self._inst).xW_j
 
         def __set__(self, value):
-            self.e_pointer.xW_j = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).xW_j = <double> value
 
 
     property N:
         def __get__(self):
-            return self.e_pointer.N
+            return (<cpp_enrichment.Enrichment *> self._inst).N
 
         def __set__(self, value):
-            self.e_pointer.N = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).N = <double> value
 
 
     property M:
         def __get__(self):
-            return self.e_pointer.M
+            return (<cpp_enrichment.Enrichment *> self._inst).M
 
         def __set__(self, value):
-            self.e_pointer.M = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).M = <double> value
 
 
     property N0:
         def __get__(self):
-            return self.e_pointer.N0
+            return (<cpp_enrichment.Enrichment *> self._inst).N0
 
         def __set__(self, value):
-            self.e_pointer.N0 = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).N0 = <double> value
 
 
     property M0:
         def __get__(self):
-            return self.e_pointer.M0
+            return (<cpp_enrichment.Enrichment *> self._inst).M0
 
         def __set__(self, value):
-            self.e_pointer.M0 = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).M0 = <double> value
 
 
     property TotalPerFeed:
         def __get__(self):
-            return self.e_pointer.TotalPerFeed
+            return (<cpp_enrichment.Enrichment *> self._inst).TotalPerFeed
 
         def __set__(self, value):
-            self.e_pointer.TotalPerFeed = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).TotalPerFeed = <double> value
 
 
     property SWUperFeed:
         def __get__(self):
-            return self.e_pointer.SWUperFeed
+            return (<cpp_enrichment.Enrichment *> self._inst).SWUperFeed
 
         def __set__(self, value):
-            self.e_pointer.SWUperFeed = <double> value
+            (<cpp_enrichment.Enrichment *> self._inst).SWUperFeed = <double> value
 
 
     property SWUperProduct:
         def __get__(self):
-            return self.e_pointer.SWUperProduct
+            return (<cpp_enrichment.Enrichment *> self._inst).SWUperProduct
 
         def __set__(self, value):
-            self.e_pointer.SWUperProduct = <double> value
-
-
-    # FCComps inherited attributes
-
-    property name:
-        def __get__(self):
-            cdef std.string n = self.e_pointer.name
-            return n.c_str()
-
-        def __set__(self, char * n):
-            self.e_pointer.name = std.string(n)
-
-
-    property natural_name:
-        def __get__(self):
-            cdef std.string n = self.e_pointer.natural_name
-            return n.c_str()
-
-        def __set__(self, char * n):
-            self.e_pointer.natural_name = std.string(n)
-
-
-    property mat_feed:
-        def __get__(self):
-            cdef pyne.material._Material pymat = pyne.material.Material()
-            pymat.mat_pointer[0] = self.e_pointer.mat_feed
-            return pymat
-
-        def __set__(self, pyne.material._Material mat):
-            self.e_pointer.mat_feed = <pyne.cpp_material.Material> mat.mat_pointer[0]
-
-
-    property mat_prod:
-        def __get__(self):
-            cdef pyne.material._Material pymat = pyne.material.Material()
-            pymat.mat_pointer[0] = self.e_pointer.mat_prod
-            return pymat
-
-        def __set__(self, pyne.material._Material mat):
-            self.e_pointer.mat_prod = <pyne.cpp_material.Material> mat.mat_pointer[0]
-
-
-    property params_prior_calc:
-        def __get__(self):
-            return conv.map_to_dict_str_dbl(self.e_pointer.params_prior_calc)
-
-        def __set__(self, dict pi):
-            self.e_pointer.params_prior_calc = conv.dict_to_map_str_dbl(pi)
-
-
-    property params_after_calc:
-        def __get__(self):
-            return conv.map_to_dict_str_dbl(self.e_pointer.params_after_calc)
-
-        def __set__(self, dict po):
-            self.e_pointer.params_after_calc = conv.dict_to_map_str_dbl(po)
-
-
-    property pass_num:
-        def __get__(self):
-            return self.e_pointer.pass_num
-
-        def __set__(self, int pn):
-            self.e_pointer.pass_num = pn
-
-
-    property track_params:
-        def __get__(self):
-            return conv.cpp_to_py_set_str(self.e_pointer.track_params)
-
-        def __set__(self, set p2t):
-            self.e_pointer.track_params = conv.py_to_cpp_set_str(p2t)
+            (<cpp_enrichment.Enrichment *> self._inst).SWUperProduct = <double> value
 
 
 
@@ -363,7 +288,7 @@ cdef class Enrichment(fccomp.FCComp):
               (re-)initialize an Enrichment cascade with.
         """
         cdef EnrichmentParameters enr_par = enrich_params
-        self.e_pointer.initialize(<cpp_enrichment.EnrichmentParameters> enr_par.ep_pointer[0])
+        (<cpp_enrichment.Enrichment *> self._inst).initialize(<cpp_enrichment.EnrichmentParameters> enr_par.ep_pointer[0])
 
 
     def calc_params(self):
@@ -397,7 +322,7 @@ cdef class Enrichment(fccomp.FCComp):
             self.params_after_calc["SWUperProduct"] = self.SWUperProduct
 
         """
-        (<cpp_enrichment.FCComp *> self.e_pointer).calc_params()
+        (<cpp_enrichment.FCComp *> self._inst).calc_params()
 
 
     def calc(self, input=None):
@@ -418,12 +343,12 @@ cdef class Enrichment(fccomp.FCComp):
         cdef pyne.material._Material output = pyne.material.Material()
 
         if input is None:
-            output.mat_pointer[0] = (<cpp_enrichment.FCComp *> self.e_pointer).calc()
+            output.mat_pointer[0] = (<cpp_enrichment.FCComp *> self._inst).calc()
         elif isinstance(input, dict):
-            output.mat_pointer[0] = self.e_pointer.calc(conv.dict_to_map_int_dbl(input))
+            output.mat_pointer[0] = (<cpp_enrichment.Enrichment *> self._inst).calc(conv.dict_to_map_int_dbl(input))
         elif isinstance(input, pyne.material._Material):
             in_mat = input
-            output.mat_pointer[0] = self.e_pointer.calc(<pyne.cpp_material.Material> in_mat.mat_pointer[0])
+            output.mat_pointer[0] = (<cpp_enrichment.Enrichment *> self._inst).calc(<pyne.cpp_material.Material> in_mat.mat_pointer[0])
 
         return output
 
@@ -443,7 +368,7 @@ cdef class Enrichment(fccomp.FCComp):
         Returns:
             * pfratio (float): As calculated above.
         """
-        return self.e_pointer.PoverF(x_F, x_P, x_W)
+        return (<cpp_enrichment.Enrichment *> self._inst).PoverF(x_F, x_P, x_W)
 
 
     def WoverF(self, double x_F, double x_P, double x_W):
@@ -461,5 +386,5 @@ cdef class Enrichment(fccomp.FCComp):
         Returns:
             * wfratio (float): As calculated above.
         """
-        return self.e_pointer.WoverF(x_F, x_P, x_W)
+        return (<cpp_enrichment.Enrichment *> self._inst).WoverF(x_F, x_P, x_W)
 
