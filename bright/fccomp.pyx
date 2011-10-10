@@ -251,12 +251,12 @@ cdef class FCComp:
         daisy-chained together.
 
         Args:
-            * input (dict or MassStream): If input is present, it set as the component's 
+            * input (dict or Material): If input is present, it set as the component's 
               mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as mat_feed.
+              dictionary is first converted into a Material before being set as mat_feed.
 
         Returns:
-            * output (MassStream): mat_prod.
+            * output (Material): mat_prod.
 
         """
         cdef pyne.material._Material pymat = pyne.material.Material()

@@ -13,15 +13,17 @@ import numpy as np
 # pyne imports 
 from pyne cimport std
 from pyne cimport stlconverters as conv
+
 cimport pyne.nucname
+import pyne.nucname
 
 cimport cpp_bright
 
 import os
 
-import pyne.__init__
+import bright.__init__
 
-_local_dir = os.path.split(pyne.__init__.__file__)[0]
+_local_dir = os.path.split(bright.__init__.__file__)[0]
 
 lib = os.path.join(_local_dir, 'lib')
 includes = os.path.join(_local_dir, 'includes')
