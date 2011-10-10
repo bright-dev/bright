@@ -141,16 +141,16 @@ cdef class Reprocess(fccomp.FCComp):
             outcomp = {}
             for iso in incomp.keys():
                 outcomp[iso] = incomp[iso] * sepeff[iso]
-            self.mat_prod = MassStream(outcomp)
+            self.mat_prod = Material(outcomp)
             return self.mat_prod
 
         Args:
-            * input (dict or MassStream): If input is present, it set as the component's 
+            * input (dict or Material): If input is present, it set as the component's 
               mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a MassStream before being set as mat_feed.
+              dictionary is first converted into a Material before being set as mat_feed.
 
         Returns:
-            * output (MassStream): mat_prod.
+            * output (Material): mat_prod.
         """
         cdef pyne.material._Material in_mat 
         cdef pyne.material._Material output = pyne.material.Material()

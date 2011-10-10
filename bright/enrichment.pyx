@@ -331,12 +331,12 @@ cdef class Enrichment(fccomp.FCComp):
         product and waste streams flowing out of the the cascade as well.
 
         Args:
-            * input (dict or MassStream or None): If input is present, it is set as the component's 
+            * input (dict or Material or None): If input is present, it is set as the component's 
             mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this dictionary 
-            is first converted into a MassStream before being set as mat_feed.
+            is first converted into a Material before being set as mat_feed.
 
         Returns:
-            * output (MassStream): mat_prod.
+            * output (Material): mat_prod.
 
         """
         cdef pyne.material._Material in_mat 

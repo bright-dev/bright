@@ -178,6 +178,10 @@ exts.append(cpp_ext("bright.enrichment", ['enrichment.pyx'],
 exts.append(cpp_ext("bright.reprocess", ['reprocess.pyx'], 
             ['bright', 'bright_fccomp', 'bright_reprocess'] + pyne_libs))
 
+# storage
+exts.append(cpp_ext("bright.storage", ['storage.pyx'], 
+            ['bright', 'bright_fccomp', 'bright_storage'] + pyne_libs))
+
 
 
 
