@@ -79,8 +79,8 @@ cdef class FCComp:
             pymat.mat_pointer[0] = self.fccomp_pointer.mat_feed
             return pymat
 
-        def __set__(self, material._Material mat):
-            self.fccomp_pointer.mat_feed = <cpp_material.Material> mat.mat_pointer[0]
+        def __set__(self, pyne.material._Material mat):
+            self.fccomp_pointer.mat_feed = <pyne.cpp_material.Material> mat.mat_pointer[0]
 
 
     property mat_prod:
@@ -89,8 +89,8 @@ cdef class FCComp:
             pymat.mat_pointer[0] = self.fccomp_pointer.mat_prod
             return pymat
 
-        def __set__(self, material._Material mat):
-            self.fccomp_pointer.mat_prod = <cpp_material.Material> mat.mat_pointer[0]
+        def __set__(self, pyne.material._Material mat):
+            self.fccomp_pointer.mat_prod = <pyne.cpp_material.Material> mat.mat_pointer[0]
 
 
     property params_prior_calc:
