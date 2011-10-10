@@ -182,6 +182,9 @@ exts.append(cpp_ext("bright.reprocess", ['reprocess.pyx'],
 exts.append(cpp_ext("bright.storage", ['storage.pyx'], 
             ['bright', 'bright_fccomp', 'bright_storage'] + pyne_libs))
 
+# fluence point
+exts.append(cpp_ext("bright.fluence_point", ['fluence_point.pyx'], ['bright', 'bright_fluence_point'], False))
+
 
 
 
