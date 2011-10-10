@@ -7,6 +7,6 @@ cdef class EnrichmentParameters:
 
 
 cdef class Enrichment(fccomp.FCComp):
-    cdef cpp_enrichment.Enrichment * e_pointer
+    pass
 
 

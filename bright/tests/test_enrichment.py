@@ -56,7 +56,6 @@ def test_constructor():
     assert_almost_equal(ep.xP_j, 0.0)
     assert_almost_equal(ep.xW_j, 0.0)
 
-
 def test_alpha_0():
     ep = EnrichmentParameters()
     ep.alpha_0 = 1.05
