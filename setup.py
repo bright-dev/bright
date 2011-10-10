@@ -170,6 +170,10 @@ exts.append(cpp_ext("bright.bright_config", ['bright_config.pyx'], ['bright'] + 
 # fccomp
 exts.append(cpp_ext("bright.fccomp", ['fccomp.pyx'], ['bright', 'bright_fccomp'] + pyne_libs))
 
+# enrichment
+exts.append(cpp_ext("bright.enrichment", ['enrichment.pyx'], 
+            ['bright', 'bright_fccomp', 'bright_enrichment'] + pyne_libs))
+
 
 
 
