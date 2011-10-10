@@ -1,4 +1,4 @@
-"""Cython header for  library."""
+"""Cython header for enrichment library."""
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.vector cimport vector
@@ -7,14 +7,7 @@ from pyne cimport std
 from pyne cimport cpp_material
 from pyne cimport material
 
-#from bright cimport cpp_fccomp
-#cimport bright.cpp_fccomp
-
 from bright.cpp_fccomp cimport FCComp
-
-#cdef extern from "fccomp.h" namespace "bright":
-#    cdef cppclass FCComp:
-#        pass
 
 cdef extern from "enrichment.h" namespace "bright":
 
