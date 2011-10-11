@@ -50,30 +50,6 @@ def general_teardown():
             os.remove(f)
 
 
-class TestFluencePoint(TestCase):
-    """Tests the fluence point Reactor1G helper clasr1g."""
-
-    def test_constructor(self):
-        fp = FluencePoint()
-        assert_equal(fp.f, 0)
-        assert_equal(fp.F, 0.0)
-        assert_equal(fp.m, 0.0)
-
-    def test_f(self):
-        fp = FluencePoint()
-        fp.f = 10
-        assert_equal(fp.f, 10)
-
-    def test_F(self):
-        fp = FluencePoint()
-        fp.F = 10.0
-        assert_equal(fp.F, 10.0)
-
-    def test_m(self):
-        fp = FluencePoint()
-        fp.m = 10.0
-        assert_equal(fp.m, 10.0)
-
 
 class TestReactorParameters(TestCase):
     """Tests the reactor parameters Reactor1G helper clasr1g."""
