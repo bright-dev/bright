@@ -325,7 +325,6 @@ void bright::Reactor1G::fold_mass_weights()
       miF[iso->first] = niF[iso->first] * pyne::nuc_weight(iso->first) / A_IHM;
   };
 
-  
   // Coolant mass weight Calculation...requires MWF
   // Fuel Molecular Weight
   MWF = 0.0; 	
@@ -423,6 +422,7 @@ void bright::Reactor1G::fold_mass_weights()
     zeta_F_.clear();
     zeta_F_.assign( F.size(), 0.0 );
   };
+
 
   // D(F)
   D_F_.clear();
@@ -1255,7 +1255,7 @@ void bright::Reactor1G::calc_zeta()
   {
     a = r;
     b = l / 2.0;
-    
+
     lattice_E_planar(a, b);
     lattice_F_planar(a, b);
   }
