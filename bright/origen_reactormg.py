@@ -1,7 +1,10 @@
-from bright import ReactorMG, bright_config
-import metasci.nuke.origen as msno
 import subprocess
+
 import numpy as np
+from pyne import origen22 
+
+from bright import bright_conf
+from bright.reactormg import ReactorMG
 
 
 class OrigenReactorMG(ReactorMG):
@@ -24,7 +27,7 @@ class OrigenReactorMG(ReactorMG):
             self.bt_s = s
             self.burn_time = self.burn_times[s]
 
-            if (2 <= bright_config.verbosity):
+            if (2 <= bright_conf.verbosity):
                 print "Time step {0} = {1} days".format(s, self.burn_times[s])
 
             # Find the nearest neightbors for this time.
@@ -85,11 +88,11 @@ class OrigenReactorMG(ReactorMG):
         T_it = self.T_it
 
         # Make cross section library
-        msno.write_tape9(name_org='template.tape9', **self._xs)
+        origen22.write_tape9(name_org='template.tape9', **self._xs)
 
         # Make input mass stream
         isovec = {iso: 1E3 * T_it[iso][s] for iso in K}
-        msno.write_tape4(isovec)
+        origen22.write_tape4(isovec)
 
         # Make origen input file
         ir_type = 'IRP'
@@ -99,13 +102,13 @@ class OrigenReactorMG(ReactorMG):
         nes = (True, False, False)
         cutoff = 1E-300
         otn = [5]
-        msno.write_tape5_irradiation(ir_type, ir_time, ir_value, nlb, cut_off=cutoff, out_table_nes=nes, out_table_num=otn)
+        origen22.write_tape5_irradiation(ir_type, ir_time, ir_value, nlb, cut_off=cutoff, out_table_nes=nes, out_table_num=otn)
 
         # Run origen
         rtn = subprocess.check_call("o2_therm_linux.exe", shell=True)
 
         # Parse origen output 
-        res = msno.parse_tape6()
+        res = origen22.parse_tape6()
         outvec = {key: sum([v[-1] for v in value]) * 1E-3 for key, value in res['table_5']['nuclide']['data'].items() if (key in K) and not np.isnan(value).any()}
         nullvec = {k: 0.0 for k in K if k not in outvec}
         outvec.update(nullvec)

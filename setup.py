@@ -210,6 +210,12 @@ exts.append(cpp_ext("bright.fuel_fabrication", ['fuel_fabrication.pyx'],
              'bright_reactor1g', 'bright_fuel_fabrication'] + pyne_libs))
 
 
+# reactormg
+exts.append(cpp_ext("bright.reactormg", ['reactormg.pyx'], 
+            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
+             'bright_reactormg'] + pyne_libs))
+
+
 
 ##########################
 ### Setup Package Data ###
