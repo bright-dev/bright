@@ -119,6 +119,8 @@ def calc_diff(r, n, name=""):
 
 
 if __name__ == "__main__":
+    raise SystemExit("NEA test cas currently broken... use test_reactormg_regression.py instead.")
+
     rmg, ms_nea = test_regression()
 
     r_BU, n_BU, diff_BU = calc_diff(rmg.BUd, 40.0, "Burnup")

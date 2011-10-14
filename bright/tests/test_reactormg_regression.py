@@ -4,9 +4,10 @@ import re
 import numpy as np
 import tables as tb
 
-from bright import *
-import isoname
-from mass_stream import MassStream
+from bright import bright_conf, load_track_nucs_hdf5
+from bright.reactor_parameters import lwr_defaults
+from pyne import nucname
+from pyne.material import Material
 
 import serpent
 import matplotlib.pyplot as plt
@@ -20,7 +21,7 @@ from metasci.graph import StairStepEnergy, stair_step
 import metasci.nuke as msn
 
 # Hack to use origen as burnup calculator
-from origen_reactormg import OrigenReactorMG
+from bright.origen_reactormg import OrigenReactorMG
 ReactorMG = OrigenReactorMG
 
 def run_serpent():
@@ -59,7 +60,7 @@ def run_serpent():
     for iso_zz in dep_bu['ZAI']:
         # Find valid isotope indeces
         try:
-            iso_LL[iso_zz] = isoname.mixed_2_LLAAAM(int(iso_zz))
+            iso_LL[iso_zz] = nucname.mixed_2_LLAAAM(int(iso_zz))
         except:
             continue
         iso_index[iso_zz] = dep_bu['i{0}'.format(iso_zz)] - 1
@@ -77,11 +78,11 @@ def run_serpent():
 
 def run_reactormg():
     # Init bright
-    libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
+    libfile = os.getenv("BRIGHT_DATA") + '/lwr_mg.h5'
     load_track_nucs_hdf5(libfile)
-    bright_config.write_text = False
-    bright_config.write_hdf5 = False
-    bright_config.verbosity = 100
+    bright_conf.write_text = False
+    bright_conf.write_hdf5 = False
+    bright_conf.verbosity = 100
 
     # Init reactor paramters
     rp = lwr_defaults()
@@ -122,7 +123,7 @@ def run_reactormg():
     rp.burn_times = bt
 
     # Init mass stream
-    leu = MassStream({922350: 0.045, 922380: 0.955})
+    leu = Material({922350: 0.045, 922380: 0.955})
 
     # Init ReactorMG
     rmg = ReactorMG(reactor_parameters=rp, name="rmg")
@@ -275,7 +276,7 @@ def sort_sig(sig):
 
 def make_1g_xs_graphs(nuc, sig):
     global burn_times
-    nuc_zz = isoname.LLAAAM_2_zzaaam(nuc)
+    nuc_zz = nucname.LLAAAM_2_zzaaam(nuc)
     plt.clf()
 
     reactions = ['sigma_t', 'sigma_s', 'sigma_a', 'sigma_f']
@@ -309,10 +310,10 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
                     'AM241', 'AM242', 'AM242M', 'AM243', 'AM244', 'CM242', 'CM243', 'CM244', 'CM245', 'CM246', ])
 
     if nuc_class == 'Actinide':
-        #filt_u = [(key, value) for key, value in u if key[0] == reaction and 890000 < isoname.LLAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
+        #filt_u = [(key, value) for key, value in u if key[0] == reaction and 890000 < nucname.LLAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
         filt_u = [(key, value) for key, value in u if key[0] == reaction and key[1] in imp_acts and hl_cutoff < hl[key[1]]]
     elif nuc_class == 'Fission Product':
-        filt_u = [(key, value) for key, value in u if key[0] == reaction and 200000 < isoname.LLAAAM_2_zzaaam(key[1]) < 730000 and hl_cutoff < hl[key[1]]]
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and 200000 < nucname.LLAAAM_2_zzaaam(key[1]) < 730000 and hl_cutoff < hl[key[1]]]
     else:
         raise ValueError
 
@@ -493,11 +494,11 @@ if __name__ == "__main__":
 
     # Make mass fraction figures
     for nuc_LL in nuclides:
-        nuc_zz = isoname.LLAAAM_2_zzaaam(nuc_LL)
+        nuc_zz = nucname.LLAAAM_2_zzaaam(nuc_LL)
         nuc_ind = dep_bu['iso_index'][nuc_zz]
         r_i, s_i, diff_i = calc_diff(T_it[nuc_zz][time_range], dep_bu['mw'][nuc_ind][time_range], name=nuc_LL + " Mass Fraction [kg/kgIHM]")
 
-    mss = [MassStream({i: T_it[i][t] for i in T_it.keys()}) for t in time_range]
+    mss = [Material({i: T_it[i][t] for i in T_it.keys()}) for t in time_range]
     r_mass, s_mass, diff_mass = calc_diff(np.array([ms.mass for ms in mss]), bu_mass_norm[time_range], name="Mass")
 
     sig = compare_1g_xs(rmg)
