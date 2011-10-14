@@ -16,5 +16,4 @@ cimport cpp_fccomp
 
 cdef class FCComp:
     cdef void * _inst
-
-
+    cdef public bint _free_inst

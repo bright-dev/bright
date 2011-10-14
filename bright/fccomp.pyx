@@ -46,10 +46,12 @@ cdef class FCComp:
             param_set = conv.py_to_cpp_set_str(params)
             self._inst = new cpp_fccomp.FCComp(param_set, std.string(name))
 
+        self._free_inst = True
+
 
     def __dealloc__(self):
-        #del self._inst
-        free(self._inst)
+        if self._free_inst:
+            free(self._inst)
 
 
     #
