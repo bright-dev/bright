@@ -194,6 +194,11 @@ exts.append(cpp_ext("bright.reactor1g", ['reactor1g.pyx'],
             ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
              'bright_reactor1g'] + pyne_libs))
 
+# light water reactor1g
+exts.append(cpp_ext("bright.light_water_reactor1g", ['light_water_reactor1g.pyx'], 
+            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
+             'bright_reactor1g', 'bright_light_water_reactor1g'] + pyne_libs))
+
 
 
 ##########################
