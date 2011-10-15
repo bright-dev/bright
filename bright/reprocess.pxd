@@ -2,6 +2,6 @@
 cimport fccomp
 
 cdef class Reprocess(fccomp.FCComp):
-    pass
+    cdef public object _sepeff
 
 

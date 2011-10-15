@@ -54,6 +54,7 @@ cdef class FCComp:
         # property defaults
         self._params_prior_calc = None
         self._params_after_calc = None
+        self._track_params = None
 
 
     def __dealloc__(self):

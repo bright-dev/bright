@@ -1,5 +1,6 @@
 """Python wrapper for Reprocess."""
 # Cython imports
+from libcpp.utility cimport pair as cpp_pair
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
 from cython cimport pointer
@@ -12,7 +13,9 @@ import numpy as np
 
 from pyne cimport std
 from pyne cimport nucname 
+
 from pyne cimport stlconverters as conv
+from pyne import stlconverters as conv
 
 from pyne import nucname
 
@@ -88,6 +91,7 @@ cdef class Reprocess(fccomp.FCComp):
         cdef dict sepdict = self._cpp_sepeff(sepeff)
         self._inst = new cpp_reprocess.Reprocess(conv.dict_to_map_int_dbl(sepdict), std.string(name))
 
+        self._sepeff = None
 
     #
     # Class Attributes
@@ -97,11 +101,41 @@ cdef class Reprocess(fccomp.FCComp):
 
     property sepeff:
         def __get__(self):
-            return conv.map_to_dict_int_dbl((<cpp_reprocess.Reprocess *> self._inst).sepeff)
+            cdef conv._MapIntDouble proxy
 
-        def __set__(self, dict value):
-            value = self._cpp_sepeff(value)
-            (<cpp_reprocess.Reprocess *> self._inst).sepeff = conv.dict_to_map_int_dbl(value)
+            if self._params_after_calc is None:
+                proxy = conv.MapIntDouble(False, False)
+                proxy.map_ptr = &(<cpp_reprocess.Reprocess *> self._inst).sepeff
+                self._sepeff = proxy
+
+            return self._sepeff
+            #return conv.map_to_dict_int_dbl((<cpp_reprocess.Reprocess *> self._inst).sepeff)
+
+        def __set__(self, value):
+            cdef cpp_pair[int, double] item
+            cdef cpp_map[int, double]  m
+
+            if isinstance(value, conv._MapIntDouble):
+                (<cpp_reprocess.Reprocess *> self._inst).sepeff = deref((<conv._MapIntDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, double]()
+                for k, v in value.items():
+                    item = cpp_pair[int, double](k, v)
+                    m.insert(item)
+                (<cpp_reprocess.Reprocess *> self._inst).sepeff = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, double]()
+                for i in value:
+                    item = cpp_pair[int, double](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reprocess.Reprocess *> self._inst).sepeff = m
+            else:
+                raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
+
+            self._sepeff = None
+
+            #value = self._cpp_sepeff(value)
+            #(<cpp_reprocess.Reprocess *> self._inst).sepeff = conv.dict_to_map_int_dbl(value)
 
 
 
