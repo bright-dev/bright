@@ -13,6 +13,7 @@ import numpy as np
 # pyne imports 
 from pyne cimport std
 from pyne cimport stlconverters as conv
+from pyne import stlconverters as conv
 
 cimport pyne.nucname
 import pyne.nucname
@@ -53,6 +54,12 @@ bright_start()
 #######################################
 
 cdef class BrightConf:
+
+    cdef object _track_nucs
+
+    def __cinit__(self):
+        self._track_nucs = None
+
     # From bright namespace
 
     property BRIGHT_DATA:
@@ -64,15 +71,31 @@ cdef class BrightConf:
             cpp_bright.BRIGHT_DATA = std.string(value)
         
 
-    # From FCComps namespace
     property track_nucs:
         def __get__(self):
-            return conv.cpp_to_py_set_int(cpp_bright.track_nucs)
+            cdef conv._SetInt proxy
+
+            if self._track_nucs is None:
+                proxy = conv.SetInt(False, False)
+                proxy.set_ptr = &cpp_bright.track_nucs
+                self._track_nucs = proxy
+
+            return self._track_nucs
 
         def __set__(self, value):
-            s = set([pyne.nucname.zzaaam(v) for v in value])
-            cpp_bright.track_nucs = conv.py_to_cpp_set_int(s)
-            cpp_bright.sort_track_nucs()
+            cdef cpp_set[int] s
+
+            if isinstance(value, conv._SetInt):
+                cpp_bright.track_nucs = deref((<conv._SetInt> value).set_ptr)
+            elif hasattr(value, '__len__'):
+                s = cpp_set[int]()
+                for nuc in value:
+                    s.insert(pyne.nucname.zzaaam(nuc))
+                cpp_bright.track_nucs = s
+            else:
+                raise TypeError('{0} cannot be converted to a C++ set.'.format(type(value)))
+
+            self._track_nucs = None
 
 
     property track_nucs_order:
