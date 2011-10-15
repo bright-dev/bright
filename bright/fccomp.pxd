@@ -17,3 +17,6 @@ cimport cpp_fccomp
 cdef class FCComp:
     cdef void * _inst
     cdef public bint _free_inst
+
+    cdef public object _params_prior_calc
+    cdef public object _params_after_calc
