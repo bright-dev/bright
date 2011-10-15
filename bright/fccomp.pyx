@@ -1,5 +1,6 @@
 """Python wrapper for fccomp."""
 # Cython imports
+from libcpp.utility cimport pair as cpp_pair
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
 from cython cimport pointer
@@ -12,7 +13,9 @@ import numpy as np
 
 from pyne cimport std
 from pyne cimport nucname
+
 from pyne cimport stlconverters as conv
+from pyne import stlconverters as conv
 
 cimport pyne.cpp_material
 cimport pyne.material
@@ -47,6 +50,10 @@ cdef class FCComp:
             self._inst = new cpp_fccomp.FCComp(param_set, std.string(name))
 
         self._free_inst = True
+
+        # property defaults
+        self._params_prior_calc = None
+        self._params_after_calc = None
 
 
     def __dealloc__(self):
@@ -98,18 +105,85 @@ cdef class FCComp:
 
     property params_prior_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_prior_calc)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict pi):
-            (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = conv.dict_to_map_str_dbl(pi)
+            if self._params_prior_calc is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_fccomp.FCComp *> self._inst).params_prior_calc
+                self._params_prior_calc = proxy
+
+            return self._params_prior_calc
+
+            #return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_prior_calc)
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._params_prior_calc = None
+            #(<cpp_fccomp.FCComp *> self._inst).params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
     property params_after_calc:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_after_calc)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict po):
-            (<cpp_fccomp.FCComp *> self._inst).params_after_calc = conv.dict_to_map_str_dbl(po)
+            if self._params_after_calc is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_fccomp.FCComp *> self._inst).params_after_calc
+                self._params_after_calc = proxy
+
+            return self._params_after_calc
+
+            #return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_after_calc)
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_fccomp.FCComp *> self._inst).params_after_calc = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_fccomp.FCComp *> self._inst).params_after_calc = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_fccomp.FCComp *> self._inst).params_after_calc = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._params_after_calc = None
+
+            #(<cpp_fccomp.FCComp *> self._inst).params_after_calc = conv.dict_to_map_str_dbl(po)
 
 
     property pass_num:
