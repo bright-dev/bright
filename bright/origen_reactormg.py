@@ -2,6 +2,7 @@ import subprocess
 
 import numpy as np
 from pyne import origen22 
+from pyne.material import Material
 
 from bright import bright_conf
 from bright.reactormg import ReactorMG
@@ -11,8 +12,20 @@ class OrigenReactorMG(ReactorMG):
     """A multi-group reactor that replaces the transmutation step with origen."""
 
     def __init__(self, *args, **kwargs):
+        tape9 = kwargs.pop('tape9', None)
         super(OrigenReactorMG, self).__init__(*args, **kwargs)
         self._nearest_neighbors = []
+
+        if tape9 is None:
+            raise ValueError("must supply a default TAPE9 file to OrigenReactorMG.")
+        elif isinstance(tape9, basestring):
+            self._tape9 = origen22.parse_tape9(tape9)
+        elif hasattr(tape9, 'keys'):
+            self._tape9 = tape9
+        else:
+            # assume sequence of tape9s
+            self._tape9 = origen22.merge_tape9(tape9)
+
 
     def burnup_core(self):
         """Overrides the burnup core functio so that we may intercept certain methods."""
@@ -62,21 +75,30 @@ class OrigenReactorMG(ReactorMG):
         phi_tg = self.phi_tg
         norm_phi = phi_tg[s] / phi_t[s]
 
-        rx_map = {'SNG':   'sigma_gamma_itg', 
-                  'SN2N':  'sigma_2n_itg', 
-                  'SN3N':  'sigma_3n_itg', 
-                  'SNF':   'sigma_f_itg', 
-                  'SNA':   'sigma_a_itg', 
-                  'SNP':   'sigma_proton_itg', 
-                  'SNGX':  'sigma_gamma_x_itg', 
-                  'SN2NX': 'sigma_2n_x_itg',
+        rx_map = {'sigma_gamma':   'sigma_gamma_itg', 
+                  'sigma_2n':      'sigma_2n_itg', 
+                  'sigma_3n':      'sigma_3n_itg', 
+                  'sigma_f':       'sigma_f_itg', 
+                  'sigma_alpha':   'sigma_a_itg', 
+                  'sigma_p':       'sigma_proton_itg', 
+                  'sigma_gamma_x': 'sigma_gamma_x_itg', 
+                  'sigma_2n_x':    'sigma_2n_x_itg',
                   }
 
-        xs = {key: dict() for key in rx_map.keys()}
-        for rx, sig_attr in rx_map.items():
-            sig = getattr(self, sig_attr)
-            for iso in K:
-                xs[rx][iso] = (sig[iso][s] * norm_phi).sum()
+        # Make an overlay for tape9 called xs which contains 
+        # the same cross-section stricture as self._tape9
+        xs = {nlb: dict() for nlb in self._tape9.keys() if self._tape9[nlb]['_type'] == 'xsfpy'}
+        for nlb, val in xs.items():
+            val['_type'] = self._tape9[nlb]['_type']
+            val['_subtype'] = self._tape9[nlb]['_subtype']
+            for rx in rx_map.keys():
+                if rx not in self._tape9[nlb]:
+                    continue
+                val[rx] = {}
+                sig = getattr(self, rx_map[rx])
+                for nuc in self._tape9[nlb][rx]:
+                    if nuc in K:
+                        val[rx][nuc] = (sig[nuc][s] * norm_phi).sum()
 
         self._xs = xs
 
@@ -87,41 +109,46 @@ class OrigenReactorMG(ReactorMG):
         s = self.bt_s
         T_it = self.T_it
 
-        # Make cross section library
-        origen22.write_tape9(name_org='template.tape9', **self._xs)
+        # Make origen cross section library
+        t9 = origen22.merge_tape9([self._xs, self._tape9])
+        origen22.write_tape9(t9)
 
         # Make input mass stream
-        isovec = {iso: 1E3 * T_it[iso][s] for iso in K}
-        origen22.write_tape4(isovec)
+        mat = Material({iso: 1E3 * T_it[iso][s] for iso in K})
+        origen22.write_tape4(mat)
 
         # Make origen input file
-        ir_type = 'IRP'
-        ir_time = self.burn_times[s+1] - self.burn_times[s]
-        ir_value = self.specific_power
-        nlb = (219, 220, 221)
-        nes = (True, False, False)
-        cutoff = 1E-300
-        otn = [5]
-        origen22.write_tape5_irradiation(ir_type, ir_time, ir_value, nlb, cut_off=cutoff, out_table_nes=nes, out_table_num=otn)
+        irr_type = 'IRP'
+        irr_time = self.burn_times[s+1] - self.burn_times[s]
+        irr_value = self.specific_power
+        t5kw = {
+            'decay_nlb': sorted(nlb for nlb in t9.keys() if t9[nlb]['_type'] == 'decay')[:3],
+            'xsfpy_nlb': sorted(nlb for nlb in t9.keys() if t9[nlb]['_type'] == 'xsfpy')[:3],
+            'out_table_nes': (True, False, False),
+            'cut_off': 1E-300, 
+            'out_table_num': [5],
+            }
+        origen22.write_tape5_irradiation(irr_type, irr_time, irr_value, **t5kw)
 
         # Run origen
         rtn = subprocess.check_call("o2_therm_linux.exe", shell=True)
 
         # Parse origen output 
         res = origen22.parse_tape6()
-        outvec = {key: sum([v[-1] for v in value]) * 1E-3 for key, value in res['table_5']['nuclide']['data'].items() if (key in K) and not np.isnan(value).any()}
+        #outvec = {key: sum([v[-1] for v in value]) * 1E-3 for key, value in res['table_5']['nuclide']['data'].items() if (key in K) and not np.isnan(value).any()}
+        outvec = res['materials'][-1].comp
         nullvec = {k: 0.0 for k in K if k not in outvec}
         outvec.update(nullvec)
 
         # update the transmutation matrix
         sp1 = s + 1
-        for iso in K:
-            T_it[iso][sp1] = outvec[iso]
+        for nuc in K:
+            T_it[nuc][sp1] = outvec[nuc]
         self.T_it = T_it
 
         # update the burnup
         BU_t = self.BU_t
-        deltaBU = ir_time * ir_value
+        deltaBU = irr_time * irr_value
         BU_t[sp1] = BU_t[s] + deltaBU
         self.BU_t = BU_t
         print "   BU_t = {0}".format(BU_t[sp1])

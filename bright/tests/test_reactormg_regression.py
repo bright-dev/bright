@@ -126,7 +126,7 @@ def run_reactormg():
     leu = Material({922350: 0.045, 922380: 0.955})
 
     # Init ReactorMG
-    rmg = ReactorMG(reactor_parameters=rp, name="rmg")
+    rmg = ReactorMG(reactor_parameters=rp, name="rmg", tape9='template.tape9')
     rmg.loadlib(libfile)
 
     # Run the reactor
@@ -276,7 +276,7 @@ def sort_sig(sig):
 
 def make_1g_xs_graphs(nuc, sig):
     global burn_times
-    nuc_zz = nucname.LLAAAM_2_zzaaam(nuc)
+    nuc_zz = nucname.zzaaam(nuc)
     plt.clf()
 
     reactions = ['sigma_t', 'sigma_s', 'sigma_a', 'sigma_f']
@@ -310,10 +310,10 @@ def make_rank_table(reaction, nuc_class='Actinide', nrows=20, hl_cutoff=86400.0)
                     'AM241', 'AM242', 'AM242M', 'AM243', 'AM244', 'CM242', 'CM243', 'CM244', 'CM245', 'CM246', ])
 
     if nuc_class == 'Actinide':
-        #filt_u = [(key, value) for key, value in u if key[0] == reaction and 890000 < nucname.LLAAAM_2_zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
+        #filt_u = [(key, value) for key, value in u if key[0] == reaction and 890000 < nucname.zzaaam(key[1]) and hl_cutoff < hl[key[1]]]
         filt_u = [(key, value) for key, value in u if key[0] == reaction and key[1] in imp_acts and hl_cutoff < hl[key[1]]]
     elif nuc_class == 'Fission Product':
-        filt_u = [(key, value) for key, value in u if key[0] == reaction and 200000 < nucname.LLAAAM_2_zzaaam(key[1]) < 730000 and hl_cutoff < hl[key[1]]]
+        filt_u = [(key, value) for key, value in u if key[0] == reaction and 200000 < nucname.zzaaam(key[1]) < 730000 and hl_cutoff < hl[key[1]]]
     else:
         raise ValueError
 
@@ -494,7 +494,7 @@ if __name__ == "__main__":
 
     # Make mass fraction figures
     for nuc_LL in nuclides:
-        nuc_zz = nucname.LLAAAM_2_zzaaam(nuc_LL)
+        nuc_zz = nucname.zzaaam(nuc_LL)
         nuc_ind = dep_bu['iso_index'][nuc_zz]
         r_i, s_i, diff_i = calc_diff(T_it[nuc_zz][time_range], dep_bu['mw'][nuc_ind][time_range], name=nuc_LL + " Mass Fraction [kg/kgIHM]")
 
