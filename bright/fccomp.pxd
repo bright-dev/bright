@@ -20,3 +20,4 @@ cdef class FCComp:
 
     cdef public object _params_prior_calc
     cdef public object _params_after_calc
+    cdef public object _track_params
