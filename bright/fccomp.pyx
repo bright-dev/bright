@@ -114,8 +114,6 @@ cdef class FCComp:
 
             return self._params_prior_calc
 
-            #return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_prior_calc)
-
         def __set__(self, value):
             cdef std.string s
             cdef cpp_pair[std.string, double] item
@@ -141,7 +139,6 @@ cdef class FCComp:
                 raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
 
             self._params_prior_calc = None
-            #(<cpp_fccomp.FCComp *> self._inst).params_prior_calc = conv.dict_to_map_str_dbl(pi)
 
 
     property params_after_calc:
@@ -154,8 +151,6 @@ cdef class FCComp:
                 self._params_after_calc = proxy
 
             return self._params_after_calc
-
-            #return conv.map_to_dict_str_dbl((<cpp_fccomp.FCComp *> self._inst).params_after_calc)
 
         def __set__(self, value):
             cdef std.string s
@@ -183,8 +178,6 @@ cdef class FCComp:
 
             self._params_after_calc = None
 
-            #(<cpp_fccomp.FCComp *> self._inst).params_after_calc = conv.dict_to_map_str_dbl(po)
-
 
     property pass_num:
         def __get__(self):
@@ -196,10 +189,35 @@ cdef class FCComp:
 
     property track_params:
         def __get__(self):
-            return conv.cpp_to_py_set_str((<cpp_fccomp.FCComp *> self._inst).track_params)
+            cdef conv._SetStr proxy
 
-        def __set__(self, set p2t):
-            (<cpp_fccomp.FCComp *> self._inst).track_params = conv.py_to_cpp_set_str(p2t)
+            if self._track_params is None:
+                proxy = conv.SetStr(False, False)
+                proxy.set_ptr = &(<cpp_fccomp.FCComp *> self._inst).track_params
+                self._track_params = proxy
+
+            return self._track_params
+
+            #return conv.cpp_to_py_set_str((<cpp_fccomp.FCComp *> self._inst).track_params)
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_set[std.string] tp
+
+            if isinstance(value, conv._SetStr):
+                (<cpp_fccomp.FCComp *> self._inst).track_params = deref((<conv._SetStr> value).set_ptr)
+            elif hasattr(value, '__len__'):
+                tp = cpp_set[std.string]()
+                for val in value:
+                    s = std.string(val)
+                    tp.insert(s)
+                (<cpp_fccomp.FCComp *> self._inst).track_params = tp
+            else:
+                raise TypeError('{0} cannot be converted to a C++ set.'.format(type(value)))
+
+            self._track_params = None
+
+            #(<cpp_fccomp.FCComp *> self._inst).track_params = conv.py_to_cpp_set_str(p2t)
 
     #
     # Class Methods
