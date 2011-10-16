@@ -29,11 +29,25 @@ cimport cpp_reprocess
 cimport fccomp
 import fccomp
 
+from reprocess cimport convert_sepeff_key, Reprocess
 
 #######################
 ### Reprocess Class ###
 #######################
 
+cdef int convert_sepeff_key(object key):
+    cdef int k
+    if isinstance(key, int):
+        k = key
+    elif isinstance(key, basestring):
+        if key in nucname.name_zz:
+            k = nucname.name_zz[key]
+        else:
+            k = nucname.zzaaam(key)
+    else:
+        raise TypeError("Separation keys must be strings or integers.")
+    return k
+    
 
 cdef class Reprocess(fccomp.FCComp):
     """Reprocess Fuel Cycle Component Class.  Daughter of bright.FCComp class.
@@ -67,28 +81,13 @@ cdef class Reprocess(fccomp.FCComp):
 
     """
 
-    def _cpp_sepeff(self, d):
-        sepeff = {}
-
-        for key, value in d.items():
-            value = float(value) 
-
-            if isinstance(key, int):
-                sepeff[key] = value
-            elif isinstance(key, basestring):
-                if key in nucname.name_zz:
-                    sepeff[nucname.name_zz[key]] = value
-                else:
-                    sepeff[nucname.zzaaam(key)] = value
-            else:
-                raise TypeError("Separation keys must be strings or integers.")
-
-        return sepeff
-
     def __cinit__(self, sepeff=None, char * name=""):
         if sepeff is None:
             sepeff = {}
-        cdef dict sepdict = self._cpp_sepeff(sepeff)
+
+        cdef dict sepdict = {}
+        for key, val in sepeff.items():
+            sepdict[convert_sepeff_key(key)] = val
         self._inst = new cpp_reprocess.Reprocess(conv.dict_to_map_int_dbl(sepdict), std.string(name))
 
         self._sepeff = None
@@ -120,13 +119,13 @@ cdef class Reprocess(fccomp.FCComp):
             elif hasattr(value, 'items'):
                 m = cpp_map[int, double]()
                 for k, v in value.items():
-                    item = cpp_pair[int, double](k, v)
+                    item = cpp_pair[int, double](convert_sepeff_key(k), v)
                     m.insert(item)
                 (<cpp_reprocess.Reprocess *> self._inst).sepeff = m
             elif hasattr(value, '__len__'):
                 m = cpp_map[int, double]()
                 for i in value:
-                    item = cpp_pair[int, double](i[0], i[1])
+                    item = cpp_pair[int, double](convert_sepeff_key(i[0]), i[1])
                     m.insert(item)
                 (<cpp_reprocess.Reprocess *> self._inst).sepeff = m
             else:
@@ -143,16 +142,18 @@ cdef class Reprocess(fccomp.FCComp):
     # Class Methods
     # 
 
-    def initialize(self, dict sepdict):
+    def initialize(self, sepeff):
         """The initialize() function calculates the sepeff from an integer-keyed dictionary
         of separation efficiencies.  The difference is that sepdict may contain either elemental or
         isotopic keys and need not contain every isotope tracked.  On the other hand, sepeff
         must have only zzaaam keys that match exactly the isotopes in bright.track_nucs.
 
         Args:
-            * sepdict (dict): Integer valued dictionary of SE to be converted to sepeff.
+            * sepeff (dict): Integer valued dictionary of SE to be converted to sepeff.
         """
-        sepdict = self._cpp_sepeff(sepdict)
+        cdef dict sepdict = {}
+        for key, val in sepeff.items():
+            sepdict[convert_sepeff_key(key)] = val
         (<cpp_reprocess.Reprocess *> self._inst).initialize(conv.dict_to_map_int_dbl(sepdict))
 
 
