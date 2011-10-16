@@ -1,5 +1,8 @@
 """Reprocessing Component tests"""
 
+import faulthandler
+faulthandler.enable()
+
 from unittest import TestCase
 import nose 
 
