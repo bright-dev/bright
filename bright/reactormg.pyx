@@ -1,5 +1,6 @@
 """Python wrapper for RMG."""
 # Cython imports
+from libcpp.utility cimport pair as cpp_pair
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
 from cython cimport pointer
@@ -12,7 +13,9 @@ import numpy as np
 
 from pyne cimport std
 from pyne cimport nucname
+
 from pyne cimport stlconverters as conv
+from pyne import stlconverters as conv
 
 cimport pyne.cpp_material
 cimport pyne.material
@@ -81,6 +84,18 @@ cdef class ReactorMG(fccomp.FCComp):
             if track_params is not None:
                 raise TypeError("The track_params keyword must be a set of strings or None.  Got " + str(type(track_params)))
 
+        # Set property defaults
+        self._chemical_form_fuel = None
+        self._chemical_form_clad = None
+        self._chemical_form_cool = None
+
+        self._I = None
+        self._J = None
+        self._K = None
+
+        self._K_ind = None
+
+
     #
     # Class Attributes
     #
@@ -108,27 +123,116 @@ cdef class ReactorMG(fccomp.FCComp):
 
     property chemical_form_fuel:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_reactormg.ReactorMG *> self._inst).chemical_form_fuel)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_fuel = conv.dict_to_map_str_dbl(value)
+            if self._chemical_form_fuel is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactormg.ReactorMG *> self._inst).chemical_form_fuel
+                self._chemical_form_fuel = proxy
+
+            return self._chemical_form_fuel
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_fuel = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_fuel = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_fuel = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._chemical_form_fuel = None
 
 
     property chemical_form_clad:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_reactormg.ReactorMG *> self._inst).chemical_form_clad)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_clad = conv.dict_to_map_str_dbl(value)
+            if self._chemical_form_clad is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactormg.ReactorMG *> self._inst).chemical_form_clad
+                self._chemical_form_clad = proxy
+
+            return self._chemical_form_clad
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_clad = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_clad = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_clad = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._chemical_form_clad = None
 
 
     property chemical_form_cool:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_reactormg.ReactorMG *> self._inst).chemical_form_cool)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_cool = conv.dict_to_map_str_dbl(value)
+            if self._chemical_form_cool is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactormg.ReactorMG *> self._inst).chemical_form_cool
+                self._chemical_form_cool = proxy
 
+            return self._chemical_form_cool
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_cool = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_cool = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).chemical_form_cool = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._chemical_form_cool = None
 
 
 
@@ -367,26 +471,83 @@ cdef class ReactorMG(fccomp.FCComp):
 
     property I:
         def __get__(self):
-            return conv.cpp_to_py_set_int((<cpp_reactormg.ReactorMG *> self._inst).I)
+            cdef conv._SetInt proxy
 
-        def __set__(self, set value):
-            (<cpp_reactormg.ReactorMG *> self._inst).I = conv.py_to_cpp_set_int(value)
+            if self._I is None:
+                proxy = conv.SetInt(False, False)
+                proxy.set_ptr = &(<cpp_reactormg.ReactorMG *> self._inst).I
+                self._I = proxy
+
+            return self._I
+
+        def __set__(self, value):
+            cdef cpp_set[int] s
+
+            if isinstance(value, conv._SetInt):
+                (<cpp_reactormg.ReactorMG *> self._inst).I = deref((<conv._SetInt> value).set_ptr)
+            elif hasattr(value, '__len__'):
+                s = cpp_set[int]()
+                for nuc in value:
+                    s.insert(pyne.nucname.zzaaam(nuc))
+                (<cpp_reactormg.ReactorMG *> self._inst).I = s
+            else:
+                raise TypeError('{0} cannot be converted to a C++ set.'.format(type(value)))
+
+            self._I = None
 
 
     property J:
         def __get__(self):
-            return conv.cpp_to_py_set_int((<cpp_reactormg.ReactorMG *> self._inst).J)
+            cdef conv._SetInt proxy
 
-        def __set__(self, set value):
-            (<cpp_reactormg.ReactorMG *> self._inst).J = conv.py_to_cpp_set_int(value)
+            if self._J is None:
+                proxy = conv.SetInt(False, False)
+                proxy.set_ptr = &(<cpp_reactormg.ReactorMG *> self._inst).J
+                self._J = proxy
+
+            return self._J
+
+        def __set__(self, value):
+            cdef cpp_set[int] s
+
+            if isinstance(value, conv._SetInt):
+                (<cpp_reactormg.ReactorMG *> self._inst).J = deref((<conv._SetInt> value).set_ptr)
+            elif hasattr(value, '__len__'):
+                s = cpp_set[int]()
+                for nuc in value:
+                    s.insert(pyne.nucname.zzaaam(nuc))
+                (<cpp_reactormg.ReactorMG *> self._inst).J = s
+            else:
+                raise TypeError('{0} cannot be converted to a C++ set.'.format(type(value)))
+
+            self._J = None
 
 
     property K:
         def __get__(self):
-            return conv.cpp_to_py_set_int((<cpp_reactormg.ReactorMG *> self._inst).K)
+            cdef conv._SetInt proxy
 
-        def __set__(self, set value):
-            (<cpp_reactormg.ReactorMG *> self._inst).K = conv.py_to_cpp_set_int(value)
+            if self._K is None:
+                proxy = conv.SetInt(False, False)
+                proxy.set_ptr = &(<cpp_reactormg.ReactorMG *> self._inst).K
+                self._K = proxy
+
+            return self._K
+
+        def __set__(self, value):
+            cdef cpp_set[int] s
+
+            if isinstance(value, conv._SetInt):
+                (<cpp_reactormg.ReactorMG *> self._inst).K = deref((<conv._SetInt> value).set_ptr)
+            elif hasattr(value, '__len__'):
+                s = cpp_set[int]()
+                for nuc in value:
+                    s.insert(pyne.nucname.zzaaam(nuc))
+                (<cpp_reactormg.ReactorMG *> self._inst).K = s
+            else:
+                raise TypeError('{0} cannot be converted to a C++ set.'.format(type(value)))
+
+            self._K = None
 
 
 
@@ -412,11 +573,37 @@ cdef class ReactorMG(fccomp.FCComp):
 
     property K_ind:
         def __get__(self):
-            return conv.map_to_dict_int_int((<cpp_reactormg.ReactorMG *> self._inst).K_ind)
+            cdef conv._MapIntInt proxy
 
-        def __set__(self, set value):
-            (<cpp_reactormg.ReactorMG *> self._inst).K_ind = conv.dict_to_map_int_int(value)
+            if self._K_ind is None:
+                proxy = conv.MapIntInt(False, False)
+                proxy.map_ptr = &(<cpp_reactormg.ReactorMG *> self._inst).K_ind
+                self._K_ind = proxy
 
+            return self._K_ind
+
+        def __set__(self, value):
+            cdef cpp_pair[int, int] item
+            cdef cpp_map[int, int]  m
+
+            if isinstance(value, conv._MapIntInt):
+                (<cpp_reactormg.ReactorMG *> self._inst).K_ind = deref((<conv._MapIntInt> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, int]()
+                for k, v in value.items():
+                    item = cpp_pair[int, int](k, v)
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).K_ind = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, int]()
+                for i in value:
+                    item = cpp_pair[int, int](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reactormg.ReactorMG *> self._inst).K_ind = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._K_ind = None
 
 
 
