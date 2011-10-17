@@ -167,7 +167,6 @@ cdef class FuelFabrication(fccomp.FCComp):
                 self._mass_weights_in = proxy
 
             return self._mass_weights_in
-            #return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in)
 
         def __set__(self, value):
             cdef std.string s
@@ -194,7 +193,6 @@ cdef class FuelFabrication(fccomp.FCComp):
                 raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
 
             self._mass_weights_in = None
-            #(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = conv.dict_to_map_str_dbl(value)
 
 
     property mass_weights_out:
@@ -207,7 +205,6 @@ cdef class FuelFabrication(fccomp.FCComp):
                 self._mass_weights_out = proxy
 
             return self._mass_weights_out
-            #return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out)
 
         def __set__(self, value):
             cdef std.string s
@@ -234,7 +231,6 @@ cdef class FuelFabrication(fccomp.FCComp):
                 raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
 
             self._mass_weights_out = None
-            #(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = conv.dict_to_map_str_dbl(value)
 
 
     property deltaRs:
@@ -247,7 +243,6 @@ cdef class FuelFabrication(fccomp.FCComp):
                 self._deltaRs = proxy
 
             return self._deltaRs
-            #return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs)
 
         def __set__(self, dict value):
             cdef std.string s
@@ -274,7 +269,6 @@ cdef class FuelFabrication(fccomp.FCComp):
                 raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
 
             self._deltaRs = None
-            #(<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = conv.dict_to_map_str_dbl(value)
 
 
     property reactor:
