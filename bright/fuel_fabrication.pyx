@@ -1,5 +1,6 @@
 """Python wrapper for fuel fabrication."""
 # Cython imports
+from libcpp.utility cimport pair as cpp_pair
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
 from cython cimport pointer
@@ -12,7 +13,9 @@ import numpy as np
 
 from pyne cimport std
 from pyne cimport nucname
+
 from pyne cimport stlconverters as conv
+from pyne import stlconverters as conv
 
 cimport pyne.cpp_material
 cimport pyne.material
@@ -107,6 +110,12 @@ cdef class FuelFabrication(fccomp.FCComp):
             if track_params is not None:
                 raise TypeError("The track_params keyword must be a set of strings or None.  Got " + str(type(track_params)))
 
+        # Set property defaults
+        self._materials = None
+        self._mass_weights_in = None
+        self._mass_weights_out = None
+        self._deltaRs = None
+
 
     #
     # Class Attributes
@@ -116,34 +125,156 @@ cdef class FuelFabrication(fccomp.FCComp):
 
     property materials:
         def __get__(self):
-            return pyne.material.map_to_dict_str_matp((<cpp_fuel_fabrication.FuelFabrication *> self._inst).materials)
+            cdef pyne.material._MapStrMaterial proxy
 
-        def __set__(self, dict value):
-            (<cpp_fuel_fabrication.FuelFabrication *> self._inst).materials = pyne.material.dict_to_map_str_matp(value)
+            if self._materials is None:
+                proxy = pyne.material.MapStrMaterial(False, False)
+                proxy.map_ptr = &(<cpp_fuel_fabrication.FuelFabrication *> self._inst).materials
+                self._materials = proxy
+
+            return self._materials
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef pyne.material._MapStrMaterial proxy
+
+            if isinstance(value, pyne.material._MapStrMaterial):
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).materials = deref((<pyne.material._MapStrMaterial> value).map_ptr)
+                self._materials = None
+            elif hasattr(value, 'items'):
+                proxy = pyne.material.MapStrMaterial()
+                for k, v in value.items():
+                    proxy[k] = v
+                self._materials = proxy
+            elif hasattr(value, '__len__'):
+                proxy = pyne.material.MapStrMaterial()
+                for i in value:
+                    proxy[i[0]] = i[1]
+                self._materials = proxy
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+                self._materials = proxy
 
 
     property mass_weights_in:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = conv.dict_to_map_str_dbl(value)
+            if self._mass_weights_in is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in
+                self._mass_weights_in = proxy
+
+            return self._mass_weights_in
+            #return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in)
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._mass_weights_in = None
+            #(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = conv.dict_to_map_str_dbl(value)
 
 
     property mass_weights_out:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = conv.dict_to_map_str_dbl(value)
+            if self._mass_weights_out is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out
+                self._mass_weights_out = proxy
+
+            return self._mass_weights_out
+            #return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out)
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._mass_weights_out = None
+            #(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = conv.dict_to_map_str_dbl(value)
 
 
     property deltaRs:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs)
+            cdef conv._MapStrDouble proxy
+
+            if self._deltaRs is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs
+                self._deltaRs = proxy
+
+            return self._deltaRs
+            #return conv.map_to_dict_str_dbl((<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs)
 
         def __set__(self, dict value):
-            (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = conv.dict_to_map_str_dbl(value)
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._deltaRs = None
+            #(<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = conv.dict_to_map_str_dbl(value)
 
 
     property reactor:

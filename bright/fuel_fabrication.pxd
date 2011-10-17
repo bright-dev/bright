@@ -2,6 +2,9 @@
 cimport fccomp
 
 cdef class FuelFabrication(fccomp.FCComp):
-    pass
+    cdef public object _materials
+    cdef public object _mass_weights_in
+    cdef public object _mass_weights_out
+    cdef public object _deltaRs
 
 
