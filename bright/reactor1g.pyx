@@ -1,5 +1,6 @@
 """Python wrapper for reactor1g."""
 # Cython imports
+from libcpp.utility cimport pair as cpp_pair
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
 from cython cimport pointer
@@ -12,7 +13,9 @@ import numpy as np
 
 from pyne cimport std
 from pyne cimport nucname
+
 from pyne cimport stlconverters as conv
+from pyne import stlconverters as conv
 
 cimport pyne.cpp_material
 cimport pyne.material
@@ -82,6 +85,16 @@ cdef class Reactor1G(fccomp.FCComp):
             if track_params is not None:
                 raise TypeError("The track_params keyword must be a set of strings or None.  Got " + str(type(track_params)))
 
+        # Set property defaults
+        self._fuel_chemical_form = None
+        self._coolant_chemical_form = None
+
+        self._niF = None
+        self._niC = None
+        self._miF = None
+        self._miC = None
+        self._NiF = None
+        self._NiC = None
 
     #
     # Class Attributes
@@ -107,18 +120,78 @@ cdef class Reactor1G(fccomp.FCComp):
 
     property fuel_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = conv.dict_to_map_str_dbl(value)
+            if self._fuel_chemical_form is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form
+                self._fuel_chemical_form = proxy
+
+            return self._fuel_chemical_form
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._fuel_chemical_form = None
 
 
     property coolant_chemical_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl((<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = conv.dict_to_map_str_dbl(value)
+            if self._coolant_chemical_form is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form
+                self._coolant_chemical_form = proxy
+
+            return self._coolant_chemical_form
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._coolant_chemical_form = None
 
 
     property rhoF:
@@ -310,50 +383,212 @@ cdef class Reactor1G(fccomp.FCComp):
     
     property niF:
         def __get__(self):
-            return conv.map_to_dict_int_dbl((<cpp_reactor1g.Reactor1G *> self._inst).niF)
+            cdef conv._MapIntDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).niF = conv.dict_to_map_int_dbl(value)
+            if self._niF is None:
+                proxy = conv.MapIntDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).niF
+                self._niF = proxy
+
+            return self._niF
+
+        def __set__(self, value):
+            cdef cpp_pair[int, double] item
+            cdef cpp_map[int, double]  m
+
+            if isinstance(value, conv._MapIntDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).niF = deref((<conv._MapIntDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, double]()
+                for k, v in value.items():
+                    item = cpp_pair[int, double](k, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).niF = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, double]()
+                for i in value:
+                    item = cpp_pair[int, double](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).niF = m
+            else:
+                raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
+
+            self._niF = None
 
     
     property niC:
         def __get__(self):
-            return conv.map_to_dict_int_dbl((<cpp_reactor1g.Reactor1G *> self._inst).niC)
+            cdef conv._MapIntDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).niC = conv.dict_to_map_int_dbl(value)
+            if self._niC is None:
+                proxy = conv.MapIntDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).niC
+                self._niC = proxy
+
+            return self._niC
+
+        def __set__(self, value):
+            cdef cpp_pair[int, double] item
+            cdef cpp_map[int, double]  m
+
+            if isinstance(value, conv._MapIntDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).niC = deref((<conv._MapIntDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, double]()
+                for k, v in value.items():
+                    item = cpp_pair[int, double](k, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).niC = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, double]()
+                for i in value:
+                    item = cpp_pair[int, double](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).niC = m
+            else:
+                raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
+
+            self._niC = None
 
     
     property miF:
         def __get__(self):
-            return conv.map_to_dict_int_dbl((<cpp_reactor1g.Reactor1G *> self._inst).miF)
+            cdef conv._MapIntDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).miF = conv.dict_to_map_int_dbl(value)
+            if self._miF is None:
+                proxy = conv.MapIntDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).miF
+                self._miF = proxy
+
+            return self._miF
+
+        def __set__(self, value):
+            cdef cpp_pair[int, double] item
+            cdef cpp_map[int, double]  m
+
+            if isinstance(value, conv._MapIntDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).miF = deref((<conv._MapIntDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, double]()
+                for k, v in value.items():
+                    item = cpp_pair[int, double](k, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).miF = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, double]()
+                for i in value:
+                    item = cpp_pair[int, double](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).miF = m
+            else:
+                raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
+
+            self._miF = None
 
     
     property miC:
         def __get__(self):
-            return conv.map_to_dict_int_dbl((<cpp_reactor1g.Reactor1G *> self._inst).miC)
+            cdef conv._MapIntDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).miC = conv.dict_to_map_int_dbl(value)
+            if self._miC is None:
+                proxy = conv.MapIntDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).miC
+                self._miC = proxy
+
+            return self._miC
+
+        def __set__(self, value):
+            cdef cpp_pair[int, double] item
+            cdef cpp_map[int, double]  m
+
+            if isinstance(value, conv._MapIntDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).miC = deref((<conv._MapIntDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, double]()
+                for k, v in value.items():
+                    item = cpp_pair[int, double](k, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).miC = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, double]()
+                for i in value:
+                    item = cpp_pair[int, double](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).miC = m
+            else:
+                raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
+
+            self._miC = None
 
     
     property NiF:
         def __get__(self):
-            return conv.map_to_dict_int_dbl((<cpp_reactor1g.Reactor1G *> self._inst).NiF)
+            cdef conv._MapIntDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).NiF = conv.dict_to_map_int_dbl(value)
+            if self._NiF is None:
+                proxy = conv.MapIntDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).NiF
+                self._NiF = proxy
+
+            return self._NiF
+
+        def __set__(self, value):
+            cdef cpp_pair[int, double] item
+            cdef cpp_map[int, double]  m
+
+            if isinstance(value, conv._MapIntDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).NiF = deref((<conv._MapIntDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, double]()
+                for k, v in value.items():
+                    item = cpp_pair[int, double](k, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).NiF = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, double]()
+                for i in value:
+                    item = cpp_pair[int, double](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).NiF = m
+            else:
+                raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
+
+            self._NiF = None
 
     
     property NiC:
         def __get__(self):
-            return conv.map_to_dict_int_dbl((<cpp_reactor1g.Reactor1G *> self._inst).NiC)
+            cdef conv._MapIntDouble proxy
 
-        def __set__(self, dict value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).NiC = conv.dict_to_map_int_dbl(value)
+            if self._NiC is None:
+                proxy = conv.MapIntDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).NiC
+                self._NiC = proxy
+
+            return self._NiC
+
+        def __set__(self, value):
+            cdef cpp_pair[int, double] item
+            cdef cpp_map[int, double]  m
+
+            if isinstance(value, conv._MapIntDouble):
+                (<cpp_reactor1g.Reactor1G *> self._inst).NiC = deref((<conv._MapIntDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[int, double]()
+                for k, v in value.items():
+                    item = cpp_pair[int, double](k, v)
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).NiC = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[int, double]()
+                for i in value:
+                    item = cpp_pair[int, double](i[0], i[1])
+                    m.insert(item)
+                (<cpp_reactor1g.Reactor1G *> self._inst).NiC = m
+            else:
+                raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
+
+            self._NiC = None
 
 
 
