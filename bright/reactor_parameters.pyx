@@ -1,5 +1,6 @@
-"""Python wrapper for  ."""
+"""Python wrapper for reactor parameters."""
 # Cython imports
+from libcpp.utility cimport pair as cpp_pair
 from libcpp.map cimport map as cpp_map
 from libcpp.vector cimport vector as cpp_vector
 from cython.operator cimport dereference as deref
@@ -7,7 +8,9 @@ from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
 
 from pyne cimport std
+
 from pyne cimport stlconverters as conv
+from pyne import stlconverters as conv
 
 cimport numpy as np
 import numpy as np
@@ -89,6 +92,9 @@ cdef class ReactorParameters:
 
     def __cinit__(self):
         self.rp_pointer = new cpp_reactor_parameters.ReactorParameters()
+        self._fuel_form = None
+        self._cladding_form = None
+        self._coolant_form = None
 
     def __dealloc__(self):
         del self.rp_pointer
@@ -119,26 +125,116 @@ cdef class ReactorParameters:
 
     property fuel_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rp_pointer.fuel_form)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            self.rp_pointer.fuel_form = conv.dict_to_map_str_dbl(value)
+            if self._fuel_form is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).fuel_form
+                self._fuel_form = proxy
+
+            return self._fuel_form
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).fuel_form = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).fuel_form = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).fuel_form = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._fuel_form = None
 
 
     property cladding_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rp_pointer.cladding_form)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            self.rp_pointer.cladding_form = conv.dict_to_map_str_dbl(value)
+            if self._cladding_form is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form
+                self._fuel_form = proxy
+
+            return self._cladding_form
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._cladding_form = None
 
 
     property coolant_form:
         def __get__(self):
-            return conv.map_to_dict_str_dbl(self.rp_pointer.coolant_form)
+            cdef conv._MapStrDouble proxy
 
-        def __set__(self, dict value):
-            self.rp_pointer.coolant_form = conv.dict_to_map_str_dbl(value)
+            if self._coolant_form is None:
+                proxy = conv.MapStrDouble(False, False)
+                proxy.map_ptr = &(<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).coolant_form
+                self._coolant_form = proxy
+
+            return self._coolant_form
+
+        def __set__(self, value):
+            cdef std.string s
+            cdef cpp_pair[std.string, double] item
+            cdef cpp_map[std.string, double]  m
+
+            if isinstance(value, conv._MapStrDouble):
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).coolant_form = deref((<conv._MapStrDouble> value).map_ptr)
+            elif hasattr(value, 'items'):
+                m = cpp_map[std.string, double]()
+                for k, v in value.items():
+                    s = std.string(k)
+                    item = cpp_pair[std.string, double](s, v)
+                    m.insert(item)
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).coolant_form = m
+            elif hasattr(value, '__len__'):
+                m = cpp_map[std.string, double]()
+                for i in value:
+                    s = std.string(i[0])
+                    item = cpp_pair[std.string, double](s, i[1])
+                    m.insert(item)
+                (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).coolant_form = m
+            else:
+                raise TypeError('{0} cannot be converted to a map.'.format(type(value)))
+
+            self._coolant_form = None
 
 
 
