@@ -108,7 +108,6 @@ cdef class Reprocess(fccomp.FCComp):
                 self._sepeff = proxy
 
             return self._sepeff
-            #return conv.map_to_dict_int_dbl((<cpp_reprocess.Reprocess *> self._inst).sepeff)
 
         def __set__(self, value):
             cdef cpp_pair[int, double] item
@@ -132,9 +131,6 @@ cdef class Reprocess(fccomp.FCComp):
                 raise TypeError('{0} cannot be converted to a C++ map.'.format(type(value)))
 
             self._sepeff = None
-
-            #value = self._cpp_sepeff(value)
-            #(<cpp_reprocess.Reprocess *> self._inst).sepeff = conv.dict_to_map_int_dbl(value)
 
 
 
