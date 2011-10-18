@@ -11,3 +11,4 @@ The following modules and sub-packages are discussed:
 
     bright_config
     fccomp
+    enrichment
