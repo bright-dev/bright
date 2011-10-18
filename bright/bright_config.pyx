@@ -37,6 +37,7 @@ bright_data = os.path.join(_local_dir, 'data')
 
 # Expose the C-code start up routine
 def bright_start():
+    """Handles bright initialization.  Reads in the 'BRIGHT_DATA' environment variable."""
     # Specifiy the BRIGHT_DATA directory
     if "BRIGHT_DATA" not in os.environ:
         os.environ['BRIGHT_DATA'] = bright_data
@@ -54,6 +55,8 @@ bright_start()
 #######################################
 
 cdef class BrightConf:
+    """A class whose attributes expose C++ bright namespace variables.  The bright_conf object is a 
+    singleton instance of this class."""
 
     cdef object _track_nucs
 
@@ -63,6 +66,7 @@ cdef class BrightConf:
     # From bright namespace
 
     property BRIGHT_DATA:
+        """Overide for directory path which is (by default) read in from an environmental variable of the same name."""
         def __get__(self):
             cdef std.string value = cpp_bright.BRIGHT_DATA
             return value.c_str()
@@ -72,6 +76,7 @@ cdef class BrightConf:
         
 
     property track_nucs:
+        """Set of nuclides (in zzaaam form, see pyne) which components should track."""
         def __get__(self):
             cdef conv._SetInt proxy
 
@@ -99,6 +104,7 @@ cdef class BrightConf:
 
 
     property track_nucs_order:
+        """Array nuclides which determines the order of track_nucs."""
         def __get__(self):
             return conv.vector_to_array_1d_int(cpp_bright.track_nucs_order)
 
@@ -111,6 +117,7 @@ cdef class BrightConf:
 
 
     property verbosity:
+        """Determines the at which to print messages. Lower numbers mean fewer messages (default 0)."""
         def __get__(self):
             return cpp_bright.verbosity
 
@@ -119,6 +126,7 @@ cdef class BrightConf:
 
 
     property write_hdf5:
+        """Boolean flag for whether to write binary HDF5 output."""
         def __get__(self):
             return cpp_bright.write_hdf5
 
@@ -127,6 +135,7 @@ cdef class BrightConf:
 
 
     property write_text:
+        """Boolean flag for whether to write flat text file output."""
         def __get__(self):
             return cpp_bright.write_text
 
@@ -135,6 +144,7 @@ cdef class BrightConf:
 
 
     property output_filename:
+        """Path to outputh file."""
         def __get__(self):
             cdef std.string value = cpp_bright.output_filename
             return value.c_str()
@@ -153,12 +163,17 @@ def load_track_nucs_hdf5(char * filename, char * datasetname="", bint clear=Fals
     in an HDF5 file.  The dataset *must* be of integer type.  String-based
     nuclide names are currently not supported. 
 
-    Args:
-        * filename (str): Path to the data library.
-        * dataset (str):  Dataset name to grab nuclides from.
-        * clear (bool):   Flag that if set removes the currrent entries
-          from track_nucs prior to loading in new values.
+    Parameters
+    ----------
+    filename : str
+        Path to the data library.
+    dataset : str, optional  
+        Dataset name to grab nuclides from.
+    clear : bool, optional
+        Flag that if set removes the currrent entries from track_nucs prior to loading in new values.
 
+    Notes
+    -----
     If the dataset argument is not provided or empty, the function tries to 
     load from various default datasets in the following order::
 
@@ -176,6 +191,7 @@ def load_track_nucs_hdf5(char * filename, char * datasetname="", bint clear=Fals
         "/FromIsos"  
         "/FromIso_zz" 
         "/FromIso_MCNP"
+
     """
     cpp_bright.load_track_nucs_hdf5(std.string(filename), std.string(datasetname), clear)
 
@@ -186,17 +202,20 @@ def load_track_nucs_text(char * filename, bint clear=False):
     conventions in the same file is allowed.  Whitespace is required between
     isotopic names.
 
-    Args:
-        * filename (str): Path to the data library.
-        * clear (bool):   Flag that if set removes the currrent entries
-          from track_nucs prior to loading in new values.
+    Parameters
+    ----------
+    filename : str 
+        Path to the data library.
+    clear : bool
+        Flag that if set removes the currrent entries from track_nucs prior to loading in new values.
+
     """
     cpp_bright.load_track_nucs_text(std.string(filename), clear)
 
 
 
 def sort_track_nucs():
-    """This function sorts the track_nucs and places the results in track_nucs_order."""
+    """This function sorts the track_nucs and places the result in track_nucs_order."""
     cpp_bright.sort_track_nucs()
 
 
