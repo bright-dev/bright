@@ -10,3 +10,4 @@ The following modules and sub-packages are discussed:
     :maxdepth: 0
 
     bright_config
+    fccomp
