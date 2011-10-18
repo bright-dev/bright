@@ -11,7 +11,10 @@ cimport numpy as np
 import numpy as np
 
 from pyne cimport std
+
 from pyne cimport nucname
+from pyne import nucname
+
 from pyne cimport stlconverters as conv
 
 cimport pyne.cpp_material
@@ -33,11 +36,9 @@ import fccomp
 
 cdef class EnrichmentParameters:
     """This class is a collection of values that mirror the attributes in 
-    Enrichment that are required for the cascade model to run.
-    In C-code this a simple `struct.  Like ReactorParameters, this class 
-    takes no arguments on initialization.  An empty ErichmentParameters
-    instance has all values (weakly) set to zero.
-    """
+    Enrichment that are required for the cascade model to run. Like 
+    ReactorParameters, this class takes no arguments on initialization.  An 
+    empty ErichmentParameters instance has all values set to zero."""
 
     def __cinit__(self):
         self.ep_pointer = new cpp_enrichment.EnrichmentParameters()
@@ -51,6 +52,9 @@ cdef class EnrichmentParameters:
     #
 
     property alpha_0:
+        """The :math:`\\alpha_0` attribute specifies the overall stage separation factor
+        for the cascade.  This should be set on initialization.  Values should be
+        greater than one.  Values less than one represent de-enrichment."""
         def __get__(self):
             return self.ep_pointer.alpha_0
 
@@ -59,6 +63,10 @@ cdef class EnrichmentParameters:
 
 
     property Mstar_0:
+        """The :math:`M^*_0` represents a first guess at what the `Mstar` should be.
+        The value of Mstar_0 on initialization should be in the ballpark
+        of the optimized result of the Mstar attribute.  However, :math:`M^*_0` must
+        always have a value between the weights of the j and k key components."""
         def __get__(self):
             return self.ep_pointer.Mstar_0
 
@@ -67,22 +75,29 @@ cdef class EnrichmentParameters:
 
 
     property j:
+        """This is an integer in zzaaam-form that represents the jth key component.
+        This nuclide is preferentially enriched in the product stream.
+        For standard uranium cascades j is 922350 (ie U-235)."""
         def __get__(self):
             return self.ep_pointer.j
 
         def __set__(self, value):
-            self.ep_pointer.j = <int> value
+            self.ep_pointer.j = nucname.zzaaam(value)
 
 
     property k:
+        """This is an integer in zzaaam-form that represents the kth key component.
+        This nuclide is preferentially enriched in the waste stream.
+        For standard uranium cascades k is 922380 (ie U-238)."""
         def __get__(self):
             return self.ep_pointer.k
 
         def __set__(self, value):
-            self.ep_pointer.k = <int> value
+            self.ep_pointer.k = nucname.zzaaam(value)
 
 
     property N0:
+        """This is the number of enriching stages initially guessed by the user."""
         def __get__(self):
             return self.ep_pointer.N0
 
@@ -91,6 +106,7 @@ cdef class EnrichmentParameters:
 
 
     property M0:
+        """This is the number of stripping stages initially guessed by the user."""
         def __get__(self):
             return self.ep_pointer.M0
 
@@ -99,6 +115,10 @@ cdef class EnrichmentParameters:
 
 
     property xP_j:
+        """This is the target enrichment of the jth isotope in the
+        product stream mat_prod.  The :math:`x^P_j` value is set by 
+        the user at initialization or run-time.  For typical uranium 
+        vectors, this value is about U-235 = 0.05."""
         def __get__(self):
             return self.ep_pointer.xP_j
 
@@ -107,6 +127,10 @@ cdef class EnrichmentParameters:
 
 
     property xW_j:
+        """This is the target enrichment of the jth isotope in the
+        waste stream ms_tail.  The :math:`x^W_j` value is set by the 
+        user at initialization or runtime.  For typical uranium vectors,
+        this value is about U-235 = 0.0025."""
         def __get__(self):
             return self.ep_pointer.xW_j
 
@@ -116,6 +140,32 @@ cdef class EnrichmentParameters:
 
 
 def uranium_enrichment_defaults():
+    """This function returns a new EnrichmentParameters instance which 
+    holds sensible initial values a urnaium enrichment cascade.
+
+    The values of this instance of EnrichmentParameters are as
+    follows::
+
+        ued = bright.enrichment.EnrichmentParameters()
+
+        ued.alpha_0 = 1.05
+        ued.Mstar_0 = 236.5
+
+        ued.j = 922350
+        ued.k = 922380
+
+        ued.xP_j = 0.05
+        ued.xW_j = 0.0025
+
+        ued.N0 = 30.0
+        ued.M0 = 10.0
+
+    Returns
+    -------
+    ued : EnrichmentParameters
+        As defined above.
+
+    """
     cdef cpp_enrichment.EnrichmentParameters cpp_ued = cpp_enrichment.fillUraniumEnrichmentDefaults()
     cdef EnrichmentParameters ued = EnrichmentParameters()
     ued.ep_pointer[0] = cpp_ued
@@ -124,16 +174,17 @@ def uranium_enrichment_defaults():
 
 
 cdef class Enrichment(fccomp.FCComp):
-    """Enrichment Fuel Cycle Component Class.  Daughter of bright.FCComp class.
+    """Enrichment Fuel Cycle Component Class.  Daughter of FCComp.
 
-    Args:
-        * enrich_params (EnrichmentParameters): This specifies how the enrichment 
-          cascade should be set up.  It is a EnrichmentParameters
-          helper object.  If enrich_params is not specified, then the cascade 
-          is initialized with UraniumEnrichmentDefaults.
-        * name (str): The name of the enrichment fuel cycle component instance.
+    Parameters
+    ----------
+    enrich_params : EnrichmentParameters, optional 
+        This specifies how the enrichment cascade should be set up.  It is a EnrichmentParameters
+        instance.  If enrich_params is not specified, then the cascade is initialized with values 
+        from uranium_enrichment_defaults().
+    name : str 
+        The name of the enrichment fuel cycle component instance.
 
-    Note that this automatically calls the public initialize() C function.
     """
 
     def __cinit__(self, enrich_params=None, char * name=""):
@@ -153,6 +204,9 @@ cdef class Enrichment(fccomp.FCComp):
     # Enrichment Attributes
 
     property alpha_0:
+        """The :math:`\\alpha_0` attribute specifies the overall stage separation factor
+        for the cascade.  This should be set on initialization.  Values should be
+        greater than one.  Values less than one represent de-enrichment."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).alpha_0
 
@@ -161,6 +215,10 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property Mstar_0:
+        """The :math:`M^*_0` represents a first guess at what the `Mstar` should be.
+        The value of Mstar_0 on initialization should be in the ballpark
+        of the optimized result of the Mstar attribute.  However, :math:`M^*_0` must
+        always have a value between the weights of the j and k key components."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).Mstar_0
 
@@ -169,6 +227,9 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property Mstar:
+        """The :math:`M^*` attribute represents the mass for which the adjusted
+        stage separation factor, :math:`\\alpha^*_i`, is equal to one.  It is this
+        value that is varied to achieve an optimized enrichment cascade."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).Mstar
 
@@ -177,6 +238,10 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property mat_tail:
+        """In addition to the mat_feed and mat_prod materials, Enrichment
+        also has a tails or waste stream that is represented by this attribute.
+        The mass of this material and the ms_prod product material should always 
+        add up to the mass of the mat_feed feed stock."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_enrichment.Enrichment *> self._inst).mat_tail
@@ -187,22 +252,32 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property j:
+        """This is an integer in zzaaam-form that represents the jth key component.
+        This nuclide is preferentially enriched in the product stream.
+        For standard uranium cascades j is 922350 (ie U-235)."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).j
 
         def __set__(self, value):
-            (<cpp_enrichment.Enrichment *> self._inst).j = <int> value
+            (<cpp_enrichment.Enrichment *> self._inst).j = nucname.zzaaam(value)
 
 
     property k:
+        """This is an integer in zzaaam-form that represents the kth key component.
+        This nuclide is preferentially enriched in the waste stream.
+        For standard uranium cascades k is 922380 (ie U-238)."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).k
 
         def __set__(self, value):
-            (<cpp_enrichment.Enrichment *> self._inst).k = <int> value
+            (<cpp_enrichment.Enrichment *> self._inst).k = nucname.zzaaam(value)
 
 
     property xP_j:
+        """This is the target enrichment of the jth isotope in the
+        product stream mat_prod.  The :math:`x^P_j` value is set by 
+        the user at initialization or run-time.  For typical uranium 
+        vectors, this value is about U-235 = 0.05."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).xP_j
 
@@ -211,6 +286,10 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property xW_j:
+        """This is the target enrichment of the jth isotope in the
+        waste stream ms_tail.  The :math:`x^W_j` value is set by the 
+        user at initialization or runtime.  For typical uranium vectors,
+        this value is about U-235 = 0.0025."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).xW_j
 
@@ -219,6 +298,9 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property N:
+        """This is the number of enriching stages present in an ideal cascade.
+        Along with Mstar and M, this number is optimized to ensure that a product 
+        enrichment of xP_j is attained."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).N
 
@@ -227,6 +309,9 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property M:
+        """This is the number of stripping stages present in an ideal cascade.
+        Along with Mstar and N, this number is optimized to ensure that a waste 
+        enrichment of xW_j is attained."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).M
 
@@ -235,6 +320,7 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property N0:
+        """This is the number of enriching stages initially guessed by the user."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).N0
 
@@ -243,6 +329,7 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property M0:
+        """This is the number of stripping stages initially guessed by the user."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).M0
 
@@ -251,6 +338,13 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property TotalPerFeed:
+        """This represents the total flow rate of the cascade divided by the 
+        feed flow rate.  As such, it shows the mass of material needed in the
+        cascade to enrich an additional kilogram of feed.  Symbolically,
+        the total flow rate is given as :math:`L` while the feed rate is
+        :math:`F`.  Therefore, this quantity is sometimes seen as 'L-over-F'
+        or as 'L/F'.  TotalPerFeed is the value that is minimized to form an 
+        optimized cascade."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).TotalPerFeed
 
@@ -259,6 +353,8 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property SWUperFeed:
+        """This value denotes the number of separative work units (SWU) required
+        per kg of feed for the specified cascade."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).SWUperFeed
 
@@ -267,6 +363,8 @@ cdef class Enrichment(fccomp.FCComp):
 
 
     property SWUperProduct:
+        """This value is the number of separative work units (SWU) required
+        to produce 1 [kg] of product in the specified cascade."""
         def __get__(self):
             return (<cpp_enrichment.Enrichment *> self._inst).SWUperProduct
 
@@ -280,46 +378,49 @@ cdef class Enrichment(fccomp.FCComp):
     # 
 
     def initialize(self, EnrichmentParameters enrich_params):
-        """The initialize function takes an enrichment parameter object and sets
+        """The initialize method takes an enrichment parameter object and sets
         the corresponding Enrichment attributes to the same value.
 
-        Args:
-            * enrich_params (EnrichmentParameters): A class containing the values to
-              (re-)initialize an Enrichment cascade with.
+        Parameters
+        ----------
+        enrich_params : EnrichmentParameters
+            A class containing the values to (re-)initialize an Enrichment cascade with.
+
         """
         cdef EnrichmentParameters enr_par = enrich_params
         (<cpp_enrichment.Enrichment *> self._inst).initialize(<cpp_enrichment.EnrichmentParameters> enr_par.ep_pointer[0])
 
 
     def calc_params(self):
-        """Here the parameters for Enrichment are set::
+        """This sets the Enrichment parameters to the following 
+        values::
 
-            self.params_prior_calc["MassFeed"]  = self.mat_feed.mass
-            self.params_after_calc["MassFeed"] = 0.0
+                self.params_prior_calc["MassFeed"] = self.mat_feed.mass
+                self.params_after_calc["MassFeed"] = 0.0
 
-            self.params_prior_calc["MassProduct"]  = 0.0
-            self.params_after_calc["MassProduct"] = self.mat_prod.mass
+                self.params_prior_calc["MassProduct"] = 0.0
+                self.params_after_calc["MassProduct"] = self.mat_prod.mass
 
-            self.params_prior_calc["MassTails"]  = 0.0
-            self.params_after_calc["MassTails"] = self.mat_tail.mass
+                self.params_prior_calc["MassTails"] = 0.0
+                self.params_after_calc["MassTails"] = self.mat_tail.mass
 
-            self.params_prior_calc["N"]  = self.N
-            self.params_after_calc["N"] = self.N
+                self.params_prior_calc["N"] = self.N
+                self.params_after_calc["N"] = self.N
 
-            self.params_prior_calc["M"]  = self.M
-            self.params_after_calc["M"] = self.M
+                self.params_prior_calc["M"] = self.M
+                self.params_after_calc["M"] = self.M
 
-            self.params_prior_calc["Mstar"]  = self.Mstar
-            self.params_after_calc["Mstar"] = self.Mstar
+                self.params_prior_calc["Mstar"] = self.Mstar
+                self.params_after_calc["Mstar"] = self.Mstar
 
-            self.params_prior_calc["TotalPerFeed"]  = self.TotalPerFeed
-            self.params_after_calc["TotalPerFeed"] = self.TotalPerFeed
+                self.params_prior_calc["TotalPerFeed"] = self.TotalPerFeed
+                self.params_after_calc["TotalPerFeed"] = self.TotalPerFeed
 
-            self.params_prior_calc["SWUperFeed"]  = self.SWUperFeed
-            self.params_after_calc["SWUperFeed"] = 0.0
+                self.params_prior_calc["SWUperFeed"] = self.SWUperFeed
+                self.params_after_calc["SWUperFeed"] = 0.0
 
-            self.params_prior_calc["SWUperProduct"]  = 0.0
-            self.params_after_calc["SWUperProduct"] = self.SWUperProduct
+                self.params_prior_calc["SWUperProduct"] = 0.0
+                self.params_after_calc["SWUperProduct"] = self.SWUperProduct
 
         """
         (<cpp_enrichment.FCComp *> self._inst).calc_params()
@@ -330,13 +431,17 @@ cdef class Enrichment(fccomp.FCComp):
         appropriate values for all Enrichment attributes.  This includes the 
         product and waste streams flowing out of the the cascade as well.
 
-        Args:
-            * input (dict or Material or None): If input is present, it is set as the component's 
-            mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this dictionary 
-            is first converted into a Material before being set as mat_feed.
+        Parameters
+        ----------
+        input : dict or Material or None, optional
+            If input is present, it is set as the component's mat_feed.  If input is 
+            a nuclide mapping (zzaaam keys, float values), it is first converted into a 
+            Material before being set as mat_feed.
 
-        Returns:
-            * output (Material): mat_prod.
+        Returns
+        -------
+        output : Material
+            mat_prod
 
         """
         cdef pyne.material._Material in_mat 
@@ -360,13 +465,20 @@ cdef class Enrichment(fccomp.FCComp):
 
             \\frac{p}{f} = \\frac{(x_F - x_W)}{(x_P - x_W)}
 
-        Args:
-            * x_F (float): Feed enrichment.
-            * x_P (float): Product enrichment.
-            * x_W (float): Waste enrichment.
+        Parameters
+        ----------
+        x_F : float
+            Feed enrichment.
+        x_P : float
+            Product enrichment.
+        x_W : float
+            Waste enrichment.
 
-        Returns:
-            * pfratio (float): As calculated above.
+        Returns
+        -------
+        pfratio : float
+            As calculated above.
+
         """
         return (<cpp_enrichment.Enrichment *> self._inst).PoverF(x_F, x_P, x_W)
 
@@ -378,13 +490,20 @@ cdef class Enrichment(fccomp.FCComp):
 
             \\frac{p}{f} = \\frac{(x_F - x_P)}{(x_W - x_P)}
 
-        Args:
-            * x_F (float): Feed enrichment.
-            * x_P (float): Product enrichment.
-            * x_W (float): Waste enrichment.
+        Parameters
+        ----------
+        x_F : float
+            Feed enrichment.
+        x_P : float
+            Product enrichment.
+        x_W : float
+            Waste enrichment.
 
-        Returns:
-            * wfratio (float): As calculated above.
+        Returns
+        -------
+        wfratio : float
+            As calculated above.
+
         """
         return (<cpp_enrichment.Enrichment *> self._inst).WoverF(x_F, x_P, x_W)
 
