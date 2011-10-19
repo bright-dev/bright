@@ -50,34 +50,23 @@ cdef int convert_sepeff_key(object key):
     
 
 cdef class Reprocess(fccomp.FCComp):
-    """Reprocess Fuel Cycle Component Class.  Daughter of bright.FCComp class.
+    """Reprocess Fuel Cycle Component Class.  Daughter of FCComp class.
 
-    Args:
-        * sepeff (dict): A dictionary containing the separation efficiencies (float) to initialize
-          the instance with.  The keys of this dictionary must be strings.  However, the strings may 
-          represent either elements or isotopes or both::
+    Parameters
+    ----------
+    sepeff : dict or map or None, optional 
+        A dictionary containing the separation efficiencies (float) to initialize
+        the instance with.  The keys of this dictionary may be strings or ints::
 
                 #ssed = string dictionary of separation efficiencies.  
                 #Of form {zz: 0.99}, eg 
-                ssed = {"92": 0.999, "94": 0.99} 
+                ssed = {92: 0.999, "94": 0.99} 
                 #of form {LL: 0.99}, eg 
                 ssed = {"U": 0.999, "PU": 0.99} 
                 #or of form {mixed: 0.99}, eg 
-                ssed = {"U235": 0.9, "922350": 0.999, "94239": 0.99}
-
-        * name (str): The name of the reprocessing fuel cycle component instance.
-
-    Note that this automatically calls the public initialize C function.
-
-    .. note::
-       The C++ version of the code also allows you to initialize from an int-keyed dictionary (map).
-       However, due to a from_python C++ signature ambiguity, you cannot do use this directly in Python.
-       Separation efficiencies must therefore be automatically initialized through string dictionaries.
-       If you need to initialize via an int dictionary in python, you can always init with an empty
-       string dictionary and then manually initialize with an int one.  For example::
-
-            R = Reprocess({}, name)
-            R.initialize( {92: 0.99, 942390: 0.9} )
+                ssed = {"U235": 0.9, 922350: 0.999, "94239": 0.99}
+    name : str 
+        The name of the reprocessing fuel cycle component instance.
 
     """
 
@@ -99,6 +88,13 @@ cdef class Reprocess(fccomp.FCComp):
     # Reprocess attributes
 
     property sepeff:
+        """This is a dictionary or map representing the separation efficiencies of each isotope 
+        in bright.bright_conf.track_nucs. Therefore it has zzaaam-integer keys and float (double) values.  
+        During initialization, other SE dictionaries are converted to this standard form::
+
+            sepeff = {922350: 0.999, 942390: 0.99}
+
+        """
         def __get__(self):
             cdef conv._MapIntDouble proxy
 
@@ -144,8 +140,10 @@ cdef class Reprocess(fccomp.FCComp):
         isotopic keys and need not contain every isotope tracked.  On the other hand, sepeff
         must have only zzaaam keys that match exactly the isotopes in bright.track_nucs.
 
-        Args:
-            * sepeff (dict): Integer valued dictionary of SE to be converted to sepeff.
+        Parameters
+        ----------
+        sepeff : dict or other mappping
+            Integer valued dictionary of SE to be converted to sepeff.
         """
         cdef dict sepdict = {}
         for key, val in sepeff.items():
@@ -175,13 +173,18 @@ cdef class Reprocess(fccomp.FCComp):
             self.mat_prod = Material(outcomp)
             return self.mat_prod
 
-        Args:
-            * input (dict or Material): If input is present, it set as the component's 
-              mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a Material before being set as mat_feed.
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a isotopic 
+            dictionary (zzaaam keys, float values), this dictionary is first converted into a 
+            Material before being set as mat_feed.
 
-        Returns:
-            * output (Material): mat_prod.
+        Returns
+        -------
+        output : Material)
+            mat_prod
+
         """
         cdef pyne.material._Material in_mat 
         cdef pyne.material._Material output = pyne.material.Material()

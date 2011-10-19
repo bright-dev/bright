@@ -12,8 +12,6 @@ between classes and allows for greater exploration of each components methodolog
 .. toctree::
    :maxdepth: 3
 
-   FCComp
-   Enrichment
    Reprocess
    Storage
    Reactor1G

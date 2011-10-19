@@ -1,8 +1,8 @@
 .. _bright_bright_config:
 
-====================
+********************
 Bright Configuration
-====================
+********************
 This module provides tools for manipulating bright-namespace level configuration 
 variables which may affect all fuel cycle components.
 
