@@ -13,3 +13,4 @@ The following modules and sub-packages are discussed:
     fccomp
     enrichment
     reprocess
+    storage

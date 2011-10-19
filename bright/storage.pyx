@@ -32,10 +32,12 @@ import fccomp
 
 
 cdef class Storage(fccomp.FCComp):
-    """Storage Fuel Cycle Component Class.  Daughter of bright.FCComp class.
+    """Storage Fuel Cycle Component Class.  Daughter of FCComp class.
 
-    Args:
-        * name (str): The name of the storage fuel cycle component instance.
+    Parameters
+    ----------
+    name : str, optional
+        The name of the storage fuel cycle component instance.
     """
 
     #cdef cpp_fccomp.Storage * s_pointer
@@ -48,9 +50,12 @@ cdef class Storage(fccomp.FCComp):
     # Class Attributes
     #
 
-    # Stroage attributes
+    # Storage attributes
 
     property decay_time:
+        """This the float (double) attribute that represents how long an input fuel mass should be
+        stored for.  This time is represented in seconds, so be sure to convert to the proper units
+        before using.  Consider using pyne.utils.to_sec() for second conversions."""
         def __get__(self):
             return (<cpp_storage.Storage *> self._inst).decay_time
 
@@ -69,6 +74,7 @@ cdef class Storage(fccomp.FCComp):
 
             self.params_prior_calc["Mass"]  = self.mat_feed.mass
             self.params_after_calc["Mass"] = self.mat_prod.mass
+
         """
         (<cpp_fccomp.FCComp *> self._inst).calc_params()
 
@@ -78,17 +84,21 @@ cdef class Storage(fccomp.FCComp):
         output Material.  Here, this amounts to calling bateman() for every nuclide in 
         mat_feed, for each chain that ends with a nuclide in track_nucs.
 
-        This method is public and accessible from Python.
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a isotopic dictionary 
+            (zzaaam keys, float values), this dictionary is first converted into a Material before being 
+            set as mat_feed.
+        decay_time : float or None, optional 
+            decay_time is set to the time value here prior to any other calculations.  This time has units 
+            of seconds.
 
-        Args:
-            * input (dict or Material): If input is present, it set as the component's 
-              mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a Material before being set as mat_feed.
-            * decay_time (float): decay_time is set to the time value here prior to any other calculations.  This
-              time has units of seconds.
+        Returns
+        -------
+        output : Material
+            mat_prod
 
-        Returns:
-            * output (Material): mat_prod.
         """
         cdef pyne.material._Material in_mat 
         cdef pyne.material._Material output = pyne.material.Material()
