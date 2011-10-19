@@ -12,3 +12,5 @@ from bright.storage import Storage
 from bright.fluence_point import FluencePoint
 
 from bright.reactor_parameters import ReactorParameters, lwr_defaults, fr_defaults
+
+from bright.reactor1g import Reactor1G
