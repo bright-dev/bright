@@ -14,3 +14,5 @@ The following modules and sub-packages are discussed:
     enrichment
     reprocess
     storage
+    fluence_point
+    reactor_parameters

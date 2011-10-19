@@ -10,12 +10,6 @@ cimport fluence_point
 
 cdef class FluencePoint:
     """This class holds three simple data points that represent a fluence point.
-
-    Attributes:
-        * f (int): Index of Reactor1G.F immediately lower than the value of F (int).
-        * F (float): Fluence value itself (float). In units of [n/kb] or [neutrons/kilobarn].
-        * m (float): The slope dBU/dF between points f and f+1 (float). 
-          Has the odd units of [MWd kb / kgIHM n].
     """
 
     def __cinit__(self):
@@ -30,6 +24,7 @@ cdef class FluencePoint:
     #
 
     property f:
+        """Index (int) of fluence immediately lower than the value of F."""
         def __get__(self):
             return self.fp_pointer.f
 
@@ -38,6 +33,7 @@ cdef class FluencePoint:
 
 
     property F:
+        """Fluence value itself (float).  In units of [neutrons/kilobarn], abbr [n/kb]."""
         def __get__(self):
             return self.fp_pointer.F
 
@@ -46,6 +42,7 @@ cdef class FluencePoint:
 
 
     property m:
+        """The slope (float) dBU/dF between points f and f+1.  Has the odd units of [MWd kb / kgIHM n]"""
         def __get__(self):
             return self.fp_pointer.m
 
