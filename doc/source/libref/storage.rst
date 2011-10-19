@@ -12,6 +12,10 @@ To use this class the necessary decay information must be available.  This is st
 that must be present within the `BRIGHT_DATA` directory.   Instantiation of this class automatically calls 
 the initialize() method on the C++ level, which loads the ``decay.h5`` library.
 
+All functionality may be found in the ``storage`` module::
+
+    import bright.storage
+
 .. currentmodule:: bright.storage
     
 .. autoclass:: Storage(name="")

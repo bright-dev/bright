@@ -848,7 +848,7 @@ def setup_class():
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
-    rmg.calcSubStreams()
+    rmg.calc_sub_mats()
 
 @classmethod
 def teardown_class():
@@ -1056,9 +1056,9 @@ def test_calc_mat_prod():
     assert(rmg.mat_prod.mass < 1.0)
 
 
-def test_calcSubStreams():
+def test_calc_sub_mats():
     rmg.calc()
-    rmg.calcSubStreams()
+    rmg.calc_sub_mats()
     assert_equal(rmg.mat_feed_u.mass, 1.0)
     assert_equal(rmg.mat_feed_tru.mass, 0.0)
     assert_equal(rmg.mat_feed_lan.mass, 0.0)

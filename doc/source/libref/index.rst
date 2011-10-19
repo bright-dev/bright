@@ -12,8 +12,11 @@ The following modules and sub-packages are discussed:
     bright_config
     fccomp
     enrichment
-    reprocess
-    storage
+    fuel_fabrication
     fluence_point
     reactor_parameters
     reactor1g
+    light_water_reactor1g
+    fast_reactor1g
+    reprocess
+    storage

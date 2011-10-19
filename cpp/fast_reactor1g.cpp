@@ -34,7 +34,7 @@ void bright::FastReactor1G::calc_params()
    *  Overwrites standard, do-nothing calc_params() function.
    */
 
-  calcSubStreams();
+  calc_sub_mats();
 
   params_prior_calc["BUd"]  = 0.0;
   params_after_calc["BUd"] = BUd;

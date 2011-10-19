@@ -14,3 +14,9 @@ from bright.fluence_point import FluencePoint
 from bright.reactor_parameters import ReactorParameters, lwr_defaults, fr_defaults
 
 from bright.reactor1g import Reactor1G
+
+from bright.light_water_reactor1g import LightWaterReactor1G
+
+from bright.fast_reactor1g import FastReactor1G
+
+from bright.fuel_fabrication import FuelFabrication

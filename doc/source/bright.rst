@@ -9,14 +9,6 @@ between classes and allows for greater exploration of each components methodolog
 
 **Components**
 
-.. toctree::
-   :maxdepth: 3
-
-   Reprocess
-   Storage
-   Reactor1G
-   FuelFabrication
-
 Currently, all fuel cycle objects inherit from a common `FCComp` class.  This takes care of all of the bookkeeping, 
 input, and output for all component instances.  Below is a a diagram of the how all of the comonents inheret 
 from the top-level `FCComp` object.  Generally, a Bright user will only need to call the bottom-level classes

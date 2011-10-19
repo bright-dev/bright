@@ -1,121 +1,41 @@
-.. currentmodule:: bright
+.. _bright_light_water_reactor1g:
 
-*************************
-Light Water Reactor Class
-*************************
+***************************
+Light Water Reactor1G Class
+***************************
 This class provides a model of a one energy group Light Water Reactor (LWR) that may be used out of the box.  
 Additionally, this portion of the code also provides a function that returns a copy of default LWR parameters.  
 Lastly, this document displays a benchmark of this LWR model to other published LWR cases.
+
+All functionality may be found in the ``light_water_reactor1g`` module::
+
+    import bright.light_water_reactor1g
+
+.. currentmodule:: bright.light_water_reactor1g
     
 =========================
 LightWaterReactor1G Class
 =========================
 
-.. class:: LightWaterReactor1G([libfile, reactor_parameters=lwr_defaults, name=""])
+.. autoclass:: LightWaterReactor1G(libfile=None, reactor_parameters=None, name="")
 
-    A One-Group Light Water Reactor Fuel Cycle Component.  This is a daughter class of :class:`Reactor1G` and 
-    a granddaughter of :class:`FCComp`.
+    .. attribute:: track_params
 
-    Args:
-        * `libfile` (string): The path the the LWR HDF5 data library.  This value is set to :attr:`Reactor1G.libfile` and used
-          by :meth:`Reactor1G.loadlib`.
-        * `reactor_parameters` (:class:`ReactorParameters`): The physical reactor parameter data to initialize this
-          LWR instance with.  If this argument is not provided, default values are taken.
-        * `name` (string): The name of this LWR instance.
+        Light water reactors have a type specific set of data that they follow from pass-to-pass.  Thus this 
+        attribute has be modified to contain following parameters: ``["BUd", "U", "TRU", "ACT", "LAN", "FP"]``. 
 
-------------------------------
-LightWaterReactor1G Attributes
-------------------------------
-As a daughter class of :class:`Reactor1G`, most of the LWR attributes are inherited.  The following are the ones that are not
-or have been otherwise altered.
-
-.. attribute:: LightWaterReactor1G.track_params
-
-    Light water reactors have a type specific set of data that they follow from pass-to-pass.  Thus this 
-    attribute has be modified to contain following parameters: ``["BUd", "U", "TRU", "ACT", "LAN", "FP"]``. 
-
----------------------------
-LightWaterReactor1G Methods
----------------------------
-As a daughter class of :class:`Reactor1G`, most of the LWR methods are inherited.  The following are the ones that are not
-or have been otherwise altered.
-
-.. method:: LightWaterReactor1G.calc_params()
-
-    Along with its own parameter set to track, the LWR model implements its own function to set these
-    parameters.  This function is equivalent to the following::
-
-        self.params_prior_calc["BUd"]  = 0.0
-        self.params_after_calc["BUd"] = self.BUd
-
-        self.params_prior_calc["U"]  = self.ms_feed_u.mass
-        self.params_after_calc["U"] = self.ms_prod_u.mass
-
-        self.params_prior_calc["TRU"]  = self.ms_feed_tru.mass
-        self.params_after_calc["TRU"] = self.ms_prod_tru.mass
-
-        self.params_prior_calc["ACT"]  = self.ms_feed_act.mass
-        self.params_after_calc["ACT"] = self.ms_prod_act.mass
-
-        self.params_prior_calc["LAN"]  = self.ms_feed_lan.mass
-        self.params_after_calc["LAN"] = self.ms_prod_lan.mass
-
-        self.params_prior_calc["FP"]  = 1.0 - self.ms_feed_act.mass  - self.ms_feed_lan.mass
-        self.params_after_calc["FP"] = 1.0 - self.ms_prod_act.mass - self.ms_prod_lan.mass
-
-======================================
-Light Water Reactor Default Parameters
-======================================
-
-.. function:: lwr_defaults()
-
-    This function returns a copy of the LWR default presets.  These are applicable to most cases.  
-    However, if you want to use your own LWR parameters, it is recommended you use this function
-    and then only change the necessary attributes.  Thus all other unchanged attributes retain their default values.
-
-    Returns:
-        * `lwrd` (:class:`ReactorParameters`): Light water reactor default physical parameters.
-          These defaults take on the following hard-coded values::
-
-            lwrd = bright.LWRDeafaults()
-
-            lwrd.batches = 3
-            lwrd.flux = 4.0 * 10.0**14
-
-            lwrd.fuel_form["IHM"] = 1.0
-            lwrd.fuel_form["O16"] = 2.0
-            lwrd.coolant_form["H1"]  = 2.0
-            lwrd.coolant_form["O16"] = 1.0
-            lwrd.coolant_form["B10"] = 0.199 * 550 * 10.0**-6
-            lwrd.coolant_form["B11"] = 0.801 * 550 * 10.0**-6
-
-            lwrd.fuel_density = 10.7
-            lwrd.coolant_density = 0.73
-
-            lwrd.pnl = 0.98
-            lwrd.BUt = 0.0
-
-            lwrd.use_disadvantage_factor = True
-            lwrd.lattice_type = "Cylindrical"
-            lwrd.rescale_hydrogen = True
-
-            lwrd.radius = 0.412
-            lwrd.pitch = 1.33
-            lwrd.open_slots = 25.0
-            lwrd.total_slots = 289.0
-
-    .. warning:: Note that the target burnup default value is zero.  Generally, at least this value should be overridden.
-
+    .. automethod:: calc_params()
 
 =============================
 Light Water Reactor Benchmark
 =============================
-The following data presents the results of benchmarking this reactor model to two separate cases.  The first is to 
-an NEA case and the second is to a VISION case.  
-These benchmarks first calibrate the non-leakage probability to the target discharge burnup and then compare isotopics.
-Then the benchmarks use a static 0.98 value for the non-leakage probability and then compare isotopics.  In doing so, 
-this gives a relative measure on how much error is induced buy simply using a nominal value for :attr:`Reactor1G.P_NL`.
-If you require more information on these benchmarks please email the author.
+The following data presents the results of benchmarking this reactor model to two separate cases.  
+The first is to an NEA case and the second is to a VISION case.  These benchmarks first calibrate 
+the non-leakage probability to the target discharge burnup and then compare isotopics. Then the 
+benchmarks use a static 0.98 value for the non-leakage probability and then compare isotopics.  
+In doing so, this gives a relative measure on how much error is induced buy simply using a nominal 
+value for :attr:`Reactor1G.P_NL`.  If you require more information on these benchmarks please email 
+the author.
 
 -------------
 NEA Benchmark
@@ -187,8 +107,8 @@ Our results were benchmarked to this study as seen below::
 ----------------
 VISION Benchmark
 ----------------
-The light water reactor here was further benchmarked against the data in the Idaho Nat'l Lab code package VISION.
-Please contact INL for more information on their study.  The results were as follows::
+The light water reactor here was further benchmarked against the data in the Idaho Nat'l Lab code package 
+VISION. Please contact INL for more information on their study.  The results were as follows::
 
     LWR Vision Benchmark
         Target BU: 51.0

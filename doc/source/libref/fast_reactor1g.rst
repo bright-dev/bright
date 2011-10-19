@@ -1,121 +1,40 @@
-.. currentmodule:: bright
+.. _bright_fast_reactor1g:
 
-******************
-Fast Reactor Class
-******************
+********************
+Fast Reactor1G Class
+********************
 This class provides a model of a one energy group Fast Reactor (FR) that may be used out of the box.  
 Additionally, this portion of the code also provides a function that returns a copy of default FR parameters.  
 Lastly, this document displays a benchmark of this FR model to other published FR cases.
+
+All functionality may be found in the ``fast_reactor1g`` module::
+
+    import bright.fast_reactor1g
+
+.. currentmodule:: bright.fast_reactor1g
     
 ===================
 FastReactor1G Class
 ===================
 
-.. class:: FastReactor1G([libfile, reactor_parameters=fr_defaults, name=""])
+.. autoclass:: FastReactor1G(libfile=None, reactor_parameters=None, name="")
 
-    A One-Group Fast Reactor Fuel Cycle Component.  This is a daughter class of :class:`Reactor1G` and 
-    a granddaughter of :class:`FCComp`.
+    .. attribute:: track_params
 
-    Args:
-        * `libfile` (string): The path the the FR HDF5 data library.  This value is set to :attr:`Reactor1G.libfile` and used
-          by :meth:`Reactor1G.loadlib`.
-        * `reactor_parameters` (:class:`ReactorParameters`): The physical reactor parameter data to initialize this
-          FR instance with.  If this argument is not provided, default values are taken.
-        * `name` (string): The name of this FR instance.
+        Fast reactors have a type specific set of data that they follow from 
+        pass-to-pass.  Thus this attribute has be modified to contain following parameters: 
+        ``["BUd", "TRUCR", "P_NL", "U", "TRU", "ACT", "LAN", "FP"]``.
 
-------------------------
-FastReactor1G Attributes
-------------------------
-As a daughter class of :class:`Reactor1G`, most of the FR attributes are inherited.  The following are the ones that are not
-or have been otherwise altered.
-
-.. attribute:: FastReactor1G.track_params
-
-    Fast reactors have a type specific set of data that they follow from pass-to-pass.  Thus this 
-    attribute has be modified to contain following parameters: ``["BUd", "TRUCR", "P_NL", "U", "TRU", "ACT", "LAN", "FP"]``.
-
----------------------
-FastReactor1G Methods
----------------------
-As a daughter class of :class:`Reactor1G`, most of the LWR methods are inherited.  The following are the ones that are not
-or have been otherwise altered.
-
-.. method:: FastReactor1G.calc_params()
-
-    Along with its own parameter set to track, the FR model implements its own function to set these
-    parameters.  This function is equivalent to the following::
-
-        self.params_prior_calc["BUd"]  = 0.0
-        self.params_after_calc["BUd"] = self.BUd
-
-        self.params_prior_calc["TRUCR"]  = 0.0
-        self.params_after_calc["TRUCR"] = self.calc_tru_cr()
-
-        self.params_prior_calc["P_NL"]  = 0.0
-        self.params_after_calc["P_NL"] = self.P_NL
-
-        self.params_prior_calc["U"]  = self.ms_feed_u.mass
-        self.params_after_calc["U"] = self.ms_prod_u.mass
-
-        self.params_prior_calc["TRU"]  = self.ms_feed_tru.mass
-        self.params_after_calc["TRU"] = self.ms_prod_tru.mass
-
-        self.params_prior_calc["ACT"]  = self.ms_feed_act.mass
-        self.params_after_calc["ACT"] = self.ms_prod_act.mass
-
-        self.params_prior_calc["LAN"]  = self.ms_feed_lan.mass
-        self.params_after_calc["LAN"] = self.ms_prod_lan.mass
-
-        self.params_prior_calc["FP"]  = 1.0 - self.ms_feed_act.mass  - self.ms_feed_lan.mass
-        self.params_after_calc["FP"] = 1.0 - self.ms_prod_act.mass - self.ms_prod_lan.mass
-
-===============================
-Fast Reactor Default Parameters
-===============================
-
-.. function:: fr_defaults()
-
-    This function returns a copy of the FR default presets.  These are applicable to most cases.  
-    However, if you want to use your own FR parameters, it is recommended you use this function
-    and then only change the necessary attributes.  Thus all other unchanged attributes retain their default values.
-
-    Returns:
-        * `frd` (:class:`ReactorParameters`): Fast reactor default physical parameters.
-          These defaults take on the following hard-coded values::
-
-            frd = bright.LWRDeafaults()
-
-            frd.batches = 3
-            frd.flux = 2.0 * 10.0**15
-
-            frd.fuel_form["IHM"] = 1.0
-            frd.coolant_form["NA23"] = 1.0
-
-            frd.fuel_density = 18.0
-            frd.coolant_density = 0.927
-
-            frd.pnl = 0.65
-            frd.BUt = 0.0
-
-            frd.use_disadvantage_factor = False
-            frd.lattice_type = "Cylindrical"
-            frd.rescale_hydrogen = False
-
-            frd.radius = 0.3115
-            frd.pitch = 0.956
-            frd.open_slots = 19.0
-            frd.total_slots = 163.0
-
-    .. warning:: Note that the target burnup default value is zero.  Generally, at least this value should be overridden.
+    .. automethod:: calc_params()
 
 
 ======================
 Fast Reactor Benchmark
 ======================
-The following data presents the results of benchmarking this reactor model to three separate cases.  The first is to 
-an NEA case and the other two are to a VISION case.  
-These benchmarks used the isotopic input streams listed in these cases as :attr:`ms_feed <FCComp.ms_feed>` for the 
-FR model here.  The non-leakage probability is then calibrated and the output isotopics are compared.
+The following data presents the results of benchmarking this reactor model to three separate cases.  
+The first is to an NEA case and the other two are to a VISION case.  These benchmarks used the isotopic 
+input streams listed in these cases as :attr:`mat_feed <FCComp.mat_feed>` for the FR model here.  
+The non-leakage probability is then calibrated and the output isotopics are compared.
 If you require more information on these benchmarks please email the author.
 
 -------------
