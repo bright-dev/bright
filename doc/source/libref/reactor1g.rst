@@ -1,281 +1,73 @@
+.. _bright_reactor1g:
+
 ***************
 Reactor1G Class
 ***************
-Reactors are the most computationally complex of the nuclear fuel cycle components.  Bright handles nuclear reactors
-in two distinct object classes: a one neutron energy group methodology (implemented here) and a multi-group algorithm (coming soon).
-Moreover, there are several different types of reactors.  Each type has its own characteristic data library associated with it 
-and takes on type-specific base case values.  The reactor types that have been fully implemented thus far are a light water 
-reactor (LWR) and a fast reactor (FR).  You may read more about these on their own pages.
+Reactors are the most computationally complex of the nuclear fuel cycle components currently implemented.  
+Bright handles nuclear reactors in two distinct object classes: a one neutron energy group methodology 
+(implemented here) and a multi-group algorithm. Moreover, there are several different types of reactors.  
+Each type has its own characteristic data library associated with it and takes on type-specific base case 
+values.  The reactor types that have been fully implemented thus far are a light water reactor (LWR) and a 
+fast reactor (FR).  You may read more about these on their own pages.
 
-All one-group (1G) reactors share a common methodological backbone.  This page describes what is fundamentally the same 
-about reactor objects via the :class:`bright.Reactor1G` class.  This is a subclass of :class:`BriPy.FCComp`.  Moreover, all 
-one-group reactor types have :class:`bright.Reactor1G` as their parent.  The type-specific reactor objects turn out to 
-be relatively simple since most of the computational effort is in  :class:`bright.Reactor1G`.
+All one-group (1G) reactors share a common methodological backbone.  This page describes what is fundamentally 
+the same about one group reactor objects via the Reactor1G class.  This is a subclass of FCComp.  Moreover, all 
+one-group reactor types have :class:`bright.Reactor1G` as their parent.  The type-specific reactor objects turn 
+out to be relatively simple since most of the computational effort is in Reactor1G.
 
 All one energy group reactors are based on a algorithm published by the author in Nuclear Engineering & Design, 
 "`A new method for rapid computation of transient fuel cycle material balances <http://www.sciencedirect.com/science?_ob=ArticleURL&_udi=B6V4D-4W0SSGY-1&_user=10&_coverDate=10/31/2009&_rdoc=1&_fmt=high&_orig=search&_sort=d&_docanchor=&view=c&_acct=C000050221&_version=1&_urlVersion=0&_userid=10&md5=e52ececcd93400f84cc630ba20b01994>`_".
-
-.. currentmodule:: bright
-    
-.. class:: Reactor1G([reactor_parameters, track_params, name])
-
-    One-Group Reactor Fuel Cycle Component Class.  Daughter of :class:`bright.FCComp` class.
-
-    Args:
-        * `reactor_parameters` (:class:`ReactorParameters`): A special data structure that contains information
-          on how to setup and run the reactor.
-        * `track_params` (string set): A set of strings that represents what parameter data the reactor should 
-          store and set.  Different reactor types may have different characteristic parameters that are of interest.
-        * `name` (str): The name of the reactor fuel cycle component instance.
-
-    Note that this automatically calls the public :meth:`initialize <bright.Reactor1G.initialize>` C function.
-
-.. note:: 
-
-    Some data members and functions have names that end in ``_F_``.  This indicates that these are a 
-    function of fluence, the time integral of the flux.  The ``_Fd_`` suffix implies that the data is 
-    evaluated at the discharge fluence.
 
 **Reactor1G Helper & Child Classes**
 
 .. toctree::
     :maxdepth: 1
 
-    Reactor1G_Helpers
-    LightWaterReactor1G
-    FastReactor1G
+    fluence_point
+    reactor_parameters
+    light_water_reactor1g
+    fast_reactor1g
 
-.. _Reactor1G_Attributes:
+.. currentmodule:: bright.reactor1g
+    
+.. autoclass:: Reactor1G(reactor_parameters=None, track_params=None, name="")
+
+    .. autoattribute:: B
+    .. autoattribute:: phi
+    .. autoattribute:: fuel_chemical_form
+    .. autoattribute:: coolant_chemical_form
+    .. autoattribute:: rhoF
+    .. autoattribute:: rhoC
+    .. autoattribute:: P_NL
+    .. autoattribute:: target_BU
+    .. autoattribute:: use_zeta
+    .. autoattribute:: lattice_flag
+    .. autoattribute:: rescale_hydrogen_xs
+    .. autoattribute:: r
+    .. autoattribute:: l
+    .. autoattribute:: S_O
+    .. autoattribute:: S_T
+    .. autoattribute:: VF
+    .. autoattribute:: VC
+    .. autoattribute:: libfile
+    .. autoattribute:: F
+    .. autoattribute:: BUi_F_
+    .. autoattribute:: pi_F_
+    .. autoattribute:: di_F_
+    .. autoattribute:: Tij_F_
+    .. autoattribute:: A_IHM
+    .. autoattribute:: MWF
+    .. autoattribute:: MWC
+    .. autoattribute:: niF
+    .. autoattribute:: niC
+    .. autoattribute:: miF
+    .. autoattribute:: miC
+    .. autoattribute:: NiF
+    .. autoattribute:: NiC
 
 ====================
 Reactor1G Attributes
 ====================
-As a daughter class of :class:`bright.FCComp`, :class:`Reactor1G` inherits all of the attributes of its parent.  
-The following is a listing of the additional attributes specific to this class and those modified from the parent values.
-
---------------------
-Protected Attributes
---------------------
-These attributes are used internal to the reactor model and are therefore protected and not accessible from Python.
-All other attributes are public and may be retrieved and modified from via the Python bindings.
-
-.. attribute:: Reactor1G.I
-
-    This is an zzaaam-integer isotopic set representing all of the nuclides that are valid inputs to the core.  This
-    includes not just the heavy metal, but also coolant and cladding material as well.  :attr:`I` is typically 
-    indexed by ``i``.  This is usually a strict subset of :func:`bright.track_nucs`.
-
-.. attribute:: Reactor1G.J
-
-    This is an zzaaam-integer isotopic set representing all of the nuclides that are valid outputs from the core.  This
-    encompasses all actinides and fission products.  :attr:`J` is typically 
-    indexed by ``j``.  This is usually equivalent to :func:`bright.track_nucs`.
-
-
-.. attribute:: Reactor1G.sigma_a_therm
-
-    This dictionary represents static, one-group microscopic thermal absorption cross sections in [barns] as 
-    gathered from `KAERI <http://atom.kaeri.re.kr/>`_.  Such data is stored in the ``KaeriData.h5`` database
-    that should be present in the ``BRIGHT_DATA`` directory.  This data is only read in if the thermal 
-    disadvantage factor is used.
-
-.. attribute:: Reactor1G.sigma_s_therm
-
-    This dictionary represents static, one-group microscopic thermal scattering cross sections in [barns] as 
-    gathered from `KAERI <http://atom.kaeri.re.kr/>`_.  Such data is stored in the ``KaeriData.h5`` database
-    that should be present in the ``BRIGHT_DATA`` directory.  This data is only read in if the thermal 
-    disadvantage factor is used.
-
-
-----------------------------
-Reactor Parameter Attributes
-----------------------------
-The following parameters are an instance copy of analogous `reactor_parameters` data that was fed to the :class:`Reactor1G` 
-constructor.  Storing these functional parameters in each instance allows for several reactors of the same type to act 
-in different manners in the same fuel cycle code.
-
-.. attribute:: Reactor1G.B
-
-    This integer is the total number of batches in the fuel management scheme.  :attr:`B` is typically indexed by ``b``.
-
-.. attribute:: Reactor1G.phi
-
-    The nominal flux value (float) that the library for this reactor type was generated with.  Used to correctly
-    weight batch-specific fluxes.
-
-.. attribute:: Reactor1G.fuel_chemical_form
-
-    This is the chemical form of fuel as dictionary.  Keys are strings that represent isotopes (mixed form) while 
-    values represent the corresponding mass weights.  The heavy metal concentration by the key ``"IHM"``.  This 
-    will automatically fill in the nuclides in :attr:`ms_feed <bright.FCComp.ms_feed>` for the ``"IHM"`` weight.  For 
-    example, LWRs typically use a UOX fuel form::
-
-        LWR.fuel_chemical_form = {"IHM": 1.0, "O16": 2.0}
-
-.. attribute:: Reactor1G.coolant_chemical_form
-
-    This is the chemical form of coolant as dictionary.  This uses the same notation as :attr:`fuel_chemical_form` except 
-    that ``"IHM"`` is no longer a valid key.  The term 'coolant' is used in preference over the term 'moderator' because
-    not all reactors moderate neutrons.  For example, LWRs often cool the reactor core with borated water::
-
-        LWR.coolant_chemical_form = {}
-
-        LWR.CoolantchemicalForm["H1"]  = 2.0
-        LWR.coolant_chemical_form["O16"] = 1.0
-        LWR.coolant_chemical_form["B10"] = 0.199 * 550 * 10.0**-6
-        LWR.coolant_chemical_form["B11"] = 0.801 * 550 * 10.0**-6
-
-.. attribute:: Reactor1G.rhoF
-
-    The fuel region density.  A float in units of [g/cm^3].
-
-.. attribute:: Reactor1G.rhoC
-
-    The coolant region density.  A float in units of [g/cm^3].
-
-.. attribute:: Reactor1G.P_NL
-
-    The reactor's non-leakage probability (float).  This is often used as a calibration parameter.
-
-.. attribute:: Reactor1G.target_BU
-
-    The reactor's target discharge burnup (float).  This is given in units of [MWd/kgIHM].  Often the
-    actual discharge burnup :attr:`BUd` does not quite hit this value, but comes acceptably close.
-
-.. attribute:: Reactor1G.use_zeta
-
-    A boolean value that determines whether the thermal disadvantage factor is employed or not.  LWRs 
-    typically set this as ``True`` while FRs have a ``False`` value.
-
-.. attribute:: Reactor1G.Lattice
-
-    A string flag that represents what lattice type the fuel assemblies are arranged in.  Currently accepted values 
-    are ``"Planar"``, ``"Spherical"``, and ``"Cylindrical"``.
-
-.. attribute:: Reactor1G.rescale_hydrogen_xs
-
-    This boolean determines whether the reactor should rescale the Hydrogen-1 destruction rate in the coolant as a
-    function of fluence.  The scaling factor is calculated via the following equation:
-
-    .. math:: f(F) = 1.36927 - 0.01119 \cdot BU(F)
-
-    This is typically not done for fast reactors but is a useful correction for LWRs.
-
-.. attribute:: Reactor1G.r
-
-    The radius (float) of the fuel region.  In units of [cm].
-
-.. attribute:: Reactor1G.l
-
-    The pitch or length (float) of the unit fuel pin cell.  In units of [cm].
-
-.. attribute:: Reactor1G.S_O
-
-    The number of slots in a fuel assembly that are open (float).  *I.E.* this is the number of slots that 
-    do not contain a fuel pin and are instead filled in by coolant. 
-
-.. attribute:: Reactor1G.S_T
-
-    The total number of fuel pin slots in a fuel assembly.  For a 17x17 bundle, :attr:`S_T` is ``289.0``. 
-
-.. attribute:: Reactor1G.VF
-
-    The relative fuel region volume.  Calculated from above information.
-
-.. attribute:: Reactor1G.VC
-
-    The relative coolant region volume.  Calculated from above information.
-
------------------------------
-Basic Reactor Data Attributes
------------------------------
-These attributes represent the raw data that is read in from a reactor type library.  These are loaded 
-into memory when the :meth:`Reactor1G.loadlib` function is called.
-
-.. attribute:: Reactor1G.libfile
-
-    The path (string) to the reactor data library.  Usually something like ``LWR.h5`` or ``FR.h5``.
-
-.. attribute:: Reactor1G.F
-
-    The fluence points that the reactor library is based on.  This is a vector of floats that have units [n/kb] or 
-    [neutrons/kilobarn].  This is read in from :attr:`libfile`.
-
-.. attribute:: Reactor1G.BUi_F_
-
-    The burnup of each initial isotope in the core as a function of fluence.  This is a dictionary whose 
-    keys are in :attr:`I` and whose values are vectors of floats.  This data has units of [MWd/kgIHM] and is
-    read in from :attr:`libfile`.
-
-.. attribute:: Reactor1G.pi_F_
-
-    The neutron production rate of each initial isotope in the core as a function of fluence.  This is a dictionary whose 
-    keys are in :attr:`I` and whose values are vectors of floats.  This data has units of [n/s] or [neutrons/second] and is
-    read in from :attr:`libfile`.
-
-.. attribute:: Reactor1G.di_F_
-
-    The neutron destruction rate of each initial isotope in the core as a function of fluence.  This is a dictionary whose 
-    keys are in :attr:`I` and whose values are vectors of floats.  This data has units of [n/s] or [neutrons/second] and is
-    read in from :attr:`libfile`.
-
-.. attribute:: Reactor1G.Tij_F_
-
-    The transmutation matrix of each initial isotope in the core into daughter nuclides as a function of fluence.  
-    This is a dictionary whose 
-    keys are in :attr:`I` and whose values also dictionaries.  These nested dictionaries have keys 
-    that are members of :attr:`J` and whose values are vectors of floats.  
-    This data has units of [kg_i/kgIHM] or kilogram of each initial isotope per kg of total initial heavy metal.
-    This matrix is read in from :attr:`libfile`.
-
-
-----------------------------
-Calculated Weight Attributes
-----------------------------
-This data represents mass weights that are calculated from the initial isotopics :attr:`ms_feed <bright.FCComp.ms_feed>`.
-They are assigned appropriate values during the :meth:`Reactor1G.fold_mass_weights` execution.
-
-.. attribute:: Reactor1G.A_IHM
-
-    The atomic weight of the initial heavy metal (float).
-
-.. attribute:: Reactor1G.MWF
-
-    The molecular weight of the fuel (float).
-
-.. attribute:: Reactor1G.MWC
-
-    The molecular weight of the coolant (float).
-
-.. attribute:: Reactor1G.niF
-
-    Atomic number weight of the fuel as a function of initial isotope.  Dictionary with zzaaam-integer keys and 
-    float values.
-
-.. attribute:: Reactor1G.niC
-
-    Atomic number weight of the coolant as a function of initial isotope.  Dictionary with zzaaam-integer keys and 
-    float values.
-
-.. attribute:: Reactor1G.miF
-
-    Mass weight of the fuel as a function of initial isotope.  Dictionary with zzaaam-integer keys and 
-    float values.
-
-.. attribute:: Reactor1G.miC
-
-    Mass weight of the coolant as a function of initial isotope.  Dictionary with zzaaam-integer keys and 
-    float values.
-
-.. attribute:: Reactor1G.NiF
-
-    Number density of the fuel as a function of initial isotope.  Dictionary with zzaaam-integer keys and 
-    float values.
-
-.. attribute:: Reactor1G.NiC
-
-    Number density of the coolant as a function of initial isotope.  Dictionary with zzaaam-integer keys and 
-    float values.
     
 --------------------------
 Calculated Data Attributes

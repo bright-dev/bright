@@ -42,22 +42,24 @@ import fccomp
 
 
 cdef class Reactor1G(fccomp.FCComp):
-    """One-Group Reactor Fuel Cycle Component Class.  Daughter of bright.FCComp class.
+    """One-Group Reactor Fuel Cycle Component Class.  Daughter of FCComp class.
 
-    Args:
-        * reactor_parameters (ReactorParameters): A special data structure that contains information
-          on how to setup and run the reactor.
-        * track_params (string set): A set of strings that represents what parameter data the reactor should 
-          store and set.  Different reactor types may have different characteristic parameters that are of interest.
-        * name (str): The name of the reactor fuel cycle component instance.
+    Parameters
+    ----------
+    reactor_parameters : ReactorParameters, optional 
+        A special data structure that contains information on how to setup and run the reactor.
+    track_params : string set, optional 
+        A set of strings that represents what parameter data the reactor should store and set.  
+        Different reactor types may have different characteristic parameters of interest.
+    name : str, optional 
+        The name of the reactor fuel cycle component instance.
 
-    Note that this automatically calls the public initialize() C function.
+    Notes
+    -----
+    Some data members and functions have names that end in '_F_'.  This indicates that these are a 
+    function of fluence, the time integral of the flux.  The '_Fd_' suffix implies that the data is 
+    evaluated at the discharge fluence.
 
-    .. note:: 
-
-        Some data members and functions have names that end in '_F_'.  This indicates that these are a 
-        function of fluence, the time integral of the flux.  The '_Fd_' suffix implies that the data is 
-        evaluated at the discharge fluence.
     """
 
     def __cinit__(self, reactor_parameters=None, track_params=None, char * name="", *args, **kwargs):
@@ -103,6 +105,8 @@ cdef class Reactor1G(fccomp.FCComp):
     # Reactor1G attributes
 
     property B:
+        """This integer is the total number of batches in the fuel management scheme.  
+        B is typically indexed by b."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).B
 
@@ -111,6 +115,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property phi:
+        """The nominal flux value (float) that the library for this reactor type was generated with.  
+        Used to correctly weight batch-specific fluxes."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).phi
 
@@ -119,6 +125,15 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property fuel_chemical_form:
+        """This is the chemical form of fuel as a dictionary or other mapping.  Keys are 
+        often strings that represent isotopes while values represent the corresponding 
+        mass weights.  The heavy metal concentration by the key "IHM".  
+        This will automatically fill in the nuclides in mat_feed for the "IHM" weight.  
+        For example, LWRs typically use a UOX fuel form::
+
+            ReactorParameters.fuel_form = {"IHM": 1.0, "O16": 2.0}
+
+        """
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -157,6 +172,20 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property coolant_chemical_form:
+        """This is the chemical form of coolant as a dictionary or other mapping.  
+        This uses the same notation as fuel_form except that "IHM" is no longer 
+        a valid key.  The term 'coolant' is used in preference over the term 
+        'moderator' because not all reactors moderate neutrons.  For example, 
+        LWRs often cool the reactor core with borated water::
+
+            ReactorParamters.coolant_form = {}
+
+            ReactorParamters.coolant_form["H1"]  = 2.0
+            ReactorParamters.coolant_form["O16"] = 1.0
+            ReactorParamters.coolant_form["B10"] = 0.199 * 550 * 10.0**-6
+            ReactorParamters.coolant_form["B11"] = 0.801 * 550 * 10.0**-6
+
+        """
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -195,6 +224,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property rhoF:
+        """The fuel region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).rhoF
 
@@ -203,6 +233,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property rhoC:
+        """The coolant region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).rhoC
 
@@ -211,6 +242,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property P_NL:
+        """The reactor's non-leakage probability (float).  This is often used as a calibration parameter."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).P_NL
 
@@ -219,6 +251,9 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property target_BU:
+        """The reactor's target discharge burnup (float).  This is given 
+        in units of [MWd/kgIHM].  Often the actual discharge burnup BUd does not 
+        quite hit this value, but comes acceptably close."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).target_BU
 
@@ -227,6 +262,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property use_zeta:
+        """Boolaean to determine whether the thermal disadvantage factor is employed or not.  
+        LWRs typically set this as True while FRs have a False value."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).use_zeta
 
@@ -235,6 +272,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property lattice_flag:
+        """Flag (str) that represents what lattice type the fuel assemblies are arranged in.  
+        Currently accepted values are "Planar", "Spherical", and "Cylindrical"."""
         def __get__(self):
             cdef std.string value = (<cpp_reactor1g.Reactor1G *> self._inst).lattice_flag
             return value.c_str()
@@ -244,6 +283,13 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property rescale_hydrogen_xs:
+        """Boolean to determine whether the reactor should rescale the Hydrogen-1 destruction 
+        rate in the coolant as a function of fluence.  The scaling factor is calculated via the 
+        following equation
+
+            .. math:: f(F) = 1.36927 - 0.01119 \cdot BU(F)
+
+        This is typically not done for fast reactors but is a useful correction for LWRs."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).rescale_hydrogen_xs
 
@@ -255,6 +301,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property r:
+        """The radius (float) of the fuel region [cm]."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).r
 
@@ -263,6 +310,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property l:
+        """The pitch or length (float) of the unit fuel pin cell [cm]."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).l
 
@@ -271,6 +319,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property S_O:
+        """The number of slots (float) in a fuel assembly that are open.  Thus this is the 
+        number of slots that do not contain a fuel pin and are instead filled in by coolant."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).S_O
 
@@ -279,6 +329,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property S_T:
+        """The total number of fuel pin slots (float) in a fuel assembly.  For a 17x17 bundle 
+        this is 289.0."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).S_T
 
@@ -287,6 +339,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property VF:
+        """The relative fuel region volume."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).VF
 
@@ -295,6 +348,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property VC:
+        """The relative coolant region volume."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).VC
 
@@ -306,6 +360,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property libfile:
+        """The path (str) to the reactor data library; usually something like "LWR.h5" or "FR.h5"."""
         def __get__(self):
             cdef std.string value = (<cpp_reactor1g.Reactor1G *> self._inst).libfile
             return value.c_str()
@@ -315,6 +370,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property F:
+        """The fluence points that the reactor library is based on.  This is a vector of floats that 
+        have units [n/kb].  This is read in from libfile."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).F)
 
@@ -323,6 +380,9 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property BUi_F_:
+        """The burnup of each initial isotope in the core as a function of fluence.  This is a dictionary whose
+        keys are initial nuclides and whose values are vectors of floats.  This data has units of [MWd/kgIHM] 
+        and is read in from libfile."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).BUi_F_)
 
@@ -331,6 +391,9 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property pi_F_:
+        """The neutron production rate of each initial isotope in the core as a function of fluence.  
+        This is a dictionary whose keys are initial nuclides and whose values are vectors of floats.  
+        This data has units of [neutrons/seconds] (abbr [n/s]) is read in from libfile."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).pi_F_)
 
@@ -339,6 +402,9 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property di_F_:
+        """The neutron destruction rate of each initial isotope in the core as a function of fluence. 
+         This is a dictionary whose keys are initial nuclides and whose values are vectors of floats.  
+        This data has units of [n/s] and is read in from libfile."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).di_F_)
 
@@ -347,6 +413,11 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property Tij_F_:
+        """The transmutation matrix of each initial isotope in the core into daughter nuclides as a 
+        function of fluence. This is a dictionary whose keys are initial nuclides and whose values 
+        also dictionaries.  These nested dictionaries have keys that are final nuclides and whose 
+        values are vectors of floats.  This data has units of [kg_i/kgIHM] or kilogram of each initial 
+        nuclide per kg of total initial heavy metal. This matrix is read in from libfile."""
         def __get__(self):
             return conv.map_to_dict_int_int_vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).Tij_F_)
 
@@ -358,6 +429,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property A_IHM:
+        """The atomic weight of the initial heavy metal (float)."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).A_IHM
 
@@ -366,6 +438,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property MWF:
+        """The molecular weight of the fuel (float)."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).MWF
 
@@ -374,6 +447,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property MWC:
+        """The molecular weight of the coolant (float)."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).MWC
 
@@ -382,6 +456,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
     
     property niF:
+        """Atomic number weight of the fuel as a function of initial nuclide. 
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble proxy
 
@@ -417,6 +493,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
     
     property niC:
+        """Atomic number weight of the coolant as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble proxy
 
@@ -452,6 +530,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
     
     property miF:
+        """Mass weight of the fuel as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble proxy
 
@@ -487,6 +567,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
     
     property miC:
+        """Mass weight of the coolant as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble proxy
 
@@ -522,6 +604,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
     
     property NiF:
+        """Number density of the fuel as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble proxy
 
@@ -557,6 +641,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
     
     property NiC:
+        """Number density of the coolant as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble proxy
 
