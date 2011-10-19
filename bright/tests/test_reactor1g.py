@@ -95,7 +95,7 @@ def setup_r1g_sub():
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.calc()
-    r1g.calcSubStreams()
+    r1g.calc_sub_mats()
 
 
 def setup_r1g_zeta():
@@ -782,9 +782,9 @@ def test_calc_mat_prod():
 
 
 @with_setup(None, teardown_r1g)
-def test_calcSubStreams():
+def test_calc_sub_mats():
     r1g.calc()
-    r1g.calcSubStreams()
+    r1g.calc_sub_mats()
     assert_equal(r1g.mat_feed_u.mass, 1.0)
     assert_equal(r1g.mat_feed_tru.mass, 0.0)
     assert_equal(r1g.mat_feed_lan.mass, 0.0)

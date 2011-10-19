@@ -7,6 +7,10 @@ The reactor classes have a couple of helper classes that allow the to function i
 The first is a simple FluencePoint data structure.  This contains information on where one is in the reactor's
 fluence vector.  
 
+All functionality may be found in the ``fluence_point`` module::
+
+    import bright.flunece_point
+
 .. currentmodule:: bright.fluence_point
     
 .. autoclass:: FluencePoint()

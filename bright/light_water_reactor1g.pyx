@@ -39,12 +39,17 @@ cdef class LightWaterReactor1G(reactor1g.Reactor1G):
     """A One-Group Light Water Reactor Fuel Cycle Component.  This is a daughter class of Reactor1G and 
     a granddaughter of FCComp.
 
-    Keyword Args:
-        * libfile (string): The path the the LWR HDF5 data library.  This value is set to 
-          Reactor1G.libfile and used by Reactor1G.loadlib.
-        * reactor_parameters (ReactorParameters): The physical reactor parameter data to initialize this
-          LWR instance with.  If this argument is not provided, default values are taken.
-        * name (string): The name of this LWR instance.
+    Parameters
+    ----------
+    libfile : str, optional
+        The path the the LWR HDF5 data library.  This value is set to Reactor1G.libfile and 
+        used by Reactor1G.loadlib().
+    reactor_parameters : ReactorParameters, optional
+        The physical reactor parameter data to initialize this LWR instance with.  If this 
+        argument is not provided, default values are taken.
+    name : str, optional
+        The name of this LWR instance.
+
     """
 
     def __cinit__(self, libfile=None, reactor_parameters=None, char * name=""):

@@ -105,7 +105,7 @@ cdef extern from "reactor1g.h" namespace "bright":
         void calc_Mj_Fd_() except +
 
         void calc_mat_prod() except +
-        void calcSubStreams() except +
+        void calc_sub_mats() except +
         double calc_tru_cr() except +
 
         double calc_deltaR() except +

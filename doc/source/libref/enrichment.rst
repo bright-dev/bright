@@ -15,6 +15,11 @@ The 'correct' solution is found by optimizing :math:`M^*`, the mass at which
 the overall stage separation factor is unity.  This model is largely based off 
 of the work of A. de la Garza, E. von Halle, and H. Wood.
 
+All functionality may be found in the ``enrichment`` module::
+
+    import bright.enrichment
+
+
 .. currentmodule:: bright.enrichment
 
 ====================

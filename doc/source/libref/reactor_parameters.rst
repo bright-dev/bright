@@ -8,8 +8,11 @@ The ReactorParamters class specifies required data for the reactor model to run.
 prevents the initialization methods from having 15+ arguments.  Instead this class is passed to the constructor 
 and related methods.
 
-.. currentmodule:: bright.reactor_parameters   
+All functionality may be found in the ``reactor_parameters`` module::
 
+    import bright.reactor_parameters
+
+.. currentmodule:: bright.reactor_parameters   
 
 ========================
 Reactor Parameters Class

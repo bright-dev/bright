@@ -38,11 +38,13 @@ import fccomp
 
 
 cdef class FuelFabrication(fccomp.FCComp):
-    """Fuel Fabrication Fuel Cycle Component Class.  Daughter of bright.FCComp class.
+    """Fuel Fabrication Fuel Cycle Component Class.  Daughter of FCComp class.
 
-    Keyword Args:
-        * materials (dict): A dictionary whose keys are string labels (eg, "U-235", 
-          "TRU", "My Fuel") and whose values are mass streams.  For example::
+    Parameters
+    ----------
+    materials : dict or map or None, optional 
+        A dictionary whose keys are string labels (eg, "U-235", "TRU", "My Fuel") 
+        and whose values are mass streams.  For example::
 
             materials = {
                 "U235": Material({922350: 1.0}, 1.0, "U-235"),
@@ -50,11 +52,11 @@ cdef class FuelFabrication(fccomp.FCComp):
                 "U238": Material({922380: 1.0}, 1.0, "U-238"),
                 }
 
-          would be valid for a light water reactor.
-        * mass_weights_in (dict): A dictionary whose keys are the same as for materials
-          and whose values are the associated weight (float) for that stream.  If a stream
-          should be allowed to vary (optimized over), specify its weight as a negative number.
-          For instance::
+        would be valid for a light water reactor.
+    mass_weights_in : dict or map or None, optional 
+        A dictionary whose keys are the same as for materials and whose values are the 
+        associated weight (float) for that stream.  If a material should be allowed to 
+        vary (ie optimized over), specify its weight as a negative number. For instance::
 
             mass_weights_in = {
                 "U235": -1.0,
@@ -62,12 +64,14 @@ cdef class FuelFabrication(fccomp.FCComp):
                 "U238": -1.0,        
                 }
 
-          would be valid for a light water reactor with half a percent of U-236 always present.
-        * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
-        * track_params (list of str): Additional parameters to track, if any.        
-        * name (str): The name of the fuel fabrication fuel cycle component instance.
+        would be valid for a light water reactor with half a percent of U-236 always present.
+    reactor : Reactor1G or None, optional 
+        An instance of a Reactor1G class to fabricate fuel for.
+    track_params : list of str or None, optional 
+        Additional parameters to track, if any.        
+    name : str, optional 
+        The name of the fuel fabrication fuel cycle component instance.
 
-    Note that this automatically calls the public initialize() C function.
     """
 
     def __cinit__(self, materials=None, mass_weights_in=None, reactor=None, track_params=None, char * name=""):
@@ -124,6 +128,7 @@ cdef class FuelFabrication(fccomp.FCComp):
     # FuelFabrication attributes
 
     property materials:
+        """A mapping of materials which are mixed to create a valid fuel form for reactor."""
         def __get__(self):
             cdef pyne.material._MapStrMaterial proxy
 
@@ -158,6 +163,8 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     property mass_weights_in:
+        """A mapping representing the initial specification of the mass weights.  
+        Exactly two of these should have negative values."""
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -196,6 +203,8 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     property mass_weights_out:
+        """A mapping representing the mass weights that are calculated to generate a valid fuel 
+        from the materials  provided."""
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -234,6 +243,7 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     property deltaRs:
+        """A mapping representing the deltaR values of each of the materials."""
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -272,6 +282,7 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     property reactor:
+        """An instance of a Reactor1G class that the mat_prod is valid as a fuel for."""
         def __get__(self):
             cdef Reactor1G value = Reactor1G()
             cdef cpp_reactor1g.Reactor1G cpp_value = (<cpp_fuel_fabrication.FuelFabrication *> self._inst).reactor
@@ -288,14 +299,19 @@ cdef class FuelFabrication(fccomp.FCComp):
     # 
 
     def initialize(self, dict materials, dict mass_weights_in, Reactor1G reactor):
-        """The initialize() method takes the appropriate mass streams, input mass weights,
-        a reactor objects and resets the current FuelFabrication instance.
+        """The initialize() method takes the appropriate materials, input mass weights,
+        and a reactor and resets the current FuelFabrication instance.
 
-        Args:
-            * materials (dict): A dictionary whose keys are string labels and whose values are mass streams.  
-            * mass_weights_in (dict): A dictionary whose keys are the same as for materials
-              and whose values are the associated weight (float) for that stream.
-            * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
+        Parameters
+        ----------
+        materials : dict
+            A dictionary whose keys are string labels and whose values are mass streams.  
+        mass_weights_in : dict 
+            A dictionary whose keys are the same as for materials and whose values are the 
+            associated weight (float) for that stream.
+        reactor : Reactor1G 
+            An instance of a Reactor1G class to fabricate fuel for.
+
         """
         cdef Reactor1G r1g = reactor
         (<cpp_fuel_fabrication.FuelFabrication *> self._inst).initialize(pyne.material.dict_to_map_str_matp(materials), 
@@ -328,11 +344,13 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     def calc_core_input(self):
-        """Computes the core input mass stream that becomes mat_prod based on materials and 
+        """Computes the core input material that becomes mat_prod based on materials and 
         mass_weights_out.
 
-        Returns:
-            * core_input (Material): mat_prod.
+        Returns
+        -------
+        core_input : Material 
+            mat_prod.
         """
         cdef pyne.material._Material pymat = pyne.pyne.material.Material()
         pymat.mat_pointer[0] = (<cpp_fuel_fabrication.FuelFabrication *> self._inst).calc_core_input()
@@ -351,18 +369,25 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     def calc(self, materials=None, mass_weights_in=None, reactor=None):
-        """This method performs an optimization calculation on all input mass streams to determine
+        """This method performs an optimization calculation on all input materials to determine
         the mass ratios that generate the correct fuel form for the reactor.  It then compiles 
-        the fuel and returns the resultant pyne.material. 
+        the fuel and returns the resultant material. 
 
-        Args:
-            * materials (dict): A dictionary whose keys are string labels and whose values are mass streams.  
-            * mass_weights_in (dict): A dictionary whose keys are the same as for materials
-              and whose values are the associated weight (float) for that stream.
-            * reactor (Reactor1G): An instance of a Reactor1G class to fabricate fuel for.
+        Parameters
+        ----------
+        materials : dict or None, optional
+            A dictionary whose keys are string labels and whose values are materials.  
+        mass_weights_in : dict or None, optional
+            A dictionary whose keys are the same as for materials and whose values are 
+            the associated weight (float) for that material.
+        reactor : Reactor1G or None, optional 
+            An instance of a Reactor1G class to fabricate fuel for.
 
-        Returns:
-            * core_input (Material): mat_prod.
+        Returns
+        -------
+        core_input : Material 
+            mat_prod
+
         """
         cdef Reactor1G r1g 
         cdef pyne.material._Material core_input = pyne.material.Material()

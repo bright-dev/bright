@@ -8,6 +8,10 @@ that all components take a material input, perform some operation on the input, 
 then return a material as output.  This class defines the elements common to all fuel cycle 
 components.  
 
+All functionality may be found in the ``fccomp`` module::
+
+    import bright.fccomp
+
 .. currentmodule:: bright.fccomp
 
 .. autoclass:: FCComp(paramlist=None, name="")

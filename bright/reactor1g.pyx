@@ -403,7 +403,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
     property di_F_:
         """The neutron destruction rate of each initial isotope in the core as a function of fluence. 
-         This is a dictionary whose keys are initial nuclides and whose values are vectors of floats.  
+        This is a dictionary whose keys are initial nuclides and whose values are vectors of floats.  
         This data has units of [n/s] and is read in from libfile."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).di_F_)
@@ -681,6 +681,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property dF_F_:
+        """The neutron destruction rate [n/s] of the fuel as a function of fluence.  
+        This is the linear combination of di_F_ for all initial nuclides using miF as weights."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).dF_F_)
 
@@ -689,6 +691,10 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property dC_F_:
+        """The neutron destruction rate [n/s] of the coolant as a function of fluence.  
+        This is the linear combination of di_F_ for all initial nuclides using miC as weights.  
+        If the disadvantage factor is used, then zeta_F_ is multiplied by the linear combination 
+        before being assigned to dC_F_."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).dC_F_)
 
@@ -697,6 +703,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property BU_F_:
+        """The reactor burnup [MWd/kgIHM] as a function of fluence.  This is the linear
+        combination of BUi_F_ for all initial nuclides using miF as weights."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).BU_F_)
 
@@ -705,6 +713,10 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property P_F_:
+        """The full-core neutron production rate [n/s] as a function of fluence.  This is the linear
+        combination of pi_F_ for all initial nuclides using miF as weights. (Note: the coolant does 
+        not have a production rate). The linear combination is subsequently multiplied by the 
+        non-leakage probability, P_NL, before being assigned to P_F_."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).P_F_)
 
@@ -713,6 +725,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property D_F_:
+        """The full-core neutron destruction rate [n/s] a function of fluence.  This is the
+        sum of dF_F_ and dC_F_."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).D_F_)
 
@@ -721,6 +735,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property k_F_:
+        """The multiplication factor of the core.  Calculated from P_F_ divided by D_F_.  
+        This attribute is unitless and not often used."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).k_F_)
 
@@ -729,6 +745,9 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property Mj_F_:
+        """The transmutation matrix of the fuel (specifically, mat_feed) into the jth nuclide 
+        as a function of fluence.  Used with the discharge fluence Fd to calculate mat_prod.  
+        This object is therefore a dictionary from zzaaam-integers to vectors of floats."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).Mj_F_)
 
@@ -737,6 +756,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property zeta_F_:
+        """The thermal disadvantage factor as a function of fluence.  This attribute is unitless 
+        and is set when calc_zeta is called."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).zeta_F_)
 
@@ -748,6 +769,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property fd:
+        """The lower index of the discharge fluence (int)."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).fd
 
@@ -756,6 +778,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property Fd:
+        """The discharge fluence [n/kb] (float).  May be used to calculate the amount of time 
+        that the fuel was irradiated."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).Fd
 
@@ -764,6 +788,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property BUd:
+        """The discharge burnup [MWd/kgIHM] (float).  Unless something went very wrong,
+        this should be rather close in value to target_BU."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).BUd
 
@@ -772,6 +798,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property k:
+        """This is the multiplication factor of the reactor at discharge.  This should be very close 
+        in value to 1.0."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).k
 
@@ -783,6 +811,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_feed_u:
+        """The input uranium material, mat_feed.sub_u()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_feed_u
@@ -793,6 +822,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_feed_tru:
+        """The input transuranic material, mat_feed.sub_tru()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_feed_tru
@@ -803,6 +833,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_feed_lan:
+        """The input lanthanide material, mat_feed.sub_lan()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_feed_lan
@@ -813,6 +844,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_feed_act:
+        """The input actininide material, mat_feed.sub_act()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_feed_act
@@ -823,6 +855,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_prod_u:
+        """The output urnaium material, mat_prod.sub_u()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_prod_u
@@ -833,6 +866,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_prod_tru:
+        """The output transuranic material, mat_prod.sub_tru()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_prod_tru
@@ -843,6 +877,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_prod_lan:
+        """The output lanthanide material, mat_prod.sub_lan()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_prod_lan
@@ -853,6 +888,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property mat_prod_act:
+        """The output actininide material, mat_prod.sub_act()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).mat_prod_act
@@ -865,6 +901,12 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property deltaR:
+        """The :math:`\delta R` value of the core with the current mat_feed.  This is equal 
+        to the production rate minus the destruction rate at the target burnup::
+
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
+
+        This is computed via the calc_deltaR() method."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).deltaR
 
@@ -873,6 +915,8 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property tru_cr:
+        """The transuranic conversion ratio of the reactor (float).  
+        This is set via the calc_tru_cr() method."""
         def __get__(self):
             return (<cpp_reactor1g.Reactor1G *> self._inst).tru_cr
 
@@ -884,6 +928,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property SigmaFa_F_:
+        """The fuel macroscopic absorption cross section [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).SigmaFa_F_)
 
@@ -892,6 +937,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property SigmaFtr_F_:
+        """The fuel macroscopic transport cross section [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).SigmaFtr_F_)
 
@@ -900,6 +946,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property kappaF_F_:
+        """One over the thermal diffusion length of the fuel [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).kappaF_F_)
 
@@ -911,6 +958,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property SigmaCa_F_:
+        """The coolant macroscopic absorption cross section [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).SigmaCa_F_)
 
@@ -919,6 +967,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property SigmaCtr_F_:
+        """The coolant macroscopic transport cross section [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).SigmaCtr_F_)
 
@@ -927,6 +976,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property kappaC_F_:
+        """One over the thermal diffusion length of the coolant [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).kappaC_F_)
 
@@ -938,6 +988,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property lattice_E_F_:
+        """The lattice function E(F)."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).lattice_E_F_)
 
@@ -946,6 +997,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property lattice_F_F_:
+        """The lattice function F(F)."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_F_)
 
@@ -961,9 +1013,11 @@ cdef class Reactor1G(fccomp.FCComp):
         """The initialize() method for reactors copies all of the reactor specific parameters to this instance.
         Additionally, it calculates and sets the volumes VF and VC.
 
-        Args:
-            * reactor_parameters (ReactorParameters): A special data structure that contains information
-              on how to setup and run the reactor.
+        Parameters
+        ----------
+        reactor_parameters : ReactorParameters 
+            A special data structure that contains information on how to setup and run the reactor.
+
         """
         cdef ReactorParameters rp = reactor_parameters
         (<cpp_reactor1g.Reactor1G *> self._inst).initialize(<cpp_reactor_parameters.ReactorParameters> rp.rp_pointer[0])
@@ -974,23 +1028,27 @@ cdef class Reactor1G(fccomp.FCComp):
         This method is typically called by the constructor of the child reactor type object.  It must be 
         called before attempting to do any real computation.
 
-        Args: 
-            * libfile (str): Path to the reactor library.
+        Parameters
+        ----------
+        libfile : str 
+            Path to the reactor library.
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).loadlib(std.string(libfile))
 
 
     def fold_mass_weights(self):
-        """This method performs the all-important task of doing the isotopically-weighted linear combination of raw data. 
-        In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
-        as the values of mat_feed.  The raw data must have previously been read in from loadlib().  
+        """This method performs the all-important task of doing the isotopically-weighted linear combination 
+        of raw data.  In a very real sense this is what makes this reactor *this specific reactor*.  The weights 
+        are taken as the values of mat_feed.  The raw data must have previously been read in from loadlib().  
 
-        .. warning::
+        Warnings
+        --------
+        Anytime any reactor parameter whatsoever (mat_feed, P_NL, *etc*) is altered in any way, 
+        the fold_mass_weights() function must be called to reset all of the resultant data.
+        If you are unsure, please call this function anyway to be safe.  There is no harm in calling 
+        this method multiple times.
 
-            Anytime any reactor parameter whatsoever (mat_feed, P_NL, *etc*) is altered in any way, 
-            the fold_mass_weights() function must be called to reset all of the resultant data.
-            If you are unsure, please call this function anyway to be safe.  There is little 
-            harm in calling it twice by accident.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).fold_mass_weights()
 
@@ -1028,9 +1086,9 @@ cdef class Reactor1G(fccomp.FCComp):
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_mat_prod()
 
-    def calcSubStreams(self):
-        """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
-        attributes:
+    def calc_sub_mats(self):
+        """This sets possibly relevant reactor input and output sub-materials.  Specifically, 
+        it computes the attributes:
 
             * mat_feed_u
             * mat_feed_tru
@@ -1042,16 +1100,21 @@ cdef class Reactor1G(fccomp.FCComp):
             * mat_prod_act
 
         """
-        (<cpp_reactor1g.Reactor1G *> self._inst).calcSubStreams()
+        (<cpp_reactor1g.Reactor1G *> self._inst).calc_sub_mats()
 
 
     def calc_tru_cr(self):
         """This calculates and sets the transuranic conversion ratio tru_cr through the equation:
 
-        .. math:: \mbox{tru_cr} = \frac{\mbox{mat_feed_tru.mass} - \mbox{mat_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: 
 
-        Returns:
-            * tru_cr (float): The value of the transuranic conversion ratio just calculated.
+            \\mbox{tru\_cr} = 1.0 - \\frac{\\mbox{mat\_feed\_tru.mass} - \\mbox{mat\_prod\_tru.mass}}{\\frac{\mbox{BUd}}{935.0}}
+
+        Returns
+        -------
+        tru_cr : float) 
+            The value of the transuranic conversion ratio just calculated.
+
         """
         return (<cpp_reactor1g.Reactor1G *> self._inst).calc_tru_cr()
 
@@ -1060,18 +1123,22 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def calc_deltaR(self, input=None):
-        """Calculates and sets the deltaR value of the reactor.  
-        This is equal to the production rate minus the destruction rate at the target burnup::
+        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        production rate minus the destruction rate at the target burnup::
 
             deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
 
-        Args:
-            * input (dict or Material): If input is present, it set as the component's 
-              mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a Material before being set as mat_feed.
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a isotopic 
+            dictionary (zzaaam keys, float values), this dictionary is first converted into a 
+            Material before being set as mat_feed.
 
-        Returns:
-            * deltaR (float): deltaR.
+        Returns
+        -------
+        deltaR : float 
+            deltaR value
         """
         cdef pyne.material._Material in_mat 
         cdef double deltaR 
@@ -1099,11 +1166,16 @@ cdef class Reactor1G(fccomp.FCComp):
             FP.F    #Fluence value itself (float)
             FP.m    #Slope dBU/dF between points f and f+1 (double)
 
-        Args:
-            * burnup (float): Burnup [MWd/kgIHM] at which to calculate the corresponding fluence.
+        Parameters
+        ----------
+        burnup : float 
+            Burnup [MWd/kgIHM] at which to calculate the corresponding fluence.
 
-        Returns:
-            * fp (FluencePoint): A class containing fluence information.
+        Returns
+        -------
+        fp : FluencePoint 
+            A class containing fluence information.
+
         """
         cdef FluencePoint fp = FluencePoint()
         fp.fp_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).fluence_at_BU(burnup)
@@ -1114,15 +1186,20 @@ cdef class Reactor1G(fccomp.FCComp):
         """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
         This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
 
-        Args:
-            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+        Parameters
+        ----------
+        BUd : float
+            The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+        PDk_flag : str , optional
+            Flag that determines whether the neutron production rate "P" [n/s],  the neutron destruction 
+            rate "D" [n/s], or the multiplication factor "K" is reported in the output.
 
-        Keyword Args:
-            * PDk_flag (string): Flag that determines whether the neutron production rate "P" [n/s], 
-              the neutron destruction rate "D" [n/s], or the multiplication factor "K" is reported in the output.
+        Returns
+        -------
+        PDk : float 
+            The batch averaged neutron production rate, neutron destruction rate, or the multiplication 
+            factor as determined by the input flag.
 
-        Returns:
-            * PDk (float): the batch averaged neutron production rate,
         """
         cdef double PDk = (<cpp_reactor1g.Reactor1G *> self._inst).batch_average(BUd, std.string(PDk_flag))
         return PDk
@@ -1131,11 +1208,16 @@ cdef class Reactor1G(fccomp.FCComp):
     def batch_average_k(self, double BUd):
         """Convenience function that calls batch_average(BUd, "K").
 
-        Args:
-            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+        Parameters
+        ----------
+        BUd : float 
+            The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
 
-        Returns:
-            * k (float): the batch averaged multiplication factor.
+        Returns
+        -------
+        k : float 
+            The batch averaged multiplication factor.
+
         """
         cdef double PDk = (<cpp_reactor1g.Reactor1G *> self._inst).batch_average_k(BUd)
         return PDk
@@ -1161,8 +1243,11 @@ cdef class Reactor1G(fccomp.FCComp):
             self.fold_mass_weights()
             self.BUd_bisection_method()
 
-        Args:
-            * pnl (float): The new non-leakage probability for the reactor.
+        Parameters
+        ----------
+        pnl : float 
+            The new non-leakage probability for the reactor.
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).run_P_NL(pnl)
     
@@ -1192,13 +1277,18 @@ cdef class Reactor1G(fccomp.FCComp):
         As you can see, all this function does is set burn an input stream to its maximum 
         discharge burnup and then reports on the output isotopics.
 
-        Args:
-            * input (dict or Material): If input is present, it set as the component's 
-              mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a Material before being set as mat_feed.
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a nuclide dictionary 
+            (zzaaam keys, float values), this dictionary is first converted into a Material before being 
+            set as mat_feed.
 
-        Returns:
-            * output (Material): mat_prod.
+        Returns
+        -------
+        output : Material 
+            mat_prod
+
         """
         cdef pyne.material._Material in_mat 
         cdef pyne.material._Material output = pyne.material.Material()
@@ -1221,9 +1311,13 @@ cdef class Reactor1G(fccomp.FCComp):
     def lattice_E_planar(self, double a, double b):
         """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
 
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_E_planar(a, b)
 
@@ -1231,9 +1325,13 @@ cdef class Reactor1G(fccomp.FCComp):
     def lattice_F_planar(self, double a, double b):
         """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
 
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_planar(a, b)
 
@@ -1241,9 +1339,13 @@ cdef class Reactor1G(fccomp.FCComp):
     def lattice_E_spherical(self, double a, double b):
         """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
 
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_E_spherical(a, b)
 
@@ -1251,9 +1353,13 @@ cdef class Reactor1G(fccomp.FCComp):
     def lattice_F_spherical(self, double a, double b):
         """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
 
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_spherical(a, b)
 
@@ -1261,9 +1367,13 @@ cdef class Reactor1G(fccomp.FCComp):
     def lattice_E_cylindrical(self, double a, double b):
         """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
 
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_E_cylindrical(a, b)
 
@@ -1271,9 +1381,13 @@ cdef class Reactor1G(fccomp.FCComp):
     def lattice_F_cylindrical(self, double a, double b):
         """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
 
-        Args:
-            * a (float): Fuel region radius equivalent [cm].
-            * b (float): Unit fuel cell pitch length equivalent [cm].
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_cylindrical(a, b)
 
@@ -1282,8 +1396,28 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def calc_zeta(self):
-        """This calculates the thermal disadvantage factor for the geometry specified by Lattice.  The results
-        are set to zeta_F_.
+        """This calculates the thermal disadvantage factor for the geometry specified by lattice_flag.  
+        The results are set to zeta_F_.  This is ostensibly done via the methodology detailed in Lamarsh's 
+        `Nuclear Reactor Theory <http://www.amazon.com/Introduction-Nuclear-Reactor-Theory-Lamarsh/dp/0894480405>`_.
+
+        Unfortunately, this formulation for the disadvantage factor is **only** valid in the case 
+        where a << b! Often times, modern (thermal) reactors do not satisfy this requirement.  We 
+        instead have a 'thin moderator'situation.
+
+        To fix this problem properly requires going to a multi-region diffusion/transport calculation.
+        Doing so is beyond the scope of Bright at this time and certainly beyond the aspirations of a
+        one-group methodology.  A strategy that is more in-line with current practice is to use the 
+        results of a more sophisticated method, interpolate over them, and use them here.
+
+        Thus in the case where 0.1 < VF/VC, where the fuel is greater than 10% of the coolant, the
+        above strategy is what is implemented. A baseline disadvantage factor is determined from 
+        data presented in "*Thermal disadvantage factor calculation by the multi-region collision 
+        probability method*" by B. Ozgener,  and H. A. Ozgener, Institute of Nuclear Energy, Istanbul 
+        Technical University 80626 Maslak, Istanbul, Turkey, Received 28 January 2003; accepted 20 May 2003.  
+        Available online 6 March 2004.  This baseline value happens to be a function of VF/VC.
+
+        The Lamarsh method is then used as a scaling factor on the baseline function to
+        account for variations in fuel composition and fluence.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta()
 

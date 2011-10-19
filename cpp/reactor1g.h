@@ -132,7 +132,7 @@ namespace bright {
     void calc_Mj_Fd_();
 
     void   calc_mat_prod();
-    void   calcSubStreams();
+    void   calc_sub_mats();
     double calc_tru_cr();
 
     double calc_deltaR();
