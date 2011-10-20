@@ -44,6 +44,7 @@ Contents
     :maxdepth: 1
 
     tutorial
+    usersguide/index
     libref/index
 
 =============

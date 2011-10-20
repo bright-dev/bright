@@ -215,7 +215,6 @@ All functionality may be found in the ``reactormg`` module::
     .. automethod:: calc_mat_prod()
     .. automethod:: calc_sub_mats()
     .. automethod:: calc_tru_cr()
-    .. automethod:: calc_deltaR(input=None)
     .. automethod:: fluence_at_BU(burnup)
     .. automethod:: batch_average_k(BUd)
     .. automethod:: BUd_bisection_method()
