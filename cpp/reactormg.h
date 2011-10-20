@@ -64,7 +64,7 @@ namespace bright {
     int B;        // Total number of fuel loading batches
     double flux;    // Flux used for Fluence
 
-    std::map<std::string, double> chemical_form_fuel; // Chemical form of Fuel as Dictionary.  Keys are elements or isotopes while values represent mass weights.  Denote heavy metal by key "IHM".
+    std::map<std::string, double> chemical_form_fuel; // Chemical form of Fuel as Dictionary.  Keys are elements or nuclides while values represent mass weights.  Denote heavy metal by key "IHM".
     std::map<std::string, double> chemical_form_clad; // Same a fuel chemical form but for cladding.  Should not have "IHM"
     std::map<std::string, double> chemical_form_cool; // Same a fuel chemical form but for coolant.  Should not have "IHM"
 
@@ -104,9 +104,9 @@ namespace bright {
 
 
     // Attributes read in from data library
-    nuc_set I;   // Set of isotopes that may be in mat_feed.
-    nuc_set J;   // Set of isotopes that may be in mat_prod.
-    nuc_set K;   // Set of isotopes that is the union of all isos in mat_feed and all isos in nuc_data
+    nuc_set I;   // Set of nuclides that may be in mat_feed.
+    nuc_set J;   // Set of nuclides that may be in mat_prod.
+    nuc_set K;   // Set of nuclides that is the union of all isos in mat_feed and all isos in nuc_data
 
     int K_num;
     iso_vec K_ord; // Lowest-to-highest order of J.
@@ -179,19 +179,19 @@ namespace bright {
     time_g lattice_F_tg;  // Lattuce function F
 
     iso_time_map T_it;             // Transformation Matrix [kg_i/kgIHM]
-    iso_time_g sigma_t_itg;        // Total cross section as a function of isotope and burn_time
-    iso_time_g sigma_a_itg;        // Absorption cross section as a function of isotope and burn_time
-    iso_time_g nubar_sigma_f_itg;    // Neutrons per fission times Fission cross section as a function of isotope and burn_time
-    iso_time_g chi_itg;            // Fission neutron energy spectrum as a function of isotope and burn_time
-    iso_time_gh sigma_s_itgh;      // Group to group scattering cross section as a function of isotope and burn_time
-    iso_time_g sigma_f_itg;        // Fission cross section as a function of isotope and burn_time
-    iso_time_g sigma_gamma_itg;    // Capture cross section as a function of isotope and burn_time
-    iso_time_g sigma_2n_itg;       // (n, 2n) cross section as a function of isotope and burn_time
-    iso_time_g sigma_3n_itg;       // (n, 3n) cross section as a function of isotope and burn_time
-    iso_time_g sigma_alpha_itg;    // (n, alpha) cross section as a function of isotope and burn_time
-    iso_time_g sigma_proton_itg;     // (n, proton) cross section as a function of isotope and burn_time
-    iso_time_g sigma_gamma_x_itg;    // Capture cross section (excited) as a function of isotope and burn_time
-    iso_time_g sigma_2n_x_itg;     // (n, 2n *) cross section as a function of isotope and burn_time
+    iso_time_g sigma_t_itg;        // Total cross section as a function of nuclide and burn_time
+    iso_time_g sigma_a_itg;        // Absorption cross section as a function of nuclide and burn_time
+    iso_time_g nubar_sigma_f_itg;    // Neutrons per fission times Fission cross section as a function of nuclide and burn_time
+    iso_time_g chi_itg;            // Fission neutron energy spectrum as a function of nuclide and burn_time
+    iso_time_gh sigma_s_itgh;      // Group to group scattering cross section as a function of nuclide and burn_time
+    iso_time_g sigma_f_itg;        // Fission cross section as a function of nuclide and burn_time
+    iso_time_g sigma_gamma_itg;    // Capture cross section as a function of nuclide and burn_time
+    iso_time_g sigma_2n_itg;       // (n, 2n) cross section as a function of nuclide and burn_time
+    iso_time_g sigma_3n_itg;       // (n, 3n) cross section as a function of nuclide and burn_time
+    iso_time_g sigma_alpha_itg;    // (n, alpha) cross section as a function of nuclide and burn_time
+    iso_time_g sigma_proton_itg;     // (n, proton) cross section as a function of nuclide and burn_time
+    iso_time_g sigma_gamma_x_itg;    // Capture cross section (excited) as a function of nuclide and burn_time
+    iso_time_g sigma_2n_x_itg;     // (n, 2n *) cross section as a function of nuclide and burn_time
 
 
     time_g Sigma_t_fuel_tg;        // Core-average Macroscopic total cross-section as a function of time and energy group
