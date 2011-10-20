@@ -9,7 +9,21 @@ from bright.reactormg import ReactorMG
 
 
 class OrigenReactorMG(ReactorMG):
-    """A multi-group reactor that replaces the transmutation step with origen."""
+    """A multi-group reactor that replaces the transmutation step with origen.  Daughter class of ReactorMG.
+
+    Parameters
+    ----------
+    tape9 : str or dict
+        A tape9 dictionary or a path to a TAPE9.INP file to be used as the default tape9 file.
+    reactor_parameters : ReactorParameters or None, optional 
+        A special data structure that contains information on how to setup and run the reactor.
+    track_params : set of str or None, optional 
+        A set of strings that represents what parameter data the reactor should store and set.  
+        Different reactor types may have different characteristic parameters that are of interest.
+    name : str, optional 
+        The name of the reactor fuel cycle component instance.
+
+    """
 
     def __init__(self, *args, **kwargs):
         tape9 = kwargs.pop('tape9', None)
@@ -28,7 +42,7 @@ class OrigenReactorMG(ReactorMG):
 
 
     def burnup_core(self):
-        """Overrides the burnup core functio so that we may intercept certain methods."""
+        """Overrides the burnup_core() method to appropriately intercept helper methods."""
 
         # prep the core
         self.init_core()
@@ -68,7 +82,7 @@ class OrigenReactorMG(ReactorMG):
 
 
     def assemble_transmutation_matrices(self):
-        """Reassemble transmutation matrices for ORIGEN."""
+        """Reassemble transmutation matrices as ORIGEN TAPE9 input."""
         K = self.K
         s = self.bt_s
         phi_t = self.phi_t
