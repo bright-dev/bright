@@ -328,7 +328,7 @@ namespace bright {
 
     void       calc_T_itd();
     void       calc_mat_prod();
-    void       calcSubStreams();
+    void       calc_sub_mats();
     double     calc_tru_cr();
 
     FluencePoint fluence_at_BU(double);

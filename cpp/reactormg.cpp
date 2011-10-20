@@ -2089,7 +2089,7 @@ void bright::ReactorMG::calc_mat_prod()
 
 
 
-void bright::ReactorMG::calcSubStreams()
+void bright::ReactorMG::calc_sub_mats()
 {
   //Sets possibly relevant reactor input and output substreams.
 

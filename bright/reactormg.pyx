@@ -1768,6 +1768,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property A_tgh:
+        """Absorprion matrix, as a function of time [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).A_tgh)
 
@@ -1776,6 +1777,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property F_tgh:
+        """Fission Matrix, as a function of time [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).F_tgh)
 
@@ -1784,6 +1786,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property A_inv_tgh:
+        """Inverse of absorprion matrix, as a function of time [cm]."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).A_inv_tgh)
 
@@ -1792,6 +1795,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property A_inv_F_tgh:
+        """Inverse of absorprion matrix mult by the fission matrix, as a function of time."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).A_inv_F_tgh)
 
@@ -1826,6 +1830,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property nearest_neighbors:
+        """Attribute that denotes the indices of the perturbation table which are closest to 
+        the current state of the reactor (ie densities, burn_time, etc)."""
         def __get__(self):
             return conv.vector_to_array_1d_int((<cpp_reactormg.ReactorMG *> self._inst).nearest_neighbors)
 
@@ -1838,6 +1844,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property k_t:
+        """Multiplication factor of the core as a function of time."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).k_t)
 
@@ -1849,6 +1856,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property td_n:
+        """Lower index of discharge time."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).td_n
 
@@ -1857,6 +1865,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property td:
+        """Discharge time [days]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).td
 
@@ -1865,6 +1874,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property BUd:
+        """Discharge Burnup [MWd/kgIHM]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).BUd
 
@@ -1873,6 +1883,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Phid:
+        """Discharge Fluence [n/kb]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).Phid
 
@@ -1881,6 +1892,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property k:
+        """Core multiplication factor."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).k
 
@@ -1893,6 +1905,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_feed_u:
+        """The input uranium material, mat_feed.sub_u()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_feed_u
@@ -1903,6 +1916,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_feed_tru:
+        """The input transuranic material, mat_feed.sub_tru()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_feed_tru
@@ -1913,6 +1927,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_feed_lan:
+        """The input lanthanide material, mat_feed.sub_lan()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_feed_lan
@@ -1923,6 +1938,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_feed_act:
+        """The input actininide material, mat_feed.sub_act()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_feed_act
@@ -1933,6 +1949,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_prod_u:
+        """The output urnaium material, mat_prod.sub_u()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_prod_u
@@ -1943,6 +1960,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_prod_tru:
+        """The output transuranic material, mat_prod.sub_tru()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_prod_tru
@@ -1953,6 +1971,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_prod_lan:
+        """The output lanthanide material, mat_prod.sub_lan()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_prod_lan
@@ -1963,6 +1982,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property mat_prod_act:
+        """The output actininide material, mat_prod.sub_act()."""
         def __get__(self):
             cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).mat_prod_act
@@ -1976,6 +1996,12 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property deltaR:
+        """The :math:`\delta R` value of the core with the current mat_feed.  This is equal 
+        to the production rate minus the destruction rate at the target burnup::
+
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
+
+        This is computed via the calc_deltaR() method."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).deltaR
 
@@ -1984,6 +2010,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property tru_cr:
+        """The transuranic conversion ratio of the reactor (float).  
+        This is set via the calc_tru_cr() method."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).tru_cr
 
@@ -2002,9 +2030,11 @@ cdef class ReactorMG(fccomp.FCComp):
         """The initialize() method for reactors copies all of the reactor specific parameters to this instance.
         Additionally, it calculates and sets the volumes VF and VC.
 
-        Args:
-            * reactor_parameters (ReactorParameters): A special data structure that contains information
-              on how to setup and run the reactor.
+        Parameters
+        ----------
+        reactor_parameters : ReactorParameters 
+            A special data structure that contains information on how to setup and run the reactor.
+
         """
         cdef ReactorParameters rp = reactor_parameters
         (<cpp_reactormg.ReactorMG *> self._inst).initialize(<cpp_reactor_parameters.ReactorParameters> rp.rp_pointer[0])
@@ -2015,8 +2045,11 @@ cdef class ReactorMG(fccomp.FCComp):
         This method is typically called by the constructor of the child reactor type object.  It must be 
         called before attempting to do any real computation.
 
-        Args: 
-            * libfile (str): Path to the reactor library.
+        Parameters
+        ----------
+        libfile : str, optional 
+            Path to the reactor library.
+
         """
         (<cpp_reactormg.ReactorMG *> self._inst).loadlib(std.string(libfile))
 
@@ -2040,12 +2073,12 @@ cdef class ReactorMG(fccomp.FCComp):
         In a very real sense this is what makes this reactor *this specific reactor*.  The weights are taken 
         as the values of mat_feed.  The raw data must have previously been read in from loadlib().  
 
-        .. warning::
-
-            Anytime any reactor parameter whatsoever (mat_feed, P_NL, *etc*) is altered in any way, 
-            the fold_mass_weights() function must be called to reset all of the resultant data.
-            If you are unsure, please call this function anyway to be safe.  There is little 
-            harm in calling it twice by accident.
+        Warnings
+        --------
+        Anytime any reactor parameter whatsoever (mat_feed, P_NL, *etc*) is altered in any way, 
+        the fold_mass_weights() function must be called to reset all of the resultant data.
+        If you are unsure, please call this function anyway to be safe.  There is little 
+        harm in calling it twice by accident.
         """
         (<cpp_reactormg.ReactorMG *> self._inst).fold_mass_weights()
 
@@ -2131,7 +2164,7 @@ cdef class ReactorMG(fccomp.FCComp):
         """
         (<cpp_reactormg.ReactorMG *> self._inst).calc_mat_prod()
 
-    def calcSubStreams(self):
+    def calc_sub_mats(self):
         """This sets possibly relevant reactor input and output substreams.  Specifically, it calculates the 
         attributes:
 
@@ -2145,16 +2178,19 @@ cdef class ReactorMG(fccomp.FCComp):
             * mat_prod_act
 
         """
-        (<cpp_reactormg.ReactorMG *> self._inst).calcSubStreams()
+        (<cpp_reactormg.ReactorMG *> self._inst).calc_sub_mats()
 
 
     def calc_tru_cr(self):
         """This calculates and sets the transuranic conversion ratio tru_cr through the equation:
 
-        .. math:: \mbox{tru_cr} = \frac{\mbox{mat_feed_tru.mass} - \mbox{mat_prod_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+        .. math:: \\mbox{tru\_cr} = \\frac{\\mbox{mat\_feed\_tru.mass} - \\mbox{mat\_prod\_tru.mass}}{\\frac{\\mbox{BUd}}{935.0}}
 
-        Returns:
-            * tru_cr (float): The value of the transuranic conversion ratio just calculated.
+        Returns
+        -------
+        tru_cr : float 
+            The value of the transuranic conversion ratio just calculated.
+
         """
         return (<cpp_reactormg.ReactorMG *> self._inst).calc_tru_cr()
 
@@ -2173,11 +2209,16 @@ cdef class ReactorMG(fccomp.FCComp):
             FP.F    #Fluence value itself (float)
             FP.m    #Slope dBU/dF between points f and f+1 (double)
 
-        Args:
-            * burnup (float): Burnup [MWd/kgIHM] at which to calculate the corresponding fluence.
+        Parameters
+        ----------
+        burnup : float 
+            Burnup [MWd/kgIHM] at which to calculate the corresponding fluence.
 
-        Returns:
-            * fp (FluencePoint): A class containing fluence information.
+        Returns
+        -------
+        fp : FluencePoint 
+            A class containing fluence information.
+
         """
         cdef FluencePoint fp = FluencePoint()
         fp.fp_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).fluence_at_BU(burnup)
@@ -2188,11 +2229,16 @@ cdef class ReactorMG(fccomp.FCComp):
         """Finds the batch average k(F) when at discharge burnup BUd.
         This function is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
 
-        Args:
-            * BUd (float): The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+        Parameters
+        ----------
+        BUd : float 
+            The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
 
-        Returns:
-            * k (float): the batch averaged multiplication factor.
+        Returns
+        -------
+        k : float 
+            The batch averaged multiplication factor.
+
         """
         cdef double k = (<cpp_reactormg.ReactorMG *> self._inst).batch_average_k(BUd)
         return k
@@ -2218,8 +2264,11 @@ cdef class ReactorMG(fccomp.FCComp):
             self.fold_mass_weights()
             self.BUd_bisection_method()
 
-        Args:
-            * pnl (float): The new non-leakage probability for the reactor.
+        Parameters
+        ----------
+        pnl : float 
+            The new non-leakage probability for the reactor.
+
         """
         (<cpp_reactormg.ReactorMG *> self._inst).run_P_NL(pnl)
     
@@ -2249,13 +2298,18 @@ cdef class ReactorMG(fccomp.FCComp):
         As you can see, all this function does is set burn an input stream to its maximum 
         discharge burnup and then reports on the output isotopics.
 
-        Args:
-            * input (dict or Material): If input is present, it set as the component's 
-              mat_feed.  If input is a isotopic dictionary (zzaaam keys, float values), this
-              dictionary is first converted into a Material before being set as mat_feed.
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a nuclide 
+            dictionary (zzaaam keys, float values), this dictionary is first converted into 
+            a Material before being set as mat_feed.
 
-        Returns:
-            * output (Material): mat_prod.
+        Returns
+        -------
+        output : Material 
+            mat_prod
+
         """
         cdef pyne.material._Material in_mat 
         cdef pyne.material._Material output = pyne.material.Material()

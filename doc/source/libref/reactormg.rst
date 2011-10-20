@@ -178,17 +178,16 @@ All functionality may be found in the ``reactormg`` module::
     .. autoattribute:: Sigma_proton_tg
     .. autoattribute:: Sigma_gamma_x_tg
     .. autoattribute:: Sigma_2n_x_tg
-
-    .. autoattribute:: dF_F_
-    .. autoattribute:: dC_F_
-    .. autoattribute:: BU_F_
-    .. autoattribute:: P_F_
-    .. autoattribute:: D_F_
-    .. autoattribute:: k_F_
-    .. autoattribute:: Mj_F_
-    .. autoattribute:: fd
-    .. autoattribute:: Fd
+    .. autoattribute:: A_tgh
+    .. autoattribute:: F_tgh
+    .. autoattribute:: A_inv_tgh
+    .. autoattribute:: A_inv_F_tgh
+    .. autoattribute:: nearest_neighbors
+    .. autoattribute:: k_t
+    .. autoattribute:: td_n
+    .. autoattribute:: td
     .. autoattribute:: BUd
+    .. autoattribute:: Phid
     .. autoattribute:: k
     .. autoattribute:: mat_feed_u
     .. autoattribute:: mat_feed_tru
@@ -200,38 +199,26 @@ All functionality may be found in the ``reactormg`` module::
     .. autoattribute:: mat_prod_act
     .. autoattribute:: deltaR
     .. autoattribute:: tru_cr
-    .. autoattribute:: SigmaFa_F_
-    .. autoattribute:: SigmaFtr_F_
-    .. autoattribute:: kappaF_F_
-    .. autoattribute:: SigmaCa_F_
-    .. autoattribute:: SigmaCtr_F_
-    .. autoattribute:: kappaC_F_
-    .. autoattribute:: lattice_E_F_
-    .. autoattribute:: lattice_F_F_
     .. automethod:: initialize(reactor_parameters)
     .. automethod:: loadlib(libfile="reactor.h5")
+    .. automethod:: interpolate_cross_sections()
+    .. automethod:: calc_mass_weights()
     .. automethod:: fold_mass_weights()
-    .. automethod:: calc_Mj_F_()
-    .. automethod:: calc_Mj_Fd_()
+    .. automethod:: assemble_multigroup_matrices()
+    .. automethod:: assemble_transmutation_matrices()
+    .. automethod:: calc_criticality()
+    .. automethod:: calc_transmutation()
+    .. automethod:: init_core()
+    .. automethod:: burnup_core()
+    .. automethod:: calc_nearest_neighbors()
+    .. automethod:: calc_T_itd()
     .. automethod:: calc_mat_prod()
     .. automethod:: calc_sub_mats()
     .. automethod:: calc_tru_cr()
     .. automethod:: calc_deltaR(input=None)
     .. automethod:: fluence_at_BU(burnup)
-    .. automethod:: batch_average(BUd, PDk_flag="K")
     .. automethod:: batch_average_k(BUd)
     .. automethod:: BUd_bisection_method()
     .. automethod:: run_P_NL(pnl)
     .. automethod:: calibrate_P_NL_to_BUd()
     .. automethod:: calc(input=None)
-    .. automethod:: lattice_E_planar(a, b)
-    .. automethod:: lattice_F_planar(a, b)
-    .. automethod:: lattice_E_spherical(a, b)
-    .. automethod:: lattice_F_spherical(a, b)
-    .. automethod:: lattice_E_cylindrical(a, b)
-    .. automethod:: lattice_F_cylindrical(a, b)
-    .. automethod:: calc_zeta()
-    .. automethod:: calc_zeta_planar()
-    .. automethod:: calc_zeta_spherical()
-    .. automethod:: calc_zeta_cylindrical()
-
