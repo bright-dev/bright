@@ -19,4 +19,8 @@ from bright.light_water_reactor1g import LightWaterReactor1G
 
 from bright.fast_reactor1g import FastReactor1G
 
+from bright.reactormg import ReactorMG
+
+from bright.origen_reactormg import OrigenReactorMG
+
 from bright.fuel_fabrication import FuelFabrication

@@ -41,22 +41,18 @@ import fccomp
 #######################
 
 cdef class ReactorMG(fccomp.FCComp):
-    """Multi-Group Reactor Fuel Cycle Component Class.  Daughter of bright.FCComp class.
+    """Multi-Group Reactor Fuel Cycle Component Class.  Daughter of FCComp class.
 
-    Args:
-        * reactor_parameters (ReactorParameters): A special data structure that contains information
-          on how to setup and run the reactor.
-        * track_params (string set): A set of strings that represents what parameter data the reactor should 
-          store and set.  Different reactor types may have different characteristic parameters that are of interest.
-        * name (str): The name of the reactor fuel cycle component instance.
+    Parameters
+    ----------
+    reactor_parameters : ReactorParameters or None, optional 
+        A special data structure that contains information on how to setup and run the reactor.
+    track_params : set of str or None, optional 
+        A set of strings that represents what parameter data the reactor should store and set.  
+        Different reactor types may have different characteristic parameters that are of interest.
+    name : str, optional 
+        The name of the reactor fuel cycle component instance.
 
-    Note that this automatically calls the public initialize() C function.
-
-    .. note:: 
-
-        Some data members and functions have names that end in '_F_'.  This indicates that these are a 
-        function of fluence, the time integral of the flux.  The '_Fd_' suffix implies that the data is 
-        evaluated at the discharge fluence.
     """
 
     def __cinit__(self, reactor_parameters=None, track_params=None, char * name="", *args, **kwargs):
@@ -103,6 +99,8 @@ cdef class ReactorMG(fccomp.FCComp):
     # ReactorMG attributes
 
     property B:
+        """This integer is the total number of batches in the fuel management scheme.  
+        B is typically indexed by b."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).B
 
@@ -111,6 +109,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property flux:
+        """The nominal flux value (float) that the library for this reactor type was generated with.  
+        Used to correctly weight batch-specific fluxes."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).flux
 
@@ -122,6 +122,15 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chemical_form_fuel:
+        """This is the chemical form of fuel as a dictionary or other mapping.  Keys are 
+        often strings that represent isotopes while values represent the corresponding 
+        mass weights.  The heavy metal concentration by the key "IHM".  
+        This will automatically fill in the nuclides in mat_feed for the "IHM" weight.  
+        For example, LWRs typically use a UOX fuel form::
+
+            ReactorMG.chemical_form_fuel = {"IHM": 1.0, "O16": 2.0}
+
+        """
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -160,6 +169,10 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chemical_form_clad:
+        """This is the chemical form of cladding as a dictionary or other mapping.  
+        This uses the same notation as fuel_form except that "IHM" is no longer 
+        a valid key.  Cladding is often made from some zircalloy.
+        """
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -198,6 +211,10 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chemical_form_cool:
+        """This is the chemical form of coolant as a dictionary or other mapping.  
+        This uses the same notation as fuel_form except that "IHM" is no longer 
+        a valid key.  The term 'coolant' is used in preference over the term 
+        'moderator' because not all reactors moderate neutrons."""
         def __get__(self):
             cdef conv._MapStrDouble proxy
 
@@ -238,6 +255,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property rho_fuel:
+        """The fuel region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).rho_fuel
 
@@ -246,6 +264,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property rho_clad:
+        """The cladding region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).rho_clad
 
@@ -254,6 +273,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property rho_cool:
+        """The coolant region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).rho_cool
 
@@ -265,6 +285,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property P_NL:
+        """The reactor's non-leakage probability (float).  This is often used as a calibration parameter."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).P_NL
 
@@ -273,6 +294,9 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property target_BU:
+        """The reactor's target discharge burnup (float).  This is given 
+        in units of [MWd/kgIHM].  Often the actual discharge burnup BUd does not 
+        quite hit this value, but comes acceptably close."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).target_BU
 
@@ -281,6 +305,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property specific_power:
+        """The specific power of the fuel (float) in units of [MW/kgIHM]"""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).specific_power
 
@@ -289,6 +314,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property burn_regions:
+        """Number of annular burn regions (int)."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).burn_regions
 
@@ -297,6 +323,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property S:
+        """Number of burnup time steps."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).S
 
@@ -305,6 +332,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property burn_time:
+        """Curent burnup time [d]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).burn_time
 
@@ -313,6 +341,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property bt_s:
+        """Curent burnup time index.  burn_time == burn_times[bt_s]"""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).bt_s
 
@@ -321,6 +350,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property burn_times:
+        """A non-negative, monotonically increasing numpy float array (C++ vector<double>) of burnup times [days]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).burn_times)
 
@@ -332,6 +362,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property use_zeta:
+        """Boolaean to determine whether the thermal disadvantage factor is employed or not.  
+        LWRs typically set this as True while FRs have a False value."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).use_zeta
 
@@ -340,6 +372,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property lattice_flag:
+        """Flag (str) that represents what lattice type the fuel assemblies are arranged in.  
+        Currently accepted values are "Planar", "Spherical", and "Cylindrical"."""
         def __get__(self):
             cdef std.string value = (<cpp_reactormg.ReactorMG *> self._inst).lattice_flag
             return value.c_str()
@@ -349,6 +383,13 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property rescale_hydrogen_xs:
+        """Boolean to determine whether the reactor should rescale the Hydrogen-1 destruction 
+        rate in the coolant as a function of fluence.  The scaling factor is calculated via the 
+        following equation
+
+            .. math:: f(F) = 1.36927 - 0.01119 \cdot BU(F)
+
+        This is typically not done for fast reactors but is a useful correction for LWRs."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).rescale_hydrogen_xs
 
@@ -357,6 +398,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property burnup_via_constant:
+        """Flag (str) for constant "flux" or "power" calculations."""
         def __get__(self):
             cdef std.string value = (<cpp_reactormg.ReactorMG *> self._inst).burnup_via_constant
             return value.c_str()
@@ -366,6 +408,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property branch_ratio_cutoff:
+        """The cutoff value (float) below which the bateman equations are not solved."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).branch_ratio_cutoff
 
@@ -377,6 +420,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property r_fuel:
+        """The radius (float) of the fuel region [cm]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).r_fuel
 
@@ -385,6 +429,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property r_void:
+        """The radius (float) of the void region [cm]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).r_void
 
@@ -393,6 +438,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property r_clad:
+        """The radius (float) of the cladding region [cm]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).r_clad
 
@@ -401,6 +447,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property pitch:
+        """The pitch or length (float) of the unit fuel pin cell [cm]."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).pitch
 
@@ -412,6 +459,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property S_O:
+        """The number of slots (float) in a fuel assembly that are open.  Thus this is the 
+        number of slots that do not contain a fuel pin and are instead filled in by coolant."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).S_O
 
@@ -420,6 +469,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property S_T:
+        """The total number of fuel pin slots (float) in a fuel assembly.  For a 17x17 bundle 
+        this is 289.0."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).S_T
 
@@ -428,6 +479,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property V_fuel:
+        """The relative fuel region volume."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).V_fuel
 
@@ -436,6 +488,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property V_clad:
+        """The relative cladding region volume."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).V_clad
 
@@ -444,6 +497,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property V_cool:
+        """The relative coolant region volume."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).V_cool
 
@@ -457,6 +511,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property libfile:
+        """The path (str) to the reactor data library; usually something like "lwr_mg.h5"."""
         def __get__(self):
             cdef std.string value = (<cpp_reactormg.ReactorMG *> self._inst).libfile
             return value.c_str()
@@ -470,6 +525,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property I:
+        """Set of nuclides that may be in mat_feed.  Indexed by i."""
         def __get__(self):
             cdef conv._SetInt proxy
 
@@ -497,6 +553,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property J:
+        """Set of nuclides that may be in mat_prod.  Indexed by j."""
         def __get__(self):
             cdef conv._SetInt proxy
 
@@ -524,6 +581,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property K:
+        """Set of nuclides that is the union of all nucs in mat_feed and all nucs in nuc_data.
+        Indexed by k."""
         def __get__(self):
             cdef conv._SetInt proxy
 
@@ -556,6 +615,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property K_num:
+        """Size of K set."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).K_num
 
@@ -564,6 +624,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property K_ord:
+        """Lowest-to-highest order of K."""
         def __get__(self):
             return conv.vector_to_array_1d_int((<cpp_reactormg.ReactorMG *> self._inst).K_ord)
 
@@ -572,6 +633,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property K_ind:
+        """Lowest-to-highest map of J into matrix position."""
         def __get__(self):
             cdef conv._MapIntInt proxy
 
@@ -651,6 +713,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property nperturbations:
+        """Number of rows in the pertubtaion table.  Indexed by p."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).nperturbations
 
@@ -659,6 +722,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property perturbed_fields:
+        """Mapping of the form {field_name: [min, max, delta]}."""
         def __get__(self):
             return conv.map_to_dict_str_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).perturbed_fields)
 
@@ -673,6 +737,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property G:
+        """Number of energy bins.  Indexed by g for incident neutrons and h for exiting neutrons."""
         def __get__(self):
             return (<cpp_reactormg.ReactorMG *> self._inst).G
 
@@ -681,6 +746,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property E_g:
+        """Energy bin boundaries [MeV].  Vector of doubles."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).E_g)
 
@@ -689,6 +755,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property phi_g:
+        """Group fluxes [n/s/cm^2] (ie flux per energy group)."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).phi_g)
 
@@ -697,6 +764,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property phi:
+        """Total flux [n/s/cm^2]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).phi)
 
@@ -705,6 +773,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Phi:
+        """Fluence [n/kb]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Phi)
 
@@ -713,6 +782,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property time0:
+        """Time steps used in data library [d]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).time0)
 
@@ -721,6 +791,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property BU0:
+        """Burnup vector used in data library [MWd/kgIHM]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).BU0)
 
@@ -733,6 +804,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Ti0:
+        """Data library's transmutation vector [kg_i]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Ti0)
 
@@ -741,6 +813,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_t_pg:
+        """Total cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_t_pg)
     
@@ -749,6 +822,7 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     property sigma_a_pg:
+        """Absorption cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_a_pg)
     
@@ -757,6 +831,7 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     property nubar_sigma_f_pg:
+        """Neutrons per fission times fission cross section from data library [n barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).nubar_sigma_f_pg)
 
@@ -765,6 +840,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chi_pg:
+        """Fission energy spectrum from data library [MeV]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).chi_pg)
     
@@ -773,6 +849,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_s_pgh:
+        """Group to group scattering cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_s_pgh)
 
@@ -781,6 +858,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_f_pg:
+        """Fission cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_f_pg)
     
@@ -789,6 +867,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_gamma_pg:
+        """Capture cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_gamma_pg)
     
@@ -797,6 +876,7 @@ cdef class ReactorMG(fccomp.FCComp):
     
 
     property sigma_2n_pg:
+        """(n, 2n) cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_2n_pg)
     
@@ -805,6 +885,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_3n_pg:
+        """(n, 3n) cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_3n_pg)
     
@@ -813,6 +894,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_alpha_pg:
+        """(n, alpha) cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_alpha_pg)
     
@@ -821,6 +903,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_proton_pg:
+        """(n, proton) cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_proton_pg)
     
@@ -829,6 +912,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_gamma_x_pg:
+        """Capture cross section (excited) from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_gamma_x_pg)
     
@@ -837,6 +921,7 @@ cdef class ReactorMG(fccomp.FCComp):
     
 
     property sigma_2n_x_pg:
+        """(n, 2n *) cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_2n_x_pg)
     
@@ -849,6 +934,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property A_HM_t:
+        """Atomic weight of heavy metal."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).A_HM_t)
 
@@ -857,6 +943,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property MW_fuel_t:
+        """Fuel Molecular Weight [amu]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).MW_fuel_t)
 
@@ -865,6 +952,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property MW_clad_t:
+        """Cladding Molecular Weight [amu]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).MW_clad_t)
 
@@ -873,6 +961,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property MW_cool_t:
+        """Coolant Molecular Weight [amu]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).MW_cool_t)
 
@@ -881,6 +970,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property n_fuel_it:
+        """Fuel Atom Number Weight."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).n_fuel_it)
 
@@ -889,6 +979,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property n_clad_it:
+        """Cladding Atom Number Weight."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).n_clad_it)
 
@@ -897,6 +988,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
     
     property n_cool_it:
+        """Coolant Atom Number Weight."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).n_cool_it)
 
@@ -905,6 +997,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property m_fuel_it:
+        """Fuel Mass Weight."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).m_fuel_it)
 
@@ -913,6 +1006,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property m_clad_it:
+        """Cladding Mass Weight."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).m_clad_it)
 
@@ -921,6 +1015,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
     
     property m_cool_it:
+        """Coolant Mass Weight."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).m_cool_it)
 
@@ -929,6 +1024,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property N_fuel_it:
+        """Fuel Number Density [atoms/cm^3]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).N_fuel_it)
 
@@ -937,6 +1033,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property N_clad_it:
+        """Cladding Number Density [atoms/cm^3]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).N_clad_it)
 
@@ -945,6 +1042,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
     
     property N_cool_it:
+        """Coolant Number Density [atoms/cm^3]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).N_cool_it)
 
@@ -959,15 +1057,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
 
-    property zeta_tg:
-        def __get__(self):
-            return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).zeta_tg)
-
-        def __set__(self, dict value):
-            (<cpp_reactormg.ReactorMG *> self._inst).zeta_tg = conv.array_to_vector_2d_dbl(value)
-
-
     property phi_tg:
+        """Group fluxes as a function of time [n/s/cm^2]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).phi_tg)
 
@@ -976,6 +1067,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property phi_t:
+        """Total flux as a function of time [n/s/cm^2]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).phi_t)
 
@@ -984,6 +1076,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Phi_t:
+        """Fluence as a function of time [n/kb]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Phi_t)
 
@@ -992,11 +1085,21 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property BU_t:
+        """Burnup as a function of time [MWd/kgIHM]."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).BU_t)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
             (<cpp_reactormg.ReactorMG *> self._inst).BU_t = conv.array_to_vector_1d_dbl(value)
+
+
+    property zeta_tg:
+        """Disadvantage factors per group as a function of time."""
+        def __get__(self):
+            return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).zeta_tg)
+
+        def __set__(self, dict value):
+            (<cpp_reactormg.ReactorMG *> self._inst).zeta_tg = conv.array_to_vector_2d_dbl(value)
 
 
 
@@ -1005,6 +1108,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property T_it:
+        """Transformation Matrix [kg_i/kgIHM]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_1d_dbl((<cpp_reactormg.ReactorMG *> self._inst).T_it)
 
@@ -1013,6 +1117,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_t_itg:
+        """Total cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_t_itg)
 
@@ -1021,6 +1126,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_a_itg:
+        """Absorption cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_a_itg)
 
@@ -1029,6 +1135,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property nubar_sigma_f_itg:
+        """Neutrons per fission times Fission cross section as a function of nuclide and burn_time [n barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).nubar_sigma_f_itg)
 
@@ -1037,6 +1144,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chi_itg:
+        """Fission neutron energy spectrum as a function of nuclide and burn_time [MeV]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).chi_itg)
 
@@ -1045,6 +1153,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_s_itgh:
+        """Group to group scattering cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_s_itgh)
 
@@ -1053,6 +1162,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_f_itg:
+        """Fission cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_f_itg)
 
@@ -1061,6 +1171,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_gamma_itg:
+        """Capture cross section as a function of nuclide and burn_time [barns]"""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_gamma_itg)
 
@@ -1069,6 +1180,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_2n_itg:
+        """(n, 2n) cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_2n_itg)
 
@@ -1077,6 +1189,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_3n_itg:
+        """(n, 3n) cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_3n_itg)
 
@@ -1085,6 +1198,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_alpha_itg:
+        """(n, alpha) cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_alpha_itg)
 
@@ -1093,6 +1207,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_proton_itg:
+        """(n, proton) cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_proton_itg)
 
@@ -1101,6 +1216,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_gamma_x_itg:
+        """Capture cross section (excited) as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_gamma_x_itg)
 
@@ -1109,6 +1225,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_2n_x_itg:
+        """(n, 2n *) cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_2n_x_itg)
 
@@ -1124,6 +1241,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_t_fuel_tg:
+        """Fuel-averaged macroscopic total cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_t_fuel_tg)
 
@@ -1132,6 +1250,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_a_fuel_tg:
+        """Fuel-averaged macroscopic absorption cross section as a function of time and energy group [1/cm]"""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_a_fuel_tg)
 
@@ -1140,6 +1259,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property nubar_Sigma_f_fuel_tg:
+        """Fuel-averaged nubar times the macroscopic fission cross-section as a function of time and energy group [n/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).nubar_Sigma_f_fuel_tg)
 
@@ -1148,6 +1268,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chi_fuel_tg:
+        """Fuel-averaged fission neutron energy spectrum as a function of time and energy group [MeV]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).chi_fuel_tg)
 
@@ -1156,6 +1277,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_s_fuel_tgh:
+        """Fuel-averaged macroscopic scattering kernel cross-section as a function of time [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_s_fuel_tgh)
 
@@ -1164,6 +1286,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_f_fuel_tg:
+        """Fuel-averaged macroscopic fission cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_f_fuel_tg)
 
@@ -1172,6 +1295,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_fuel_tg:
+        """Fuel-averaged macroscopic capture cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_fuel_tg)
 
@@ -1180,6 +1304,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_fuel_tg:
+        """Fuel-averaged macroscopic (n, 2n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_fuel_tg)
 
@@ -1188,6 +1313,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_3n_fuel_tg:
+        """Fuel-averaged macroscopic (n, 3n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_3n_fuel_tg)
 
@@ -1196,6 +1322,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_alpha_fuel_tg:
+        """Fuel-averaged macroscopic (n, alpha) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_alpha_fuel_tg)
 
@@ -1204,6 +1331,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_proton_fuel_tg:
+        """Fuel-averaged macroscopic proton cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_proton_fuel_tg)
 
@@ -1212,6 +1340,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_x_fuel_tg:
+        """Fuel-averaged macroscopic capture (excited) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_x_fuel_tg)
 
@@ -1220,6 +1349,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_fuel_tg:
+        """Fuel-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_fuel_tg)
 
@@ -1228,6 +1358,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property kappa_fuel_tg:
+        """Inverse of the fuel diffusion coefficent [1/cm^2]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).kappa_fuel_tg)
 
@@ -1243,6 +1374,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_t_clad_tg:
+        """Cladding-averaged macroscopic total cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_t_clad_tg)
 
@@ -1251,6 +1383,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_a_clad_tg:
+        """Cladding-averaged macroscopic absorption cross section as a function of time and energy group [1/cm]"""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_a_clad_tg)
 
@@ -1259,6 +1392,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property nubar_Sigma_f_clad_tg:
+        """Cladding-averaged nubar times the macroscopic fission cross-section as a function of time and energy group [n/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).nubar_Sigma_f_clad_tg)
 
@@ -1267,6 +1401,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chi_clad_tg:
+        """Cladding-averaged fission neutron energy spectrum as a function of time and energy group [MeV]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).chi_clad_tg)
 
@@ -1275,6 +1410,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_s_clad_tgh:
+        """Cladding-averaged macroscopic scattering kernel cross-section as a function of time [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_s_clad_tgh)
 
@@ -1283,6 +1419,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_f_clad_tg:
+        """Cladding-averaged macroscopic fission cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_f_clad_tg)
 
@@ -1291,6 +1428,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_clad_tg:
+        """Cladding-averaged macroscopic capture cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_clad_tg)
 
@@ -1299,6 +1437,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_clad_tg:
+        """Cladding-averaged macroscopic (n, 2n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_clad_tg)
 
@@ -1307,6 +1446,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_3n_clad_tg:
+        """Cldding-averaged macroscopic (n, 3n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_3n_clad_tg)
 
@@ -1315,6 +1455,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_alpha_clad_tg:
+        """Cladding-averaged macroscopic (n, alpha) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_alpha_clad_tg)
 
@@ -1323,6 +1464,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_proton_clad_tg:
+        """Cladding-averaged macroscopic proton cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_proton_clad_tg)
 
@@ -1331,6 +1473,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_x_clad_tg:
+        """Cladding-averaged macroscopic capture (excited) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_x_clad_tg)
 
@@ -1339,6 +1482,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_clad_tg:
+        """Cladding-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_clad_tg)
 
@@ -1347,6 +1491,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property kappa_clad_tg:
+        """Inverse of the cladding diffusion coefficent [1/cm^2]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).kappa_clad_tg)
 
@@ -1363,6 +1508,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_t_cool_tg:
+        """Coolant-averaged macroscopic total cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_t_cool_tg)
 
@@ -1371,6 +1517,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_a_cool_tg:
+        """Coolant-averaged macroscopic absorption cross section as a function of time and energy group [1/cm]"""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_a_cool_tg)
 
@@ -1379,6 +1526,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property nubar_Sigma_f_cool_tg:
+        """Coolant-averaged nubar times the macroscopic fission cross-section as a function of time and energy group [n/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).nubar_Sigma_f_cool_tg)
 
@@ -1387,6 +1535,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chi_cool_tg:
+        """Coolant-averaged fission neutron energy spectrum as a function of time and energy group [MeV]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).chi_cool_tg)
 
@@ -1395,6 +1544,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_s_cool_tgh:
+        """Coolant-averaged macroscopic scattering kernel cross-section as a function of time [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_s_cool_tgh)
 
@@ -1403,6 +1553,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_f_cool_tg:
+        """Coolant-averaged macroscopic fission cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_f_cool_tg)
 
@@ -1411,6 +1562,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_cool_tg:
+        """Coolant-averaged macroscopic capture cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_cool_tg)
 
@@ -1419,6 +1571,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_cool_tg:
+        """Coolant-averaged macroscopic (n, 2n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_cool_tg)
 
@@ -1427,6 +1580,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_3n_cool_tg:
+        """Coolant-averaged macroscopic (n, 3n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_3n_cool_tg)
 
@@ -1435,6 +1589,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_alpha_cool_tg:
+        """Coolant-averaged macroscopic (n, alpha) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_alpha_cool_tg)
 
@@ -1443,6 +1598,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_proton_cool_tg:
+        """Coolant-averaged macroscopic proton cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_proton_cool_tg)
 
@@ -1451,6 +1607,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_x_cool_tg:
+        """Coolant-averaged macroscopic capture (excited) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_x_cool_tg)
 
@@ -1459,6 +1616,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_cool_tg:
+        """Coolant-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_cool_tg)
 
@@ -1467,6 +1625,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property kappa_cool_tg:
+        """Inverse of the coolant diffusion coefficent [1/cm^2]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).kappa_cool_tg)
 
@@ -1485,6 +1644,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_t_tg:
+        """Core-averaged macroscopic total cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_t_tg)
 
@@ -1493,6 +1653,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_a_tg:
+        """Core-averaged macroscopic absorption cross section as a function of time and energy group [1/cm]"""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_a_tg)
 
@@ -1501,6 +1662,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property nubar_Sigma_f_tg:
+        """Core-averaged nubar times the macroscopic fission cross-section as a function of time and energy group [n/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).nubar_Sigma_f_tg)
 
@@ -1509,6 +1671,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property chi_tg:
+        """Core-averaged fission neutron energy spectrum as a function of time and energy group [MeV]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).chi_tg)
 
@@ -1517,6 +1680,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_s_tgh:
+        """Core-averaged macroscopic scattering kernel cross-section as a function of time [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_3d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_s_tgh)
 
@@ -1525,6 +1689,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_f_tg:
+        """Core-averaged macroscopic fission cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_f_tg)
 
@@ -1533,6 +1698,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_tg:
+        """Core-averaged macroscopic capture cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_tg)
 
@@ -1541,6 +1707,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_tg:
+        """Core-averaged macroscopic (n, 2n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_tg)
 
@@ -1549,6 +1716,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_3n_tg:
+        """Core-averaged macroscopic (n, 3n) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_3n_tg)
 
@@ -1557,6 +1725,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_alpha_tg:
+        """Core-averaged macroscopic (n, alpha) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_alpha_tg)
 
@@ -1565,6 +1734,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_proton_tg:
+        """Core-averaged macroscopic proton cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_proton_tg)
 
@@ -1573,6 +1743,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_gamma_x_tg:
+        """Core-averaged macroscopic capture (excited) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_gamma_x_tg)
 
@@ -1581,6 +1752,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_tg:
+        """Core-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_tg)
 

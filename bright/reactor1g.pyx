@@ -131,7 +131,7 @@ cdef class Reactor1G(fccomp.FCComp):
         This will automatically fill in the nuclides in mat_feed for the "IHM" weight.  
         For example, LWRs typically use a UOX fuel form::
 
-            ReactorParameters.fuel_form = {"IHM": 1.0, "O16": 2.0}
+            Reactor1G.fuel_chemical_form = {"IHM": 1.0, "O16": 2.0}
 
         """
         def __get__(self):

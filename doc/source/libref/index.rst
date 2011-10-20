@@ -28,6 +28,8 @@ The following modules and sub-packages comprise bright:
     reactor1g
     light_water_reactor1g
     fast_reactor1g
+    reactormg
+    origen_reactormg
     reprocess
     storage
 
