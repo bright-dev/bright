@@ -246,7 +246,7 @@ cdef extern from "reactormg.h" namespace "bright":
         void calc_T_itd() except +
 
         void calc_mat_prod() except +
-        void calcSubStreams() except +
+        void calc_sub_mats() except +
         double calc_tru_cr() except +
 
         FluencePoint fluence_at_BU(double) except +
