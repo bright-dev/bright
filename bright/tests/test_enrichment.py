@@ -380,18 +380,18 @@ def test_sample_feed():
     assert_almost_equal(e.mat_prod.comp[922350],  0.06,   5) 
     assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 5)
 
-    assert_almost_equal(e.mat_feed.mass   / 1.0,                 1.0)
-    assert_almost_equal(e.mat_prod.mass  / 0.11652173913043479, 1.0)
+    assert_almost_equal(e.mat_feed.mass / 1.0,                 1.0)
+    assert_almost_equal(e.mat_prod.mass / 0.11652173913043479, 1.0)
     assert_almost_equal(e.mat_tail.mass / 0.88347826086956527, 1.0)
 
-    assert_almost_equal(e.N / 26.92681830762287,  1.0, 4)
-    assert_almost_equal(e.M / 16.677607227634965, 1.0, 4)
+    assert_almost_equal(e.N / 26.8646352802, 1.0, 4)
+    assert_almost_equal(e.M / 16.6379009423, 1.0, 4)
 
-    assert_almost_equal(e.Mstar / 236.52972999999989, 1.0, 5)
+    assert_almost_equal(e.Mstar / 236.577085, 1.0, 5)
 
-    assert_almost_equal(e.TotalPerFeed  / 359.02324257153055,  1.0, 5)
-    assert_almost_equal(e.SWUperFeed    / 0.93228086408760513, 1.0, 5)
-    assert_almost_equal(e.SWUperProduct / 8.0009178634384011,  1.0, 5)
+    assert_almost_equal(e.TotalPerFeed  / 357.388791749,  1.0, 5)
+    assert_almost_equal(e.SWUperFeed    / 0.932280175218, 1.0, 5)
+    assert_almost_equal(e.SWUperProduct / 8.0009119515,  1.0, 5)
 
 
 @with_setup(setup_enrichment1, teardown_enrichment)
@@ -413,14 +413,14 @@ def test_NU():
     assert_almost_equal(e.mat_prod.mass  / 0.0989473684211, 1.0)
     assert_almost_equal(e.mat_tail.mass / 0.901052631579,  1.0)
 
-    assert_almost_equal(e.N / 27.245874769544688, 1.0, 4)
-    assert_almost_equal(e.M / 13.420267151618368, 1.0, 4)
+    assert_almost_equal(e.N / 27.1835088212, 1.0, 4)
+    assert_almost_equal(e.M / 13.3875092512, 1.0, 4)
 
-    assert_almost_equal(e.Mstar / 236.51480600000014, 1.0, 5)
+    assert_almost_equal(e.Mstar / 236.562179, 1.0, 5)
 
-    assert_almost_equal(e.TotalPerFeed  / 289.94789485489417,  1.0, 5)
-    assert_almost_equal(e.SWUperFeed    / 0.76126365178905142, 1.0, 5)
-    assert_almost_equal(e.SWUperProduct / 7.6936220127616908,  1.0, 5)
+    assert_almost_equal(e.TotalPerFeed  / 288.627270162,  1.0, 5)
+    assert_almost_equal(e.SWUperFeed    / 0.761263453429, 1.0, 5)
+    assert_almost_equal(e.SWUperProduct / 7.69362000806,  1.0, 5)
 
 
 @with_setup(setup_enrichment1, teardown_enrichment)
@@ -439,18 +439,21 @@ def test_VISION():
     assert_almost_equal(e.mat_prod.comp[922350],  0.055,   5) 
     assert_almost_equal(e.mat_tail.comp[922350], 0.0025, 5)
 
-    assert_almost_equal(e.mat_feed.mass   / 1.0,                 1.0)
-    assert_almost_equal(e.mat_prod.mass  / 0.10830030583196934, 1.0)
+    assert_almost_equal(e.mat_feed.mass / 1.0,                 1.0)
+    assert_almost_equal(e.mat_prod.mass / 0.10830030583196934, 1.0)
     assert_almost_equal(e.mat_tail.mass / 0.89169969416803063, 1.0)
 
     assert_almost_equal(e.N / 27.38162850698868, 1.0, 2)
     assert_almost_equal(e.M / 15.09646512546496, 1.0, 2)
 
-    assert_almost_equal(e.Mstar / 236.53026, 1.0, 4)
+    assert_almost_equal(e.Mstar / 236.581784, 1.0, 4)
 
-    assert_almost_equal(e.TotalPerFeed  / 328.39281411626348,  1.0, 4)
-    assert_almost_equal(e.SWUperFeed    / 0.8510218268267431,  1.0, 4)
-    assert_almost_equal(e.SWUperProduct / 7.8579817507360037,  1.0, 4)
+    print e.TotalPerFeed
+    print e.SWUperFeed
+    print e.SWUperProduct
+    assert_almost_equal(e.TotalPerFeed  / 326.895568684,  1.0, 4)
+    assert_almost_equal(e.SWUperFeed    / 0.85102089049,  1.0, 4)
+    assert_almost_equal(e.SWUperProduct / 7.85797310499,  1.0, 4)
 
 
 @with_setup(setup_enrichment1, teardown_enrichment)
@@ -482,18 +485,18 @@ def test_Tungsten():
     assert_almost_equal(e.mat_prod.comp[741800],  0.5109,  5) 
     assert_almost_equal(e.mat_tail.comp[741800], 0.00014, 5)
 
-    assert_almost_equal(e.mat_feed.mass   / 1.0,                   1.0)
-    assert_almost_equal(e.mat_prod.mass  / 0.0024669120526274574, 1.0)
+    assert_almost_equal(e.mat_feed.mass / 1.0,                   1.0)
+    assert_almost_equal(e.mat_prod.mass / 0.0024669120526274574, 1.0)
     assert_almost_equal(e.mat_tail.mass / 0.99753308794737272,   1.0)
 
     assert_almost_equal(e.N / 43.557515688533513, 1.0, 2)
     assert_almost_equal(e.M / 11.49556481009056,  1.0, 2)
 
-    assert_almost_equal(e.Mstar / 181.22106000000002, 1.0, 4)
+    assert_almost_equal(e.Mstar / 181.164592, 1.0, 4)
 
-    assert_almost_equal(e.TotalPerFeed  / 96.970110083845768, 1.0, 3)
-    assert_almost_equal(e.SWUperFeed    / 2.2218643574439323, 1.0, 3)
-    assert_almost_equal(e.SWUperProduct / 900.66622159370058, 1.0, 3)
+    assert_almost_equal(e.TotalPerFeed  / 96.8179316719, 1.0, 3)
+    assert_almost_equal(e.SWUperFeed    / 2.22221945305, 1.0, 3)
+    assert_almost_equal(e.SWUperProduct / 900.810164953, 1.0, 3)
 
 if __name__ == "__main__":
     nose.main()
