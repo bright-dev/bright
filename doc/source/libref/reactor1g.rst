@@ -126,4 +126,3 @@ All functionality may be found in the ``reactor1g`` module::
     .. automethod:: calc_zeta_cylindrical()
 
 
-.. _di_F: :attr:`Pick me <bright.reactor1g.Reactor1G.di_F_>`

@@ -43,7 +43,7 @@ Contents
 .. toctree::
     :maxdepth: 1
 
-    tutorial
+    usersguide/tutorial
     usersguide/index
     libref/index
 
