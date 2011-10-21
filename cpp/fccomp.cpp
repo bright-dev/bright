@@ -228,7 +228,7 @@ void bright::FCComp::calc_params ()
   // Placeholder function that sets the states of params_prior_calc and params_after_calc.
   for ( std::set<std::string>::iterator p2t = track_params.begin(); p2t != track_params.end(); p2t++)
   {
-    params_prior_calc[*p2t]  = 0.0;
+    params_prior_calc[*p2t] = 0.0;
     params_after_calc[*p2t] = 0.0;
   }
 };
@@ -391,8 +391,9 @@ void bright::FCComp::write()
   pass_num++;
 
   // Set the parameters for this pass.
-  if (!track_params.empty())
-    calc_params();
+  // Uncommenting breaks python inheritance
+  //if (!track_params.empty())
+  //  calc_params();
 
   // Writes the output table files.
   if (bright::write_text)

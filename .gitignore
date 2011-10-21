@@ -24,3 +24,5 @@ bright/tests/*.eps
 bright/tests/TAPE*
 bright/tests/*.tex
 bright/tests/*.h5
+
+examples/*.txt
