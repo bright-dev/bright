@@ -8,16 +8,16 @@ is to allow the user or developer to easily create their own custom components. 
 the existing functionality is to subclass existing components.  This may be done *either* on the C++ level
 or on the Python level.
 
-============
-FCComp Mixin
-============
+==================
+Subclassing FCComp
+==================
 The abstract base class for bright is the fuel cycle component :class:`FCComp <bright.fccomp.FCComp>`.
 This class handles much of the logic for initialization, I/O, and contains member variables which
 are common to all components.  To successfully subclass :class:`FCComp <bright.fccomp.FCComp>`, 
 the child class should override the following attributes and methods:
 
 * **track_params**: A set of strings used as keys in the params_prior_calc and params_after_calc
-  maps.  This denotes what parameters are fundementally important for this component to follow
+  maps.  This denotes what parameters are fundamentally important for this component to follow
   and determines which parameters are written to output.
 * **calc([input])**: A method which computes and returns the output material mat_prod given an input
   material mat_feed.  If input is not supplied as an argument to this function, the mat_feed material
@@ -83,7 +83,7 @@ You start out by subclassing :class:`FCComp <bright.fccomp.FCComp>`::
 
         # Override the calc_params() to set the appropriate parameter values
         def calc_params(self):
-            """Calculate farbrication parameters."""
+            """Calculate fabrication parameters."""
             self.params_prior_calc['g'] = self.g
             self.params_after_calc['g'] = self.g
 
@@ -106,4 +106,47 @@ You start out by subclassing :class:`FCComp <bright.fccomp.FCComp>`::
         # Set the parameters and display output
         gf.calc_params()
         gf.write()
+
+
+----------------
+Other Subclasses
+----------------
+Any of the other daughter classes of :class:`FCComp <bright.fccomp.FCComp>` may be subclassed
+and their behavior altered.  More sophisticated components may require additional methods or 
+attributes to be specified. In all cases, the three attributes above must be implemented.  
+
+An example of subclassing that has become part of the bright suite is the 
+:class:`OrigenReactorMG <bright.origen_reactormg.OrigenReactorMG>` component.  This class
+inherits from the standard :class:`ReactorMG <bright.reactormg.ReactorMG>` class and swaps 
+out the parent's transmutation methods with the an ORIGEN 2.2 based approach.  Please refer
+to the source code for more implementation details.
+
+----------
+Adaptation
+----------
+Another powerful feature of this subclassing approach is the ability to adapt the existing 
+classes to new use cases.  Suppose a pricing model (based on the mass of the output) is desired.
+Thus all components should have an associated price() method.  Thin subclasses which mix
+an adapter and the base classes can easily be defined.  For example::
+
+    from bright.api import *
+
+    # Adapter class
+
+    class PriceAdapter(object):
+        """I am useless on my own."""
+        def price(self):
+            return self.mat_prod.mass * 42.0
+
+
+    # Adapted classes
+
+    class PricedFCComp(FCComp, PriceAdapter):
+        pass
+
+    class PricedEnrichment(Enrichment, PriceAdapter):
+        pass
+
+    class PricedStorage(Storage, PriceAdapter):
+        pass
 
