@@ -42,7 +42,7 @@ class GundaniumFab(FCComp):
 
     # Override the calc_params() to set the appropriate parameter values
     def calc_params(self):
-        """Calculate farbrication parameters."""
+        """Calculate fabrication parameters."""
         self.params_prior_calc['g'] = self.g
         self.params_after_calc['g'] = self.g
 
