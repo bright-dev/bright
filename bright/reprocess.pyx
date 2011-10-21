@@ -70,7 +70,10 @@ cdef class Reprocess(fccomp.FCComp):
 
     """
 
-    def __cinit__(self, sepeff=None, char * name=""):
+    def __cinit__(self, *args, **kwargs):
+        self._sepeff = None
+
+    def __init__(self, sepeff=None, char * name="", *args, **kwargs):
         if sepeff is None:
             sepeff = {}
 
@@ -79,7 +82,6 @@ cdef class Reprocess(fccomp.FCComp):
             sepdict[convert_sepeff_key(key)] = val
         self._inst = new cpp_reprocess.Reprocess(conv.dict_to_map_int_dbl(sepdict), std.string(name))
 
-        self._sepeff = None
 
     #
     # Class Attributes

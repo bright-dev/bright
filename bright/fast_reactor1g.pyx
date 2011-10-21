@@ -53,7 +53,11 @@ cdef class FastReactor1G(reactor1g.Reactor1G):
 
     """
 
-    def __cinit__(self, libfile=None, reactor_parameters=None, char * name=""):
+    def __cinit__(self, *args, **kwargs):
+        pass
+
+
+    def __init__(self, libfile=None, reactor_parameters=None, char * name="", *args, **kwargs):
         cdef ReactorParameters rp
         cdef std.string cpp_name = std.string(name)
 

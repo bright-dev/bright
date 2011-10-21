@@ -187,7 +187,10 @@ cdef class Enrichment(fccomp.FCComp):
 
     """
 
-    def __cinit__(self, enrich_params=None, char * name=""):
+    def __cinit__(self, *args, **kwargs):
+        pass
+
+    def __init__(self, enrich_params=None, char * name="", *args, **kwargs):
         cdef EnrichmentParameters enr_par
 
         if enrich_params is None:

@@ -55,7 +55,19 @@ cdef class ReactorMG(fccomp.FCComp):
 
     """
 
-    def __cinit__(self, reactor_parameters=None, track_params=None, char * name="", *args, **kwargs):
+    def __cinit__(self, *args, **kwargs):
+        # Set property defaults
+        self._chemical_form_fuel = None
+        self._chemical_form_clad = None
+        self._chemical_form_cool = None
+
+        self._I = None
+        self._J = None
+        self._K = None
+
+        self._K_ind = None
+
+    def __init__(self, reactor_parameters=None, track_params=None, char * name="", *args, **kwargs):
         cdef ReactorParameters rp
         cdef std.string cpp_name = std.string(name)
 
@@ -79,17 +91,6 @@ cdef class ReactorMG(fccomp.FCComp):
 
             if track_params is not None:
                 raise TypeError("The track_params keyword must be a set of strings or None.  Got " + str(type(track_params)))
-
-        # Set property defaults
-        self._chemical_form_fuel = None
-        self._chemical_form_clad = None
-        self._chemical_form_cool = None
-
-        self._I = None
-        self._J = None
-        self._K = None
-
-        self._K_ind = None
 
 
     #

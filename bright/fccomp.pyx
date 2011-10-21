@@ -35,14 +35,24 @@ cdef class FCComp:
 
     Parameters
     ----------
-    paramlist : sequence of str, optional
+    params : sequence of str, optional
         A set of parameter names (str) that the component will track.
     name : str, optional
         The name of the fuel cycle component instance.
 
     """
 
-    def __cinit__(self, params=None, char * name="", *args, **kwargs):
+    def __cinit__(self, *args, **kwargs):
+        self._inst = NULL
+        self._free_inst = True
+
+        # property defaults
+        self._params_prior_calc = None
+        self._params_after_calc = None
+        self._track_params = None
+
+
+    def __init__(self, params=None, char * name="", *args, **kwargs):
         cdef cpp_set[std.string] param_set
 
         if params is None:
@@ -50,13 +60,6 @@ cdef class FCComp:
         else:
             param_set = conv.py_to_cpp_set_str(params)
             self._inst = new cpp_fccomp.FCComp(param_set, std.string(name))
-
-        self._free_inst = True
-
-        # property defaults
-        self._params_prior_calc = None
-        self._params_after_calc = None
-        self._track_params = None
 
 
     def __dealloc__(self):
