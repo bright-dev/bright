@@ -16,7 +16,7 @@ from Cython.Distutils import build_ext
         
 import numpy as np
 
-INFO = {'version': '0.5'}
+INFO = {'version': '0.51'}
 
 
 

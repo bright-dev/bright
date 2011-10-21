@@ -1,7 +1,7 @@
 ==================================
 Welcome to Bright's documentation!
 ==================================
-Bright is a nuclear fuel cycle code.  Bright is a pure C++ library that models many canonical 
+Bright is a nuclear fuel cycle code.  Bright is a C++ library that models many canonical 
 components such as reactors, storage facilities, and more. These components are then linked to one another using 
 the Material object from PyNE.  
 
@@ -9,10 +9,10 @@ Arbitrarily hooking together fuel cycle objects in C-code is usually an unwieldy
 has low computational overhead.  Bright, therefore, is simply a collection of object models that 
 allow another program to connect them.  The bright bindings enable this hooking to be done 
 in Python or C++.  Thus by using bright, Python itself becomes the fuel cycle interpreter while allowing the 
-heavy lifting of the models to be performed by the faster C++ code.
+heavy lifting of the models is performed by the faster C++ code.
 
-Since Bright fuel cycle objects will usually be called via Python, this documentation 
-serves for both interfaces.
+Since bright fuel cycle objects will usually be called via Python, this documentation 
+discusses the Python level, though it serves for both interfaces.
 
 Bright currently has the following external C++ dependencies:
 

@@ -48,8 +48,8 @@ copyright = u'2008 - 2011, Anthony Scopatz'
 # built documents.
 #
 # The short X.Y version.
-sys.path.insert(0, '../../python/')
-from setup_data import INFO
+sys.path.insert(0, '../../')
+from setup import INFO
 
 version = INFO['version']
 # The full version, including alpha/beta/rc tags.
@@ -186,7 +186,7 @@ htmlhelp_basename = 'brightdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'bright.tex', u'BriPy Documentation',
+  ('index', 'bright.tex', u'Bright Documentation',
    u'Anthony Scopatz', 'manual'),
 ]
 
