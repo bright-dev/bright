@@ -1,2 +1,2 @@
-INFO = {'version': '0.5'}
+INFO = {'version': '0.51'}
        
