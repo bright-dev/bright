@@ -322,19 +322,21 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     def calc_params(self):
-        """Here the parameters for FuelFabrication are set.  For example::
+        """Here the parameters for FuelFabrication are set.  
+        For example::
 
-            self.params_prior_calc["Weight_U235"]  = self.mass_weights_in["U235"]
-            self.Paramsout["Weight_U235"] = self.mass_weights_out["U235"]
+            self.params_prior_calc["Weight_U235"] = self.mass_weights_in["U235"]
+            self.params_after_calc["Weight_U235"] = self.mass_weights_out["U235"]
 
-            self.params_prior_calc["deltaR_U235"]  = self.deltaRs["U235"]
-            self.Paramsout["deltaR_U235"] = self.deltaRs["U235"]
+            self.params_prior_calc["deltaR_U235"] = self.deltaRs["U235"]
+            self.params_after_calc["deltaR_U235"] = self.deltaRs["U235"]
 
-            self.params_prior_calc["Weight_U238"]  = self.mass_weights_in["U238"]
-            self.Paramsout["Weight_U238"] = self.mass_weights_out["U238"]
+            self.params_prior_calc["Weight_U238"] = self.mass_weights_in["U238"]
+            self.params_after_calc["Weight_U238"] = self.mass_weights_out["U238"]
 
-            self.params_prior_calc["deltaR_U238"]  = self.deltaRs["U238"]
-            self.Paramsout["deltaR_U238"] = self.deltaRs["U238"]
+            self.params_prior_calc["deltaR_U238"] = self.deltaRs["U238"]
+            self.params_after_calc["deltaR_U238"] = self.deltaRs["U238"]
+
         """
         (<cpp_fccomp.FCComp *> self._inst).calc_params()
 

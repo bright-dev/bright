@@ -922,7 +922,7 @@ cdef class ReactorMG(fccomp.FCComp):
     
 
     property sigma_2n_x_pg:
-        """(n, 2n *) cross section from data library [barns]."""
+        """(n, 2n*) cross section from data library [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_2n_x_pg)
     
@@ -1226,7 +1226,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property sigma_2n_x_itg:
-        """(n, 2n *) cross section as a function of nuclide and burn_time [barns]."""
+        """(n, 2n*) cross section as a function of nuclide and burn_time [barns]."""
         def __get__(self):
             return conv.map_to_dict_int_vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).sigma_2n_x_itg)
 
@@ -1350,7 +1350,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_fuel_tg:
-        """Fuel-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
+        """Fuel-averaged macroscopic (n, 2n*) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_fuel_tg)
 
@@ -1483,7 +1483,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_clad_tg:
-        """Cladding-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
+        """Cladding-averaged macroscopic (n, 2n*) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_clad_tg)
 
@@ -1617,7 +1617,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_cool_tg:
-        """Coolant-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
+        """Coolant-averaged macroscopic (n, 2n*) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_cool_tg)
 
@@ -1753,7 +1753,7 @@ cdef class ReactorMG(fccomp.FCComp):
 
 
     property Sigma_2n_x_tg:
-        """Core-averaged macroscopic (n, 2n *) cross-section as a function of time and energy group [1/cm]."""
+        """Core-averaged macroscopic (n, 2n*) cross-section as a function of time and energy group [1/cm]."""
         def __get__(self):
             return conv.vector_to_array_2d_dbl((<cpp_reactormg.ReactorMG *> self._inst).Sigma_2n_x_tg)
 

@@ -684,7 +684,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
     property dF_F_:
         """The neutron destruction rate [n/s] of the fuel as a function of fluence.  
-        This is the linear combination of di_F_ for all initial nuclides using miF as weights."""
+        This is the linear combination of ``di_F_`` for all initial nuclides using miF as weights."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).dF_F_)
 
@@ -694,9 +694,9 @@ cdef class Reactor1G(fccomp.FCComp):
 
     property dC_F_:
         """The neutron destruction rate [n/s] of the coolant as a function of fluence.  
-        This is the linear combination of di_F_ for all initial nuclides using miC as weights.  
-        If the disadvantage factor is used, then zeta_F_ is multiplied by the linear combination 
-        before being assigned to dC_F_."""
+        This is the linear combination of ``di_F_`` for all initial nuclides using miC as weights.  
+        If the disadvantage factor is used, then ``zeta_F_`` is multiplied by the linear combination 
+        before being assigned to ``dC_F_``."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).dC_F_)
 
@@ -706,7 +706,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
     property BU_F_:
         """The reactor burnup [MWd/kgIHM] as a function of fluence.  This is the linear
-        combination of BUi_F_ for all initial nuclides using miF as weights."""
+        combination of ``BUi_F_`` for all initial nuclides using miF as weights."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).BU_F_)
 
@@ -716,9 +716,9 @@ cdef class Reactor1G(fccomp.FCComp):
 
     property P_F_:
         """The full-core neutron production rate [n/s] as a function of fluence.  This is the linear
-        combination of pi_F_ for all initial nuclides using miF as weights. (Note: the coolant does 
+        combination of ``pi_F_`` for all initial nuclides using miF as weights. (Note: the coolant does 
         not have a production rate). The linear combination is subsequently multiplied by the 
-        non-leakage probability, P_NL, before being assigned to P_F_."""
+        non-leakage probability, P_NL, before being assigned to ``P_F_``."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).P_F_)
 
@@ -728,7 +728,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
     property D_F_:
         """The full-core neutron destruction rate [n/s] a function of fluence.  This is the
-        sum of dF_F_ and dC_F_."""
+        sum of ``dF_F_`` and ``dC_F_``."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).D_F_)
 
@@ -737,7 +737,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     property k_F_:
-        """The multiplication factor of the core.  Calculated from P_F_ divided by D_F_.  
+        """The multiplication factor of the core.  Calculated from ``P_F_`` divided by ``D_F_``.  
         This attribute is unitless and not often used."""
         def __get__(self):
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).k_F_)
@@ -1059,14 +1059,14 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def calc_Mj_F_(self):
-        """This function calculates and sets the Mj_F_ attribute from mat_feed and the 
-        raw reactor data Tij_F_.
+        """This function calculates and sets the ``Mj_F_`` attribute from mat_feed and the 
+        raw reactor data ``Tij_F_``.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_Mj_F_()
 
 
     def calc_Mj_Fd_(self):
-        """This function evaluates Mj_F_ calculated from calc_Mj_F_() at the discharge fluence Fd.
+        """This function evaluates ``Mj_F_`` calculated from calc_Mj_F_() at the discharge fluence Fd.
         The resultant isotopic dictionary is then converted into the mat_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate mat_prod
         without going through calc(), use this function.
@@ -1311,7 +1311,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def lattice_E_planar(self, double a, double b):
-        """Calculates the lattice function E(F) for planar geometry.  Sets value as lattice_E_F_
+        """Calculates the lattice function E(F) for planar geometry.  Sets value as ``lattice_E_F_``.
 
         Parameters
         ----------
@@ -1325,7 +1325,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def lattice_F_planar(self, double a, double b):
-        """Calculates the lattice function F(F) for planar geometry.  Sets value as lattice_F_F_
+        """Calculates the lattice function F(F) for planar geometry.  Sets value as ``lattice_F_F_``.
 
         Parameters
         ----------
@@ -1339,7 +1339,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def lattice_E_spherical(self, double a, double b):
-        """Calculates the lattice function E(F) for spherical geometry.  Sets value as lattice_E_F_
+        """Calculates the lattice function E(F) for spherical geometry.  Sets value as ``lattice_E_F_``.
 
         Parameters
         ----------
@@ -1353,7 +1353,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def lattice_F_spherical(self, double a, double b):
-        """Calculates the lattice function F(F) for spherical geometry.  Sets value as lattice_F_F_
+        """Calculates the lattice function F(F) for spherical geometry.  Sets value as ``lattice_F_F_``.
 
         Parameters
         ----------
@@ -1367,7 +1367,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def lattice_E_cylindrical(self, double a, double b):
-        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as lattice_E_F_
+        """Calculates the lattice function E(F) for cylindrical geometry.  Sets value as ``lattice_E_F_``.
 
         Parameters
         ----------
@@ -1381,7 +1381,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
 
     def lattice_F_cylindrical(self, double a, double b):
-        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as lattice_F_F_
+        """Calculates the lattice function F(F) for cylindrical geometry.  Sets value as ``lattice_F_F_``.
 
         Parameters
         ----------
@@ -1399,7 +1399,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
     def calc_zeta(self):
         """This calculates the thermal disadvantage factor for the geometry specified by lattice_flag.  
-        The results are set to zeta_F_.  This is ostensibly done via the methodology detailed in Lamarsh's 
+        The results are set to ``zeta_F_``.  This is ostensibly done via the methodology detailed in Lamarsh's 
         `Nuclear Reactor Theory <http://www.amazon.com/Introduction-Nuclear-Reactor-Theory-Lamarsh/dp/0894480405>`_.
 
         Unfortunately, this formulation for the disadvantage factor is **only** valid in the case 
@@ -1426,21 +1426,21 @@ cdef class Reactor1G(fccomp.FCComp):
 
     def calc_zeta_planar(self):
         """This calculates the thermal disadvantage factor for a planar geometry.  The results
-        are set to zeta_F_.
+        are set to ``zeta_F_``.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_planar()
 
 
     def calc_zeta_spherical(self):
         """This calculates the thermal disadvantage factor for a spherical geometry.  The results
-        are set to zeta_F_.
+        are set to ``zeta_F_``.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_spherical()
 
 
     def calc_zeta_cylindrical(self):
         """This calculates the thermal disadvantage factor for a clyindrical geometry.  The results
-        are set to zeta_F_.
+        are set to ``zeta_F_``.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_cylindrical()
 
