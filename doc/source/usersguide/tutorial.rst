@@ -90,9 +90,9 @@ Thus the complete program of this nuclear fuel cycle simulation is provided belo
     lwr_data = data_dir + "/LWR.h5"
 
     # Customize output
-    bright.write_text(False)
-    bright.write_hdf5(True)
-    bright.load_track_nucs_hdf5(lwr_data)
+    bright_conf.write_text = False
+    bright_conf.write_hdf5 = True
+    load_track_nucs_hdf5(lwr_data)
     
     # Enrichment Calculation
     nu = Material({"U234": 0.000055, "U235": 0.0072, "U238": 0.992745})

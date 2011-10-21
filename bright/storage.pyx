@@ -40,9 +40,10 @@ cdef class Storage(fccomp.FCComp):
         The name of the storage fuel cycle component instance.
     """
 
-    #cdef cpp_fccomp.Storage * s_pointer
+    def __cinit__(self, *args, **kwargs):
+        pass
 
-    def __cinit__(self, char * name=""):
+    def __init__(self, char * name="", *args, **kwargs):
         self._inst = new cpp_storage.Storage(std.string(name))
 
 

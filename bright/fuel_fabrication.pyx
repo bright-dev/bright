@@ -74,7 +74,15 @@ cdef class FuelFabrication(fccomp.FCComp):
 
     """
 
-    def __cinit__(self, materials=None, mass_weights_in=None, reactor=None, track_params=None, char * name=""):
+    def __cinit__(self, *args, **kwargs):
+        # Set property defaults
+        self._materials = None
+        self._mass_weights_in = None
+        self._mass_weights_out = None
+        self._deltaRs = None
+
+
+    def __init__(self, materials=None, mass_weights_in=None, reactor=None, track_params=None, char * name="", *args, **kwargs):
         cdef std.string cpp_name = std.string(name)
         cdef Reactor1G r1g 
 
@@ -113,12 +121,6 @@ cdef class FuelFabrication(fccomp.FCComp):
 
             if track_params is not None:
                 raise TypeError("The track_params keyword must be a set of strings or None.  Got " + str(type(track_params)))
-
-        # Set property defaults
-        self._materials = None
-        self._mass_weights_in = None
-        self._mass_weights_out = None
-        self._deltaRs = None
 
 
     #
