@@ -8,173 +8,279 @@ std::string bright::BRIGHT_DATA = "";
 
 void bright::bright_start()
 {
-#ifdef _WIN32
+  #ifdef _WIN32
     char * tmpBRIGHT_DATA;
     size_t lenBRIGHT_DATA;
     errno_t errBRIGHT_DATA = _dupenv_s(&tmpBRIGHT_DATA, &lenBRIGHT_DATA, "BRIGHT_DATA");
     if (errBRIGHT_DATA) std::cout << "BRIGHT_DATA Enviromental Variable could not be found\n";
-    BRIGHT_DATA = (std::string) tmpBRIGHT_DATA;
-#else
+      BRIGHT_DATA = (std::string) tmpBRIGHT_DATA;
+  #else
     BRIGHT_DATA = getenv("BRIGHT_DATA");
+  #endif
+  return;
+};
+
+
+
+#ifdef _WIN32
+  int null_set [1] = {922350};
+  std::set<int> bright::track_nucs (null_set, null_set+1);
+  std::vector<int> bright::track_nucs_order (null_set, null_set+1);
+#else
+  int null_set [0] = {};
+  std::set<int> bright::track_nucs (null_set, null_set+0);
+  std::vector<int> bright::track_nucs_order (null_set, null_set+0);
 #endif
-    return;
+
+int bright::verbosity  = 0;
+int bright::write_text = 1;
+int bright::write_hdf5 = 0;
+
+std::string bright::output_filename = "fuel_cycle.h5";
+
+
+void bright::sort_track_nucs()
+{
+  track_nucs_order = std::vector<int> (track_nucs.begin(), track_nucs.end());
+  std::sort(track_nucs_order.begin(), track_nucs_order.end());
 };
 
-//String Transformations
-std::string bright::to_str (int t)
+
+
+void bright::load_track_nucs_hdf5(std::string filename, std::string datasetname, bool clear_prev)
 {
-    std::stringstream ss;
-    ss << t;
-    return ss.str();
-}
+  // Check that the file is there
+  if (!pyne::file_exists(filename))
+    throw pyne::FileNotFound(filename);
 
-std::string bright::to_str (double t)
-{
-    std::stringstream ss;
-    ss << t;
-    return ss.str();
-}
+  //Load values into track_nucs from an hdf5 file.
+  //If the dataspace name is not given, try some defaults.
+  int dslen = 14;
+  std::string defaultsets [14] = {
+    "/track_nucs",
+    "/Isos2Track",
+    "/isostrack",   
+    "/IsosTrack",
+    "/isotrack",   
+    "/IsoTrack",    
+    "/ToIso",
+    "/ToIsos",
+    "/ToIso_zz",
+    "/ToIso_MCNP",  
+    "/FromIso",  
+    "/FromIsos",  
+    "/FromIso_zz",
+    "/FromIso_MCNP"
+    };
 
-std::string bright::to_str (bool t)
-{
-    std::stringstream ss;
-    ss << t;
-    return ss.str();
-}
+  //Open file
+  H5::H5File isofile(filename, H5F_ACC_RDONLY);
 
-int bright::to_int (std::string s)
-{
-    return atoi( s.c_str() );
-}
+  //Open dataset
+  H5::DataSet isoset;
+  if (datasetname.length() != 0)
+    isoset = isofile.openDataSet(datasetname);
+  else
+  {
+    //Try to grab one of the default data sets
+    //...while suppressing HDF5 errors.
+    H5::FileIException not_found_error;
+    not_found_error.dontPrint();
 
-double bright::to_dbl (std::string s)
-{
-    return strtod( s.c_str(), NULL );
-}
-
-std::string bright::ToUpper(std::string strToConvert)
-{
-    //change each element of the string to upper case.
-    for(unsigned int i = 0; i < strToConvert.length(); i++)
-    {
-        strToConvert[i] = toupper(strToConvert[i]);
-    }
-    return strToConvert;
-}
-
-std::string bright::ToLower(std::string strToConvert)
-{
-    //change each element of the string to lower case
-    for(unsigned int i=0;i<strToConvert.length();i++)
-    {
-        strToConvert[i] = tolower(strToConvert[i]);
-    }
-    return strToConvert;
-}
-
-std::string bright::getFlag(char line[], int max_l)
-{
-    char tempflag [10];
-    for (int i = 0; i < max_l; i++)
-    {
-        if (line[i] == '\t' || line[i] == '\n' || line[i] == ' ' || line[i] == '\0')
-        {
-            tempflag[i] = '\0';
-            break;
-        }
-        else
-            tempflag[i] = line[i];
-    }
-    return std::string (tempflag);
-}
-
-std::string bright::Strip(std::string strToConvert, std::string strStrip)
-{
-    //change each element of the string to lower case
-    int n_found = strToConvert.find(strStrip);
-    while ( 0 <= n_found )
-    {
-        strToConvert.erase( n_found , strStrip.length() );
-        n_found = strToConvert.find(strStrip);
-    }
-    return strToConvert;
-}
-
-std::string bright::MultiStrip(std::string strToConvert, std::string strMultiStrip)
-{
-    //change each element of the string to lower case
-    for (int i = 0; i < strMultiStrip.length(); i++ )
-    {
-        strToConvert = Strip(strToConvert, strMultiStrip.substr(i, 1) );
-    }
-    return strToConvert;
-}
-
-std::string bright::StrictReplaceAll(std::string strToAlter, std::string subToRemove, std::string subToPlace)
-{
-    int n_found = strToAlter.find(subToRemove);
-    while ( 0 <= n_found )
-    {
-        strToAlter.replace( n_found , subToRemove.length(), subToPlace );
-        n_found = strToAlter.find(subToRemove);
-    }
-    return strToAlter;
-};
-
-std::string bright::LastChar(std::string s)
-{
-    //Returns the last character in a string.
-    return s.substr(s.length()-1, 1);
-}
-
-std::string bright::SubFromEnd(std::string s, int n, int l)
-{
-    //Returns the splice of a string using negative indices.
-    return s.substr(s.length()+n, l);
-}
-
-bool bright::ChainGreaterCompare(int a, int b, int c)
-{
-    //returns true id a <= b <= c and flase otherwise.
-    return (a <= b && b <= c); 
-}
-
-bool bright::SubInString(std::string s, std::string sub)
-{
-    //Returns a boolean based on if the sub is in s.
-    int n = s.find(sub);
-    return ( 0 <= n && n < s.length() );
-}
-
-std::string bright::natural_naming(std::string name)
-{
-    std::string nat_name (name);
-
-    //Replace Whitespace characters with underscores
-    nat_name = bright::StrictReplaceAll(nat_name, " ",  "_");
-    nat_name = bright::StrictReplaceAll(nat_name, "\t", "_");
-    nat_name = bright::StrictReplaceAll(nat_name, "\n", "_");
-
-    //Remove non-word characters
     int n = 0;
-    while ( n < nat_name.length() )
+    while (n < dslen)
     {
-        if ( bright::words.find(nat_name[n]) == std::string::npos )
-            nat_name.erase(n, 1);
-        else
-            n++;
-    }
+      try {  
+        isoset = isofile.openDataSet(defaultsets[n]);
+        break;
+      }
+      catch(H5::FileIException not_found_error)
+      {
+      };
+      n++;
+    };
+    if (n == dslen)
+      throw H5::FileIException("load_track_nucs", "Dataset not found!");
+  };
 
-    //Make sure that the name in non-empty before continuing
-    if (nat_name.length() == 0)
-        return nat_name;
+  //Read in isos from dataset.
+  H5::DataSpace isospace = isoset.getSpace();
+  hsize_t isolen[1];
+  int isodim = isospace.getSimpleExtentDims(isolen, NULL);
 
-    // Make sure that the name doesn't begin with a number.
-    if ( bright::digits.find(nat_name[0]) != std::string::npos)
-        nat_name.insert(0, "_"); 
+  //Try native int data type first
+  #ifdef _WIN32
+    // Windows VC++ doesn't accept variable length arrays!
+    // So let's make the read in array greater than the number of known isotopes...
+    int         iso_out_int [5000];
+  #else
+    int         iso_out_int [isolen[0]];
+  #endif
+  isoset.read(iso_out_int, H5::PredType::NATIVE_INT);
+  //Maybe add other data types in the future... 
 
-    return nat_name;
+  //Clear previous entries
+  if (clear_prev)
+    track_nucs.clear();
+
+  //load into track_nucs
+  for(int n = 0; n < isolen[0]; n++)
+    track_nucs.insert(pyne::nucname::zzaaam(iso_out_int[n]));
+
+  // Sort the results
+  sort_track_nucs();
 };
+
+void bright::load_track_nucs_text(std::string filename, bool clear_prev)
+{
+  // Check that the file is there
+  if (!pyne::file_exists(filename))
+    throw pyne::FileNotFound(filename);
+
+  //Clear previous entries
+  if (clear_prev)
+    track_nucs.clear();
+
+  //open file
+  std::fstream isofile;
+  isofile.open(filename.c_str(), std::fstream::in);
+
+  char isoraw [20];
+  std::string isostr;
+  while (!isofile.eof())
+  {
+    isofile.width(20);
+    isofile >> isoraw;
+    isostr.assign(isoraw);
+    isostr = pyne::remove_characters(isostr, "()[],.;{}!#|");
+    track_nucs.insert(pyne::nucname::zzaaam(isostr));
+  };
+
+  //close file
+  isofile.close();
+
+  // Sort the results
+  sort_track_nucs();
+};
+
+
+
+
+//
+// Some HDF5 helpers
+//
+H5::StrType bright::iso_LL_type = H5::StrType(0, 6);
+
+hsize_t bright::cinder_g_dims [1] = {63};
+H5::ArrayType bright::cinder_g_type = H5::ArrayType(H5::PredType::NATIVE_DOUBLE, 1, bright::cinder_g_dims);
+
+
+
+//
+// Isotopic decay HDF5 interface
+//
+
+H5::CompType bright::make_decay_iso_desc()
+{
+  //  Makes a decay isotope compound datatype
+  H5::CompType didesc( sizeof(decay_iso_struct) );
+
+  didesc.insertMember( "from_iso_LL", HOFFSET(decay_iso_struct, from_iso_LL), bright::iso_LL_type);
+  didesc.insertMember( "from_iso_zz", HOFFSET(decay_iso_struct, from_iso_zz), H5::PredType::NATIVE_INT);
+
+  didesc.insertMember( "half_life", HOFFSET(decay_iso_struct, half_life), H5::PredType::NATIVE_DOUBLE);
+  didesc.insertMember( "decay_const", HOFFSET(decay_iso_struct, decay_const), H5::PredType::NATIVE_DOUBLE);
+
+  didesc.insertMember( "to_iso_LL", HOFFSET(decay_iso_struct, to_iso_LL), bright::iso_LL_type);
+  didesc.insertMember( "to_iso_zz", HOFFSET(decay_iso_struct, to_iso_zz), H5::PredType::NATIVE_INT);
+
+  didesc.insertMember( "branch_ratio", HOFFSET(decay_iso_struct, branch_ratio), H5::PredType::NATIVE_DOUBLE);
+ 
+  return didesc;
+};
+
+H5::CompType bright::decay_iso_desc = bright::make_decay_iso_desc();
+
+
+
+//
+// Fission Product HDF5 interface
+//
+
+H5::CompType bright::make_fission_desc()
+{
+  //  Makes a fission compound datatype
+  H5::CompType fdesc( sizeof(fission_struct) );
+
+  fdesc.insertMember( "iso_LL", HOFFSET(fission_struct, iso_LL), bright::iso_LL_type);
+  fdesc.insertMember( "iso_zz", HOFFSET(fission_struct, iso_zz), H5::PredType::NATIVE_INT);
+
+  fdesc.insertMember( "thermal_yield", HOFFSET(fission_struct, thermal_yield), H5::PredType::NATIVE_INT8);
+  fdesc.insertMember( "fast_yield", HOFFSET(fission_struct, fast_yield), H5::PredType::NATIVE_INT8);
+  fdesc.insertMember( "high_energy_yield", HOFFSET(fission_struct, high_energy_yield), H5::PredType::NATIVE_INT8);
+
+  fdesc.insertMember( "xs", HOFFSET(fission_struct, xs), bright::cinder_g_type);
+ 
+  return fdesc;
+};
+
+H5::CompType bright::fission_desc = bright::make_fission_desc();
+
+
+
+H5::CompType bright::make_fission_product_yields_desc()
+{
+  //  Makes a decay isotope compound datatype
+  H5::CompType fpydesc( sizeof(fission_product_yields_struct) );
+
+  fpydesc.insertMember( "index", HOFFSET(fission_product_yields_struct, index), H5::PredType::NATIVE_INT16);
+
+  fpydesc.insertMember( "from_iso_LL", HOFFSET(fission_product_yields_struct, from_iso_LL), bright::iso_LL_type);
+  fpydesc.insertMember( "from_iso_zz", HOFFSET(fission_product_yields_struct, from_iso_zz), H5::PredType::NATIVE_INT);
+
+  fpydesc.insertMember( "to_iso_LL", HOFFSET(fission_product_yields_struct, to_iso_LL), bright::iso_LL_type);
+  fpydesc.insertMember( "to_iso_zz", HOFFSET(fission_product_yields_struct, to_iso_zz), H5::PredType::NATIVE_INT);
+
+  fpydesc.insertMember( "mass_frac", HOFFSET(fission_product_yields_struct, mass_frac), H5::PredType::NATIVE_DOUBLE);
+ 
+  return fpydesc;
+};
+
+H5::CompType bright::fission_product_yields_desc = bright::make_fission_product_yields_desc();
+
+
+
+
+
+H5::CompType bright::make_xs_1g_desc()
+{
+  //  Makes a decay isotope compound datatype
+  H5::CompType xs1gdesc( sizeof(xs_1g_struct) );
+
+  xs1gdesc.insertMember( "iso_LL", HOFFSET(xs_1g_struct, iso_LL), bright::iso_LL_type);
+  xs1gdesc.insertMember( "iso_zz", HOFFSET(xs_1g_struct, iso_zz), H5::PredType::NATIVE_INT);
+
+  xs1gdesc.insertMember( "sigma_t", HOFFSET(xs_1g_struct, sigma_t), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_s", HOFFSET(xs_1g_struct, sigma_s), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_e", HOFFSET(xs_1g_struct, sigma_e), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_i", HOFFSET(xs_1g_struct, sigma_i), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_a", HOFFSET(xs_1g_struct, sigma_a), H5::PredType::NATIVE_DOUBLE);
+
+  xs1gdesc.insertMember( "sigma_gamma", HOFFSET(xs_1g_struct, sigma_gamma), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_f", HOFFSET(xs_1g_struct, sigma_f), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_alpha", HOFFSET(xs_1g_struct, sigma_alpha), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_proton", HOFFSET(xs_1g_struct, sigma_proton), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_duet", HOFFSET(xs_1g_struct, sigma_duet), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_trit", HOFFSET(xs_1g_struct, sigma_trit), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_2n", HOFFSET(xs_1g_struct, sigma_2n), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_3n", HOFFSET(xs_1g_struct, sigma_3n), H5::PredType::NATIVE_DOUBLE);
+  xs1gdesc.insertMember( "sigma_4n", HOFFSET(xs_1g_struct, sigma_4n), H5::PredType::NATIVE_DOUBLE);
+ 
+  return xs1gdesc;
+};
+
+H5::CompType bright::xs_1g_desc = bright::make_xs_1g_desc();
+
 
 
 
@@ -184,19 +290,17 @@ std::string bright::natural_naming(std::string name)
 
 std::vector<double> bright::delta_vector(double x, std::vector<double> vec)
 {
-    // This functions finds the 
-    // value of (x - vec[i]) for all elements i 
-    // in the vector.
-    std::vector<double> d (vec.size(), 0.0);
+  // This functions finds the 
+  // value of (x - vec[i]) for all elements i 
+  // in the vector.
+  std::vector<double> d (vec.size(), 0.0);
 
-    // Calculate the normalized delta for 
-    // all i elements.
-    for(int i = 0; i < vec.size(); i++)
-    {
-        d[i] = (x - vec[i]);
-    };
+  // Calculate the normalized delta for 
+  // all i elements.
+  for(int i = 0; i < vec.size(); i++)
+    d[i] = (x - vec[i]);
 
-    return d;
+  return d;
 };
 
 
@@ -205,41 +309,39 @@ std::vector<double> bright::delta_vector(double x, std::vector<double> vec)
 
 std::vector<double> bright::normalized_delta(double x, std::vector<double> vec)
 {
-    // This functions find the normalized 
-    // value of (x - vec[i]) for all elements i 
-    // in the vector.
-    //
-    // This is equivelent to the fraction:
-    //     (x - vec[i])
-    //     ------------
-    //      norm_factor
-    //
-    // Where the normalization factor is 
-    //   norm_factor = (vec_max - vec_min) 
-    // if the min does not equal the max.
-    // and norm_factor = vec_min = vec_max 
-    // if it does.
+  // This functions find the normalized 
+  // value of (x - vec[i]) for all elements i 
+  // in the vector.
+  //
+  // This is equivelent to the fraction:
+  //     (x - vec[i])
+  //     ------------
+  //      norm_factor
+  //
+  // Where the normalization factor is 
+  //   norm_factor = (vec_max - vec_min) 
+  // if the min does not equal the max.
+  // and norm_factor = vec_min = vec_max 
+  // if it does.
 
-    double norm_factor;
-    std::vector<double> nd (vec.size(), 0.0);
+  double norm_factor;
+  std::vector<double> nd (vec.size(), 0.0);
 
-    // Get the min and max out of the vector
-    double vec_min = *std::min_element(vec.begin(), vec.end());
-    double vec_max = *std::max_element(vec.begin(), vec.end());
+  // Get the min and max out of the vector
+  double vec_min = *std::min_element(vec.begin(), vec.end());
+  double vec_max = *std::max_element(vec.begin(), vec.end());
 
-    if (vec_min == vec_max)
-        norm_factor = vec_min;
-    else
-        norm_factor = vec_max - vec_min;
+  if (vec_min == vec_max)
+    norm_factor = vec_min;
+  else
+    norm_factor = vec_max - vec_min;
 
-    // Calculate the normalized delta for 
-    // all i elements.
-    for(int i = 0; i < vec.size(); i++)
-    {
-        nd[i] = (x - vec[i]) / norm_factor;
-    };
+  // Calculate the normalized delta for 
+  // all i elements.
+  for(int i = 0; i < vec.size(); i++)
+    nd[i] = (x - vec[i]) / norm_factor;
 
-    return nd;
+  return nd;
 };
 
 
@@ -248,31 +350,27 @@ std::vector<double> bright::normalized_delta(double x, std::vector<double> vec)
 
 bool bright::sorted_index_comparator(std::pair<int, double> i, std::pair<int, double> j)
 {
-    return i.second < j.second;
+  return i.second < j.second;
 };
 
 
 std::vector<int> bright::sorted_index(std::vector<double> vec)
 {
-    // Make an indexed vector
-    int I = vec.size();
-    std::vector< std::pair<int, double> > ind_vec (I);
-    for (int i = 0; i < I; i++)
-    {
-        ind_vec[i] = std::pair<int, double>(i, vec[i]);
-    };
+  // Make an indexed vector
+  int I = vec.size();
+  std::vector< std::pair<int, double> > ind_vec (I);
+  for (int i = 0; i < I; i++)
+    ind_vec[i] = std::pair<int, double>(i, vec[i]);
 
-    // Sort the indexed vector
-    std::sort(ind_vec.begin(), ind_vec.end(), sorted_index_comparator);
+  // Sort the indexed vector
+  std::sort(ind_vec.begin(), ind_vec.end(), sorted_index_comparator);
 
-    // Grab the indicies out of ind_vec
-    std::vector<int> ind (I);
-    for (int i = 0; i < I; i++)
-    {
-        ind[i] = ind_vec[i].first;
-    };
+  // Grab the indicies out of ind_vec
+  std::vector<int> ind (I);
+  for (int i = 0; i < I; i++)
+    ind[i] = ind_vec[i].first;
 
-    return ind;
+  return ind;
 };
 
 
@@ -280,20 +378,20 @@ std::vector<int> bright::sorted_index(std::vector<double> vec)
 
 std::vector<double> bright::y_x_factor_interpolation(double x_factor, std::vector<double> y2, std::vector<double> y1)
 {
-    // This function calculates the following equation in a vectorized way
-    //
-    //      y = x(y2 - y1) * x_factor + y1
-    //
-    // y1 must be of the same size as y2
+  // This function calculates the following equation in a vectorized way
+  //
+  //      y = x(y2 - y1) * x_factor + y1
+  //
+  // y1 must be of the same size as y2
 
-    int N = y1.size();
+  int N = y1.size();
 
-    std::vector<double> y (N, -1.0);
+  std::vector<double> y (N, -1.0);
 
-    for (int n = 0; n < N; n++)
-        y[n] = ((y2[n] - y1[n]) * x_factor) + y1[n];
+  for (int n = 0; n < N; n++)
+    y[n] = ((y2[n] - y1[n]) * x_factor) + y1[n];
 
-    return y;
+  return y;
 };
 
 
@@ -303,21 +401,21 @@ std::vector<double> bright::y_x_factor_interpolation(double x_factor, std::vecto
 
 std::vector< std::vector<double> > bright::vector_outer_product(std::vector<double> a, std::vector<double> b)
 {
-    // Performs outer product operation on two vectors
-    int I = a.size(); 
+  // Performs outer product operation on two vectors
+  int I = a.size(); 
 
-    if (I != b.size())
-        throw VectorSizeError();
+  if (I != b.size())
+    throw VectorSizeError();
 
-    std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
 
-    for (int i = 0; i < I; i++)
-    {
-        for (int j = 0; j < I; j++)
-            c[i][j] = a[i] * b[j];
-    };
+  for (int i = 0; i < I; i++)
+  {
+    for (int j = 0; j < I; j++)
+      c[i][j] = a[i] * b[j];
+  };
 
-    return c;
+  return c;
 };
 
 
@@ -327,85 +425,80 @@ std::vector< std::vector<double> > bright::vector_outer_product(std::vector<doub
 
 std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vector<double> > a)
 {
-    // Performs outer product operation on two vectors
-    int I = a.size(); 
+  // Performs outer product operation on two vectors
+  int I = a.size(); 
 
-    std::vector< std::vector<double> > a_inv (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > a_inv (I, std::vector<double>(I, 0.0)); 
 
-    /* This function calculates the inverse of a square matrix
-     *
-     * Code is rewritten from c++ template code Mike Dinolfo
-     * by D. Kroon which was rewritten by Anthony Scopatz
-     * which was found at http://snippets.dzone.com/posts/show/7558
-     *
-     */
-    /* Loop variables */
-    int i, j, k;
+  /* This function calculates the inverse of a square matrix
+   *
+   * Code is rewritten from c++ template code Mike Dinolfo
+   * by D. Kroon which was rewritten by Anthony Scopatz
+   * which was found at http://snippets.dzone.com/posts/show/7558
+   *
+   */
+  /* Loop variables */
+  int i, j, k;
 
-    /* Sum variables */
-    double sum, x;
+  /* Sum variables */
+  double sum, x;
     
-    /*  Copy the input matrix to output matrix */
-    for (i = 0; i < I; i++) 
-    {
-        for (j = 0; j < I; j++)
-            a_inv[i][j] = a[i][j]; 
-    };
+  /*  Copy the input matrix to output matrix */
+  for (i = 0; i < I; i++) 
+  {
+    for (j = 0; j < I; j++)
+      a_inv[i][j] = a[i][j]; 
+  };
     
-    /* Add small value to diagonal if diagonal is zero */
-    for(i = 0; i < I; i++)
+  /* Add small value to diagonal if diagonal is zero */
+  for(i = 0; i < I; i++)
+  { 
+    if((a_inv[i][i] < 1e-12) && (a_inv[i][i] > -1e-12))
+      a_inv[i][i] = 1e-12; 
+  }
+    
+  /* Matrix size of one is special cased */
+  if (I == 1)
+  {
+    a_inv[0][0] = 1.0 / a_inv[0][0];
+    return a_inv;
+  };
+
+  /* Matrix size must be larger than zero */
+  if (I <= 0)
+    throw VectorSizeError();
+
+  /* normalize row 0 */
+  for (i = 1; i < I; i++) 
+    a_inv[0][i] /= a_inv[0][0];
+
+  /* Do LU separation */    
+  for (i = 1; i < I; i++)  
+  {
+    /* do a column of L */
+    for (j = i; j < I; j++)  
     { 
-        if((a_inv[i][i] < 1e-12) && (a_inv[i][i] > -1e-12))
-            a_inv[i][i] = 1e-12; 
-    }
-    
-    /* Matrix size of one is special cased */
-    if (I == 1)
-    {
-        a_inv[0][0] = 1.0 / a_inv[0][0];
-        return a_inv;
+      sum = 0.0;
+      for (k = 0; k < i; k++) 
+        sum += a_inv[j][k] * a_inv[k][i];
+
+      a_inv[j][i] -= sum;
     };
 
-    /* Matrix size must be larger than zero */
-    if (I <= 0)
-        throw VectorSizeError();
+    if (i == I-1)
+      continue;
 
-    
-    
-    /* normalize row 0 */
-    for (i = 1; i < I; i++) 
+        
+    /* do a row of U */
+    for (j = i+1; j < I; j++)
     {
-        a_inv[0][i] /= a_inv[0][0];
+      sum = 0.0;
+      for (k = 0; k < i; k++)
+        sum += a_inv[i][k] * a_inv[k][j];
+
+      a_inv[i][j] = (a_inv[i][j] - sum) / a_inv[i][i];
     };
-
-
-    /* Do LU separation */    
-    for (i = 1; i < I; i++)  
-    {
-        /* do a column of L */
-        for (j = i; j < I; j++)  
-        { 
-            sum = 0.0;
-            for (k = 0; k < i; k++) 
-                sum += a_inv[j][k] * a_inv[k][i];
-
-            a_inv[j][i] -= sum;
-        };
-
-        if (i == I-1)
-             continue;
-
-        /* do a row of U */
-        for (j = i+1; j < I; j++)
-        {
-            sum = 0.0;
-            for (k = 0; k < i; k++)
-                sum += a_inv[i][k] * a_inv[k][j];
-
-            a_inv[i][j] = (a_inv[i][j] - sum) / a_inv[i][i];
-        };
-    };
-
+  };
 
     /* invert L */ 
     for ( i = 0; i < I; i++ )  
@@ -425,40 +518,37 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
         };
     };
 
-
-    /* invert U */ 
-    for ( i = 0; i < I; i++ ) 
+  /* invert U */ 
+  for ( i = 0; i < I; i++ ) 
+  {
+    for ( j = i; j < I; j++ )  
     {
-        for ( j = i; j < I; j++ )  
-        {
-            if ( i == j ) 
-                continue;
+      if ( i == j ) 
+        continue;
 
-            sum = 0.0;
+      sum = 0.0;
+      for ( k = i; k < j; k++ )
+        sum += a_inv[k][j] * ( (i==k) ? 1.0 : a_inv[i][k] );
 
-            for ( k = i; k < j; k++ )
-                sum += a_inv[k][j] * ( (i==k) ? 1.0 : a_inv[i][k] );
-
-            a_inv[i][j] = -sum;
-        };
+      a_inv[i][j] = -sum;
     };
+  };
 
-
-    /* final inversion */ 
-    for ( i = 0; i < I; i++ ) 
+  /* final inversion */ 
+  for ( i = 0; i < I; i++ ) 
+  {
+    for ( j = 0; j < I; j++ )  
     {
-        for ( j = 0; j < I; j++ )  
-        {
-            sum = 0.0;
+      sum = 0.0;
 
-            for ( k = ((i>j)?i:j); k < I; k++ ) 
-                sum += ((j==k)?1.0:a_inv[j][k]) * a_inv[k][i];
+      for ( k = ((i>j)?i:j); k < I; k++ ) 
+        sum += ((j==k)?1.0:a_inv[j][k]) * a_inv[k][i];
 
-            a_inv[j][i] = sum;
-        };
+      a_inv[j][i] = sum;
     };
+  };
  
-    return a_inv;
+  return a_inv;
 };
 
 
@@ -467,27 +557,24 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
 
 std::vector< std::vector<double> > bright::matrix_addition(std::vector< std::vector<double> > a, std::vector< std::vector<double> > b)
 {
-    // Adds two matrices together
+  // Adds two matrices together
 
-    int I = a.size();
+  int I = a.size();
 
-    if ( I != a[0].size() || I != b.size() || I != b[0].size())
-        throw VectorSizeError();
+  if ( I != a[0].size() || I != b.size() || I != b[0].size())
+    throw VectorSizeError();
     
-    std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
 
-    int i, j;
+  int i, j;
 
-    for (i = 0; i < I; i++)
-    {
-        for (j = 0; j < I; j++)
-        {
-            c[i][j] = a[i][j] + b[i][j];
-        };
-    };
+  for (i = 0; i < I; i++)
+  {
+    for (j = 0; j < I; j++)
+      c[i][j] = a[i][j] + b[i][j];
+  };
 
-    return c;
-
+  return c;
 };
 
 
@@ -495,28 +582,27 @@ std::vector< std::vector<double> > bright::matrix_addition(std::vector< std::vec
 
 std::vector< std::vector<double> > bright::matrix_multiplication(std::vector< std::vector<double> > a, std::vector< std::vector<double> > b)
 {
-    // Multiplies two matrices together
+  // Multiplies two matrices together
 
-    int I = a.size();
+  int I = a.size();
 
-    if ( I != a[0].size() || I != b.size() || I != b[0].size())
-        throw VectorSizeError();
+  if ( I != a[0].size() || I != b.size() || I != b[0].size())
+    throw VectorSizeError();
     
-    std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
 
-    int i, j, k;
+  int i, j, k;
 
-    for (i = 0; i < I; i++)
+  for (i = 0; i < I; i++)
+  {
+    for (j = 0; j < I; j++)
     {
-        for (j = 0; j < I; j++)
-        {
-            for (k = 0; k < I; k++)        
-                c[i][j] += a[i][k] * b[k][j];
-        };
+      for (k = 0; k < I; k++)        
+        c[i][j] += a[i][k] * b[k][j];
     };
+  };
 
-    return c;
-
+  return c;
 };
 
 
@@ -525,25 +611,23 @@ std::vector< std::vector<double> > bright::matrix_multiplication(std::vector< st
 
 std::vector< std::vector<double> > bright::scalar_matrix_product(double a, std::vector< std::vector<double> > M)
 {
-    // Solves the equation r = aM for a scalar a and Matrix M.
-    // Returns the resultant vector r.
+  // Solves the equation r = aM for a scalar a and Matrix M.
+  // Returns the resultant vector r.
 
-    int I = M.size();
+  int I = M.size();
 
-    if (I != M[0].size())
-        throw VectorSizeError();
+  if (I != M[0].size())
+    throw VectorSizeError();
 
-    std::vector< std::vector<double> > r (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > r (I, std::vector<double>(I, 0.0)); 
 
-    for (int i = 0; i < I; i++)
-    {
-        for (int j = 0; j < I; j++)
-        {
-            r[i][j] += (a * M[i][j]);
-        };
-    };
+  for (int i = 0; i < I; i++)
+  {
+    for (int j = 0; j < I; j++)
+      r[i][j] += (a * M[i][j]);
+  };
 
-    return r;
+  return r;
 };
 
 
@@ -552,26 +636,25 @@ std::vector< std::vector<double> > bright::scalar_matrix_product(double a, std::
 
 std::vector<double> bright::scalar_matrix_vector_product(double a, std::vector< std::vector<double> > M, std::vector<double> v)
 {
-    // Solves the equation r = aMv for a scalar a, Matrix M, and vector v.
-    // Returns the resultant vector r.
+  // Solves the equation r = aMv for a scalar a, Matrix M, and vector v.
+  // Returns the resultant vector r.
 
-    int I = M.size();
+  int I = M.size();
 
-    if ( I != M[0].size() || I != v.size())
-        throw VectorSizeError();
+  if ( I != M[0].size() || I != v.size())
+    throw VectorSizeError();
 
-    std::vector<double> r (I, 0.0);
+  std::vector<double> r (I, 0.0);
 
-    for (int i = 0; i < I; i++)
-    {
-        for (int j = 0; j < I; j++)
-        {
-            r[i] += (M[i][j] * v[j]);
-        };
-        r[i] = (r[i] * a);
-    };
+  for (int i = 0; i < I; i++)
+  {
+    for (int j = 0; j < I; j++)
+      r[i] += (M[i][j] * v[j]);
 
-    return r;
+    r[i] = (r[i] * a);
+  };
+
+  return r;
 };
 
 
@@ -584,87 +667,23 @@ std::vector<double> bright::scalar_matrix_vector_product(double a, std::vector< 
 
 int bright::find_index_char(char * val, char ** arr, int arr_len)
 {
-    // Finds an element 'val' in array 'arr'
-    // returns the index of val's first location
-    // returns -1 if not found.
-    // For Arrays of char strings
+  // Finds an element 'val' in array 'arr'
+  // returns the index of val's first location
+  // returns -1 if not found.
+  // For Arrays of char strings
 
-    if (arr_len < 0)
-        arr_len = length_array(arr);
+  if (arr_len < 0)
+    arr_len = length_array(arr);
 
-    for (int n = 0; n < arr_len; n++)
-    {
-        if (strcmp(arr[n], val) == 0)
-            return n;
-    };
+  for (int n = 0; n < arr_len; n++)
+  {
+    if (strcmp(arr[n], val) == 0)
+       return n;
+  };
 
-    return -1;
+  return -1;
 };
 
-
-//Math Helpers
-const double bright::pi = 3.14159265359;
-const double bright::N_A = 6.0221415 * pow(10.0, 23);
-const double bright::barns_per_cm2 = pow(10.0, 24); 
-const double bright::cm2_per_barn = pow(10.0, -24); 
-const double bright::sec_per_day = 24.0 * 3600.0; 
-
-double bright::slope (double x2, double y2, double x1, double y1)
-{
-    //Finds the slope of a line.
-    return (y2 - y1) / (x2 - x1);
-};
-
-double bright::SolveLine (double x, double x2, double y2, double x1, double y1)
-{
-    return (slope(x2,y2,x1,y1) * (x - x2)) + y2;
-};
-
-double bright::TANH(double x)
-{
-    return tanh(x);
-};
-
-double bright::COTH(double x)
-{
-    return 1.0 / tanh(x);
-};
-
-
-
-
-// File Helpers
-
-bool bright::FileExists(std::string strFilename) 
-{
-    // Thank you intarwebz for this function!
-    // Sepcifically: http://www.techbytes.ca/techbyte103.html
-    struct stat stFileInfo; 
-    bool blnReturn; 
-    int intStat; 
-
-    // Attempt to get the file attributes 
-    intStat = stat(strFilename.c_str(), &stFileInfo); 
-
-    if(intStat == 0) 
-    { 
-        // We were able to get the file attributes 
-        // so the file obviously exists. 
-        blnReturn = true; 
-    } 
-    else 
-    { 
-        // We were not able to get the file attributes. 
-        // This may mean that we don't have permission to 
-        // access the folder which contains this file. If you 
-        // need to do that level of checking, lookup the 
-        // return values of stat which will give you 
-        // more details on why stat failed. 
-        blnReturn = false; 
-    } 
-   
-  return(blnReturn); 
-};
 
 
 

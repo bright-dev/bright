@@ -16,13 +16,16 @@ import sys, os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.append(os.path.abspath('.'))
+sys.path.append(os.path.abspath('../sphinxext'))
 
 # -- General configuration -----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.pngmath', 'sphinx.ext.inheritance_diagram']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.pngmath',
+              'sphinx.ext.inheritance_diagram', 'numpydoc', #'sphinx.ext.autosummary',
+              'ipython_console_highlighting',
+              ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -45,8 +48,8 @@ copyright = u'2008 - 2011, Anthony Scopatz'
 # built documents.
 #
 # The short X.Y version.
-sys.path.insert(0, '../../python/')
-from setup_data import INFO
+sys.path.insert(0, '../../')
+from setup import INFO
 
 version = INFO['version']
 # The full version, including alpha/beta/rc tags.
@@ -183,7 +186,7 @@ htmlhelp_basename = 'brightdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'bright.tex', u'BriPy Documentation',
+  ('index', 'bright.tex', u'Bright Documentation',
    u'Anthony Scopatz', 'manual'),
 ]
 
