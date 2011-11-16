@@ -5,7 +5,7 @@ import tables as tb
 
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 
-import isoname
+import nucname
 
 from tally_types import sigma_a_tallies
 
@@ -185,7 +185,7 @@ def test_sigma_f():
         raise nose.SkipTest
 
     for iso_LL in isos_LL:
-        iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
+        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
 
         sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
         sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, iso_LL)
@@ -208,7 +208,7 @@ def test_chi():
         raise nose.SkipTest
 
     for iso_LL in isos_LL:    
-        iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
+        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
 
         chi_arr, chi = read_array(rx_h5.root.chi, iso_LL)
         sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, iso_LL)
@@ -224,7 +224,7 @@ def test_sigma_s():
         raise nose.SkipTest
 
     for iso_LL in isos_LL:    
-        iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
+        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
 
         sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
         sig_s_arr, sig_s = read_array(rx_h5.root.sigma_s, iso_LL)
@@ -240,7 +240,7 @@ def test_sigma_a():
         raise nose.SkipTest
 
     for iso_LL in isos_LL:    
-        iso_zz = isoname.LLAAAM_2_zzaaam(iso_LL)
+        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
 
         sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
         sig_a_arr, sig_a = read_array(rx_h5.root.sigma_a, iso_LL)

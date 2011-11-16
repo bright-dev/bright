@@ -23,9 +23,9 @@ from optparse import OptionParser
 import metasci
 from metasci.colortext import failure
 
-import isoname
-LLzz = isoname.LLzz
-zzLL = isoname.zzLL
+import nucname
+LLzz = nucname.LLzz
+zzLL = nucname.zzLL
 
 #################
 ### CHAR Libs ###
@@ -79,7 +79,7 @@ def cast_iso_zzaaam(s):
     iso_zz = 0
 
     try:
-        iso_zz = isoname.mixed_2_zzaaam(s)
+        iso_zz = nucname.mixed_2_zzaaam(s)
     except RuntimeError:
         iso_zz = LLzz[s] * 10000
 

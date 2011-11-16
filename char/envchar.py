@@ -10,7 +10,7 @@ import subprocess
 ##########################
 import numpy as np
 
-import isoname
+import nucname
 from pyne.material import Material
 
 import metasci
@@ -34,7 +34,7 @@ def iso_list_conversions(iso_list):
     """Converts an isotopic list from a mixed from to zzaaam, LLAAAM, MCNP form as well as doing the
     having a separate lists fo just the metastable isotopes.  Returns a dictionary."""
 
-    zzaaam = sorted( isoname.mixed_2_zzaaam_List(iso_list) )
+    zzaaam = sorted( nucname.mixed_2_zzaaam_List(iso_list) )
     metastable = []
 
     for iso in zzaaam:
@@ -54,12 +54,12 @@ def iso_list_conversions(iso_list):
     metastable = sorted(metastable)
 
     iso_dict = {'zzaaam': zzaaam, 
-                'LLAAAM': isoname.zzaaam_2_LLAAAM_List(zzaaam),
-                'MCNP':   isoname.zzaaam_2_MCNP_List(zzaaam),
+                'LLAAAM': nucname.zzaaam_2_LLAAAM_List(zzaaam),
+                'MCNP':   nucname.zzaaam_2_MCNP_List(zzaaam),
 
                 'metastable_zzaaam': metastable, 
-                'metastable_LLAAAM': isoname.zzaaam_2_LLAAAM_List(metastable),
-                'metastable_MCNP':   isoname.zzaaam_2_MCNP_List(metastable),
+                'metastable_LLAAAM': nucname.zzaaam_2_LLAAAM_List(metastable),
+                'metastable_MCNP':   nucname.zzaaam_2_MCNP_List(metastable),
                 }
 
     return iso_dict

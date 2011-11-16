@@ -5,7 +5,7 @@ import sys
 import subprocess
 from itertools import product
 
-import isoname
+import nucname
 import numpy as np
 import tables as tb
 import metasci.nuke as msn
@@ -48,7 +48,7 @@ def zzaaam_2_serpent(iso):
         iso_serp = str(iso/10)
     else:
         iso_zz = iso/10000
-        iso_LL = isoname.zzLL[iso_zz]
+        iso_LL = nucname.zzLL[iso_zz]
         iso_LL = iso_LL.capitalize()
         iso_aaa = (iso/10)%1000
         iso_serp = "{0}-{1}m".format(iso_LL, iso_aaa)
@@ -110,7 +110,7 @@ class NCodeSerpent(object):
         comp_str = ''
 
         for iso in comp.keys():
-            iso_serp = isoname.mixed_2_zzaaam(iso)
+            iso_serp = nucname.mixed_2_zzaaam(iso)
             iso_serp = zzaaam_2_serpent(iso_serp)
 
             comp_str += "{0:>11}".format("{0}.{1}".format(iso_serp, self.env['temp_flag']))
@@ -136,7 +136,7 @@ class NCodeSerpent(object):
             for iiv in self.env['initial_iso_keys']:
                 iiv_col = self.pert_cols[iiv]
 
-                iso_zz = isoname.mixed_2_zzaaam(iiv.partition('_')[2])
+                iso_zz = nucname.mixed_2_zzaaam(iiv.partition('_')[2])
                 pert_isos.add(iso_zz)
 
                 init_iso_conc[iso_zz] = iiv_col[n]
@@ -368,7 +368,7 @@ class NCodeSerpent(object):
         the serpent template.  Requires the isotope to be specified."""
         det = {}
 
-        iso_zz   = isoname.mixed_2_zzaaam(iso)
+        iso_zz   = nucname.mixed_2_zzaaam(iso)
         iso_serp = zzaaam_2_serpent(iso_zz)
 
         # Set the isotope to calculate XS for
@@ -510,7 +510,7 @@ class NCodeSerpent(object):
     def make_deltam_input(self, iso, n, s, frac):
         """While n indexs the perturbations, iso is the isotope (zzaaam) to perturb and 
         frac is the new mass fraction of this isotope."""
-        iso_LL = isoname.mixed_2_LLAAAM(iso)
+        iso_LL = nucname.mixed_2_LLAAAM(iso)
         self.serpent_fill.update(self.make_burnup(n))
         self.serpent_fill.update(self.make_deltam(iso, frac[s]))
 
@@ -631,8 +631,8 @@ class NCodeSerpent(object):
         WARNING: This is only suppossed to be a first order correction!
         Make sure that you include enough fission products in core_transmute.
         """
-        iso_zz = isoname.mixed_2_zzaaam(iso)
-        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+        iso_zz = nucname.mixed_2_zzaaam(iso)
+        iso_LL = nucname.zzaaam_2_LLAAAM(iso_zz)
 
         args_xs_gen = "{0}_xs_gen_{1}_{2} {3}".format(self.env['reactor'], iso_LL, n, self.mpi_flag)
 
@@ -643,9 +643,9 @@ class NCodeSerpent(object):
         top_up_mass = 1.0 - ms_n.mass
         if top_up_mass == 0.0:
             top_up = 0.0
-        elif isoname.zzLL[iso_zz//10000] == 'ZR':
+        elif nucname.zzLL[iso_zz//10000] == 'ZR':
             top_up = Material({380900: 90.0, 621480: 148.0}, top_up_mass)
-        elif isoname.zzLL[iso_zz//10000] == 'SM':
+        elif nucname.zzLL[iso_zz//10000] == 'SM':
             top_up = Material({400900: 90.0, 601480: 148.0}, top_up_mass)
         else:
             top_up = Material({400900: 90.0, 621480: 148.0}, top_up_mass)
@@ -815,7 +815,7 @@ class NCodeSerpent(object):
         n : perterbation step number.
         """
         info_str = 'Generating cross-sections for {0} at perturbation step {1} using models.'
-        self.env['logger'].info(info_str.format(isoname.mixed_2_LLAAAM(iso), n))
+        self.env['logger'].info(info_str.format(nucname.mixed_2_LLAAAM(iso), n))
 
         tallies = self.env['tallies']
 
@@ -882,7 +882,7 @@ class NCodeSerpent(object):
         if 0 != n%self.ntimes:
             raise IndexError("Sensitivities must be started at t = 0 perturbations.")
 
-        iso_LL = isoname.mixed_2_LLAAAM(iso)
+        iso_LL = nucname.mixed_2_LLAAAM(iso)
         argstr = "{0}_deltam_{1}_{2}_{3} {4}".format(self.env['reactor'], iso_LL, n, s, self.mpi_flag)
 
         info_str = 'Running {0} sensitivity study at mass fraction {1} at perturbation step {2}.'.format(iso, iso_fracs[s], n)
@@ -1256,7 +1256,7 @@ class NCodeSerpent(object):
         for iso_zz in dep['ZAI']:
             # Find valid isotope indeces
             try: 
-                iso_LL[iso_zz] = isoname.mixed_2_LLAAAM(int(iso_zz))
+                iso_LL[iso_zz] = nucname.mixed_2_LLAAAM(int(iso_zz))
             except:
                 continue
             iso_index[iso_zz] = dep['i{0}'.format(iso_zz)] - 1
@@ -1280,9 +1280,9 @@ class NCodeSerpent(object):
 
 
     def write_xs_gen(self, iso, n, res, det):
-        # Convert isoname
-        iso_zz = isoname.mixed_2_zzaaam(iso)
-        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+        # Convert nucname
+        iso_zz = nucname.mixed_2_zzaaam(iso)
+        iso_LL = nucname.zzaaam_2_LLAAAM(iso_zz)
 
         iso_is_fissionable = (86 <= iso_zz/10000)
 
@@ -1463,9 +1463,9 @@ class NCodeSerpent(object):
     def write_xs_mod(self, iso, n, xs_dict):
         """Writes cross sections from models."""
 
-        # Convert isoname
-        iso_zz = isoname.mixed_2_zzaaam(iso)
-        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+        # Convert nucname
+        iso_zz = nucname.mixed_2_zzaaam(iso)
+        iso_LL = nucname.zzaaam_2_LLAAAM(iso_zz)
 
         iso_is_fissionable = (86 <= iso_zz/10000)
 
@@ -1569,8 +1569,8 @@ class NCodeSerpent(object):
         iso : The isotope name in zzaaam form.
         frac : The mass fraction of the IHM of this isotopr.
         """
-        iso_zz = isoname.mixed_2_zzaaam(iso)
-        iso_LL = isoname.zzaaam_2_LLAAAM(iso_zz)
+        iso_zz = nucname.mixed_2_zzaaam(iso)
+        iso_LL = nucname.zzaaam_2_LLAAAM(iso_zz)
 
         # Open the hdf5 file 
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
@@ -1641,7 +1641,7 @@ class NCodeSerpent(object):
 
         print(message("Maximum standard deviation for isotopic sensitivity study:"))
         for sig, iso_zz in rho_std_iso:
-            iso_LL = isoname.zzaaam_2_LLAAAM(int(iso_zz))
+            iso_LL = nucname.zzaaam_2_LLAAAM(int(iso_zz))
             print("{0:<8}{1}".format(iso_LL, sig))
 
         # close the file before returning
