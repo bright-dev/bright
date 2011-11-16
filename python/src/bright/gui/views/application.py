@@ -49,17 +49,13 @@ class Application(HasTraits):
     component_views = Dict
     loaded_script = Str
     handle = E_handler()
-    something = Event    
     activated_formation = Any
     instancekey = Dict
-
-
+    
 
     def register_views(self):
         localdict = {}
-        file_dir = os.path.split(__file__)[0]
-        comp_dir = os.path.join(file_dir, 'component_views/')
-        comp_list = os.listdir(comp_dir)
+        comp_list = os.listdir('component_views/')
         comp_list.remove('views')
         comp_list.remove('__init__.py')
         for i in comp_list:
@@ -88,7 +84,7 @@ class Application(HasTraits):
                             Item('script', editor = CodeEditor(), show_label = False, resizable = True, width = .50)
                             ),
                         HGroup(
-                            Item('variables_list', editor = ListStrEditor(title = 'Variables In Use', editable = False), show_label = False, resizable = True, width =.17),
+                            Item('variables_list', editor = ListStrEditor(title = 'Variables In Use', editable = False, operations = []), show_label = False, resizable = True, width =.17),
                             #Item('variables_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.17),
                             Item('model_context', editor = ShellEditor(share = True), show_label = False)
                               )
@@ -114,13 +110,14 @@ class Application(HasTraits):
 
     #@on_trait_event('model.graph_changed_event')
     def update_graph_view(self):
-        #print "yo dudes i'm workin"
+        print "yo dudes i'm workin"
         self.graph_view.graph = self.model.graph
         self.graph_view._graph_changed(self.model.graph)
+        self.graph_view._canvas.tools.pop(1)            
+        self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
         #self.graph_view = GraphView(graph =self.model.graph)
         #gv = GraphView(graph = self.model.graph)
 
-        #gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
            
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
