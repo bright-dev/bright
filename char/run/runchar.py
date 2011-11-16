@@ -8,7 +8,7 @@ import numpy as np
 import tables as tb
 
 from metasci.colortext import message, failure
-from mass_stream import MassStream
+from pyne.material import Material
 
 class RunChar(object):
     """A controller to run char very generally."""
@@ -77,8 +77,8 @@ class RunChar(object):
 
         # Loop over the perturbation steps
         for n in range(*idx):
-            # Grab the MassStream at this time.
-            ms_n = MassStream()
+            # Grab the Material at this time.
+            ms_n = Material()
             ms_n.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", n)
 
             # Calc restricted mass streams

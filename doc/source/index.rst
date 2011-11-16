@@ -20,8 +20,7 @@ Char currently has the following dependencies:
    #. `NumPy <http://numpy.scipy.org/>`_
    #. `SciPy <http://www.scipy.org/>`_
    #. `PyTables <http://www.pytables.org/>`_
-   #. MetaSci
-   #. Bright
+   #. Pyne
    #. `Serpent <http://montecarlo.vtt.fi/>`_
    #. `Enthought Tool Suite <http://code.enthought.com/projects/index.php>`_ (Optional, for UI)
 

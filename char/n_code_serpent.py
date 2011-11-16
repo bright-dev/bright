@@ -11,7 +11,7 @@ import tables as tb
 import metasci.nuke as msn
 import metasci.nuke.xs as msnxs
 from metasci import safe_remove, clean_reload
-from mass_stream import MassStream
+from pyne.material import Material
 from metasci.colortext import message, failure
 
 from scipy.integrate import cumtrapz
@@ -142,7 +142,7 @@ class NCodeSerpent(object):
                 init_iso_conc[iso_zz] = iiv_col[n]
 
             # generate a pertubed stream
-            pert_stream = MassStream(init_iso_conc)
+            pert_stream = Material(init_iso_conc)
 
             # generate a non-pertubed stream
             all_isos = set(self.env['IHM_stream'].comp.keys())
@@ -159,7 +159,7 @@ class NCodeSerpent(object):
         isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, self.env['fuel_chemical_form'])
 
         # Set the most recent values on the instance
-        self.initial_fuel_stream = MassStream(isovec)
+        self.initial_fuel_stream = Material(isovec)
         self.IHM_weight = AW
         self.fuel_weight = MW
     
@@ -181,7 +181,7 @@ class NCodeSerpent(object):
     def make_input_cladding(self):
         # Try to load cladding stream
         if 'clad_form' in self.env:
-            clad_stream = MassStream(self.env['clad_form'])
+            clad_stream = Material(self.env['clad_form'])
         else:
             if 0 < self.env['verbosity']:
                 print(message("Cladding not found.  Proceeding with standard zircaloy mixture."))
@@ -223,7 +223,7 @@ class NCodeSerpent(object):
                 # We Need Oxygen!
                 80160:  0.00125,
                 }
-            clad_stream = MassStream(clad_form)
+            clad_stream = Material(clad_form)
             self.env['clad_form'] = clad_form
 
         # Try to find if the cladding form is mass or atomic weighted
@@ -238,7 +238,7 @@ class NCodeSerpent(object):
     def make_input_coolant(self):
         # Try to load coolant stream
         if 'cool_form' in self.env:
-            cool_stream = MassStream(self.env['cool_form'])
+            cool_stream = Material(self.env['cool_form'])
         else:
             if 0 < self.env['verbosity']:
                 print(message("Coolant not found.  Proceeding with borated light water.\n"))
@@ -251,7 +251,7 @@ class NCodeSerpent(object):
                 50100: (0.199 * 550 * 10.0**-6 * 10.0) / MW,
                 50110: (0.801 * 550 * 10.0**-6 * 11.0) / MW,
                 }
-            cool_stream = MassStream(cool_form)
+            cool_stream = Material(cool_form)
             self.env['cool_form'] = cool_form
 
         # Try to find if the coolant form is mass or atomic weighted
@@ -415,7 +415,7 @@ class NCodeSerpent(object):
         init_iso_conc = {iso: frac} 
 
         # generate a pertubed stream
-        pert_stream = MassStream(init_iso_conc)
+        pert_stream = Material(init_iso_conc)
 
         # generate a non-pertubed stream
         all_isos = set(self.ihm_stream.comp.keys())
@@ -432,7 +432,7 @@ class NCodeSerpent(object):
         isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, self.env['fuel_chemical_form'])
 
         # Set the most recent values on the instance
-        self.initial_fuel_stream = MassStream(isovec)
+        self.initial_fuel_stream = Material(isovec)
         self.IHM_weight = AW
         self.fuel_weight = MW
 
@@ -644,11 +644,11 @@ class NCodeSerpent(object):
         if top_up_mass == 0.0:
             top_up = 0.0
         elif isoname.zzLL[iso_zz//10000] == 'ZR':
-            top_up = MassStream({380900: 90.0, 621480: 148.0}, top_up_mass)
+            top_up = Material({380900: 90.0, 621480: 148.0}, top_up_mass)
         elif isoname.zzLL[iso_zz//10000] == 'SM':
-            top_up = MassStream({400900: 90.0, 601480: 148.0}, top_up_mass)
+            top_up = Material({400900: 90.0, 601480: 148.0}, top_up_mass)
         else:
-            top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
+            top_up = Material({400900: 90.0, 621480: 148.0}, top_up_mass)
 
         ms = ms_n + top_up
 
@@ -659,7 +659,7 @@ class NCodeSerpent(object):
             o = n + 1
             if (o == self.nperturbations) or (self.perturbations[o][-1] == 0.0):
                 o = n - 1
-            ms_o = MassStream()
+            ms_o = Material()
             ms_o.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", o)
 
             # make a new mass weight guess
@@ -668,12 +668,12 @@ class NCodeSerpent(object):
                 mw_iso = 0.001
 
             # Change the mass weight for this iso
-            ms_iso = MassStream({iso_zz: mw_iso})
+            ms_iso = Material({iso_zz: mw_iso})
             ms = ms + ms_iso
 
         # Set the final mass stream
         isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
-        ms = MassStream(isovec)
+        ms = Material(isovec)
 
         # Make new input file
         self.make_common_input(n)
@@ -786,11 +786,11 @@ class NCodeSerpent(object):
         if top_up_mass == 0.0:
             top_up = 0.0
         else:
-            top_up = MassStream({400900: 90.0, 621480: 148.0}, top_up_mass)
+            top_up = Material({400900: 90.0, 621480: 148.0}, top_up_mass)
 
         ms = ms_n + top_up
         isovec, AW, MW = msn.convolve_initial_fuel_form(ms, self.env['fuel_chemical_form'])
-        ms = MassStream(isovec)
+        ms = Material(isovec)
 
         # Make new input file
         self.make_common_input(n)

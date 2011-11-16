@@ -11,7 +11,7 @@ import subprocess
 import numpy as np
 
 import isoname
-from mass_stream import MassStream
+from pyne.material import Material
 
 import metasci
 import metasci.nuke as msn
@@ -253,7 +253,7 @@ def update_env_for_execution(env):
     #print(env['iso_mts'][501250]); raise SystemExit
 
     # Make fuel stream
-    env['IHM_stream'] = MassStream(env['initial_heavy_metal'])
+    env['IHM_stream'] = Material(env['initial_heavy_metal'])
 
     if 'sensitivity_mass_fractions' in env:
         env['deltam'] = np.atleast_1d(env['sensitivity_mass_fractions'])
