@@ -126,7 +126,7 @@ cdef class ReactorParameters:
             if self._cladding_form is None:
                 proxy = conv.MapStrDouble(False, False)
                 proxy.map_ptr = &(<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form
-                self._fuel_form = proxy
+                self._cladding_form = proxy
 
             return self._cladding_form
 
