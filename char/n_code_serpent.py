@@ -8,11 +8,11 @@ from itertools import product
 import nucname
 import numpy as np
 import tables as tb
-import metasci.nuke as msn
-import metasci.nuke.xs as msnxs
-from metasci import safe_remove, clean_reload
+#import metasci.nuke as msn
+#import metasci.nuke.xs as msnxs
+#from metasci import safe_remove, clean_reload
+#from metasci.colortext import message, failure
 from pyne.material import Material
-from metasci.colortext import message, failure
 
 from scipy.integrate import cumtrapz
 
@@ -41,29 +41,110 @@ run_serpent_in_switch = {
     'module': serpent.main, 
     }
 
-
-def zzaaam_2_serpent(iso):
-    """Makes an isotope in serpent form."""
-    if 0 == iso%10:
-        iso_serp = str(iso/10)
-    else:
-        iso_zz = iso/10000
-        iso_LL = nucname.zzLL[iso_zz]
-        iso_LL = iso_LL.capitalize()
-        iso_aaa = (iso/10)%1000
-        iso_serp = "{0}-{1}m".format(iso_LL, iso_aaa)
-
-    return iso_serp
-
-
 partial_fission_mts = set([19, 20, 21, 38])
+
+
+#
+# Helper Functions
+#
+
+
+def serpent_xs_isos_available(xsdata):
+    """Finds the isotopes available to serpent for cross-section generation.
+
+    Args:
+        * xsdata (str): path to serpent *.xsdata file that will be used.
+
+    Returns:
+        * serpent_isos (set): Set of isotopes serpent has available.
+    """
+    # Grabs the ZAID and metastable flag separately
+    xsdata_pattern = "\s*[\dA-Za-z-]+\.\d{2}[a-z]\s+\d{4,6}\.\d{2}[a-z]  \d\s+(\d{4,6})  (\d)\s+.*"
+
+    with open(xsdata, 'r') as f:
+        raw_xsdata = f.read()
+
+    serpent_iso = set(int(''.join(m.groups())) for m in re.finditer(xsdata_pattern, raw_xsdata))
+    return serpent_iso
+
+
+serpent_mt_always = set(range(-9, 3))
+"""A set of MT numbers that is always available in Serpent."""
+
+serpent_mt_fission = set([-6, 18, 19, 20, 21, 38])
+"""A set of MT numbers for fission cross-sections in Serpent."""
+
+serpent_mt_nubar = set([-7])
+"""A set of MT numbers for the number of neutrons per fission times the fission cross-sections in Serpent."""
+
+def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
+    """Finds the MT numbers available for each isotope.
+
+    Args:
+        * xsdata (str): path to serpent *.xsdata file that will be used.
+        * isos (list of zzaaam): List of isotopes to find MT numbers for. 
+          isotopes must be valid for serpent.
+        * temp_flag (3-character string): Flag for the temperature.
+
+    Returns:
+        * iso_mt (dict of sets): A dictionary whose keys are isotopes (zzaaam) and whose 
+          keys are sets of MT numbers that serpent has available.
+    """
+    if 0 < verbosity:
+        print(message("Grabbing valid MT numbers for available isotopes:"))
+
+    # First, read in the xsdata file
+    xsdata_dict = {}
+    with open(xsdata, 'r') as f:
+        for line in f:
+            ls = line.split()
+            xsdata_dict[ls[0]] = (ls[1], ls[-1])
+
+    # Now, find the MTs for each iso
+    iso_mts = {}
+    for iso_zz in isos:
+        # Convert iso 
+        iso_serp = nucname.serpent(iso_zz)
+        iso_serp_flag = "{0}.{1}".format(iso_serp, temp_flag)
+
+        if 0 < verbosity:
+            print("  Isotope {0:>7} {1:>11}".format(iso_zz, iso_serp_flag))
+
+        # Get the MT numbers
+        mts = ace.mt(*xsdata_dict[iso_serp_flag])
+        iso_mt = (mts | serpent_mt_always)
+
+        if (iso_zz, temp_flag) in restricted_tallies:
+            iso_mt = iso_mt - restricted_tallies[(iso_zz, temp_flag)]
+
+        if 0 == len(iso_mt & serpent_mt_fission - set([-6])):
+            # if isotopic fission not avilable, remove material 
+            # fission and nubar from avilable tallies
+            iso_mt = iso_mt - serpent_mt_fission
+            iso_mt = iso_mt - serpent_mt_nubar
+
+        # Add this iso to the dict
+        iso_mts[iso_zz] = iso_mt
+
+    if 0 < verbosity:
+        print(message("Done!"))
+        print()
+
+    return iso_mts
+
+
+
+#
+# Neutron Code Class
+#
 
 
 class NCodeSerpent(object):
     """A Serpent neutronics code wrapper class."""
 
     def __init__(self, env):
-        self.env = env
+        self.env = self.update_env(env)
+
         self.name = "Serpent"
         self.run_str = "sss-dev"
 
@@ -99,6 +180,15 @@ class NCodeSerpent(object):
         self.nperturbations = len(self.perturbations)
         self.pert_cols = {p: np.array([row[i] for row in self.perturbations])
                                               for i, p in enumerate(self.env['perturbation_params'])}
+
+
+    #
+    # Environment updater
+    #
+    def update_env(self, env):
+        
+        return env
+
 
     #
     # Serpent input file generation methods
@@ -1646,4 +1736,3 @@ class NCodeSerpent(object):
 
         # close the file before returning
         rx_h5.close()
-

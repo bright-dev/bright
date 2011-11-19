@@ -275,7 +275,7 @@ def main():
     logger.setLevel(logging.INFO)
     env['logger'] = logger
 
-    # Set the transport code
+    # Set the neutronics code
     n_coder = n_code_switch[env['transporter']]
     n_code = n_coder(env)
     env['n_code'] = n_code
