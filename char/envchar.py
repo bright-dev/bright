@@ -23,56 +23,12 @@ from metasci.colortext import message, failure
 ######################
 from n_code_serpent import zzaaam_2_serpent
 from tally_types import restricted_tallies
+from char import utils
 
 ########################
 ### Global Functions ###
 ########################
 initial_iso_pattern = 'initial_([A-Za-z]{1,2}\d{1,3}[Mm]?)'
-
-
-def iso_list_conversions(iso_list):
-    """Converts an isotopic list from a mixed from to zzaaam, LLAAAM, MCNP form as well as doing the
-    having a separate lists fo just the metastable isotopes.  Returns a dictionary."""
-
-    zzaaam = sorted( nucname.mixed_2_zzaaam_List(iso_list) )
-    metastable = []
-
-    for iso in zzaaam:
-        if not ( (iso%10) == 0):
-            continue
-            metastable.append(iso)
-
-            NGammaParent = ((iso/10) - 1) * 10
-            if not (NGammaParent in zzaaam):
-                zzaaam.append(NGammaParent)
-
-            N2NParent = ((iso/10) + 1) * 10 
-            if not (N2NParent in zzaaam):
-                zzaaam.append(N2NParent)
-
-    zzaaam = sorted(zzaaam)
-    metastable = sorted(metastable)
-
-    iso_dict = {'zzaaam': zzaaam, 
-                'LLAAAM': nucname.zzaaam_2_LLAAAM_List(zzaaam),
-                'MCNP':   nucname.zzaaam_2_MCNP_List(zzaaam),
-
-                'metastable_zzaaam': metastable, 
-                'metastable_LLAAAM': nucname.zzaaam_2_LLAAAM_List(metastable),
-                'metastable_MCNP':   nucname.zzaaam_2_MCNP_List(metastable),
-                }
-
-    return iso_dict
-
-
-def iso_file_conversions(filename):
-    """Takes a file that contains whitespace separated isotope names and runs iso_list_conversions on it."""
-    with open(filename, 'r') as f:
-        s = f.read()
-
-    iso_list = s.split()
-    iso_dict = iso_list_conversions(iso_list)
-    return iso_dict
 
 
 def serpent_xs_isos_available(xsdata):
