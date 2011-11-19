@@ -13,16 +13,13 @@ import numpy as np
 import nucname
 from pyne.material import Material
 
-#import metasci
-#import metasci.nuke as msn
-#from metasci.nuke import ace
 #from metasci.colortext import message, failure
 
 ######################
 ### CHAR Libraries ###
 ######################
-from tally_types import restricted_tallies
 from char import utils
+from char.tally_types import restricted_tallies
 
 ##########################
 #### Global Variables ####
@@ -33,41 +30,24 @@ initial_iso_pattern = 'initial_([A-Za-z]{1,2}\d{1,3}[Mm]?)'
 def update_env_for_execution(env):
     """Updates the env namespace for runs where an execution is going to occur."""
     # Make isotopic lists
-    if isinstance(env['core_load_isos'], basestring):
-        env['core_load'] = load_nuc_file(env['core_load_isos'])
+    if isinstance(env['core_load_nucs'], basestring):
+        env['core_load'] = load_nuc_file(env['core_load_nucs'])
     else:
-        env['core_load'] = sorted(nucname.zzaaam(nuc) for nuc in env['core_load_isos'])
+        env['core_load'] = sorted(nucname.zzaaam(nuc) for nuc in env['core_load_nucs'])
 
-    if isinstance(env['core_transmute_isos'], basestring):
-        env['core_transmute'] = load_nuc_file(env['core_transmute_isos'])
+    if isinstance(env['core_transmute_nucs'], basestring):
+        env['core_transmute'] = load_nuc_file(env['core_transmute_nucs'])
     else:
-        env['core_transmute'] = sorted(nucname.zzaaam(nuc) for nuc in env['core_transmute_isos'])
+        env['core_transmute'] = sorted(nucname.zzaaam(nuc) for nuc in env['core_transmute_nucs'])
 
-    # Find which isotopes are available in serpent
-    # and which ones must be handled manually.
-    core_transmute_set = set(env['core_transmute']['zzaaam'])
-    serpent_xs_isos_set = serpent_xs_isos_available(env['serpent_xsdata'])
-
-    core_transmute_in_serpent = list(core_transmute_set & serpent_xs_isos_set)
-    core_transmute_not_in_serpent = list(core_transmute_set - serpent_xs_isos_set)
-
-    env['core_transmute_in_serpent'] = iso_list_conversions(core_transmute_in_serpent)
-    env['core_transmute_not_in_serpent'] = iso_list_conversions(core_transmute_not_in_serpent)
-
-    #env['xs_models_needed'] = (0 < len(env['core_transmute_not_in_serpent']))
-
-    # Make temperature flag
-    if 'temperature' not in env:
-        env['temperature'] = 600
-
-    env['temp_flag'] = temperature_flag(env['temperature'])
+    # Make temperature
+    env['temperature'] = env.get('temperature', 600)
 
     # Grab the MT numbers that are available for valid isotopes.
     env['iso_mts'] = serpent_mt_avaliable(env['serpent_xsdata'], 
                                           env['core_transmute_in_serpent']['zzaaam'], 
                                           env['temp_flag'], 
                                           env['verbosity'])
-    #print(env['iso_mts'][501250]); raise SystemExit
 
     # Make fuel stream
     env['IHM_stream'] = Material(env['initial_heavy_metal'])

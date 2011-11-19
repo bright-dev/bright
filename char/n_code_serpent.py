@@ -186,6 +186,21 @@ class NCodeSerpent(object):
     # Environment updater
     #
     def update_env(self, env):
+        """Update environment to work with serpent."""
+
+        # Find which nuclides are available in serpent
+        # and which ones must be handled manually.
+        core_transmute_set = set(env['core_transmute']['zzaaam'])
+        serpent_xs_isos_set = serpent_xs_isos_available(env['serpent_xsdata'])
+
+        core_transmute_in_serpent = list(core_transmute_set & serpent_xs_isos_set)
+        core_transmute_not_in_serpent = list(core_transmute_set - serpent_xs_isos_set)
+
+        env['core_transmute_in_serpent'] = iso_list_conversions(core_transmute_in_serpent)
+        env['core_transmute_not_in_serpent'] = iso_list_conversions(core_transmute_not_in_serpent)
+
+        # Make temperature
+        env['temp_flag'] = utils.temperature_flag(env['temperature'])
         
         return env
 
@@ -1736,3 +1751,4 @@ class NCodeSerpent(object):
 
         # close the file before returning
         rx_h5.close()
+

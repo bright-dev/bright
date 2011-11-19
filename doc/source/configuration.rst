@@ -71,17 +71,17 @@ For example, one may set up the general portion as follows::
     cpus_per_node = 4   # Processors per node
 
 
-.. _isotope-tracking:
+.. _nuclide-tracking:
 
 ----------------
-Isotope Tracking
+Nuclide Tracking
 ----------------
-* **core_load_isos** (list or path):  This parameter specifies all of the isotopes that may 
-  be present in the initial core loading of the reactor.  As such, it is these isotopes that 
-  char worries about transmuting from.
-* **core_transmute_isos** (list or path):  This parameter gives all of the nulcides that char
+* **core_load_nucs** (list or path):  This parameter specifies all of the nuclides that may 
+  be present in the initial core loading of the reactor.  As such, it is these nuclides that 
+  Char worries about transmuting from.
+* **core_transmute_nucs** (list or path):  This parameter gives all of the nulcides that char
   tracks throughout a burnup-depeletion calcultion.  As such, it is this set that determines 
-  which isotopes are transmuted to.  Cross sections are calculated for all isotopes in this
+  which nuclides are transmuted to.  Cross sections are calculated for all nuclides in this
   list.
 
 There are a few ways to instantiate these two variables.  
@@ -89,24 +89,24 @@ The preffered way is to import some of the predefined lists that have already be
 in char.  This prevents the user from having to build undo specification::
 
     # Set isotopes to track
-    from char.iso_track import load, transmute
-    core_load_isos      = load
-    core_transmute_isos = transmute
+    from char.nuc_track import load, transmute
+    core_load_nucs      = load
+    core_transmute_nucs = transmute
 
-Valid lists that may be imported are ``load``, ``transmute``, ``actinides``, ``uranium``, and ``u235``.
-The contents of these lists may be seen at 
-`the github website <https://github.com/scopatz/char/blob/master/char/iso_track.py>`_.
+Valid lists that may be imported are ``load``, ``transmute``, ``actinides``, ``uranium``, 
+and ``u235``.  The contents of these lists may be seen at 
+`the github website <https://github.com/scopatz/char/blob/master/char/nuc_track.py>`_.
 
 Moreover, the user can simply pass in python lists:: 
 
     # Set isotopes to track
-    core_load_isos = ['U235', 922380, 'O16', 10010]
-    core_transmute_isos = ['Am245', 'PU240', 'tc99', ...]
+    core_load_nucs = ['U235', 922380, 'O16', 10010]
+    core_transmute_nucs = ['Am245', 'PU240', 'tc99', ...]
 
 Additionally, suppose that you have file that is a whitespace separated list of isotope names.
 A string-valued path to this file may also be passed into these parameters.
 
-    ``isos_to_track.txt``::
+    ``nucs_to_track.txt``::
 
         U235 
         Th232 80160
@@ -115,8 +115,8 @@ A string-valued path to this file may also be passed into these parameters.
     Relevant part of ``defchar.py``::
 
         # Set isotopes to track
-        core_load_isos = "/path/to/isos_to_track.txt"
-        core_transmute_isos = "/path/to/isos_to_track.txt"
+        core_load_nucs = "/path/to/nucs_to_track.txt"
+        core_transmute_nucs = "/path/to/nucs_to_track.txt"
 
 
 .. _calc_mode_templates:
@@ -129,7 +129,7 @@ Calculation Mode Templates
 * **xs_gen_template** (str): An unformatted string template that is used for cross-section generation
   calculations.
 
-Like in :ref:`isotope-tracking`, the preffered method of supplying templates is from pre-defined
+Like in :ref:`nuclide-tracking`, the preffered method of supplying templates is from pre-defined
 versions in char itself.  Current values may be seen 
 `at github <https://github.com/scopatz/char/blob/master/char/templates/lwr/serpent.py>`_::
 
