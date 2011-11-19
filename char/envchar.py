@@ -153,7 +153,9 @@ def update_env(env):
     env['remote_connection'] = RemoteConnection(**rckw)
 
     # Make Time Steps
-    if 'burn_times' not in env:
+    if 'burn_times' in env:
+        env['burn_times'] = np.asarray(env['burn_times'], dtype=float)
+    else:
         bt_upper_lim = env['burn_time'] + env['time_step']/10.0
         env['burn_times'] = np.arange(0, bt_upper_lim, env['time_step'])
     env['burn_times_index'] = range(len(env['burn_times']))

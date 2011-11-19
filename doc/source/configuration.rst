@@ -42,6 +42,9 @@ General Specification
 * **time_step** (int or float): Time step by which to increment ``burn_time``.  The code generally
   works best when ``(0 == burn_time % time_step)``.  It is usually better to guess smaller values
   for this parameter rather than larger ones.
+* **burn_times** (sequence): This is a list, array, or other sequence of burnup times, in days. 
+  If present, this overrides the ``burn_time`` and ``time_step`` variables.  Zero should 
+  be the first entry and it should be strictly monotonicly increasing.
 * **email** (str): An email address to send runtime updates to, "char@zeon.gov".
 * **scheduler** (str): If present, this value specifices which scheduler to use.  Accepted values include 
   an empty string ``''`` to indicate no scheduler and ``"PBS"`` to use the torque scheduler.
