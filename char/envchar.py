@@ -24,7 +24,7 @@ from char.tally_types import restricted_tallies
 ##########################
 #### Global Variables ####
 ##########################
-initial_iso_pattern = 'initial_([A-Za-z]{1,2}\d{1,3}[Mm]?)'
+initial_nuc_pattern = 'initial_([A-Za-z]{0,2}\d{1,7}[Mm]?)'
 
 
 def update_env_for_execution(env):
@@ -46,6 +46,7 @@ def update_env_for_execution(env):
     # Make fuel stream
     env['ihm_mat'] = Material(env['initial_heavy_metal'])
 
+    # make sensitivity mass fractions
     if 'sensitivity_mass_fractions' in env:
         env['deltam'] = np.atleast_1d(env['sensitivity_mass_fractions'])
         env['deltam'].sort()
@@ -67,20 +68,21 @@ def update_env_for_execution(env):
 
     # Grab initial iso perturbation
     max_mass = 0.0
-    initial_iso_keys = []
+    initial_nuc_keys = []
     for key in env:
-        m = re.match(initial_iso_pattern, key)
+        m = re.match(initial_nuc_pattern, key)
         if m is None:
             continue
 
-        env_initial_iso = env[key]
-        env_initial_iso = np.atleast_1d(env_initial_iso)
+        env_initial_nuc = env[key]
+        env_initial_nuc = np.atleast_1d(env_initial_nuc)
+        env[key] = env_initial_nuc
 
-        initial_iso_keys.append(key)
-        max_mass += np.max(env_initial_iso)
+        initial_nuc_keys.append(key)
+        max_mass += np.max(env_initial_nuc)
 
-    initial_iso_keys.sort()
-    env['initial_iso_keys'] = initial_iso_keys
+    initial_nuc_keys.sort()
+    env['initial_nuc_keys'] = initial_nuc_keys
 
     if 1.0 < max_mass:
         print(failure("The maxium mass of initial heavy metal perturbations exceeds 1.0 kg!"))
@@ -99,7 +101,7 @@ def update_env_for_execution(env):
                                   'burn_regions', 
                                   'fuel_specific_power',]
 
-    env['perturbation_params'].extend(initial_iso_keys)
+    env['perturbation_params'].extend(initial_nuc_keys)
  
     # burn_times needs to be the last element
     env['perturbation_params'].append('burn_times')   
