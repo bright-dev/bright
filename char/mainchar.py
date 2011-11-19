@@ -292,7 +292,7 @@ def main():
         isos = set(env['core_transmute']['zzaaam'])
     else:
         isos = (isos & set(env['core_transmute']['zzaaam']))
-    ihm_isos = (isos & set(env['IHM_stream'].comp.keys()))
+    ihm_isos = (isos & set(env['ihm_mat'].comp.keys()))
 
     if 'deltam' in env:
         sidx = parse_slice(options.NSENS, len(env['deltam']))

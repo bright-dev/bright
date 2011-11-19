@@ -237,7 +237,7 @@ class NCodeSerpent(object):
         if len(self.env['initial_iso_keys']) == 0:
             # Don't bother readin the perturbation table if there 
             # is nothing there to read!
-            ihm_stream = 1.0 * self.env['IHM_stream']
+            ihm_mat = 1.0 * self.env['ihm_mat']
         else:
             # Read the perturbations from the file
             pert_isos = set()
@@ -255,18 +255,18 @@ class NCodeSerpent(object):
             pert_stream = Material(init_iso_conc)
 
             # generate a non-pertubed stream
-            all_isos = set(self.env['IHM_stream'].comp.keys())
+            all_isos = set(self.env['ihm_mat'].comp.keys())
             non_pert_isos = all_isos - pert_isos
-            non_pert_stream = self.env['IHM_stream'].get_sub_stream(non_pert_isos)
+            non_pert_stream = self.env['ihm_mat'].get_sub_stream(non_pert_isos)
             non_pert_stream.mass = 1.0 - pert_stream.mass
 
             # generate an initial heavy metal stream
-            ihm_stream = pert_stream + non_pert_stream
+            ihm_mat = pert_stream + non_pert_stream
 
-        self.ihm_stream = ihm_stream
+        self.ihm_mat = ihm_mat
 
         # Convolve the streams
-        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, self.env['fuel_chemical_form'])
+        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_mat, self.env['fuel_chemical_form'])
 
         # Set the most recent values on the instance
         self.initial_fuel_stream = Material(isovec)
@@ -519,7 +519,7 @@ class NCodeSerpent(object):
         """Generates a dictionary of values that fill the fuel mass stream portion of the 
         serpent template with this isotope (zzaaam) pertubed to this mass value."""
 
-        ihm_stream = 1.0 * self.ihm_stream
+        ihm_mat = 1.0 * self.ihm_mat
 
         pert_iso = set([iso])
         init_iso_conc = {iso: frac} 
@@ -528,18 +528,18 @@ class NCodeSerpent(object):
         pert_stream = Material(init_iso_conc)
 
         # generate a non-pertubed stream
-        all_isos = set(self.ihm_stream.comp.keys())
+        all_isos = set(self.ihm_mat.comp.keys())
         non_pert_isos = all_isos - pert_iso
-        non_pert_stream = self.ihm_stream.getSubStreamInt(list(non_pert_isos))
+        non_pert_stream = self.ihm_mat.getSubStreamInt(list(non_pert_isos))
         non_pert_stream.mass = 1.0 - pert_stream.mass
 
         # generate an initial heavy metal stream
-        ihm_stream = pert_stream + non_pert_stream
+        ihm_mat = pert_stream + non_pert_stream
 
-        self.ihm_stream = ihm_stream
+        self.ihm_mat = ihm_mat
 
         # Convolve the streams
-        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_stream, self.env['fuel_chemical_form'])
+        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_mat, self.env['fuel_chemical_form'])
 
         # Set the most recent values on the instance
         self.initial_fuel_stream = Material(isovec)

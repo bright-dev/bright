@@ -44,7 +44,7 @@ def update_env_for_execution(env):
     env['temperature'] = env.get('temperature', 600)
 
     # Make fuel stream
-    env['IHM_stream'] = Material(env['initial_heavy_metal'])
+    env['ihm_mat'] = Material(env['initial_heavy_metal'])
 
     if 'sensitivity_mass_fractions' in env:
         env['deltam'] = np.atleast_1d(env['sensitivity_mass_fractions'])
