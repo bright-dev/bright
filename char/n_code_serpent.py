@@ -101,7 +101,7 @@ def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
             xsdata_dict[ls[0]] = (ls[1], ls[-1])
 
     # Now, find the MTs for each iso
-    iso_mts = {}
+    nuc_mts = {}
     for iso_zz in isos:
         # Convert iso 
         iso_serp = nucname.serpent(iso_zz)
@@ -124,13 +124,13 @@ def serpent_mt_avaliable(xsdata, isos, temp_flag, verbosity=100):
             iso_mt = iso_mt - serpent_mt_nubar
 
         # Add this iso to the dict
-        iso_mts[iso_zz] = iso_mt
+        nuc_mts[iso_zz] = iso_mt
 
     if 0 < verbosity:
         print(message("Done!"))
         print()
 
-    return iso_mts
+    return nuc_mts
 
 
 
@@ -201,7 +201,12 @@ class NCodeSerpent(object):
 
         # Make temperature
         env['temp_flag'] = utils.temperature_flag(env['temperature'])
-        
+
+        # Grab the MT numbers that are available for all valid nuclides
+        env['nuc_mts'] = serpent_mt_avaliable(env['serpent_xsdata'], 
+                                              env['core_transmute_in_serpent']['zzaaam'], 
+                                              env['temp_flag'], 
+                                              env['verbosity'])
         return env
 
 
@@ -492,18 +497,18 @@ class NCodeSerpent(object):
 
         # Get tallies
         tallies = self.env['tallies']
-        iso_mts = self.env['iso_mts'][iso_zz]
+        nuc_mts = self.env['nuc_mts'][iso_zz]
 
         # Add tally line if MT number is valid
         for tally in tallies:
-            if tallies[tally] in iso_mts:
+            if tallies[tally] in nuc_mts:
                 det['xsdet'] += det_format.format(tally_name=tally, 
                                                   tally_type=tallies[tally], 
                                                   detector_mat=det['detector_mat'])
 
         # Add partial fission MTs, to sum later, if total fission tally is not avilable
-        if (tallies['sigma_f'] not in iso_mts) and (0 < len(partial_fission_mts & iso_mts)):
-            for mt in (partial_fission_mts & iso_mts):
+        if (tallies['sigma_f'] not in nuc_mts) and (0 < len(partial_fission_mts & nuc_mts)):
+            for mt in (partial_fission_mts & nuc_mts):
                 det['xsdet'] += det_format.format(tally_name='sigma_f{0}'.format(mt), 
                                                   tally_type=mt, 
                                                   detector_mat=det['detector_mat'])
@@ -794,7 +799,7 @@ class NCodeSerpent(object):
 
         # Prep for metastable tallies
         tallies = self.env['tallies']
-        iso_mts = self.env['iso_mts'][iso_zz]
+        nuc_mts = self.env['nuc_mts'][iso_zz]
 
         #
         # Use models, if serpent is not available
@@ -802,11 +807,11 @@ class NCodeSerpent(object):
 
         # Get absorption reaction tallies
         for tally in tallies:
-            if (tallies[tally] not in iso_mts) and (tallies[tally] is not None):
+            if (tallies[tally] not in nuc_mts) and (tallies[tally] is not None):
                 if tally == 'sigma_f':
-                    if (0 < len(partial_fission_mts & iso_mts)):
+                    if (0 < len(partial_fission_mts & nuc_mts)):
                         sig_f  = np.zeros(len(E_g) - 1, dtype=float)
-                        for mt in (partial_fission_mts & iso_mts):
+                        for mt in (partial_fission_mts & nuc_mts):
                             sig_f += det['DETsigma_f{0}'.format(mt)][:, 10]
                     else:
                         sig_f = msnxs.sigma_f(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
@@ -830,7 +835,7 @@ class NCodeSerpent(object):
 
         # Get (n, g *)
         if 'sigma_gamma_x' in tallies:
-            if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in iso_mts):
+            if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in nuc_mts):
                 tot_sig_g = det['DETsigma_gamma'][:, 10]
                 ms_rat = msnxs.metastable_ratio(iso_zz, 'gamma', E_g=E_g, E_n=E_n, phi_n=phi_n)
                 sig_g = tot_sig_g / (1.0 + ms_rat)
@@ -842,7 +847,7 @@ class NCodeSerpent(object):
 
         # Get (n, 2n *)
         if 'sigma_2n_x' in tallies:
-            if ('sigma_2n' in tallies) and (tallies['sigma_2n'] in iso_mts):
+            if ('sigma_2n' in tallies) and (tallies['sigma_2n'] in nuc_mts):
                 tot_sig_2n = det['DETsigma_2n'][:, 10]
                 ms_rat = msnxs.metastable_ratio(iso_zz, '2n', E_g=E_g, E_n=E_n, phi_n=phi_n)
                 sig_2n = tot_sig_2n / (1.0 + ms_rat)
@@ -853,18 +858,18 @@ class NCodeSerpent(object):
                 det['_sigma_2n_x'] = msnxs.sigma_reaction(iso_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
 
         # Get fission XS if MT not available
-        if tallies['nubar_sigma_f'] not in iso_mts:
-            if (tallies['sigma_f'] in iso_mts):
+        if tallies['nubar_sigma_f'] not in nuc_mts:
+            if (tallies['sigma_f'] in nuc_mts):
                 sig_f = det['DETsigma_f'][:, 10]
             else:
                 sig_f = det['_sigma_f']
             det['_nubar_sigma_f'] = 2.5 * sig_f
 
         # Get absoprtion XS if MT not available
-        if tallies['sigma_a'] not in iso_mts:
+        if tallies['sigma_a'] not in nuc_mts:
             det['_sigma_a'] = np.zeros(len(E_g) - 1, dtype=float)
             for tally in tally_types.sigma_a_tallies:
-                if (tallies[tally] in iso_mts):
+                if (tallies[tally] in nuc_mts):
                     det['_sigma_a'] += det['DET' + tally][:, 10]
                 elif '_'+tally in det:
                     det['_sigma_a'] += det['_' + tally]
@@ -1409,7 +1414,7 @@ class NCodeSerpent(object):
 
             # Make sure the detector was calculated, 
             # Or replace the tally with zeros
-            if tallies[tally] in self.env['iso_mts'][iso_zz]:
+            if tallies[tally] in self.env['nuc_mts'][iso_zz]:
                 tally_serp_array = det['DET{0}'.format(tally)]
                 tally_serp_array = tally_serp_array[::-1, 10]
             elif ('_'+tally in det):
@@ -1470,7 +1475,7 @@ class NCodeSerpent(object):
                 if 'sigma_i' not in tally:
                     continue
 
-                if tallies[tally] not in self.env['iso_mts'][iso_zz]:
+                if tallies[tally] not in self.env['nuc_mts'][iso_zz]:
                     continue
 
                 # Grab a sigma_iN array
@@ -1751,4 +1756,3 @@ class NCodeSerpent(object):
 
         # close the file before returning
         rx_h5.close()
-

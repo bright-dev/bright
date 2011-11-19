@@ -43,12 +43,6 @@ def update_env_for_execution(env):
     # Make temperature
     env['temperature'] = env.get('temperature', 600)
 
-    # Grab the MT numbers that are available for valid isotopes.
-    env['iso_mts'] = serpent_mt_avaliable(env['serpent_xsdata'], 
-                                          env['core_transmute_in_serpent']['zzaaam'], 
-                                          env['temp_flag'], 
-                                          env['verbosity'])
-
     # Make fuel stream
     env['IHM_stream'] = Material(env['initial_heavy_metal'])
 
