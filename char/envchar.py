@@ -28,25 +28,6 @@ from char import utils
 #### Global Variables ####
 ##########################
 initial_iso_pattern = 'initial_([A-Za-z]{1,2}\d{1,3}[Mm]?)'
-    
-class RemoteConnection(object):
-    def __init__(self, url='', user='', dir=''):
-        self.url  = url
-        self.user = user
-        self.dir  = dir
-
-    def run(self, cmd):
-        return subprocess.call('ssh {user}@{url} \"{remcmd}\"'.format(remcmd=cmd, **self.__dict__), shell=True)
-
-    def put(self, loc_file, rem_file):
-        return subprocess.call("rsync -rh --partial --progress --rsh=ssh {lf} {user}@{url}:{rf}".format(
-                                lf=loc_file, rf=rem_file, **self.__dict__), shell=True)
-
-    def get(self, rem_file, loc_file):
-        return subprocess.call("rsync -rh --partial --progress --rsh=ssh {user}@{url}:{rf} {lf}".format(
-                                lf=loc_file, rf=rem_file, **self.__dict__), shell=True)
-
-
 
 
 def update_env_for_execution(env):

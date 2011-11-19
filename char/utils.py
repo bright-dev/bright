@@ -1,3 +1,5 @@
+import subprocess
+
 from pyne import nucname
 
 def load_nuc_file(path):
@@ -40,3 +42,25 @@ def temperature_flag(T):
     temp_flag = "{0:02}c".format(t/100)
 
     return temp_flag
+
+
+class RemoteConnection(object):
+    def __init__(self, url='', user='', dir=''):
+        self.url  = url
+        self.user = user
+        self.dir  = dir
+
+    def run(self, cmd):
+        callcmd = 'ssh {user}@{url} \"{remcmd}\"'.format(remcmd=cmd, **self.__dict__)
+        return subprocess.call(callcmd, shell=True)
+
+    def put(self, loc_file, rem_file):
+        callcmd = "rsync -rh --partial --progress --rsh=ssh {lf} {user}@{url}:{rf}"
+        callcmd = callcmd.format(lf=loc_file, rf=rem_file, **self.__dict__)
+        return subprocess.call(callcmd, shell=True)
+
+    def get(self, rem_file, loc_file):
+        callcmd = "rsync -rh --partial --progress --rsh=ssh {user}@{url}:{rf} {lf}"
+        callcmd = callcmd.format(lf=loc_file, rf=rem_file, **self.__dict__)
+        return subprocess.call(callcmd, shell=True)
+
