@@ -1,8 +1,6 @@
 #!/usr/bin/env python
  
 from distutils.core import setup
-from setuptools.command.develop import develop
-#from distutils.extension import Extension
 
 setup(name="CHAR",
 	version='1.0',
