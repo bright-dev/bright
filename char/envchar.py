@@ -134,19 +134,12 @@ def update_env_for_execution(env):
 
 
 def update_env(env):
-    """Takes the env[' namespace, updates it, and returns it."""
-    if 'transporter' not in env:
-        env['transporter'] = ''
-
-    if 'scheduler' not in env:
-        env['scheduler'] = ''
+    """Takes the env namespace, updates it, and returns it."""
+    env['transporter'] = env.get('transporter', '')
+    env['scheduler'] = env.get('scheduler', '')
 
     # Name some files and directories
-    env['input_file'] = env['reactor'] + ".i"
     env['run_script'] = 'run_{0}.sh'.format(env['reactor'])
-
-    if 'remote_dir' in env:
-        env['remote_dir'] = env['remote_dir'] + "runchar/{0}/".format(env['reactor'])
 
     # Setup a remote connection instance
     rckw = {}
@@ -155,11 +148,14 @@ def update_env(env):
     if 'remote_user' in env:
         rckw['user'] = env['remote_user']
     if 'remote_dir' in env:
+        env['remote_dir'] = env['remote_dir'] + "runchar/{0}/".format(env['reactor'])
         rckw['dir'] = env['remote_dir']
     env['remote_connection'] = RemoteConnection(**rckw)
 
-    # Make Time Steps 
-    env['burn_times'] = np.arange(0, env['burn_time'] + env['time_step']/10.0, env['time_step'])
+    # Make Time Steps
+    if 'burn_times' not in env:
+        bt_upper_lim = env['burn_time'] + env['time_step']/10.0
+        env['burn_times'] = np.arange(0, bt_upper_lim, env['time_step'])
     env['burn_times_index'] = range(len(env['burn_times']))
 
     # Upddate the namespace if we are going to execute a neutronics code
