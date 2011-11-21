@@ -13,8 +13,6 @@ import numpy as np
 import nucname
 from pyne.material import Material
 
-#from metasci.colortext import message, failure
-
 ######################
 ### CHAR Libraries ###
 ######################
@@ -85,8 +83,8 @@ def update_env_for_execution(env):
     env['initial_nuc_keys'] = initial_nuc_keys
 
     if 1.0 < max_mass:
-        print(failure("The maxium mass of initial heavy metal perturbations exceeds 1.0 kg!"))
-        raise SystemExit
+        msg = "The maxium mass of initial heavy metal perturbations exceeds 1.0 kg!"
+        raise SystemExit(utils.failure(msg))
 
     # Set up tuple of parameters to perform a burnup step for
     env['perturbation_params'] = ['fuel_density', 

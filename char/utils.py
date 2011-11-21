@@ -1,6 +1,14 @@
+from __future__ import print_function
+
+import os
 import subprocess
 
 from pyne import nucname
+
+USE_COLOR = False
+if os.name is 'posix':
+    USE_COLOR = True
+
 
 def load_nuc_file(path):
     """Takes a file that contains whitespace separated nuclide names and 
@@ -64,3 +72,12 @@ class RemoteConnection(object):
         callcmd = callcmd.format(lf=loc_file, rf=rem_file, **self.__dict__)
         return subprocess.call(callcmd, shell=True)
 
+
+
+def failure(s):
+    """Formats a fail message for printing.  If on a posix system the message will be in color."""
+    head = "\033[1;31m" if USE_COLOR else "*** FAILURE ***: "
+    tail = "\033[0m" if USE_COLOR else ""
+
+    msg = head + s + tail
+    return msg
