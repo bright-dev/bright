@@ -7,8 +7,9 @@ import subprocess
 import numpy as np
 import tables as tb
 
-from metasci.colortext import message, failure
 from pyne.material import Material
+
+from char.utils import message, failure
 
 class RunChar(object):
     """A controller to run char very generally."""

@@ -11,12 +11,12 @@ import tables as tb
 #import metasci.nuke as msn
 #import metasci.nuke.xs as msnxs
 #from metasci import safe_remove, clean_reload
-#from metasci.colortext import message, failure
 from pyne.material import Material
 
 from scipy.integrate import cumtrapz
 
 import tally_types
+from char.utils import message, failure
 from m2py import convert_res, convert_dep, convert_det
 
 # Hide warnings from numpy

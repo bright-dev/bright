@@ -21,7 +21,6 @@ from optparse import OptionParser
 #### Custom Libraries ####
 ##########################
 import metasci
-from metasci.colortext import failure
 
 import nucname
 LLzz = nucname.LLzz
@@ -34,6 +33,8 @@ import envchar
 
 from run.pbs import Pbs
 from run.bash import Bash
+
+from char.utils import message, failure
 
 from tests import _run_tests
 

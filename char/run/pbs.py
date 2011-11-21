@@ -5,10 +5,10 @@ import time
 import subprocess
 from math import ceil
 
-from metasci.colortext import message, failure
 
 # Char Libraries
 from runchar import RunChar
+from char.utils import message, failure
 from ..templates.run_script import template as run_script_template
 
 
