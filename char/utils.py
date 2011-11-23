@@ -70,21 +70,3 @@ class RemoteConnection(object):
         callcmd = callcmd.format(lf=loc_file, rf=rem_file, **self.__dict__)
         return subprocess.call(callcmd, shell=True)
 
-
-
-def message(s):
-    """Formats a message for printing.  If on a posix system the message will be in color."""
-    head = "\033[1;32m" if USE_COLOR else "*** MESSAGE ***: "
-    tail = "\033[0m" if USE_COLOR else ""
-
-    msg = head + s + tail
-    return msg
-
-
-def failure(s):
-    """Formats a fail message for printing.  If on a posix system the message will be in color."""
-    head = "\033[1;31m" if USE_COLOR else "*** FAILURE ***: "
-    tail = "\033[0m" if USE_COLOR else ""
-
-    msg = head + s + tail
-    return msg

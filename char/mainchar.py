@@ -34,7 +34,7 @@ import envchar
 from run.pbs import Pbs
 from run.bash import Bash
 
-from char.utils import message, failure
+from pyne.utils import message, failure
 
 from tests import _run_tests
 

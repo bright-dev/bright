@@ -8,7 +8,7 @@ import subprocess
 # Char Libraries
 from runchar import RunChar
 from ..templates.run_script import template as run_script_template
-from char.utils import message, failure
+from pyne.utils import message, failure
 
 
 class Bash(RunChar):

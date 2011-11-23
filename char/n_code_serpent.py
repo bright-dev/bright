@@ -16,7 +16,7 @@ from pyne.material import Material
 from scipy.integrate import cumtrapz
 
 import tally_types
-from char.utils import message, failure
+from pyne.utils import message, failure
 from m2py import convert_res, convert_dep, convert_det
 
 # Hide warnings from numpy

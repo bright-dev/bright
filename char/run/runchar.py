@@ -9,7 +9,7 @@ import tables as tb
 
 from pyne.material import Material
 
-from char.utils import message, failure
+from pyne.utils import message, failure
 
 class RunChar(object):
     """A controller to run char very generally."""
