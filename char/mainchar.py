@@ -20,7 +20,6 @@ from optparse import OptionParser
 ##########################
 #### Custom Libraries ####
 ##########################
-import metasci
 
 import nucname
 LLzz = nucname.LLzz
@@ -34,7 +33,7 @@ import envchar
 from run.pbs import Pbs
 from run.bash import Bash
 
-from pyne.utils import message, failure
+from pyne.utils import message, failure, remove
 
 from tests import _run_tests
 
@@ -259,7 +258,7 @@ def main():
     # Prep work
     if not options.CWD:
         if env['options'].CLEAN:
-            metasci.safe_remove(env['reactor'], True)
+            remove(env['reactor'], True)
 
         if env['reactor'] not in os.listdir('.'):
             os.mkdir(env['reactor'])

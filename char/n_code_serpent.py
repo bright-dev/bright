@@ -10,7 +10,6 @@ import numpy as np
 import tables as tb
 #import metasci.nuke as msn
 #import metasci.nuke.xs as msnxs
-#from metasci import safe_remove, clean_reload
 from pyne.material import Material
 
 from scipy.integrate import cumtrapz
