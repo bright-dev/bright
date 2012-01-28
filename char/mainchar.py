@@ -35,7 +35,7 @@ from run.bash import Bash
 
 from pyne.utils import message, failure, remove
 
-from tests import _run_tests
+from testing import _run_tests
 
 run_switch = {'': Bash, 
               'BASH': Bash,
