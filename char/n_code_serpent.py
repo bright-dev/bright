@@ -10,7 +10,9 @@ import numpy as np
 import tables as tb
 #import metasci.nuke as msn
 #import metasci.nuke.xs as msnxs
+
 from pyne.material import Material
+from pyne.pyne_config import pyne_conf
 
 from scipy.integrate import cumtrapz
 
@@ -162,11 +164,8 @@ class NCodeSerpent(object):
         self.G = len(self.env['group_structure']) - 1
 
         # Grab stock high-resolution group structure
-        #if self.env['xs_models_needed']:
-        #    with tb.openFile(msn.nuc_data, 'r') as f:
-        #        self.hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
-        with tb.openFile(msn.nuc_data, 'r') as f:
-            self.hi_res_group_structure = np.array(f.root.neutron.xs_mg.E_g)
+        with tb.openFile(pyne_conf.NUC_DATA_PATH, 'r') as f:
+            self.hi_res_group_structure = np.array(f.root.neutron.cinder_xs.E_g)
 
         # Set Stock tallies for serpent
         if 'tallies' not in env:
@@ -600,7 +599,7 @@ class NCodeSerpent(object):
 
     def make_flux_g_input(self, n):
         # Make the flux only calculation with this energy group structure
-        self.serpent_fill.update(self.make_input_energy_groups(self.hi_res_group_structure))
+        self.serpent_fill.update(self.make_input_energy_groups(self.hi_res_group_structure[::-1]))
 
         # Load the detectors to ensure valid entries,
         # Then wash out mutlipliers that are not just the flux
@@ -1284,7 +1283,7 @@ class NCodeSerpent(object):
         self.init_array(rx_h5, hi_res_group, 'phi_g', negG, "High-Resolution Group fluxes [n/cm2/s]")
 
         # Energy Group bounds
-        self.init_array(rx_h5, hi_res_group, 'energy', group_structure[::-1], "High-Resolution Energy Boundaries [MeV]")
+        self.init_array(rx_h5, hi_res_group, 'energy', group_structure, "High-Resolution Energy Boundaries [MeV]")
 
         # close the file before returning
         rx_h5.close()
