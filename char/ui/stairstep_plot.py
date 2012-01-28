@@ -1,18 +1,15 @@
 # Other imports
 import numpy as np
+from pyne.bins import stair_step
 
 # Chaco imports
 from enthought.chaco.api import ArrayPlotData, Plot
 from enthought.chaco.tools.api import PanTool, ZoomTool
 
-# My libs
-import metasci
 
 def stairstep_plot(energy, data, data_name):
     # Munge the data into a plotable form
-    x, y = metasci.stair_step(energy, data)
-    x = np.array(x)
-    y = np.array(y)
+    x, y = stair_step(energy, data)
 
     # Create a plot data obect and give it this data
     pd = ArrayPlotData()
