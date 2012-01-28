@@ -1,5 +1,3 @@
-import metsci
-
 template = """\
 [CHAR] LWR Fuel Cell
 C 
@@ -91,7 +89,7 @@ def template_extras(moffset=3):
         mnum = mnum + 1
         mat_number[iso] = mnum
 
-    number_mat = metasci.ReverseDic(mat_number)
+    number_mat = {v: k for k, v in mat_number.items()}
 
     extra_fill = {'mat_number': mat_number, 'number_mat': number_mat}
 
