@@ -7,12 +7,11 @@ from itertools import product
 
 import numpy as np
 import tables as tb
-#import metasci.nuke as msn
-#import metasci.nuke.xs as msnxs
 
 from pyne import nucname
 from pyne.material import Material, from_atom_frac
 from pyne.pyne_config import pyne_conf
+import pyne.xs.channels
 
 from scipy.integrate import cumtrapz
 
@@ -719,7 +718,7 @@ class NCodeSerpent(object):
 
 
 
-    def run_xs_gen_pert(self, iso, n, ms_n, E_n=None, E_g=None, phi_n=None):
+    def run_xs_gen_pert(self, nuc, n, ms_n, E_n=None, E_g=None, phi_n=None):
         """Runs the perturbation for an isotope that is in serpent.
 
         iso : isotope identifier
@@ -738,13 +737,13 @@ class NCodeSerpent(object):
         WARNING: This is only suppossed to be a first order correction!
         Make sure that you include enough fission products in core_transmute.
         """
-        iso_zz = nucname.mixed_2_zzaaam(iso)
-        iso_LL = nucname.zzaaam_2_LLAAAM(iso_zz)
+        nuc_zz = nucname.mixed_2_zzaaam(nuc)
+        nuc_LL = nucname.zzaaam_2_LLAAAM(nuc_zz)
 
-        args_xs_gen = "{0}_xs_gen_{1}_{2} {3}".format(self.env['reactor'], iso_LL, n, self.mpi_flag)
+        args_xs_gen = "{0}_xs_gen_{1}_{2} {3}".format(self.env['reactor'], nuc_LL, n, self.mpi_flag)
 
         info_str = 'Generating cross-sections for {0} at perturbation step {1} using serpent.'
-        self.env['logger'].info(info_str.format(iso_LL, n))
+        self.env['logger'].info(info_str.format(nuc_LL, n))
 
         # Add filler fision product
         top_up_mass = 1.0 - ms_n.mass
@@ -761,7 +760,7 @@ class NCodeSerpent(object):
 
         # Add a differential mass of this isotope, if not otherwise present
         # Needed to capture sigma_s_gh effects via serpent.
-        if (iso_zz not in ms.comp) or (ms.comp[iso_zz] == 0.0):
+        if (nuc_zz not in ms.comp) or (ms.comp[nuc_zz] == 0.0):
             # Grab the next (or prev) mass stream
             o = n + 1
             if (o == self.nperturbations) or (self.perturbations[o][-1] == 0.0):
@@ -770,13 +769,13 @@ class NCodeSerpent(object):
             ms_o.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", o)
 
             # make a new mass weight guess
-            mw_iso = 0.001 * ms_o.comp[iso_zz]
-            if mw_iso == 0.0:
-                mw_iso = 0.001
+            mw_nuc = 0.001 * ms_o.comp[nuc_zz]
+            if mw_nuc == 0.0:
+                mw_nuc = 0.001
 
             # Change the mass weight for this iso
-            ms_iso = Material({iso_zz: mw_iso})
-            ms = ms + ms_iso
+            ms_iso = Material({nuc_zz: mw_nuc})
+            ms = ms + ms_nuc
 
         # Set the final material
         atom_frac_fuel = {k: v for k, v in self.env['fuel_chemical_form'].items() if k != "IHM"}
@@ -786,18 +785,18 @@ class NCodeSerpent(object):
         # Make new input file
         self.make_common_input(n)
         self.serpent_fill['fuel'] = self.make_input_fuel(ms)
-        self.make_xs_gen_input(iso_LL, n)
+        self.make_xs_gen_input(nuc_LL, n)
 
         # Run serpent on this input file as a subprocess
         if not self.env['options'].CACHE:
             rtn = self.run_serpent(args_xs_gen)
 
         # Parse this run 
-        res, det = self.parse_xs_gen(iso_LL, n)
+        res, det = self.parse_xs_gen(nuc_LL, n)
 
         # Prep for metastable tallies
         tallies = self.env['tallies']
-        nuc_mts = self.env['nuc_mts'][iso_zz]
+        nuc_mts = self.env['nuc_mts'][nuc_zz]
 
         #
         # Use models, if serpent is not available
@@ -812,7 +811,7 @@ class NCodeSerpent(object):
                         for mt in (partial_fission_mts & nuc_mts):
                             sig_f += det['DETsigma_f{0}'.format(mt)][:, 10]
                     else:
-                        sig_f = msnxs.sigma_f(iso, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                        sig_f = pyne.xs.channels.sigma_f(nuc, E_n=E_n, E_g=E_g, phi_n=phi_n)
                     det['_sigma_f'] = sig_f
                 elif tally == 'nubar_sigma_f':
                     # Do nubar later, after fission XS have been calculated
@@ -821,13 +820,17 @@ class NCodeSerpent(object):
                     # Do absorption later, after other XS have been calculated
                     pass 
                 elif tally == 'sigma_s_gh':
-                    det['_sigma_s_gh'] = msnxs.sigma_s_gh(iso, self.env['temperature'], E_n=E_n, E_g=E_g, phi_n=phi_n)
+                    det['_sigma_s_gh'] = pyne.xs.channels.sigma_s_gh(nuc, 
+                                                                     self.env['temperature'], 
+                                                                     E_n=E_n, 
+                                                                     E_g=E_g, 
+                                                                     phi_n=phi_n)
                 elif tally == 'sigma_s':
-                    det['_sigma_s'] = msnxs.sigma_s(iso, self.env['temperature'], E_n=E_n, E_g=E_g, phi_n=phi_n)
+                    det['_sigma_s'] = msnxs.sigma_s(nuc, self.env['temperature'], E_n=E_n, E_g=E_g, phi_n=phi_n)
                 else:
                     tally_rx = tally.partition('_')[2]
                     try:
-                        det['_'+tally] = msnxs.sigma_reaction(iso_zz, tally_rx, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                        det['_'+tally] = msnxs.sigma_reaction(nuc_zz, tally_rx, E_n=E_n, E_g=E_g, phi_n=phi_n)
                     except IndexError:
                         pass
 
@@ -835,25 +838,25 @@ class NCodeSerpent(object):
         if 'sigma_gamma_x' in tallies:
             if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in nuc_mts):
                 tot_sig_g = det['DETsigma_gamma'][:, 10]
-                ms_rat = msnxs.metastable_ratio(iso_zz, 'gamma', E_g=E_g, E_n=E_n, phi_n=phi_n)
+                ms_rat = msnxs.metastable_ratio(nuc_zz, 'gamma', E_g=E_g, E_n=E_n, phi_n=phi_n)
                 sig_g = tot_sig_g / (1.0 + ms_rat)
                 sig_g_x = ms_rat * sig_g
                 det['_sigma_gamma_x'] = sig_g_x
                 det['DETsigma_gamma'][:, 10] = sig_g
             else:
-                det['_sigma_gamma_x'] = msnxs.sigma_reaction(iso_zz, 'gamma_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
+                det['_sigma_gamma_x'] = msnxs.sigma_reaction(nuc_zz, 'gamma_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
 
         # Get (n, 2n *)
         if 'sigma_2n_x' in tallies:
             if ('sigma_2n' in tallies) and (tallies['sigma_2n'] in nuc_mts):
                 tot_sig_2n = det['DETsigma_2n'][:, 10]
-                ms_rat = msnxs.metastable_ratio(iso_zz, '2n', E_g=E_g, E_n=E_n, phi_n=phi_n)
+                ms_rat = msnxs.metastable_ratio(nuc_zz, '2n', E_g=E_g, E_n=E_n, phi_n=phi_n)
                 sig_2n = tot_sig_2n / (1.0 + ms_rat)
                 sig_2n_x = ms_rat * sig_2n
                 det['_sigma_2n_x'] = sig_2n_x
                 det['DETsigma_2n'][:, 10] = sig_2n
             else:
-                det['_sigma_2n_x'] = msnxs.sigma_reaction(iso_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
+                det['_sigma_2n_x'] = msnxs.sigma_reaction(nuc_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
 
         # Get fission XS if MT not available
         if tallies['nubar_sigma_f'] not in nuc_mts:
@@ -937,13 +940,13 @@ class NCodeSerpent(object):
 
         # Add the cross-section data from models
         if 'sigma_f' in tallies:
-            xs_dict['sigma_f'] = msnxs.sigma_f(iso)
+            xs_dict['sigma_f'] = pyne.xs.channels.sigma_f(iso)
 
         if 'sigma_a' in tallies:
             xs_dict['sigma_a'] = msnxs.sigma_a(iso)
 
         if 'sigma_s_gh' in tallies:
-            xs_dict['sigma_s_gh'] = msnxs.sigma_s_gh(iso, self.env['temperature'])
+            xs_dict['sigma_s_gh'] = pyne.xs.channels.sigma_s_gh(iso, self.env['temperature'])
 
         if 'sigma_s' in tallies:
             xs_dict['sigma_s'] = msnxs.sigma_s(iso, self.env['temperature'])
