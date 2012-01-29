@@ -5,13 +5,13 @@ import sys
 import subprocess
 from itertools import product
 
-import nucname
 import numpy as np
 import tables as tb
 #import metasci.nuke as msn
 #import metasci.nuke.xs as msnxs
 
-from pyne.material import Material
+from pyne import nucname
+from pyne.material import Material, from_atom_frac
 from pyne.pyne_config import pyne_conf
 
 from scipy.integrate import cumtrapz
@@ -264,12 +264,11 @@ class NCodeSerpent(object):
         self.ihm_mat = ihm_mat
 
         # Convolve the streams
-        isovec, AW, MW = msn.convolve_initial_fuel_form(ihm_mat, self.env['fuel_chemical_form'])
-
-        # Set the most recent values on the instance
-        self.initial_fuel_stream = Material(isovec)
-        self.IHM_weight = AW
-        self.fuel_weight = MW
+        atom_frac_fuel = {k: v for k, v in self.env['fuel_chemical_form'].items() if k != "IHM"}
+        atom_frac_fuel[ihm_mat] = self.env['fuel_chemical_form'].get("IHM", 0.0)
+        self.initial_fuel_stream = from_atom_frac(atom_frac_fuel)
+        self.IHM_weight = self.ihm_mat.molecular_weight()
+        self.fuel_weight = self.initial_fuel_stream.molecular_weight()
     
 
     def make_input_fuel(self, ms=None):
