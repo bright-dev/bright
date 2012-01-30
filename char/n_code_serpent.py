@@ -831,7 +831,9 @@ class NCodeSerpent(object):
                 else:
                     tally_rx = tally.partition('_')[2]
                     try:
-                        det['_'+tally] = msnxs.sigma_reaction(nuc_zz, tally_rx, E_n=E_n, E_g=E_g, phi_n=phi_n)
+                        det['_'+tally] = pyne.xs.channels.sigma_a_reaction(nuc_zz, tally_rx, 
+                                                                           E_n=E_n, E_g=E_g, 
+                                                                           phi_n=phi_n)
                     except IndexError:
                         pass
 
@@ -845,7 +847,9 @@ class NCodeSerpent(object):
                 det['_sigma_gamma_x'] = sig_g_x
                 det['DETsigma_gamma'][:, 10] = sig_g
             else:
-                det['_sigma_gamma_x'] = msnxs.sigma_reaction(nuc_zz, 'gamma_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
+                det['_sigma_gamma_x'] = pyne.xs.channels.sigma_a_reaction(nuc_zz, 'gamma_x', 
+                                                                          E_n=E_n, E_g=E_g, 
+                                                                          phi_n=phi_n)
 
         # Get (n, 2n *)
         if 'sigma_2n_x' in tallies:
@@ -857,7 +861,8 @@ class NCodeSerpent(object):
                 det['_sigma_2n_x'] = sig_2n_x
                 det['DETsigma_2n'][:, 10] = sig_2n
             else:
-                det['_sigma_2n_x'] = msnxs.sigma_reaction(nuc_zz, '2n_x', E_n=E_n, E_g=E_g, phi_n=phi_n)
+                det['_sigma_2n_x'] = pyne.xs.channels.sigma_a_reaction(nuc_zz, '2n_x', E_n=E_n, 
+                                                                       E_g=E_g, phi_n=phi_n)
 
         # Get fission XS if MT not available
         if tallies['nubar_sigma_f'] not in nuc_mts:
@@ -956,31 +961,31 @@ class NCodeSerpent(object):
             xs_dict['chi'] = msnxs.chi(iso)
 
         if 'sigma_gamma' in tallies:
-            xs_dict['sigma_gamma'] = msnxs.sigma_reaction(iso, 'gamma')
+            xs_dict['sigma_gamma'] = pyne.xs.channels.sigma_a_reaction(iso, 'gamma')
 
         if 'sigma_2n' in tallies:
-            xs_dict['sigma_2n'] = msnxs.sigma_reaction(iso, '2n')
+            xs_dict['sigma_2n'] = pyne.xs.channels.sigma_a_reaction(iso, '2n')
 
         if 'sigma_3n' in tallies:
-            xs_dict['sigma_3n'] = msnxs.sigma_reaction(iso, '3n')
+            xs_dict['sigma_3n'] = pyne.xs.channels.sigma_a_reaction(iso, '3n')
 
         if 'sigma_alpha' in tallies:
-            xs_dict['sigma_alpha'] = msnxs.sigma_reaction(iso, 'alpha')
+            xs_dict['sigma_alpha'] = pyne.xs.channels.sigma_a_reaction(iso, 'alpha')
 
         if 'sigma_proton' in tallies:
-            xs_dict['sigma_proton'] = msnxs.sigma_reaction(iso, 'proton')
+            xs_dict['sigma_proton'] = pyne.xs.channels.sigma_a_reaction(iso, 'proton')
 
         if 'sigma_deut' in tallies:
-            xs_dict['sigma_deut'] = msnxs.sigma_reaction(iso, 'deut')
+            xs_dict['sigma_deut'] = pyne.xs.channels.sigma_a_reaction(iso, 'deut')
 
         if 'sigma_trit' in tallies:
-            xs_dict['sigma_trit'] = msnxs.sigma_reaction(iso, 'trit')
+            xs_dict['sigma_trit'] = pyne.xs.channels.sigma_a_reaction(iso, 'trit')
 
         if 'sigma_gamma_x' in tallies:
-            xs_dict['sigma_gamma_x'] = msnxs.sigma_reaction(iso, 'gamma_x')
+            xs_dict['sigma_gamma_x'] = pyne.xs.channels.sigma_a_reaction(iso, 'gamma_x')
 
         if 'sigma_2n_x' in tallies:
-            xs_dict['sigma_2n_x'] = msnxs.sigma_reaction(iso, '2n_x')
+            xs_dict['sigma_2n_x'] = pyne.xs.channels.sigma_a_reaction(iso, '2n_x')
 
         if 'sigma_t' in tallies:
             xs_dict['sigma_t'] = msnxs.sigma_t(iso, self.env['temperature'])
