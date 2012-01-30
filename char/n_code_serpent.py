@@ -826,7 +826,8 @@ class NCodeSerpent(object):
                                                                      E_g=E_g, 
                                                                      phi_n=phi_n)
                 elif tally == 'sigma_s':
-                    det['_sigma_s'] = msnxs.sigma_s(nuc, self.env['temperature'], E_n=E_n, E_g=E_g, phi_n=phi_n)
+                    det['_sigma_s'] = pyne.xs.channels.sigma_s(nuc, self.env['temperature'], 
+                                                               E_n=E_n, E_g=E_g, phi_n=phi_n)
                 else:
                     tally_rx = tally.partition('_')[2]
                     try:
@@ -949,7 +950,7 @@ class NCodeSerpent(object):
             xs_dict['sigma_s_gh'] = pyne.xs.channels.sigma_s_gh(iso, self.env['temperature'])
 
         if 'sigma_s' in tallies:
-            xs_dict['sigma_s'] = msnxs.sigma_s(iso, self.env['temperature'])
+            xs_dict['sigma_s'] = pyne.xs.channels.sigma_s(iso, self.env['temperature'])
 
         if 'chi' in tallies:
             xs_dict['chi'] = msnxs.chi(iso)
