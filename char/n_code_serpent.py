@@ -841,7 +841,8 @@ class NCodeSerpent(object):
         if 'sigma_gamma_x' in tallies:
             if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in nuc_mts):
                 tot_sig_g = det['DETsigma_gamma'][:, 10]
-                ms_rat = msnxs.metastable_ratio(nuc_zz, 'gamma', E_g=E_g, E_n=E_n, phi_n=phi_n)
+                ms_rat = pyne.xs.channels.metastable_ratio(nuc_zz, 'gamma', E_g=E_g, 
+                                                           E_n=E_n, phi_n=phi_n)
                 sig_g = tot_sig_g / (1.0 + ms_rat)
                 sig_g_x = ms_rat * sig_g
                 det['_sigma_gamma_x'] = sig_g_x
@@ -855,7 +856,8 @@ class NCodeSerpent(object):
         if 'sigma_2n_x' in tallies:
             if ('sigma_2n' in tallies) and (tallies['sigma_2n'] in nuc_mts):
                 tot_sig_2n = det['DETsigma_2n'][:, 10]
-                ms_rat = msnxs.metastable_ratio(nuc_zz, '2n', E_g=E_g, E_n=E_n, phi_n=phi_n)
+                ms_rat = pyne.xs.channels.metastable_ratio(nuc_zz, '2n', E_g=E_g, E_n=E_n, 
+                                                           phi_n=phi_n)
                 sig_2n = tot_sig_2n / (1.0 + ms_rat)
                 sig_2n_x = ms_rat * sig_2n
                 det['_sigma_2n_x'] = sig_2n_x
