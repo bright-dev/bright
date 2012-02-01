@@ -10,7 +10,7 @@ import subprocess
 ##########################
 import numpy as np
 
-import nucname
+from pyne import nucname
 from pyne.material import Material
 
 ######################

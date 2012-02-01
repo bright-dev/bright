@@ -5,14 +5,14 @@ import tables as tb
 
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 
-import nucname
+from pyne import nucname
 
 from tally_types import sigma_a_tallies
 
 np.seterr(divide='ignore')
 
 rx_h5 = None
-isos_LL = None
+nucs = None
 
 npert = None
 G = None
@@ -23,10 +23,10 @@ G = None
 
 def _run_tests(path):
     """Runs tests on a library located at path"""
-    global rx_h5, isos_LL, npert, G
+    global rx_h5, nucs, npert, G
     rx_h5 = tb.openFile(path, 'r')
 
-    isos_LL = [iso_LL for iso_LL in rx_h5.root.transmute_isos_LL]
+    nucs = [nuc for nuc in rx_h5.root.transmute_nucs]
     npert = len(rx_h5.root.perturbations)
     G = len(rx_h5.root.energy[0]) - 1
 
@@ -184,16 +184,16 @@ def test_sigma_f():
     if not hasattr(rx_h5.root, 'sigma_f'):
         raise nose.SkipTest
 
-    for iso_LL in isos_LL:
-        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
+    for nuc in nucs:
+        nuc_zz = nucname.zzaaam(nuc)
 
-        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
-        sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, iso_LL)
-        nu_sig_f_arr, nu_sig_f = read_array(rx_h5.root.nubar_sigma_f, iso_LL)
+        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, nuc)
+        sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, nuc)
+        nu_sig_f_arr, nu_sig_f = read_array(rx_h5.root.nubar_sigma_f, nuc)
 
         yield check_le, sig_f, sig_t, [sig_f_arr._v_pathname, sig_t_arr._v_pathname]
 
-        if 86 <= (iso_zz/10000):
+        if 86 <= (nuc_zz/10000):
             mask = (sig_f != 0.0)
             nu = nu_sig_f[mask] / sig_f[mask]
             yield check_le, 1.0, nu, ['1.0', 'nu(' + sig_f_arr._v_pathname + ')']
@@ -207,13 +207,13 @@ def test_chi():
     if not hasattr(rx_h5.root, 'chi'):
         raise nose.SkipTest
 
-    for iso_LL in isos_LL:    
-        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
+    for nuc in nucs:    
+        nuc_zz = nucname.zzaaam(nuc)
 
-        chi_arr, chi = read_array(rx_h5.root.chi, iso_LL)
-        sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, iso_LL)
+        chi_arr, chi = read_array(rx_h5.root.chi, nuc)
+        sig_f_arr, sig_f = read_array(rx_h5.root.sigma_f, nuc)
 
-        if 86 <= (iso_zz/10000):
+        if 86 <= (nuc_zz/10000):
             yield check_array_almost_eq, 1.0, chi.sum(axis=1), ['1.0', 'sum(' + chi_arr._v_pathname + ')']
         else:
             yield check_eq, 0.0, chi, ['0.0', chi_arr._v_pathname]
@@ -223,12 +223,12 @@ def test_sigma_s():
     if not hasattr(rx_h5.root, 'sigma_s'):
         raise nose.SkipTest
 
-    for iso_LL in isos_LL:    
-        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
+    for nuc in nucs:    
+        nuc_zz = nucname.zzaaam(nuc)
 
-        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
-        sig_s_arr, sig_s = read_array(rx_h5.root.sigma_s, iso_LL)
-        sig_s_gh_arr, sig_s_gh = read_array(rx_h5.root.sigma_s_gh, iso_LL)
+        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, nuc)
+        sig_s_arr, sig_s = read_array(rx_h5.root.sigma_s, nuc)
+        sig_s_gh_arr, sig_s_gh = read_array(rx_h5.root.sigma_s_gh, nuc)
 
         yield check_le, sig_s, sig_t, [sig_s_arr._v_pathname, sig_t_arr._v_pathname]
         yield check_array_almost_eq, sig_s, sig_s_gh.sum(axis=-2), [sig_s_arr._v_pathname, 'sum(' + sig_s_gh_arr._v_pathname + ')']
@@ -239,11 +239,11 @@ def test_sigma_a():
     if not hasattr(rx_h5.root, 'sigma_a'):
         raise nose.SkipTest
 
-    for iso_LL in isos_LL:    
-        iso_zz = nucname.LLAAAM_2_zzaaam(iso_LL)
+    for nuc in nucs:    
+        nuc_zz = nucname.zzaaam(nuc)
 
-        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, iso_LL)
-        sig_a_arr, sig_a = read_array(rx_h5.root.sigma_a, iso_LL)
+        sig_t_arr, sig_t = read_array(rx_h5.root.sigma_t, nuc)
+        sig_a_arr, sig_a = read_array(rx_h5.root.sigma_a, nuc)
 
         yield check_le, sig_a, sig_t, [sig_a_arr._v_pathname, sig_t_arr._v_pathname]
 
@@ -251,7 +251,7 @@ def test_sigma_a():
 
         for tally in sigma_a_tallies:
             if hasattr(rx_h5.root, tally):
-                sig_tally_arr, sig_tally = read_array(getattr(rx_h5.root, tally), iso_LL)
+                sig_tally_arr, sig_tally = read_array(getattr(rx_h5.root, tally), nuc)
                 yield check_le, sig_tally, sig_a, [sig_tally_arr._v_pathname, sig_a_arr._v_pathname]
                 tot_sig_a += sig_tally
 

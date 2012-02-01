@@ -21,9 +21,9 @@ from optparse import OptionParser
 #### Custom Libraries ####
 ##########################
 
-import nucname
-LLzz = nucname.LLzz
-zzLL = nucname.zzLL
+from pyne import nucname
+name_zz = nucname.name_zz
+zz_name = nucname.zz_name
 
 #################
 ### CHAR Libs ###
@@ -73,51 +73,35 @@ def parse_slice(s, size):
     return l
 
 
-def cast_iso_zzaaam(s):
-    """Obtain a zzaaam representation of the isotope."""
-    s = s.upper()
-    iso_zz = 0
+def parse_nucs(s):
+    """Parses a string into a set of nuclides."""
+    nset = set()
+    nucs = s.split(',')
 
-    try:
-        iso_zz = nucname.mixed_2_zzaaam(s)
-    except RuntimeError:
-        iso_zz = LLzz[s] * 10000
-
-    if iso_zz < 10000:
-        iso_zz = iso_zz * 10000
-    
-    return iso_zz
-
-
-def parse_isos(s):
-    """Parses a string into a set of isotopes."""
-    iset = set()
-    isos = s.split(',')
-
-    for iso in isos:
-        if len(iso) == 0:
+    for nuc in nucs:
+        if len(nuc) == 0:
             continue
-        elif '-' in iso:
-            isplit = iso.split()
-            ilower = cast_iso_zzaaam(isplit[0])
-            iupper = cast_iso_zzaaam(isplit[1])
-            if 0 == iupper%10000:
-                iupper += 10000
+        elif '-' in nuc:
+            nsplit = nuc.split()
+            nlower = nucname.zzaaam(nsplit[0])
+            nupper = nucname.zzaaam(nsplit[1])
+            if 0 == nupper%10000:
+                nupper += 10000
             else:
-                iupper += 1
-            tmpset = set(range(ilower, iupper))
+                nupper += 1
+            tmpset = set(range(nlower, nupper))
         else:
-            i = cast_iso_zzaaam(iso)
-            if 0 == i%10000:
-                irange = range(i, i + 10000)
+            n = nucname.zzaaam(nuc)
+            if 0 == n%10000:
+                nrange = range(n, n + 10000)
             else:
-                irange = [i]
-            tmpset = set(irange)
+                nrange = [n]
+            tmpset = set(nrange)
 
         # Add the union 
-        iset = (iset | tmpset)
+        nset = (nset | tmpset)
 
-    return iset
+    return nset
 
 
 def main():
@@ -287,7 +271,7 @@ def main():
     # Get the inputs indeces
     idx = parse_slice(options.NPERT, n_code.nperturbations)
 
-    isos = parse_isos(options.ISOS)
+    isos = parse_nucs(options.ISOS)
     if len(isos) == 0:
         isos = set(env['core_transmute']['zzaaam'])
     else:
