@@ -11,6 +11,7 @@ import tables as tb
 from pyne import nucname
 from pyne.material import Material, from_atom_frac
 from pyne.pyne_config import pyne_conf
+from pyne.xs.cache import xs_cache
 import pyne.xs.channels
 
 from scipy.integrate import cumtrapz
@@ -940,9 +941,9 @@ class NCodeSerpent(object):
         tallies = self.env['tallies']
 
         # Load cross-section cahce with proper values
-        msnxs.xs_cache['E_n'] = E_n
-        msnxs.xs_cache['E_g'] = E_g
-        msnxs.xs_cache['phi_n'] = phi_n
+        xs_cache['E_n'] = E_n
+        xs_cache['E_g'] = E_g
+        xs_cache['phi_n'] = phi_n
 
         xs_dict = {}
 
@@ -951,7 +952,7 @@ class NCodeSerpent(object):
             xs_dict['sigma_f'] = pyne.xs.channels.sigma_f(iso)
 
         if 'sigma_a' in tallies:
-            xs_dict['sigma_a'] = msnxs.sigma_a(iso)
+            xs_dict['sigma_a'] = pyne.xs.channels.sigma_a(iso)
 
         if 'sigma_s_gh' in tallies:
             xs_dict['sigma_s_gh'] = pyne.xs.channels.sigma_s_gh(iso, self.env['temperature'])
@@ -960,7 +961,7 @@ class NCodeSerpent(object):
             xs_dict['sigma_s'] = pyne.xs.channels.sigma_s(iso, self.env['temperature'])
 
         if 'chi' in tallies:
-            xs_dict['chi'] = msnxs.chi(iso)
+            xs_dict['chi'] = pyne.xs.channels.chi(iso)
 
         if 'sigma_gamma' in tallies:
             xs_dict['sigma_gamma'] = pyne.xs.channels.sigma_a_reaction(iso, 'gamma')
@@ -990,7 +991,7 @@ class NCodeSerpent(object):
             xs_dict['sigma_2n_x'] = pyne.xs.channels.sigma_a_reaction(iso, '2n_x')
 
         if 'sigma_t' in tallies:
-            xs_dict['sigma_t'] = msnxs.sigma_t(iso, self.env['temperature'])
+            xs_dict['sigma_t'] = pyne.xs.channels.sigma_t(iso, self.env['temperature'])
 
         return xs_dict
 
