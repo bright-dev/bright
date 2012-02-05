@@ -18,7 +18,7 @@ from scipy.integrate import cumtrapz
 
 import tally_types
 from pyne.utils import message, failure
-from m2py import convert_res, convert_dep, convert_det
+import pyne.serpent
 
 # Hide warnings from numpy
 np.seterr(divide='ignore')
@@ -1032,14 +1032,8 @@ class NCodeSerpent(object):
         dep_file = self.env['reactor'] + "_burnup_{0}_dep".format(n)
 
         # Convert files
-        convert_res(res_file + ".m")
-        convert_dep(dep_file + ".m")
-
-        # Get data
-        res = {}
-        dep = {}
-        execfile(res_file + ".py", {}, res)
-        execfile(dep_file + ".py", {}, dep)
+        res = pyne.serpent.parse_res(res_file + ".m")
+        dep = pyne.serpent.parse_dep(dep_file + ".m")
 
         return res, dep
 
@@ -1050,14 +1044,8 @@ class NCodeSerpent(object):
         det_file = self.env['reactor'] + "_xs_gen_{0}_{1}_det0".format(iso, n)
 
         # Convert files
-        convert_res(res_file + '.m')
-        convert_det(det_file + '.m')
-
-        # Get data
-        res = {}
-        det = {}
-        execfile(res_file + '.py', {}, res)
-        execfile(det_file + '.py', {}, det)
+        res = pyne.serpent.parse_res(res_file + ".m")
+        det = pyne.serpent.parse_det(det_file + '.m')
 
         return res, det
 
@@ -1068,14 +1056,8 @@ class NCodeSerpent(object):
         det_file = self.env['reactor'] + "_flux_g_{0}_det0".format(n)
 
         # Convert files
-        convert_res(res_file + '.m')
-        convert_det(det_file + '.m')
-
-        # Get data
-        res = {}
-        det = {}
-        execfile(res_file + '.py', {}, res)
-        execfile(det_file + '.py', {}, det)
+        res = pyne.serpent.parse_res(res_file + ".m")
+        det = pyne.serpent.parse_det(det_file + '.m')
 
         return res, det
 
@@ -1086,14 +1068,8 @@ class NCodeSerpent(object):
         dep_file = self.env['reactor'] + "_deltam_{0}_{1}_{2}_dep".format(iso, n, s)
 
         # Convert files
-        convert_res(res_file + '.m')
-        convert_dep(dep_file + '.m')
-
-        # Get data
-        res = {}
-        dep = {}
-        execfile(res_file + '.py', {}, res)
-        execfile(dep_file + '.py', {}, dep)
+        res = pyne.serpent.parse_res(res_file + ".m")
+        dep = pyne.serpent.parse_dep(dep_file + ".m")
 
         return res, dep
 
