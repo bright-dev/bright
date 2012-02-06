@@ -85,9 +85,9 @@ def template_extras(moffset=3):
     mat_number = {}
 
     mnum = moffset
-    for iso in defchar.core_load["MCNP"]:
+    for nuc in defchar.core_load["MCNP"]:
         mnum = mnum + 1
-        mat_number[iso] = mnum
+        mat_number[nuc] = mnum
 
     number_mat = {v: k for k, v in mat_number.items()}
 

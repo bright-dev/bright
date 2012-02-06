@@ -74,7 +74,7 @@ ene energies 1
 det phi de energies dm {detector_mat}
 
 % Group constant material
-mat xsmat 1.0 {xsiso} 1.0
+mat xsmat 1.0 {xsnuc} 1.0
 
 % Set group transfer probability to this material
 set gtpmat xsmat

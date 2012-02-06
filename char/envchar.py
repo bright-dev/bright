@@ -27,7 +27,7 @@ initial_nuc_pattern = 'initial_([A-Za-z]{0,2}\d{1,7}[Mm]?)'
 
 def update_env_for_execution(env):
     """Updates the env namespace for runs where an execution is going to occur."""
-    # Make isotopic lists
+    # Make nuclide lists
     if isinstance(env['core_load_nucs'], basestring):
         env['core_load'] = load_nuc_file(env['core_load_nucs'])
     else:
@@ -64,7 +64,7 @@ def update_env_for_execution(env):
     env['burn_regions'] = np.atleast_1d(env['burn_regions'])
     env['fuel_specific_power'] = np.atleast_1d(env['fuel_specific_power'])
 
-    # Grab initial iso perturbation
+    # Grab initial nuc perturbation
     max_mass = 0.0
     initial_nuc_keys = []
     for key in env:

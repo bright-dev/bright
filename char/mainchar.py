@@ -133,13 +133,13 @@ def main():
         default=False, help="Run the cross-section generation calculation.")
 
     parser.add_option("-m", "--delta-mass",  action="store_true", dest="RUN_DELTAM", 
-        default=False, help="Run the initial isotope sensitivity calculation.")
+        default=False, help="Run the initial nuclide sensitivity calculation.")
 
     parser.add_option("-N", action="store", dest="NPERT", 
         default='', help="Pertubation indices to calculate, in Python slice syntax.")
 
     parser.add_option("-I",  action="store", dest="ISOS", 
-        default='', help="Isotopes to calculate.")
+        default='', help="Nuclides to calculate.")
 
     parser.add_option("-S",  action="store", dest="NSENS", 
         default='', help="Sensitivity indices to calculate, in Python slice syntax.")
@@ -271,12 +271,12 @@ def main():
     # Get the inputs indeces
     idx = parse_slice(options.NPERT, n_code.nperturbations)
 
-    isos = parse_nucs(options.ISOS)
-    if len(isos) == 0:
-        isos = set(env['core_transmute']['zzaaam'])
+    nucs = parse_nucs(options.ISOS)
+    if len(nucs) == 0:
+        nucs = set(env['core_transmute']['zzaaam'])
     else:
-        isos = (isos & set(env['core_transmute']['zzaaam']))
-    ihm_isos = (isos & set(env['ihm_mat'].comp.keys()))
+        nucs = (nucs & set(env['core_transmute']['zzaaam']))
+    ihm_nucs = (nucs & set(env['ihm_mat'].comp.keys()))
 
     if 'deltam' in env:
         sidx = parse_slice(options.NSENS, len(env['deltam']))
@@ -306,11 +306,11 @@ def main():
 
         # Make Cross-sections as a separate step from the burnup calculation
         if options.RUN_XS_GEN:
-            runchar.xs_gen(idx, isos)
+            runchar.xs_gen(idx, nucs)
 
-        # Run initial isotope sensitivity calculation
+        # Run initial nuclide sensitivity calculation
         if options.RUN_DELTAM:
-            n_code.run_deltam(idx, ihm_isos, sidx)
+            n_code.run_deltam(idx, ihm_nucs, sidx)
 
     elif options.FETCH_FILES:
         # Fetches files from remote server

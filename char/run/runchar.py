@@ -46,7 +46,7 @@ class RunChar(object):
             #    self.n_code.init_h5_flux_g()
             self.n_code.init_h5_flux_g()
 
-        # Run initial isotope sensitivity calculation
+        # Run initial nuclide sensitivity calculation
         if self.env['options'].RUN_DELTAM:
             self.n_code.init_h5_deltam()
 
@@ -66,15 +66,15 @@ class RunChar(object):
             self.n_code.write_burnup(n, res, dep)
 
 
-    def xs_gen(self, idx, isos):
+    def xs_gen(self, idx, nucs):
         """Runs the cross-section generation portion of char.
 
         idx : a list of perturbation indices that 
               could be supplied to range() or slice().
-        isos : a set of isotopes to run (zzaaaam-form).
+        nucs : a set of nuclides to run (zzaaaam-form).
         """
-        isos_in_serpent = (isos & set(self.env['core_transmute_in_serpent']['zzaaam']))
-        isos_not_in_serpent = (isos & set(self.env['core_transmute_not_in_serpent']['zzaaam']))
+        nucs_in_serpent = (nucs & set(self.env['core_transmute_in_serpent']['zzaaam']))
+        nucs_not_in_serpent = (nucs & set(self.env['core_transmute_not_in_serpent']['zzaaam']))
 
         # Loop over the perturbation steps
         for n in range(*idx):
@@ -100,25 +100,25 @@ class RunChar(object):
                     phi_n = np.array(rx_h5.root.hi_res.phi_g[n][::-1])
 
             #
-            # Loop over all output isotopes...
+            # Loop over all output nuclides...
             #
             # ...that are valid in serpent
-            for iso in isos_in_serpent:
-                res, det = self.n_code.run_xs_gen_pert(iso, n, ms_n_in_serpent, E_n, E_g, phi_n)
-                self.n_code.write_xs_gen(iso, n, res, det)
+            for nuc in nucs_in_serpent:
+                res, det = self.n_code.run_xs_gen_pert(nuc, n, ms_n_in_serpent, E_n, E_g, phi_n)
+                self.n_code.write_xs_gen(nuc, n, res, det)
 
             # ...that are NOT valid in serpent
-            for iso in isos_not_in_serpent:
-                xsd = self.n_code.run_xs_mod_pert(iso, n, E_n, E_g, phi_n)
-                self.n_code.write_xs_mod(iso, n, xsd)
+            for nuc in nucs_not_in_serpent:
+                xsd = self.n_code.run_xs_mod_pert(nuc, n, E_n, E_g, phi_n)
+                self.n_code.write_xs_mod(nuc, n, xsd)
 
 
-    def deltam(self, idx, isos, sidx):
-        """Runs the isotopic sensitivity study.
+    def deltam(self, idx, nucs, sidx):
+        """Runs the nuclide sensitivity study.
 
         idx : a list of perturbation indices that 
               could be supplied to range() or slice().
-        isos : a set of isotopes to run (zzaaaam-form).
+        nucs : a set of nuclides to run (zzaaaam-form).
         sidx : a list of sensitivity indices that 
               could be supplied to range() or slice().
         """
@@ -127,17 +127,17 @@ class RunChar(object):
 
         # Loop over all perturbations.
         for n in range(*ridx):
-            # Loop over all isotopes
-            for iso_zz in isos:
-                # Calulate this isotopes new values of IHM concentration
-                iso_fracs = self.env['deltam'] * self.ihm_stream.comp[iso_zz]
+            # Loop over all nuclides
+            for nuc_zz in nucs:
+                # Calulate this nuclides new values of IHM concentration
+                nuc_fracs = self.env['deltam'] * self.ihm_stream.comp[nuc_zz]
 
-                # Skip isotopes that would be pertubed over 1 kgIHM
-                if (1.0 < iso_fracs).any():
+                # Skip nuclides that would be pertubed over 1 kgIHM
+                if (1.0 < nuc_fracs).any():
                     continue
 
-                # Loop over all isotopic sesnitivities
+                # Loop over all nuclide sesnitivities
                 for s in range(*sidx):
-                    res, dep = self.n_code.run_deltam_pert(iso_zz, n, s, iso_fracs)
-                    self.n_code.write_deltam(iso_zz, n, s, iso_fracs, res, dep)
+                    res, dep = self.n_code.run_deltam_pert(nuc_zz, n, s, nuc_fracs)
+                    self.n_code.write_deltam(nuc_zz, n, s, nuc_fracs, res, dep)
 
