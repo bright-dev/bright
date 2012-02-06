@@ -124,7 +124,7 @@ def update_env(env):
     if 'remote_dir' in env:
         env['remote_dir'] = env['remote_dir'] + "runchar/{0}/".format(env['reactor'])
         rckw['dir'] = env['remote_dir']
-    env['remote_connection'] = RemoteConnection(**rckw)
+    env['remote_connection'] = utils.RemoteConnection(**rckw)
 
     # Make Time Steps
     if 'burn_times' in env:
