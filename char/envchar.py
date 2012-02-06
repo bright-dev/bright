@@ -35,7 +35,7 @@ def update_env_for_execution(env):
     env['core_load'] = sorted(set(core_load))
 
     if isinstance(env['core_transmute_nucs'], basestring):
-        core_transmute = load_nuc_file(env['core_transmute_nucs']
+        core_transmute = load_nuc_file(env['core_transmute_nucs'])
     else:
         core_transmute = [nucname.zzaaam(nuc) for nuc in env['core_transmute_nucs']]
     env['core_transmute'] = sorted(set(core_transmute))
