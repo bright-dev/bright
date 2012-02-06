@@ -242,7 +242,7 @@ def main():
     # Prep work
     if not options.CWD:
         if env['options'].CLEAN:
-            remove(env['reactor'], True)
+            remove(env['reactor'])
 
         if env['reactor'] not in os.listdir('.'):
             os.mkdir(env['reactor'])
