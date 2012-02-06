@@ -188,7 +188,7 @@ class NCodeSerpent(object):
 
         # Find which nuclides are available in serpent
         # and which ones must be handled manually.
-        core_transmute_set = set(env['core_transmute']['zzaaam'])
+        core_transmute_set = set(env['core_transmute'])
         serpent_xs_nucs_set = serpent_xs_nucs_available(env['serpent_xsdata'])
 
         core_transmute_in_serpent = list(core_transmute_set & serpent_xs_nucs_set)
