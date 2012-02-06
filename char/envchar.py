@@ -29,14 +29,16 @@ def update_env_for_execution(env):
     """Updates the env namespace for runs where an execution is going to occur."""
     # Make nuclide lists
     if isinstance(env['core_load_nucs'], basestring):
-        env['core_load'] = load_nuc_file(env['core_load_nucs'])
+        core_load = load_nuc_file(env['core_load_nucs'])
     else:
-        env['core_load'] = sorted(nucname.zzaaam(nuc) for nuc in env['core_load_nucs'])
+        core_load = [nucname.zzaaam(nuc) for nuc in env['core_load_nucs']]
+    env['core_load'] = sorted(set(core_load))
 
     if isinstance(env['core_transmute_nucs'], basestring):
-        env['core_transmute'] = load_nuc_file(env['core_transmute_nucs'])
+        core_transmute = load_nuc_file(env['core_transmute_nucs']
     else:
-        env['core_transmute'] = sorted(nucname.zzaaam(nuc) for nuc in env['core_transmute_nucs'])
+        core_transmute = [nucname.zzaaam(nuc) for nuc in env['core_transmute_nucs']]
+    env['core_transmute'] = sorted(set(core_transmute))
 
     # Make temperature
     env['temperature'] = env.get('temperature', 600)
