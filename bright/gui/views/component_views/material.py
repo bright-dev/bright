@@ -8,11 +8,11 @@ from enthought.traits.ui.table_column import ObjectColumn
 from enthought.traits.ui.table_filter import EvalFilterTemplate, MenuFilterTemplate, RuleFilterTemplate, EvalTableFilter, TableFilter
 
 import bright
-import isoname
-import mass_stream
+from pyne import nucname
+from pyne.material import Material
 
 ###############################################################################
-# General MassStream View Helpers
+# General Material View Helpers
 ###############################################################################
 
 
@@ -34,7 +34,7 @@ MAFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))
 FPFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.fp,  name='Fission Products')
 
 
-mass_stream_editor = TableEditor(
+material_editor = TableEditor(
     columns = [ ObjectColumn(name='isotope',
                     label='Isotope',
                     #tooltip='Isotope name in natrual (LLAAAM) form.',
@@ -76,10 +76,10 @@ mass_stream_editor = TableEditor(
 
 
 
-class _MassStream_View(HasTraits):
-    """At last! A MassStream view."""
+class _Material_View(HasTraits):
+    """At last! A Material view."""
 
-    mass_stream = Instance(mass_stream.MassStream)
+    material = Instance(Material)
 
     name = Str('')
 
@@ -100,7 +100,7 @@ class _MassStream_View(HasTraits):
                 ),
             Item('iso_entries',
                 show_label  = False,
-                editor      = mass_stream_editor,
+                editor      = material_editor,
                 ),
             ),
         width     = 0.4, 
@@ -111,7 +111,7 @@ class _MassStream_View(HasTraits):
 
     def get_iso_entries_from_comp(self, comp=None):
         if comp == None:
-            comp = self.mass_stream.mult_by_mass()
+            comp = self.material.mult_by_mass()
 
         iso_entries = [ _IsoEntry(isotope=isoname.zzaaam_2_LLAAAM(iso).capitalize(), mass_weight=comp[iso]) 
                         for iso in sorted(comp.keys()) ]
@@ -143,14 +143,14 @@ class _MassStream_View(HasTraits):
         return mass
 
     @on_trait_change('iso_entries.isotope')
-    def update_mass_stream(self):
+    def update_material(self):
         comp = self.get_comp_from_iso_entries()
-        ms = mass_stream.MassStream(comp, self.mass, str(self.name))
-        self.mass_stream = ms
+        ms = Material(comp, self.mass, str(self.name))
+        self.material = ms
 
-    def update_from_mass_stream(self, ms=None):
+    def update_from_material(self, ms=None):
         if ms == None:
-            ms = self.mass_stream
+            ms = self.material
 
         self.name = ms.name
         self.mass = ms.mass
@@ -166,17 +166,17 @@ class _MassStream_View(HasTraits):
         return iso_entries
 
     def _name_default(self):
-        return self.mass_stream.name
+        return self.material.name
 
     def _mass_default(self):
-        return self.mass_stream.mass
+        return self.material.mass
 
     #
     # Changed trait methods
     #
 
     def _name_changed(self):
-        self.update_mass_stream()
+        self.update_material()
 
     def _mass_changed(self, old, new):
         # Don't zero out isotopics 
@@ -195,7 +195,7 @@ class _MassStream_View(HasTraits):
                 iso.mass_weight = iso.mass_weight * mass_ratio
 
         # Update mass stream
-        self.update_mass_stream()
+        self.update_material()
 
     @on_trait_change('iso_entries.mass_weight')
     def update_from_mass_weights(self):
@@ -204,7 +204,7 @@ class _MassStream_View(HasTraits):
 
 
     def _file_changed(self):
-        ms = bright.MassStream()
+        ms = bright.Material()
 
         rpart = self.file.rpartition('.')
 
@@ -221,40 +221,40 @@ class _MassStream_View(HasTraits):
         elif (rpart[2] in ['txt', 'TXT']):
             ms.load_from_text(str(self.file))
 
-        self.update_from_mass_stream(ms)
-        self.mass_stream = ms
+        self.update_from_material(ms)
+        self.material = ms
 
     def _iso_entries_items_changed(self):
-        self.update_mass_stream()
+        self.update_material()
 
 
 ###############################################################################
 # Mass Stream Block
 ###############################################################################
 
-def MassStream(ms_in):
+def Material(ms_in):
     """Mass Stream
     ***********
-    This provides a simple, standard way to represent fuel cycle mass flows.  The ``MassStream`` objects
+    This provides a simple, standard way to represent fuel cycle mass flows.  The ``Material`` objects
     represent the flows (arrows) between fuel cycle component objects.  A mass stream has three main attributes:
 
-    * ``MassStream.mass``: The current mass of the flow in the units of the problem.
-    * ``MassStream.comp``: A dictionary (map) of isotopes to their normalized fractional weights.  Isotopic keys are given in `zzaaam` (integer) form.
-    * ``MassStream.name``: (Optional) The label or name  of the stream.
+    * ``Material.mass``: The current mass of the flow in the units of the problem.
+    * ``Material.comp``: A dictionary (map) of isotopes to their normalized fractional weights.  Isotopic keys are given in `zzaaam` (integer) form.
+    * ``Material.name``: (Optional) The label or name  of the stream.
 
     """
 
-    if isinstance(ms_in, bright.MassStream):
+    if isinstance(ms_in, bright.Material):
         ms_out = ms_in
 
     return ms_out
 
 
-class MassStreamView(HasTraits):
+class MaterialView(HasTraits):
 
-    ms_out = Instance(mass_stream.MassStream)
+    ms_out = Instance(Material)
 
-    ms_out_view = Instance(_MassStream_View)
+    ms_out_view = Instance(_Material_View)
 
     traits_view = View(
         Item('ms_out_view',
@@ -269,16 +269,16 @@ class MassStreamView(HasTraits):
         )
 
     def _ms_out_default(self):
-        ms_out = bright.MassStream()
+        ms_out = bright.Material()
         return ms_out
 
     def _ms_out_view_default(self):
-        _msov = MassStreamView(mass_stream=self.ms_out)
+        _msov = MaterialView(material=self.ms_out)
         return _msov
 
-    @on_trait_change('ms_out_view.mass_stream')
+    @on_trait_change('ms_out_view.material')
     def _ms_out_view_changed(self):
-        self.ms_out = self.ms_out_view.mass_stream
+        self.ms_out = self.ms_out_view.material
 
 
 ###############################################################################
@@ -291,18 +291,18 @@ def NaturalUranium(nu_in):
     A natural uranium mass stream.
 
     """
-    if isinstance(nu_in, mass_stream.MassStream):
+    if isinstance(nu_in, Material):
         nu_out = nu_in
     else:
-        nu_out = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 1.0, "Natural Uranium")
+        nu_out = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 1.0, "Natural Uranium")
     return nu_out
 
 
 class _NaturalUranium_view(HasTraits):
 
-    nu_in = nu_out = Instance(mass_stream.MassStream)
+    nu_in = nu_out = Instance(Material)
 
-    nu_view = Instance(MassStreamView)
+    nu_view = Instance(MaterialView)
 
     traits_view = View(
         Item('nu_view',
@@ -321,12 +321,12 @@ class _NaturalUranium_view(HasTraits):
         return nu
 
     def _nu_view_default(self):
-        _msov = MassStreamView(mass_stream=self.nu_in)
+        _msov = MaterialView(material=self.nu_in)
         return _msov
 
-    @on_trait_change('nu_view.mass_stream')
+    @on_trait_change('nu_view.material')
     def _nu_view_changed(self):
-        self.nu_in = self.nu_out = self.nu_view.mass_stream
+        self.nu_in = self.nu_out = self.nu_view.material
 
 
 ###############################################################################
@@ -339,18 +339,18 @@ def DepletedUranium(du_in):
     A depleted uranium mass stream.
 
     """
-    if isinstance(du_in, mass_stream.MassStream):
+    if isinstance(du_in, Material):
         du_out = du_in
     else:
-        du_out = mass_stream.MassStream({922350: 0.0025, 922380: 0.9975}, 1.0, "Depleted Uranium")
+        du_out = Material({922350: 0.0025, 922380: 0.9975}, 1.0, "Depleted Uranium")
     return du_out
 
 
 class _DepletedUranium_view(HasTraits):
 
-    du_in = du_out = Instance(mass_stream.MassStream)
+    du_in = du_out = Instance(Material)
 
-    du_view = Instance(MassStreamView)
+    du_view = Instance(MaterialView)
 
     traits_view = View(
         Item('du_view',
@@ -369,12 +369,12 @@ class _DepletedUranium_view(HasTraits):
         return du
 
     def _du_view_default(self):
-        _msov = MassStreamView(mass_stream=self.du_in)
+        _msov = MaterialView(material=self.du_in)
         return _msov
 
-    @on_trait_change('du_view.mass_stream')
+    @on_trait_change('du_view.material')
     def _du_view_changed(self):
-        self.du_in = self.du_out = self.du_view.mass_stream
+        self.du_in = self.du_out = self.du_view.material
 
 
 ###############################################################################
@@ -387,18 +387,18 @@ def LowEnrichedUranium(leu_in):
     A low enriched uranium mass stream.
 
     """
-    if isinstance(leu_in, mass_stream.MassStream):
+    if isinstance(leu_in, Material):
         leu_out = leu_in
     else:
-        leu_out = mass_stream.MassStream({922350: 0.05, 922380: 0.95}, 1.0, "Low Enriched Uranium")
+        leu_out = Material({922350: 0.05, 922380: 0.95}, 1.0, "Low Enriched Uranium")
     return leu_out
 
 
 class _LowEnrichedUranium_view(HasTraits):
 
-    leu_in = leu_out = Instance(mass_stream.MassStream)
+    leu_in = leu_out = Instance(Material)
 
-    leu_view = Instance(MassStreamView)
+    leu_view = Instance(MaterialView)
 
     traits_view = View(
         Item('leu_view',
@@ -417,19 +417,19 @@ class _LowEnrichedUranium_view(HasTraits):
         return leu
 
     def _leu_view_default(self):
-        _msov = MassStreamView(mass_stream=self.leu_in)
+        _msov = MaterialView(material=self.leu_in)
         return _msov
 
-    @on_trait_change('leu_view.mass_stream')
+    @on_trait_change('leu_view.material')
     def _du_view_changed(self):
-        self.leu_in = self.leu_out = self.leu_view.mass_stream
+        self.leu_in = self.leu_out = self.leu_view.material
 
 
 
 # A sample of how the view is suppossed to work
 if __name__ == "__main__":
-    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+    nu = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
 
-    _msview = MassStreamView(mass_stream=nu)
+    _msview = MaterialView(material=nu)
     _msview.configure_traits()
 #    _msview.edit_traits()

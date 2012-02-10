@@ -58,6 +58,13 @@ class Application(HasTraits):
         comp_list = os.listdir('component_views/')
         comp_list.remove('views')
         comp_list.remove('__init__.py')
+        
+        #temporarily remove these classes (some are missing in the bright directory or code needs to be rewritten to compensate for change 
+        comp_list.remove('scatter_plot.py')
+        comp_list.remove('fuel_cycle_plot.py')
+        comp_list.remove('light_water_reactor1g.py')
+        
+      
         for i in comp_list:
             if 'init' not in i and 'util' not in i and 'lwr' not in i:
                 match = re.search('(.+).py',i)
@@ -65,7 +72,12 @@ class Application(HasTraits):
                 for n in vname_list:
                     vname_list[vname_list.index(n)] = n.capitalize()
                 vname = ''.join(vname_list)
-                exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
+                if match.group(1) == 'material':
+      
+                    exec('from pyne.{name} import {view_name}'.format(name=match.group(1), view_name=vname), {}, localdict)
+                #exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
+                else:
+                    exec('from bright.{name} import {view_name}'.format(name=match.group(1), view_name=vname), {}, localdict)
         for key, value in localdict.items():
             self.component_views[key] = value
         
