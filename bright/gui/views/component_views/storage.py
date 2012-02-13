@@ -2,20 +2,20 @@ from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trai
 
 from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor
 
-import mass_stream
+import material
 
 import bright
 
 from utils import _init_comp, _get_comp_pass_number
-from mass_stream import MassStreamView
+from material import MaterialView
 
 class StorageView(HasTraits):
 
-    IsosIn  = Instance(mass_stream.MassStream)
-    IsosOut = Instance(mass_stream.MassStream)
+    IsosIn  = Instance(material.Material)
+    IsosOut = Instance(material.Material)
 
-    IsosIn_view  = Instance(MassStreamView)
-    IsosOut_view = Instance(MassStreamView)
+    IsosIn_view  = Instance(MaterialView)
+    IsosOut_view = Instance(MaterialView)
 
     name = Str("Storage")
 
@@ -52,34 +52,34 @@ class StorageView(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
+        IsosIn = material.Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
         return IsosIn
 
     def _IsosIn_view_default(self):
-        iiv = MassStreamView(mass_stream=self.IsosIn)
+        iiv = MaterialView(material=self.IsosIn)
         return iiv
 
-    @on_trait_change('IsosIn_view.mass_stream')
+    @on_trait_change('IsosIn_view.material')
     def _IsosIn_view_changed(self):
-        self.IsosIn = self.IsosIn_view.mass_stream
+        self.IsosIn = self.IsosIn_view.material
 
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
+        IsosOut = material.Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
         return IsosOut
 
     def _IsosOut_view_default(self):
-        iov = MassStreamView(mass_stream=self.IsosOut)
+        iov = MaterialView(material=self.IsosOut)
         return iov
 
-    @on_trait_change('IsosOut_view.mass_stream')
+    @on_trait_change('IsosOut_view.material')
     def _IsosOut_view_changed(self):
-        self.IsosOut = self.IsosOut_view.mass_stream
+        self.IsosOut = self.IsosOut_view.material
 
 
 if __name__ == "__main__":
-    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")  
+    nu = material.Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")  
 
 #    _storageview = _StorageView(IsosIn = nu, IsosOut = nu )
 #    _storageview.configure_traits()
