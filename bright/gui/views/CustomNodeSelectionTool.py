@@ -15,9 +15,9 @@ class CustomNodeSelectionTool(BaseTool):
             if node.is_in(event.x, event.y):
                     for key, value in self.classes_available.items():
                         if self.variables_available[str(node.value)].__class__ == value:
-                            #x =  self.class_views[str(key)]()
-                            #print self.class_views
-                            x =  self.class_views[str(key + "View")]()
+                            x =  self.class_views[str(key)]()
+                            print self.class_views
+                            #x =  self.class_views[str(key + "View")]()
                     x.edit_traits(kind='livemodal')
                     break
 

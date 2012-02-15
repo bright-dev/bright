@@ -7,15 +7,15 @@ import material
 import bright
 
 from utils import _init_comp, _get_comp_pass_number
-from material import MaterialView
+from pyne.material import Material
 
 class StorageView(HasTraits):
 
     IsosIn  = Instance(material.Material)
     IsosOut = Instance(material.Material)
 
-    IsosIn_view  = Instance(MaterialView)
-    IsosOut_view = Instance(MaterialView)
+    IsosIn_view  = Instance(Material)
+    IsosOut_view = Instance(Material)
 
     name = Str("Storage")
 
@@ -56,7 +56,7 @@ class StorageView(HasTraits):
         return IsosIn
 
     def _IsosIn_view_default(self):
-        iiv = MaterialView(material=self.IsosIn)
+        iiv = Material(material=self.IsosIn)
         return iiv
 
     @on_trait_change('IsosIn_view.material')
@@ -70,7 +70,7 @@ class StorageView(HasTraits):
         return IsosOut
 
     def _IsosOut_view_default(self):
-        iov = MaterialView(material=self.IsosOut)
+        iov = Material(material=self.IsosOut)
         return iov
 
     @on_trait_change('IsosOut_view.material')

@@ -7,6 +7,7 @@ from graphcanvas.api import GraphView
 import os
 import re
 from CustomNodeSelectionTool import CustomNodeSelectionTool
+from CustomGraphNodeComponent import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
 import random
 
@@ -127,6 +128,7 @@ class Application(HasTraits):
         self.graph_view._graph_changed(self.model.graph)
         self.graph_view._canvas.tools.pop(1)            
         self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
+        
         #self.graph_view = GraphView(graph =self.model.graph)
         #gv = GraphView(graph = self.model.graph)
 
@@ -137,6 +139,9 @@ class Application(HasTraits):
         #import pdb; pdb.set_trace()
         gv._canvas.tools.pop(0)
         gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
+
+        #FIX THIS SO THAT IT CHANGES THE COLOR OF SPECIFIC NODES
+        #print gv._canvas.components
         return gv
     
     def _model_context_default(self):
