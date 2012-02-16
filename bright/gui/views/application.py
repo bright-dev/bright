@@ -125,6 +125,11 @@ class Application(HasTraits):
     def update_graph_view(self):
         print "yo dudes i'm workin"
         self.graph_view.graph = self.model.graph
+        
+
+        self.graph_view._graph_changed(self.graph_view, self.model.graph)
+        
+
         self.graph_view._graph_changed(self.model.graph)
         self.graph_view._canvas.tools.pop(1)            
         self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
@@ -132,10 +137,14 @@ class Application(HasTraits):
         #self.graph_view = GraphView(graph =self.model.graph)
         #gv = GraphView(graph = self.model.graph)
 
-           
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
         gv = GraphView(graph = self.model.graph)
+        
+
+        gv._graph_changed = _graph_changed
+        
+        
         #import pdb; pdb.set_trace()
         gv._canvas.tools.pop(0)
         gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
@@ -187,6 +196,21 @@ class Application(HasTraits):
         for i in self.classes_list:
             tempdict[i] = i[0] + i[1] + i[2]
         return tempdict
+
+
+def _graph_changed(self, new):
+    #print "hello world"
+    for component in self._canvas.components:
+        component.container = None
+    self._canvas._components = []
+
+    for node in new.nodes():
+     # creating a component will automatically add it to the canvas
+         CustomGraphNodeComponent(container=self._canvas, value=node)
+
+    self._canvas.graph = new
+    self._canvas._graph_layout_needed = True
+    self._canvas.request_redraw()
 
 if __name__ == '__main__':
     app = Application()

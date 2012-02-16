@@ -43,7 +43,6 @@ class CustomGraphNodeComponent(Component):
 
         font = Font(family=MODERN)
         gc.set_font(font)        
-        gc.set_fill_color((0.8,0.0,0.1,1.0))
 
         # update the size to match the text extent.
         x, y, width, height = gc.get_text_extent(self.label)
@@ -53,7 +52,7 @@ class CustomGraphNodeComponent(Component):
 
         self._draw_border(gc, view_bounds, mode)
         self._draw_text(gc, view_bounds, mode)
-
+       
     def _draw_text(self, gc, view_bounds, mode):
         pos = (self.x + self.padding_left,
                self.y2 - 2*self.padding_bottom)
@@ -87,13 +86,15 @@ class CustomGraphNodeComponent(Component):
                 x + end_radius, y,
                 end_radius)
 
-        gc.linear_gradient(x, y, x, y+100,
-                numpy.array([starting_color, ending_color]),
-                "pad")
+#        gc.linear_gradient(x, y, x, y+100,
+ #               numpy.array([starting_color, ending_color]),
+  #              "pad")
+        gc.set_fill_color((0.8,0.0,0.1,1.0))
 
         gc.draw_path()
         gc.restore_state()
-
+        #gc.rect(x,y)
+        #gc.fill_path()
     def __key_default(self):
         return self.value
 
