@@ -2,12 +2,12 @@ from class_model import ClassModel, Str, Dict
 
 class MassStream(ClassModel):
     
-    name = Str("MassStream")
+    name = Str("Material")
     var = Str("ms")
-    class_name = Str("MassStream")
+    class_name = Str("Material")
 
 
-    import_line = Str("from mass_stream import {name}")
+    import_line = Str("from pyne.material import {name}")
     instance_line = Str("{var} = {classname}({mass_dict})")
 
 

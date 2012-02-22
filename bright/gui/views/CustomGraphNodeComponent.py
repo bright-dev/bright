@@ -46,7 +46,9 @@ class CustomGraphNodeComponent(Component):
 
         # update the size to match the text extent.
         x, y, width, height = gc.get_text_extent(self.label)
-
+        
+        import pdb; pdb.set_trace()
+        
         self.width = width + self.padding_left + self.padding_right
         self.height = height + self.padding_bottom + self.padding_top
 
@@ -64,8 +66,25 @@ class CustomGraphNodeComponent(Component):
         """ Draws a nicely shaded border around the graph node
         """
         end_radius = 4
-        starting_color = numpy.array([0.0, 1.0, 1.0, 1.0, 1.0])
-        ending_color = numpy.array([1.0, 0.0, 0.0, 0.0, 1.0])
+        if 'MassStream' in str(self.value.__class__):
+            starting_color = numpy.array([0.0, 0.0, 1.0, 1.0, 0.0])
+            ending_color = numpy.array([1.0, 0.0, 0.0, 0.0, 1.0])
+        elif 'Storage' in str(self.value.__class__):
+            starting_color = numpy.array([0.0, 0.5, 0.5, 1.0, 1.0])
+            ending_color = numpy.array([1.0, 0.2, 0.2, 0.2, 1.0])
+        elif 'Reactor' in str(self.value.__class__):
+            starting_color = numpy.array([0.6, 0.0, 1.0, 1.0, 1.0])
+            ending_color = numpy.array([1.0, 0.2, 0.0, 0.0, 1.0])
+        elif 'Reprocess' in str(self.value.__class__):
+            starting_color = numpy.array([0.0, 0.5, 1.0, 1.0, 1.0])
+            ending_color = numpy.array([0.8, 0.0, 0.0, 0.0, 1.0])
+        elif 'Enrichment' in str(self.value.__class__):
+            starting_color = numpy.array([0.2, 0.0, 0.8, 1.0, 1.0])
+            ending_color = numpy.array([1.0, 0.2, 1.0, 0.2, 1.0])
+
+        else:    
+            starting_color = numpy.array([0.0, 1.0, 1.0, 1.0, 1.0])
+            ending_color = numpy.array([1.0, 0.0, 0.0, 0.0, 1.0])
 
         x = self.x
         y = self.y
@@ -86,10 +105,11 @@ class CustomGraphNodeComponent(Component):
                 x + end_radius, y,
                 end_radius)
 
-#        gc.linear_gradient(x, y, x, y+100,
- #               numpy.array([starting_color, ending_color]),
-  #              "pad")
-        gc.set_fill_color((0.8,0.0,0.1,1.0))
+        gc.linear_gradient(x, y, x, y+100,
+                numpy.array([starting_color, ending_color]),
+                "pad")
+   #     gc.set_fill_color((0.8,0.0,0.1,1.0))
+        #gc.set_fill_color(color)
 
         gc.draw_path()
         gc.restore_state()
@@ -110,3 +130,4 @@ class CustomGraphNodeComponent(Component):
 
     def _value_changed(self):
         self.request_redraw()
+

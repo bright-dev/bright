@@ -123,14 +123,15 @@ class Application(HasTraits):
 
     #@on_trait_event('model.graph_changed_event')
     def update_graph_view(self):
-        print "yo dudes i'm workin"
+        #print "yo dudes i'm workin"
         self.graph_view.graph = self.model.graph
         
 
         self.graph_view._graph_changed(self.graph_view, self.model.graph)
+ #       self.graph_view._graph_changed(self.model.graph)
         
 
-        self.graph_view._graph_changed(self.model.graph)
+        #self.graph_view._graph_changed(self.model.graph)
         self.graph_view._canvas.tools.pop(1)            
         self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
         
@@ -141,16 +142,16 @@ class Application(HasTraits):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
         gv = GraphView(graph = self.model.graph)
         
-
+        
+#        GraphView._graph_changed = _graph_changed
         gv._graph_changed = _graph_changed
-        
-        
+#        gv = GraphView(graph = self.model.graph)
+       
+#       gv._canvas.request_redraw()
         #import pdb; pdb.set_trace()
         gv._canvas.tools.pop(0)
         gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
 
-        #FIX THIS SO THAT IT CHANGES THE COLOR OF SPECIFIC NODES
-        #print gv._canvas.components
         return gv
     
     def _model_context_default(self):
@@ -178,7 +179,13 @@ class Application(HasTraits):
     def _open_changed(self):
         file_name = open_file()
         if file_name != '':
-            self.loaded_script = file_name 
+            f = open(file_name)
+            for line in f:
+                self.loaded_script += line
+            self.model.script = self.loaded_script
+            self.model.script_to_graph(self.model.script)
+           
+            #self.graph_view.graph = self.model.graph_from_script
             #self.file_name = file_name
         #self.open = False
 
@@ -199,7 +206,7 @@ class Application(HasTraits):
 
 
 def _graph_changed(self, new):
-    #print "hello world"
+    print "hello world"
     for component in self._canvas.components:
         component.container = None
     self._canvas._components = []

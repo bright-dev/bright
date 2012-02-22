@@ -144,6 +144,7 @@ class FuelCycleModel(HasTraits):
         import_set = set()
         for key, value in self.variables.items():
             import_set.add(value.add_import())
+        
         for k in import_set:
             temp_script = temp_script + k + '\n'
         self.script_imports = temp_script
@@ -228,7 +229,7 @@ class FuelCycleModel(HasTraits):
         
     def script_to_graph(self, fcm_script):
         """Given a script (in string format), script_to_graph creates an instance of the ScriptToParser class to
-           parse through and convert the string into its graphical equivalent."""
+           parse through and convert theast string into its graphical equivalent."""
         
         #create an instance of the parser class
         stg = ScriptToGraphParser()
@@ -238,8 +239,10 @@ class FuelCycleModel(HasTraits):
 
         #traverse through the nodes within the AST
         stg.visit(astrep)
-
-
+        
+        #for i in stg.graph_from_script.nodes():
+         #   print i.add_instance()
+        
         print "Loops: ", nx.simple_cycles(stg.graph_from_script), "\n"
         print "Nodes: ", stg.graph_from_script.nodes(), "\n"
         print "Edges: ", stg.graph_from_script.edges(), "\n"
@@ -285,6 +288,8 @@ class ScriptToGraphParser (ast.NodeVisitor):
             
             for p in n.value.args:
                 x = p.value.id
+                #x = p.id
+                print x
             self.graph_from_script.add_edge(x,y)
 
 
@@ -292,6 +297,10 @@ class ScriptToGraphParser (ast.NodeVisitor):
     
 if __name__ == "__main__":
     fcm = FuelCycleModel()
+    #f = open("/home/kevin/Desktop/FCM.py")
+    #fcm.script = ""
+    #for line in f:
+     #   fcm.script += line
     fcm.add_instance("sr2","Storage")
     fcm.add_instance("sr1","Storage")
     fcm.add_instance("sr3","Storage")
@@ -311,7 +320,8 @@ if __name__ == "__main__":
     #fcm.remove_variable("sr1")
     #fcm.remove_variable("sr2")
     #fcm.remove_variable("ms1")
+    #fcm.script_to_graph(fcm.script)
     fcm.script_to_graph(fcm.script)
 
-    print fcm.script
+    #print fcm.script
 
