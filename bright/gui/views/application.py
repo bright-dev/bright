@@ -127,28 +127,36 @@ class Application(HasTraits):
         self.graph_view.graph = self.model.graph
         
 
+        #Either one can be used; which one is better?#
         self.graph_view._graph_changed(self.graph_view, self.model.graph)
  #       self.graph_view._graph_changed(self.model.graph)
         
 
-        #self.graph_view._graph_changed(self.model.graph)
         self.graph_view._canvas.tools.pop(1)            
         self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
         
-        #self.graph_view = GraphView(graph =self.model.graph)
-        #gv = GraphView(graph = self.model.graph)
 
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
+        
         gv = GraphView(graph = self.model.graph)
-        
-        
-#        GraphView._graph_changed = _graph_changed
         gv._graph_changed = _graph_changed
-#        gv = GraphView(graph = self.model.graph)
-       
-#       gv._canvas.request_redraw()
-        #import pdb; pdb.set_trace()
+        gv._graph_changed(gv, self.model.graph)
+
+
+
+        
+
+
+
+        #Either this or the three lines above can be used; which one is better though?#
+        #GraphView._graph_changed = _graph_changed
+        #gv = GraphView(graph = self.model.graph)
+        #gv._graph_changed(self.model.graph)
+
+
+
+
         gv._canvas.tools.pop(0)
         gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
 
@@ -206,7 +214,6 @@ class Application(HasTraits):
 
 
 def _graph_changed(self, new):
-    print "hello world"
     for component in self._canvas.components:
         component.container = None
     self._canvas._components = []
