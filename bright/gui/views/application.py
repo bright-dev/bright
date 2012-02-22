@@ -85,24 +85,20 @@ class Application(HasTraits):
     traits_view = View(
                      VGroup(
                         HGroup(
-                            #Item('open', show_label = False, width = .05),
-                            #Item('save', show_label = False, width = .05),
-                            #Item('file_name', show_label = False, width = .05)
-                            
-                              ),
-                        HGroup(
-                            Item('classes_list', editor = ListStrEditor(activated = 'activated_formation', title = 'Classes Available', editable = False, operations = []), show_label = False, width =.25),
+                            Item('classes_list', editor = ListStrEditor(activated = 'activated_formation', title = 'Classes Available', editable = False, operations = []), show_label = False, width =.10),
                             #Item('classes_list', editor = ListEditor(trait_handler=instance_handler), style = 'readonly', show_label = False, resizable = True, width =.25),
-                            Item('_container', editor = ComponentEditor(), show_label = False, resizable = True, width =.25),
-                            Item('script', editor = CodeEditor(), show_label = False, resizable = True, width = .50)
+                            Item('_container', editor = ComponentEditor(), show_label = False, resizable = True, width =.42),
+                            Item('script', editor = CodeEditor(), show_label = False, resizable = True, width = .38)
                             ),
                         HGroup(
-                            Item('variables_list', editor = ListStrEditor(title = 'Variables In Use', editable = False, operations = []), show_label = False, resizable = True, width =.17),
+                            Item('variables_list', editor = ListStrEditor(title = 'Variables In Use', editable = False, operations = []), show_label = False, resizable = True, width =.10),
                             #Item('variables_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.17),
-                            Item('model_context', editor = ShellEditor(share = True), show_label = False)
+                            Item('model_context', editor = ShellEditor(share = True), show_label = False, width = .80)
                               )
                           ),
                   resizable = True,
+                  width = .90,
+                  height = .90,
                   handler = handle,
                   title = "Fuel Cycle Model",
                   menubar = MenuBar(Menu(handle.open, handle.save, name = "File"))
