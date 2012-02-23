@@ -220,7 +220,7 @@ exts.append(cpp_ext("bright.reactormg", ['reactormg.pyx'],
 ##########################
 ### Setup Package Data ###
 ##########################
-packages = ['bright', 'bright.lib', 'bright.gui', 'bright.gui.models', 'bright.gui.models.class_models', 
+packages = ['bright', 'bright.lib', 'bright.gui', 'bright.gui.models', 'bright.gui.models.class_models',
             'bright.gui.views', 'bright.gui.views.component_views', 'bright.gui.views.component_views.views',
             'bright.data']
 

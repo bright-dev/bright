@@ -61,11 +61,13 @@ class FuelCycleModel(HasTraits):
         for i in dirlist:
             match = re.search('(.+_model).py$', i)  #select models only
             if match:
+                #print match.group(1)
+
                 exec('from bright.gui.models.class_models.{0} import *'.format(match.group(1)), {}, localdict)  #import all classes and store into a local dictionary
                 for key, value in localdict.items():     #check for a subclass of ClassModel
                     if issubclass(value, ClassModel) and value != ClassModel:
                        self.classes_available[key] = value   #append to classes_available dictionary
- 
+        
     @on_trait_change ('script_imports, script_bright_config, script_variables, script_execution')
     def update_script(self):
         """Update the script if any of its components (script_imports, script_bright_config, script_variables, script_execution) change."""
@@ -297,6 +299,7 @@ class ScriptToGraphParser (ast.NodeVisitor):
     
 if __name__ == "__main__":
     fcm = FuelCycleModel()
+    
     #f = open("/home/kevin/Desktop/FCM.py")
     #fcm.script = ""
     #for line in f:
@@ -307,7 +310,7 @@ if __name__ == "__main__":
     fcm.add_instance("sr4","Storage")
     fcm.add_instance("sr5","Storage")
     fcm.add_instance("sr6","Storage")
-    fcm.add_instance("ms1","MassStream",{922350:1.0})
+    fcm.add_instance("ms1","Material",{922350:1.0})
     fcm.calc_comp("sr1","ms1")
     fcm.calc_comp("sr2","sr1", "ms_prod")
     fcm.calc_comp("sr3","sr2", "ms_tail")
@@ -322,6 +325,6 @@ if __name__ == "__main__":
     #fcm.remove_variable("ms1")
     #fcm.script_to_graph(fcm.script)
     fcm.script_to_graph(fcm.script)
-
+    print fcm.classes_available
     #print fcm.script
 

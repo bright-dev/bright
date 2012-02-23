@@ -1,6 +1,6 @@
 from class_model import ClassModel, Str, Dict
 
-class MassStream(ClassModel):
+class Material(ClassModel):
     
     name = Str("Material")
     var = Str("ms")

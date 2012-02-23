@@ -27,10 +27,36 @@ class E_handler(Handler):
         else:
             info.object.open = True
         return
-    
+
+    def preconfigured_lwru(self, info):
+        info.object.model.add_instance("LWRU Nu","Material")
+        info.object.model.add_instance("LWRU Enrich","Enrichment")
+        info.object.model.add_instance("LWRU Storage","Storage")
+        info.object.model.add_instance("LWRU Reactor","Reactor")
+        info.object.model.calc_comp("LWRU Storage","LWRU Nu")
+        info.object.model.calc_comp("LWRU Enrich","LWRU Nu")
+        info.object.model.calc_comp("LWRU Reactor","LWRU Enrich")
+        return
+
+    def preconfigured_lwrmox(self, info):
+        info.object.model.add_instance("LWRMOX Reprocess","Reprocess")
+        info.object.model.add_instance("LWRMOX Reactor","Reactor")
+        info.object.model.add_instance("LWRMOX Storage","Storage")
+        info.object.model.calc_comp("LWRMOX Storage","LWRMOX Reprocess")
+        info.object.model.calc_comp("LWRMOX Reactor","LWRMOX Reprocess")
+        return
+
+    def preconfigured_candu(self, info):
+        info.object.model.add_instance("LWRCANDU Nu","Material")
+        info.object.model.add_instance("LWRCANDU Reactor","Reactor")
+        info.object.model.calc_comp("LWRCANDU Reactor","LWRCANDU Nu")
+        return
+
     save = Action(name = "Save", action = "save_file")
     open = Action(name = "Open", action = "open_file")
-
+    preset1 = Action(name = "LWRU Fuel Cycle", action = "preconfigured_lwru")
+    preset2 = Action(name = "LWRMOX Fuel Cycle", action = "preconfigured_lwrmox")
+    preset3 = Action(name = "CANDU Fuel Cycle", action = "preconfigured_candu")
 
 class Application(HasTraits):
     model = Instance(FuelCycleModel)
@@ -101,7 +127,9 @@ class Application(HasTraits):
                   height = .90,
                   handler = handle,
                   title = "Fuel Cycle Model",
-                  menubar = MenuBar(Menu(handle.open, handle.save, name = "File"))
+                  menubar = MenuBar(Menu(handle.open, handle.save, name = "File"),Menu(handle.preset1, handle.preset2, handle.preset3, name = "PreSets")),
+                  
+                    
                     )
     
     def _activated_formation_changed(self):
@@ -111,7 +139,7 @@ class Application(HasTraits):
 
     def _model_default(self):
         fcm = FuelCycleModel()
-        fcm.add_instance("nu", "MassStream", {922380:0.992745, 922350:0.0072, 922340:0.000055})
+        fcm.add_instance("nu", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
         fcm.add_instance("sr1", "Storage")
         fcm.calc_comp("sr1","nu")
         self.register_views()
@@ -130,7 +158,7 @@ class Application(HasTraits):
 
         self.graph_view._canvas.tools.pop(1)            
         self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
-        
+       
 
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
@@ -162,12 +190,15 @@ class Application(HasTraits):
         return {'fc': self.model}
 
     def _classes_list_default(self):
+        #import pdb; pdb.set_trace()
+
         fcm = FuelCycleModel()
         list_temp = []
+
         for key, value in fcm.classes_available.items():
             list_temp.append(key)
         return list_temp
-
+    
     def _variables_list_default(self):
         temp_list = []    
         for key, value in self.model.variables.items():
