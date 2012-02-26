@@ -269,7 +269,7 @@ class MaterialView(HasTraits):
         )
 
     def _ms_out_default(self):
-        ms_out = bright.Material()
+        ms_out = pyne.Material()
         return ms_out
 
     def _ms_out_view_default(self):

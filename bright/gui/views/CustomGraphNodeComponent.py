@@ -26,10 +26,17 @@ class CustomGraphNodeComponent(Component):
     # changed
     _key = Any
 
-    padding_left = 5
+    """padding_left = 5
     padding_right = 5
     padding_top = 5
-    padding_bottom = 5
+    padding_bottom = 5"""
+
+    padding_left = 25
+    padding_right = 25
+    padding_top = 25
+    padding_bottom = 25
+
+    
 
     traits_view = View(HGroup(
                            spring,
@@ -39,8 +46,8 @@ class CustomGraphNodeComponent(Component):
 
     def draw(self, gc, view_bounds=None, mode="default"):
         """ Draws the graph node
-        """
-
+       """
+       
         font = Font(family=MODERN)
         gc.set_font(font)        
 
@@ -50,14 +57,15 @@ class CustomGraphNodeComponent(Component):
         #import pdb; pdb.set_trace()
         
         self.width = width + self.padding_left + self.padding_right
-        self.height = height + self.padding_bottom + self.padding_top
+        self.height = height + self.padding_bottom + self.padding_top 
+
 
         self._draw_border(gc, view_bounds, mode)
         self._draw_text(gc, view_bounds, mode)
        
     def _draw_text(self, gc, view_bounds, mode):
         pos = (self.x + self.padding_left,
-               self.y2 - 2*self.padding_bottom)
+               self.y2 - self.padding_bottom)
 
         gc.show_text(self.label, pos)
 
@@ -66,7 +74,7 @@ class CustomGraphNodeComponent(Component):
         """ Draws a nicely shaded border around the graph node
         """
         end_radius = 4
-        if 'MassStream' in str(self.value.__class__):
+        """if 'MassStream' in str(self.value.__class__):
             starting_color = numpy.array([0.0, 0.0, 1.0, 1.0, 0.0])
             ending_color = numpy.array([1.0, 0.0, 0.0, 0.0, 1.0])
         elif 'Storage' in str(self.value.__class__):
@@ -84,7 +92,10 @@ class CustomGraphNodeComponent(Component):
 
         else:    
             starting_color = numpy.array([0.0, 1.0, 1.0, 1.0, 1.0])
-            ending_color = numpy.array([1.0, 0.0, 0.0, 0.0, 1.0])
+            ending_color = numpy.array([1.0, 0.0, 0.0, 0.0, 1.0])"""
+        starting_color = numpy.array([0.0, 1.0, 1.0, 1.0, 1.0])
+        ending_color = numpy.array([1.0, 0.0, 0.0, 0.0, 1.0])
+
 
         x = self.x
         y = self.y
@@ -92,15 +103,19 @@ class CustomGraphNodeComponent(Component):
         gc.save_state()
         gc.begin_path()
         gc.move_to(x + end_radius, y)
+        
         gc.arc_to(x + self.width, y,
                 x + self.width, y + end_radius,
                 end_radius)
+        
         gc.arc_to(x + self.width, y + self.height,
                 x + self.width - end_radius, y + self.height,
                 end_radius)
+        
         gc.arc_to(x, y + self.height,
                 x, y + self.height - end_radius,
                 end_radius)
+        
         gc.arc_to(x, y,
                 x + end_radius, y,
                 end_radius)
@@ -108,9 +123,10 @@ class CustomGraphNodeComponent(Component):
         gc.linear_gradient(x, y, x, y+100,
                 numpy.array([starting_color, ending_color]),
                 "pad")
+
    #     gc.set_fill_color((0.8,0.0,0.1,1.0))
         #gc.set_fill_color(color)
-
+      
         gc.draw_path()
         gc.restore_state()
         #gc.rect(x,y)

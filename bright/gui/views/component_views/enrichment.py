@@ -2,12 +2,12 @@ from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trai
 
 from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor
 
-import mass_stream
+#import mass_stream
 
 import bright
 
 from utils import _init_comp, _get_comp_pass_number
-from mass_stream import MassStreamView
+from material import MaterialView
 
 class EnrichmentView(HasTraits):
 

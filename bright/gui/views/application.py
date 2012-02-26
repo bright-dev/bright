@@ -3,12 +3,16 @@ from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, Cod
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
-from graphcanvas.api import GraphView
+from graph_view import GraphView
+#from graphcanvas.api import GraphView
 import os
 import re
+from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
 from CustomNodeSelectionTool import CustomNodeSelectionTool
 from CustomGraphNodeComponent import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
+from graph_container import GraphContainer
+from CustomDagContainer import CustomDAGContainer
 import random
 
 class E_handler(Handler):
@@ -61,6 +65,7 @@ class E_handler(Handler):
 class Application(HasTraits):
     model = Instance(FuelCycleModel)
     graph_view = Instance(GraphView)
+    graph_container = Instance(CustomDAGContainer)
     _container = DelegatesTo('graph_view')
     script = DelegatesTo('model')
     model_context = Dict
@@ -90,6 +95,7 @@ class Application(HasTraits):
         comp_list.remove('scatter_plot.py')
         comp_list.remove('fuel_cycle_plot.py')
         comp_list.remove('light_water_reactor1g.py')
+        comp_list.remove('enrichment.py')
         
       
         for i in comp_list:
@@ -101,13 +107,13 @@ class Application(HasTraits):
                 vname = ''.join(vname_list)
                 if match.group(1) == 'material':
       
-                    exec('from pyne.{name} import {view_name}'.format(name=match.group(1), view_name=vname), {}, localdict)
+                    exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
                 #exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
-                else:
-                    exec('from bright.{name} import {view_name}'.format(name=match.group(1), view_name=vname), {}, localdict)
+         #       else:
+          #          exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
         for key, value in localdict.items():
             self.component_views[key] = value
-        
+        #import pdb; pdb.set_trace()
     traits_view = View(
                      VGroup(
                         HGroup(
@@ -149,27 +155,28 @@ class Application(HasTraits):
     def update_graph_view(self):
         #print "yo dudes i'm workin"
         self.graph_view.graph = self.model.graph
-        
 
         #Either one can be used; which one is better?#
         self.graph_view._graph_changed(self.graph_view, self.model.graph)
  #       self.graph_view._graph_changed(self.model.graph)
+        #self.graph_view._GraphView__canvas_default(self.graph_view)
         
-
         self.graph_view._canvas.tools.pop(1)            
         self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
-       
 
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
-        
         gv = GraphView(graph = self.model.graph)
+        
+                  
+        #import pdb; pdb.set_trace()
+
+
         gv._graph_changed = _graph_changed
         gv._graph_changed(gv, self.model.graph)
 
 
-
-        
+    
 
 
 
@@ -185,7 +192,9 @@ class Application(HasTraits):
         gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
 
         return gv
-    
+    def _graph_container_default(self):
+        #self.graph_container.draw = draw
+        return CustomDAGContainer()
     def _model_context_default(self):
         return {'fc': self.model}
 
@@ -253,10 +262,115 @@ def _graph_changed(self, new):
     self._canvas._graph_layout_needed = True
     self._canvas.request_redraw()
 
+def _GraphView__canvas_default(self):
+    """ default setter for _canvas
+    """
+    if self.graph.is_directed():
+        container = CustomDAGContainer(style=self.layout)
+    else:
+        container = GraphContainer(style=self.layout)
+
+    container.tools.append(CustomNodeSelectionTool(component=container))
+    container.tools.append(GraphNodeHoverTool(component=container,
+                                                  callback=self._on_hover))
+    return container
+
+
+
+def draw(self, gc, view_bounds=None, mode="default"):
+    if self._layout_needed:
+        self.do_layout()
+    # draw each component first to ensure their position and size
+    # are more or less finalized
+    component_dict = {}
+    for component in self.components:
+        component.draw(gc, view_bounds, mode)
+        component_dict[component.value] = component
+    # draw the connectors
+    # connectors will always originate on a side
+    # and terminate on the top or bottom
+    line_starts = []
+    line_ends = []
+    for edge in self.graph.edges():
+        orig = component_dict[edge[0]]
+        dest = component_dict[edge[1]]
+        if orig.y < dest.y:
+            # up
+            orig_y = orig.y + dest.height/2
+            dest_y = dest.y
+        else:
+            # down
+            orig_y = orig.y + dest.height/2
+            dest_y = dest.y + dest.height
+
+        if orig.x < dest.x:
+            # right
+            orig_x = orig.x + orig.width
+            dest_x = dest.x + dest.width/2
+        else:
+            # left
+            orig_x = orig.x
+            dest_x = dest.x + dest.width/2
+
+        line_starts.append([orig_x, orig_y])
+        line_ends.append([dest_x, dest_y])
+
+        with gc:
+            gc.set_stroke_color((.5,.5,.5))
+            gc.set_fill_color((1,1,1,0))
+
+        # TODO: expose weighed parameters
+        attributes = self.graph.get_edge_data(*edge)
+        if 'weight' in attributes:
+            weight = attributes['weight']
+            if weight < 0.5:
+                phase = 3 * 2.5;
+                pattern = 3 * numpy.array((5,5))
+                gc.set_line_dash(pattern,phase)
+                gc.set_line_cap(CAP_BUTT)
+
+            if self.graph.is_directed():
+                gc.set_fill_color((.5,.5,.5,1))
+                if orig.x < dest.x:
+                    gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
+                else:
+                    gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
+
+            gc.move_to(orig_x, orig_y)
+            gc.line_to(dest_x, dest_y)
+            gc.draw_path()
+
+    line_starts = numpy.array(line_starts)
+    line_ends = numpy.array(line_ends)
+
+
+    if self.graph.is_directed():
+        a = 0.707106781   # sqrt(2)/2
+        vec = line_ends - line_starts
+        unit_vec = vec / numpy.sqrt(vec[:,0] ** 2 + vec[:,1] ** 2)[:, numpy.newaxis]
+            
+        with gc:
+            gc.set_fill_color((1,1,1,0))
+
+            # Draw the left arrowhead (for an arrow pointing straight up)
+            arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
+            gc.begin_path()
+            gc.line_set(line_ends, arrow_ends)
+            gc.stroke_path()
+
+            # Draw the right arrowhead (for an arrow pointing straight up)
+            arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, -a], [a, a]])) * 10
+            gc.begin_path()
+            gc.line_set(line_ends, arrow_ends)
+            gc.stroke_path()
+
+
+
 if __name__ == '__main__':
     app = Application()
     #app.register_views()
     app.configure_traits()
     
+
 
 
