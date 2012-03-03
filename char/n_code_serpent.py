@@ -21,6 +21,8 @@ import tally_types
 from pyne.utils import message, failure
 import pyne.serpent
 
+from char import utils
+
 # Hide warnings from numpy
 np.seterr(divide='ignore')
 
