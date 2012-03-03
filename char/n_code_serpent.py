@@ -192,11 +192,11 @@ class NCodeSerpent(object):
         core_transmute_set = set(env['core_transmute'])
         serpent_xs_nucs_set = serpent_xs_nucs_available(env['serpent_xsdata'])
 
-        core_transmute_in_serpent = list(core_transmute_set & serpent_xs_nucs_set)
-        core_transmute_not_in_serpent = list(core_transmute_set - serpent_xs_nucs_set)
+        core_transmute_in_serpent = sorted(core_transmute_set & serpent_xs_nucs_set)
+        core_transmute_not_in_serpent = sorted(core_transmute_set - serpent_xs_nucs_set)
 
-        env['core_transmute_in_serpent'] = nuc_list_conversions(core_transmute_in_serpent)
-        env['core_transmute_not_in_serpent'] = nuc_list_conversions(core_transmute_not_in_serpent)
+        env['core_transmute_in_serpent'] = core_transmute_in_serpent
+        env['core_transmute_not_in_serpent'] = core_transmute_not_in_serpent
 
         # Make temperature
         env['temp_flag'] = utils.temperature_flag(env['temperature'])
