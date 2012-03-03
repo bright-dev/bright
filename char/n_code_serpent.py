@@ -23,6 +23,7 @@ from pyne.utils import message, failure
 import pyne.serpent
 
 from char import utils
+from char.tally_types import restricted_tallies
 
 # Hide warnings from numpy
 np.seterr(divide='ignore')
