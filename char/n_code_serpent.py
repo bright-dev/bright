@@ -1142,7 +1142,8 @@ class NCodeSerpent(object):
         tally_group = rx_h5.createGroup(base_group, tally, gstring.format(tally=tally))
 
         # Add nuclide arrays for this tally to this group.
-        for nuc_LL in self.env['core_transmute']['LLAAAM']: 
+        for nuc in self.env['core_transmute']:
+            nuc_LL = nucname.name(nuc)
             rx_h5.createArray(tally_group, nuc_LL, init_array, astring.format(tally=tally, nuc=nuc_LL))
 
 
