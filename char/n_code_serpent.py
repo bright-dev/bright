@@ -116,15 +116,11 @@ def serpent_mt_avaliable(xsdata, nucs, temp_flag, verbosity=100):
             print("  Nuclide {0:>7} {1:>11}".format(nuc_zz, nuc_serp_flag))
 
         # Get the MT numbers
-        #mts = ace.mt(*xsdata_dict[nuc_serp_flag])
-        print(nuc_serp_flag, xsdata_dict[nuc_serp_flag])
         ace_lib = ace.Library(xsdata_dict[nuc_serp_flag][1])
         ace_lib.read()
         nuc_tab = ace_lib.find_table(xsdata_dict[nuc_serp_flag][0])
         nuc_tab._read_mtr()
         mts = set(rx.MT for rx in nuc_tab.reactions)
-        print(mts)
-        #
         nuc_mt = (mts | serpent_mt_always)
 
         if (nuc_zz, temp_flag) in restricted_tallies:
