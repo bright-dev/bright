@@ -10,6 +10,7 @@ import numpy as np
 import tables as tb
 
 from pyne import nucname
+from pyne import ace
 from pyne.material import Material, from_atom_frac
 from pyne.pyne_config import pyne_conf
 from pyne.xs.cache import xs_cache
@@ -92,8 +93,7 @@ def serpent_mt_avaliable(xsdata, nucs, temp_flag, verbosity=100):
 
     Returns:
         * nuc_mt (dict of sets): A dictionary whose keys are nuclides (zzaaam) and whose 
-          keys are sets of MT numbers that serpent has available.
-    """
+          keys are sets of MT numbers that serpent has available."""
     if 0 < verbosity:
         print(message("Grabbing valid MT numbers for available nuclides:"))
 
@@ -115,7 +115,12 @@ def serpent_mt_avaliable(xsdata, nucs, temp_flag, verbosity=100):
             print("  Nuclide {0:>7} {1:>11}".format(nuc_zz, nuc_serp_flag))
 
         # Get the MT numbers
-        mts = ace.mt(*xsdata_dict[nuc_serp_flag])
+        #mts = ace.mt(*xsdata_dict[nuc_serp_flag])
+        ace_lib = ace.Library(xsdata_dict[nuc_serp_flag][1])
+        nuc_tab = ace_lib.find_table(nuc_serp_flag)
+        mts = set(nuc_tab._read_mtr())
+        print mts
+        #
         nuc_mt = (mts | serpent_mt_always)
 
         if (nuc_zz, temp_flag) in restricted_tallies:
