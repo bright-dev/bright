@@ -1,6 +1,7 @@
 """A class to setup, run, and parse Serpent."""
 from __future__ import print_function
 import os
+import re
 import sys
 import subprocess
 from itertools import product
