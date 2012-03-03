@@ -119,7 +119,7 @@ def serpent_mt_avaliable(xsdata, nucs, temp_flag, verbosity=100):
         ace_lib = ace.Library(xsdata_dict[nuc_serp_flag][1])
         nuc_tab = ace_lib.find_table(nuc_serp_flag)
         mts = set(nuc_tab._read_mtr())
-        print mts
+        print(mts)
         #
         nuc_mt = (mts | serpent_mt_always)
 
