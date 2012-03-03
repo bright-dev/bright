@@ -471,7 +471,7 @@ class NCodeSerpent(object):
             bu['depletion_times'] += '{0:>8.4G}\n'.format(bt)
 
         bu['transmute_inventory'] = ''
-        for nuc in self.env['core_transmute']['zzaaam']:
+        for nuc in self.env['core_transmute']:
             bu['transmute_inventory'] += '{0:>8}\n'.format(nuc)
 
         return bu
@@ -1102,17 +1102,19 @@ class NCodeSerpent(object):
         p.append(self.perturbations)
 
         # Add the nuclide tracking arrays.  
-        rx_h5.createArray(base_group, 'nucstrack', np.array(self.env['core_transmute']['zzaaam']), 
+        rx_h5.createArray(base_group, 'nucstrack', np.array(self.env['core_transmute']), 
                           "Nuclides to track, copy of transmute_nucs_zz")
 
-        rx_h5.createArray(base_group, 'load_nucs_zz', np.array(self.env['core_load']['zzaaam']), 
+        rx_h5.createArray(base_group, 'load_nucs_zz', np.array(self.env['core_load']), 
                           "Core loading nuclides [zzaaam]")
-        rx_h5.createArray(base_group, 'load_nucs_LL', np.array(self.env['core_load']['LLAAAM']), 
+        rx_h5.createArray(base_group, 'load_nucs_LL', np.array(\
+                          [nucname.name(nuc) for nuc in self.env['core_load']]), 
                           "Core loading nuclides [LLAAAM]")
 
-        rx_h5.createArray(base_group, 'transmute_nucs_zz', np.array(self.env['core_transmute']['zzaaam']), 
+        rx_h5.createArray(base_group, 'transmute_nucs_zz', np.array(self.env['core_transmute']), 
                           "Core transmute nuclides [zzaaam]")
-        rx_h5.createArray(base_group, 'transmute_nucs_LL', np.array(self.env['core_transmute']['LLAAAM']), 
+        rx_h5.createArray(base_group, 'transmute_nucs_LL', np.array(\
+                          [nucname.name(nuc) for nuc in self.env['core_transmute']]), 
                           "Core transmute nuclides [LLAAAM]")
 
         # Close HDF5 file
