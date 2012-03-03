@@ -273,9 +273,9 @@ def main():
 
     nucs = parse_nucs(options.ISOS)
     if len(nucs) == 0:
-        nucs = set(env['core_transmute']['zzaaam'])
+        nucs = set(env['core_transmute'])
     else:
-        nucs = (nucs & set(env['core_transmute']['zzaaam']))
+        nucs = (nucs & set(env['core_transmute']))
     ihm_nucs = (nucs & set(env['ihm_mat'].comp.keys()))
 
     if 'deltam' in env:
