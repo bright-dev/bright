@@ -205,7 +205,7 @@ class NCodeSerpent(object):
 
         # Grab the MT numbers that are available for all valid nuclides
         env['nuc_mts'] = serpent_mt_avaliable(env['serpent_xsdata'], 
-                                              env['core_transmute_in_serpent']['zzaaam'], 
+                                              env['core_transmute_in_serpent'], 
                                               env['temp_flag'], 
                                               env['verbosity'])
         return env
