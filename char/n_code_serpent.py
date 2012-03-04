@@ -262,7 +262,7 @@ class NCodeSerpent(object):
             # generate a non-pertubed stream
             all_nucs = set(self.env['ihm_mat'].comp.keys())
             non_pert_nucs = all_nucs - pert_nucs
-            non_pert_stream = self.env['ihm_mat'].get_sub_stream(non_pert_nucs)
+            non_pert_stream = self.env['ihm_mat'][non_pert_nucs]
             non_pert_stream.mass = 1.0 - pert_stream.mass
 
             # generate an initial heavy metal stream
@@ -534,7 +534,7 @@ class NCodeSerpent(object):
         # generate a non-pertubed stream
         all_nucs = set(self.ihm_mat.comp.keys())
         non_pert_nucs = all_nucs - pert_nuc
-        non_pert_stream = self.ihm_mat.getSubStreamInt(list(non_pert_nucs))
+        non_pert_stream = self.ihm_mat[non_pert_nucs]
         non_pert_stream.mass = 1.0 - pert_stream.mass
 
         # generate an initial heavy metal stream

@@ -83,8 +83,8 @@ class RunChar(object):
             ms_n.from_hdf5(self.env['reactor'] + ".h5", "/Ti0", n, protocol=0)
 
             # Calc restricted mass streams
-            ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent'])
-            ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent'])
+            ms_n_in_serpent = ms_n[self.env['core_transmute_in_serpent']]
+            ms_n_not_in_serpent = ms_n[self.env['core_transmute_not_in_serpent']]
 
             # Read in some common parameters from the data file
             with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
