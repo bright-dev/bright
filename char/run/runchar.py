@@ -71,10 +71,10 @@ class RunChar(object):
 
         idx : a list of perturbation indices that 
               could be supplied to range() or slice().
-        nucs : a set of nuclides to run (zzaaaam-form).
+        nucs : a set of nuclides to run (zzaaam-form).
         """
-        nucs_in_serpent = (nucs & set(self.env['core_transmute_in_serpent']['zzaaam']))
-        nucs_not_in_serpent = (nucs & set(self.env['core_transmute_not_in_serpent']['zzaaam']))
+        nucs_in_serpent = (nucs & set(self.env['core_transmute_in_serpent']))
+        nucs_not_in_serpent = (nucs & set(self.env['core_transmute_not_in_serpent']))
 
         # Loop over the perturbation steps
         for n in range(*idx):
@@ -83,8 +83,8 @@ class RunChar(object):
             ms_n.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", n)
 
             # Calc restricted mass streams
-            ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent']['zzaaam'])
-            ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent']['zzaaam'])
+            ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent'])
+            ms_n_not_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_not_in_serpent'])
 
             # Read in some common parameters from the data file
             with tb.openFile(self.env['reactor'] + ".h5", 'r') as  rx_h5:
