@@ -774,7 +774,7 @@ class NCodeSerpent(object):
             if (o == self.nperturbations) or (self.perturbations[o][-1] == 0.0):
                 o = n - 1
             ms_o = Material()
-            ms_o.load_from_hdf5(self.env['reactor'] + ".h5", "/Ti0", o)
+            ms_o.from_hdf5(self.env['reactor'] + ".h5", "/Ti0", o)
 
             # make a new mass weight guess
             mw_nuc = 0.001 * ms_o.comp[nuc_zz]
