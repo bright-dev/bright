@@ -80,7 +80,7 @@ class RunChar(object):
         for n in range(*idx):
             # Grab the Material at this time.
             ms_n = Material()
-            ms_n.from_hdf5(self.env['reactor'] + ".h5", "/Ti0", n)
+            ms_n.from_hdf5(self.env['reactor'] + ".h5", "/Ti0", n, protocol=0)
 
             # Calc restricted mass streams
             ms_n_in_serpent = ms_n.get_sub_stream(self.env['core_transmute_in_serpent'])
