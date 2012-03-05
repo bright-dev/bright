@@ -52,18 +52,7 @@ class CustomGraphNodeComponent(Component):
         gc.set_font(font)        
 
         # update the size to match the text extent.
-        text = self.label
-        if len(text) > 20:
-            x, y = gc.get_text_extent(self.label)
-            width = 50
-            height = 50
-        else:
-            x, y, width, height = gc.get_text_extent(self.label)
-        #x, y, width, height = gc.get_text_extent(self.label)
-        #import pdb; pdb.set_trace()
         x, y, width, height = gc.get_text_extent(self.label)
-#        import pdb; pdb.set_trace()
-
         #import pdb; pdb.set_trace()
         
         self.width = width + self.padding_left + self.padding_right
@@ -154,8 +143,8 @@ class CustomGraphNodeComponent(Component):
             text = str(self.value)
         #if len(text) > 20:
          #   text =  text[0:17] + "..."
-        if len(text) > 20:
-            text =  text[0:17] + "\n    " + text[18:len(text)]
+        #if len(text) > 20:
+         #   text =  text[0:17] + "\n    " + text[18:len(text)]
         return text
 
     def _value_changed(self):
