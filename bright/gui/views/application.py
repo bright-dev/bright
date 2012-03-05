@@ -151,14 +151,11 @@ class Application(HasTraits):
                     
                     )
     def _activated_formation_changed(self):	
-<<<<<<< HEAD
         self.model.add_instance(self.activated_formation.strip() + " " + str(self.instancekey[self.activated_formation][1]), self.instancekey[self.activated_formation][0])
         self.instancekey[self.activated_formation][1] += 1
         #self.model.add_instance(self.instancekey[self.activated_formation] + str(random.randint(0,9)), self.activated_formation) 
-=======
 	
         self.model.add_instance(self.instancekey[self.activated_formation] + str(random.randint(0,9)), self.activated_formation) 
->>>>>>> f79612095f5f0bea9975226fcd825a16cfc6241f
         
 
 
@@ -221,13 +218,10 @@ class Application(HasTraits):
 
         fcm = FuelCycleModel()
         list_temp = []
-<<<<<<< HEAD
         x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast Reactor", "    CANDU",
                      "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interim Storage Facility",
-=======
         x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast", "    CANDU",
                      "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interlm Storage Facility",
->>>>>>> f79612095f5f0bea9975226fcd825a16cfc6241f
                       "    Geologic Repository"]
 
         for key, value in fcm.classes_available.items():
@@ -246,11 +240,8 @@ class Application(HasTraits):
                list_temp.append(x[7])
                list_temp.append(x[8])
             
-<<<<<<< HEAD
         #import pdb; pdb.set_trace()
-=======
        # import pdb; pdb.set_trace()
->>>>>>> f79612095f5f0bea9975226fcd825a16cfc6241f
         
 
         return list_temp
