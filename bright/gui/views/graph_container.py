@@ -82,8 +82,8 @@ class GraphContainer(Container):
                            max(50, self.components[0].height)*2*radius]
 
             for component in self.components:
-                component.x = self.width * layout[component._key][0]
-                component.y = self.height * layout[component._key][1]
+                component.x = self.width * layout[component._key][0]*3
+                component.y = self.height * layout[component._key][1]*3
         self._graph_layout_needed = False
 
 
