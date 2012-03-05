@@ -31,7 +31,7 @@ class GraphContainer(Container):
         def _apply_graphviz_layout(layout):
             min_x = min([pos[0] for pos in layout.values()])
             max_y = max([pos[1] for pos in layout.values()])
-           
+            
             for component in self.components:
                 component.x = layout[component._key][0] - min_x
                 component.y = self.height - max_y + layout[component._key][1]
@@ -76,7 +76,6 @@ class GraphContainer(Container):
             _apply_graphviz_layout(layout)
         else:
             layout = networkx.spring_layout(self.graph)
-
             # resize the bounds to fit the graph
             radius = numpy.log2(len(layout))
             self.bounds = [max(75, self.components[0].width)*2*radius,
@@ -91,7 +90,6 @@ class GraphContainer(Container):
     def draw(self, gc, view_bounds=None, mode="default"):
         if self._layout_needed:
             self.do_layout()
-        print "sup"
         # draw each component first to ensure their position and size
         # are more or less finalized
         component_dict = {}

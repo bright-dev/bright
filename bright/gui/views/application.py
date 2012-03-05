@@ -1,5 +1,5 @@
-from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool, Event
-from traitsui.api import View, InstanceEditor, Item, HGroup, VGroup, Tabbed, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
+from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool, Event, Int
+from traitsui.api import View, InstanceEditor, Item, Group, HGroup, VGroup, Tabbed, TreeEditor, TreeNode, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
@@ -62,6 +62,11 @@ class E_handler(Handler):
     preset2 = Action(name = "LWRMOX Fuel Cycle", action = "preconfigured_lwrmox")
     preset3 = Action(name = "CANDU Fuel Cycle", action = "preconfigured_candu")
 
+
+    
+
+
+
 class Application(HasTraits):
     model = Instance(FuelCycleModel)
     graph_view = Instance(GraphView)
@@ -83,7 +88,7 @@ class Application(HasTraits):
     handle = E_handler()
     activated_formation = Any
     instancekey = Dict
-    
+    count = Int(1)
 
     def register_views(self):
         localdict = {}
@@ -97,7 +102,7 @@ class Application(HasTraits):
         comp_list.remove('light_water_reactor1g.py')
         comp_list.remove('enrichment.py')
         
-      
+        
         for i in comp_list:
             if 'init' not in i and 'util' not in i and 'lwr' not in i:
                 match = re.search('(.+).py',i)
@@ -114,14 +119,17 @@ class Application(HasTraits):
         for key, value in localdict.items():
             self.component_views[key] = value
         #import pdb; pdb.set_trace()
-    traits_view = View(
+
+        
+    traits_view =View(
                      VGroup(
                         HGroup(
                             Item('classes_list', editor = ListStrEditor(activated = 'activated_formation', title = 'Classes Available', editable = False, operations = []), show_label = False, width =.10),
+                            #Item('classes_list', editor = tree_editor, resizable = False),
                             #Item('classes_list', editor = ListEditor(trait_handler=instance_handler), style = 'readonly', show_label = False, resizable = True, width =.25),
-                            Item('_container', editor = ComponentEditor(), show_label = False, resizable = True, width =.42),
+                            Item('_container', editor = ComponentEditor(), show_label = False, resizable = True, width =.52),
                             Item('script', editor = CodeEditor(), show_label = False, resizable = True, width = .38)
-                            ),
+                            ), 
                         HGroup(
                             Item('variables_list', editor = ListStrEditor(title = 'Variables In Use', editable = False, operations = []), show_label = False, resizable = True, width =.10),
                             #Item('variables_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.17),
@@ -129,17 +137,19 @@ class Application(HasTraits):
                               )
                           ),
                   resizable = True,
-                  width = .90,
-                  height = .90,
-                  handler = handle,
+                  width = 1,
+                  height = 1,
+                  handler = handle, 
+                  #handler = TreeHandler(),
                   title = "Fuel Cycle Model",
                   menubar = MenuBar(Menu(handle.open, handle.save, name = "File"),Menu(handle.preset1, handle.preset2, handle.preset3, name = "PreSets")),
-                  
+                       
                     
                     )
-    
-    def _activated_formation_changed(self):
-        self.model.add_instance(self.instancekey[self.activated_formation] + str(random.randint(0,9)), self.activated_formation) 
+    def _activated_formation_changed(self):	
+        self.model.add_instance(self.activated_formation.strip() + " " + str(self.instancekey[self.activated_formation][1]), self.instancekey[self.activated_formation][0])
+        self.instancekey[self.activated_formation][1] += 1
+        #self.model.add_instance(self.instancekey[self.activated_formation] + str(random.randint(0,9)), self.activated_formation) 
         
 
 
@@ -199,13 +209,32 @@ class Application(HasTraits):
         return {'fc': self.model}
 
     def _classes_list_default(self):
-        #import pdb; pdb.set_trace()
 
         fcm = FuelCycleModel()
         list_temp = []
+        x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast Reactor", "    CANDU",
+                     "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interim Storage Facility",
+                      "    Geologic Repository"]
 
         for key, value in fcm.classes_available.items():
             list_temp.append(key)
+            if(key == "Reactor"):
+               list_temp.append(x[2])
+               list_temp.append(x[3])
+	       list_temp.append(x[4])
+            elif(key =="Material"):
+	       list_temp.append(x[0])
+               list_temp.append(x[1])
+            elif(key == "Reprocess"):
+               list_temp.append(x[5])
+               list_temp.append(x[6])
+            elif(key == "Storage"):
+               list_temp.append(x[7])
+               list_temp.append(x[8])
+            
+        #import pdb; pdb.set_trace()
+        
+
         return list_temp
     
     def _variables_list_default(self):
@@ -244,8 +273,23 @@ class Application(HasTraits):
     
     def _instancekey_default(self):
         tempdict = {}
+        """for i in self.classes_list:
+	    if (i[0] == ' '):
+	        tempdict[i] = i[4] + i[5] + i[6] + i[7] 
+            else:
+		tempdict[i] = i[0] + i[1] + i[2]"""
+	#import pdb; pdb.set_trace()
         for i in self.classes_list:
-            tempdict[i] = i[0] + i[1] + i[2]
+            if ("Reactor" in i) or ("CANDU" in i):
+                tempdict[i] = ["Reactor",0]
+            elif "Mine" in i:
+                tempdict[i] = ["Material",0]
+            elif "Storage" in i or "Repository" in i:
+                tempdict[i] = ["Storage",0]
+            elif "Reprocess" in i:
+                tempdict[i] = ["Reprocess",0]
+            else:
+                tempdict[i] = [i,0]
         return tempdict
 
 
@@ -256,7 +300,7 @@ def _graph_changed(self, new):
 
     for node in new.nodes():
      # creating a component will automatically add it to the canvas
-         CustomGraphNodeComponent(container=self._canvas, value=node)
+        CustomGraphNodeComponent(container=self._canvas, value=node)
 
     self._canvas.graph = new
     self._canvas._graph_layout_needed = True
