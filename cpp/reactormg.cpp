@@ -117,9 +117,23 @@ void bright::ReactorMG::loadlib(std::string libfile)
   H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
 
   // Load isos
-  I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/load_isos_zz", H5::PredType::NATIVE_INT);
-  J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
-  K = h5wrap::h5_array_to_cpp_set<int>(&rmglib, "/transmute_isos_zz", H5::PredType::NATIVE_INT);
+  std::string load_zz, transmute_zz;
+  if (h5wrap::path_exists(&rmglib, "/load_isos_zz"))
+  {
+    load_zz = "/load_isos_zz";
+    transmute_zz = "/transmute_isos_zz";
+  }
+  else if (h5wrap::path_exists(&rmglib, "/load_nucs_zz"))
+  {
+    load_zz = "/load_nucs_zz";
+    transmute_zz = "/transmute_nucs_zz";
+  }
+  else
+    throw h5wrap::PathNotFound(libfile, "/load_nucs_zz or /load_nucs_zz");
+
+  I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, load_zz,       H5::PredType::NATIVE_INT);
+  J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, transmute_zz, H5::PredType::NATIVE_INT);
+  K = h5wrap::h5_array_to_cpp_set<int>(&rmglib, transmute_zz, H5::PredType::NATIVE_INT);
 
   // Load perturbation table
   perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
