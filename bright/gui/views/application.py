@@ -1,12 +1,14 @@
-from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool, Event, Int
-from traitsui.api import View, InstanceEditor, Item, Group, HGroup, VGroup, Tabbed, TreeEditor, TreeNode, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
+from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, 
+                       Dict, List, Set, Str, File, Button, Enum, Bool, Event, Int
+from traitsui.api import View, InstanceEditor, Item, Group, HGroup, VGroup, 
+                         Tabbed, TreeEditor, TreeNode, CodeEditor, ShellEditor, 
+                         FileEditor, TitleEditor, TableEditor, ListEditor, 
+                         ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from bright.gui.views.custom_graph_canvas.graph_view import GraphView
 #from graphcanvas.api import GraphVieW
-#TESTESTESTEST
-# kevin like a boss
 import os
 import re
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
@@ -99,7 +101,8 @@ class Application(HasTraits):
         comp_list.remove('views')
         comp_list.remove('__init__.py')
         
-        #temporarily remove these classes (some are missing in the bright directory or code needs to be rewritten to compensate for change 
+        #temporarily remove these classes (some are missing in the bright 
+        #directory or code needs to be rewritten to compensate for change 
         comp_list.remove('scatter_plot.py')
         comp_list.remove('fuel_cycle_plot.py')
         comp_list.remove('light_water_reactor1g.py')
@@ -127,16 +130,43 @@ class Application(HasTraits):
     traits_view =View(
                      VGroup(
                         HGroup(
-                            Item('classes_list', editor = ListStrEditor(activated = 'activated_formation', title = 'Classes Available', editable = False, operations = []), show_label = False, width =.10),
-                            #Item('classes_list', editor = tree_editor, resizable = False),
-                            #Item('classes_list', editor = ListEditor(trait_handler=instance_handler), style = 'readonly', show_label = False, resizable = True, width =.25),
-                            Item('_container', editor = ComponentEditor(), show_label = False, resizable = True, width =.52),
-                            Item('script', editor = CodeEditor(), show_label = False, resizable = True, width = .38)
+                            Item('classes_list', 
+                                 editor = ListStrEditor(
+                                                        activated = 'activated_formation', 
+                                                        title = 'Classes Available', 
+                                                        editable = False, operations = []
+                                                       ), 
+                                 show_label = False, width =.10
+                                ),
+                            Item('_container', 
+                                 editor = ComponentEditor(), 
+                                 show_label = False, 
+                                 resizable = True, 
+                                 width =.52
+                                ),
+                            Item('script', 
+                                 editor = CodeEditor(), 
+                                 show_label = False, 
+                                 resizable = True, 
+                                 width = .38)
                             ), 
                         HGroup(
-                            Item('variables_list', editor = ListStrEditor(title = 'Variables In Use', editable = False, operations = []), show_label = False, resizable = True, width =.10),
-                            #Item('variables_list', editor = ListEditor(), style = 'readonly', show_label = False, resizable = True, width =.17),
-                            Item('model_context', editor = ShellEditor(share = True), show_label = False, width = .80)
+                            Item('variables_list', 
+                                 editor = ListStrEditor(
+                                                        title = 'Variables In Use', 
+                                                        editable = False, 
+                                                        operations = []
+                                                       ), 
+                                 show_label = False, 
+                                 resizable = True, 
+                                 width =.10
+                                ),
+
+                            Item('model_context', 
+                                 editor = ShellEditor(share = True), 
+                                 show_label = False, 
+                                 width = .80
+                                )
                               )
                           ),
                   resizable = True,
@@ -176,7 +206,12 @@ class Application(HasTraits):
         #self.graph_view._GraphView__canvas_default(self.graph_view)
         
         self.graph_view._canvas.tools.pop(1)            
-        self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=self.graph_view._canvas))
+        self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, 
+                                                                     variables_available = self.model.variables, 
+                                                                     class_views = self.component_views, 
+                                                                     component=self.graph_view._canvas
+                                                                    )
+                                            )
 
     def _graph_view_default(self):
         self.on_trait_event(self.update_graph_view, 'model.graph_changed_event')
@@ -203,7 +238,12 @@ class Application(HasTraits):
 
 
         gv._canvas.tools.pop(0)
-        gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, variables_available = self.model.variables, class_views = self.component_views, component=gv._canvas))
+        gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, 
+                                                        variables_available = self.model.variables, 
+                                                        class_views = self.component_views, 
+                                                        component=gv._canvas
+                                                        )
+                                )
 
         return gv
     def _graph_container_default(self):
@@ -283,7 +323,7 @@ class Application(HasTraits):
 	        tempdict[i] = i[4] + i[5] + i[6] + i[7] 
             else:
 		tempdict[i] = i[0] + i[1] + i[2]"""
-	#import pdb; pdb.set_trace()
+
         for i in self.classes_list:
             if ("Reactor" in i) or ("CANDU" in i):
                 tempdict[i] = ["Reactor",0]
