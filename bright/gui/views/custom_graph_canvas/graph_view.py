@@ -6,10 +6,10 @@ from traits.api import HasTraits, Instance, Dict, Any, Enum, \
         on_trait_change, Property, cached_property, List
 from traitsui.api import View, Item
 
-from custom_dag_container import CustomDAGContainer
-from graph_container import GraphContainer
-from custom_graph_node_component import CustomGraphNodeComponent
-from custom_node_selection_tool import CustomNodeSelectionTool
+from bright.gui.views.custom_graph_canvas.custom_dag_container import CustomDAGContainer
+from bright.gui.views.custom_graph_canvas.graph_container import GraphContainer
+from bright.gui.views.custom_graph_canvas.custom_graph_node_component import CustomGraphNodeComponent
+from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
 
 def graph_from_dict(d):

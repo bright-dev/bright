@@ -4,12 +4,12 @@ from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from bright.gui.views.custom_graph_canvas.graph_view import GraphView
-#from graphcanvas.api import GraphVieW
+#from graphcanvas.api import GraphView
 import os
 import re
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
 from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
-from bright.gui.views.custom_graph_canvas.custom_graph_node_component import CustomGraphNodeComponent
+from custom_graph_node_component import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
 from bright.gui.views.custom_graph_canvas.graph_container import GraphContainer
 from bright.gui.views.custom_graph_canvas.custom_dag_container import CustomDAGContainer
@@ -192,11 +192,13 @@ class Application(HasTraits):
                     
                     )
     def _activated_formation_changed(self):	
-        self.model.add_instance(self.activated_formation.strip() + " " + str(self.instancekey[self.activated_formation][1]), self.instancekey[self.activated_formation][0])
+        variable_name = self.activated_formation.strip().lower()
+        variable_name = '_'.join(variable_name.split(' '))
+        self.model.add_instance(variable_name + str(self.instancekey[self.activated_formation][1]), self.instancekey[self.activated_formation][0])
         self.instancekey[self.activated_formation][1] += 1
         #self.model.add_instance(self.instancekey[self.activated_formation] + str(random.randint(0,9)), self.activated_formation) 
-	
-        
+
+            
 
 
     def _model_default(self):
@@ -213,7 +215,10 @@ class Application(HasTraits):
         self.graph_view.graph = self.model.graph
 
         #Either one can be used; which one is better?#
+
         self.graph_view._graph_changed(self.graph_view, self.model.graph)
+
+
  #       self.graph_view._graph_changed(self.model.graph)
         #self.graph_view._GraphView__canvas_default(self.graph_view)
         

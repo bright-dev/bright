@@ -25,13 +25,13 @@ class _IsoEntry(HasTraits):
     mass_weight = Float(0.0)
 
 # Mass Stream isotopic filters
-UFilter   = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 == 92,        name='Uranium')
-PUFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 == 94,        name='Plutonium')
-LANFilter = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.lan, name='Lanthanides')
-ACTFilter = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.act, name='Actinides')
-TRUFilter = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.tru, name='Transuranics')
-MAFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.ma,  name='Minor Actinides')
-FPFilter  = TableFilter(allowed=lambda x: isoname.mixed_2_zzaaam(str(x.isotope))/10000 in isoname.fp,  name='Fission Products')
+UFilter   = TableFilter(allowed=lambda x: nucname.zzaam(str(x.isotope))/10000 == 92,        name='Uranium')
+PUFilter  = TableFilter(allowed=lambda x: nucname.zzaam(str(x.isotope))/10000 == 94,        name='Plutonium')
+LANFilter = TableFilter(allowed=lambda x: nucname.zzaam(str(x.isotope))/10000 in isoname.lan, name='Lanthanides')
+ACTFilter = TableFilter(allowed=lambda x: nucname.zzaam(str(x.isotope))/10000 in isoname.act, name='Actinides')
+TRUFilter = TableFilter(allowed=lambda x: nucname.zzaam(str(x.isotope))/10000 in isoname.tru, name='Transuranics')
+MAFilter  = TableFilter(allowed=lambda x: nucname.zzaam(str(x.isotope))/10000 in isoname.ma,  name='Minor Actinides')
+FPFilter  = TableFilter(allowed=lambda x: nucname.zzaam(str(x.isotope))/10000 in isoname.fp,  name='Fission Products')
 
 
 material_editor = TableEditor(
@@ -113,7 +113,7 @@ class _Material_View(HasTraits):
         if comp == None:
             comp = self.material.mult_by_mass()
 
-        iso_entries = [ _IsoEntry(isotope=isoname.zzaaam_2_LLAAAM(iso).capitalize(), mass_weight=comp[iso]) 
+        iso_entries = [ _IsoEntry(isotope=nucname.zzaam(iso).capitalize(), mass_weight=comp[iso]) 
                         for iso in sorted(comp.keys()) ]
         return iso_entries
 
@@ -128,7 +128,7 @@ class _Material_View(HasTraits):
 
         for iso in self.iso_entries:
             try:
-                isozz = isoname.mixed_2_zzaaam(str(iso.isotope))
+                isozz = nucname.mixed_2_zzaaam(str(iso.isotope))
             except RuntimeError:
                 continue
 
@@ -204,7 +204,7 @@ class _Material_View(HasTraits):
 
 
     def _file_changed(self):
-        ms = bright.Material()
+        ms = Material()
 
         rpart = self.file.rpartition('.')
 
@@ -244,7 +244,7 @@ def Material(ms_in):
 
     """
 
-    if isinstance(ms_in, bright.Material):
+    if isinstance(ms_in, pyne.Material):
         ms_out = ms_in
 
     return ms_out
@@ -269,7 +269,7 @@ class MaterialView(HasTraits):
         )
 
     def _ms_out_default(self):
-        ms_out = pyne.Material()
+        ms_out = Material()
         return ms_out
 
     def _ms_out_view_default(self):
@@ -428,8 +428,10 @@ class _LowEnrichedUranium_view(HasTraits):
 
 # A sample of how the view is suppossed to work
 if __name__ == "__main__":
-    nu = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+#    nu = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+    nu = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
+    #leu = Material({'U238': 0.96, 'U235': 0.04}, 42, 'LEU')
 
-    _msview = MaterialView(material=nu)
-    _msview.configure_traits()
+    #_msview = MaterialView(material=nu)
+    #_msview.configure_traits()
 #    _msview.edit_traits()

@@ -82,7 +82,7 @@ class StorageView(HasTraits):
 if __name__ == "__main__":
     nu =  Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")  
 
-#    _storageview = _StorageView(IsosIn = nu, IsosOut = nu )
-#    _storageview.configure_traits()
+    _storageview = StorageView(IsosIn = nu, IsosOut = nu )
+    _storageview.configure_traits()
 
 #    Storage(nu)

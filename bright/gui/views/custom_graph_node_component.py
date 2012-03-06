@@ -34,7 +34,7 @@ class CustomGraphNodeComponent(Component):
     padding_left = 25
     padding_right = 25
     padding_top = 25
-    padding_bottom = 100
+    padding_bottom = 25
 
     
 
