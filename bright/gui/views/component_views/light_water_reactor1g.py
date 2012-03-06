@@ -1,11 +1,11 @@
-from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trait_change, Int, Array, Bool, List, Enum
+from traits.api import HasTraits, Float, Str, Range, Instance, on_trait_change, Int, Array, Bool, List, Enum
 
-from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor, HGroup, Label, spring, RangeEditor
+from traitsui.api import View, Item, Tabbed, Group, InstanceEditor, HGroup, Label, spring, RangeEditor
 
-from enthought.chaco.api import OverlayPlotContainer, Plot, ArrayPlotData
-from enthought.enable.component_editor import ComponentEditor
-from enthought.chaco.tools.cursor_tool import CursorTool, BaseCursorTool
-from enthought.chaco.base import n_gon
+from chaco.api import OverlayPlotContainer, Plot, ArrayPlotData
+from enable.component_editor import ComponentEditor
+from chaco.tools.cursor_tool import CursorTool, BaseCursorTool
+from chaco.base import n_gon
 from numpy import linspace, sin, sqrt, transpose
 
 import mass_stream

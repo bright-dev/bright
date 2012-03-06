@@ -3,12 +3,12 @@
 import numpy as np
 
 # Enthought library imports
-from enthought.chaco.api import create_line_plot, OverlayPlotContainer, Plot, PlotLabel
-from enthought.chaco.tools.api import PanTool, ZoomTool
-from enthought.chaco.tools.cursor_tool import CursorTool, BaseCursorTool
-from enthought.enable.component_editor import ComponentEditor
-from enthought.traits.api import HasTraits, Instance, on_trait_change
-from enthought.traits.ui.api import View, Item, HGroup, VGroup
+from chaco.api import create_line_plot, OverlayPlotContainer, Plot, PlotLabel
+from chaco.tools.api import PanTool, ZoomTool
+from chaco.tools.cursor_tool import CursorTool, BaseCursorTool
+from enable.component_editor import ComponentEditor
+from traits.api import HasTraits, Instance, on_trait_change
+from traitsui.api import View, Item, HGroup, VGroup
 
 from metasci import SolveLine
 
@@ -116,7 +116,7 @@ def _burnup_criticality_estimator_plot(BU_F_, k_F_, BUt, batches):
     
 
 if __name__=='__main__':
-    from enthought.traits.api import Array
+    from traits.api import Array
 
     class BurnupView(HasTraits):
         burnup_plot = Instance(OverlayPlotContainer)

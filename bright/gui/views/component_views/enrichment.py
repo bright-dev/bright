@@ -1,6 +1,6 @@
-from enthought.traits.api import HasTraits, Float, Str, Range, Instance, on_trait_change
+from traits.api import HasTraits, Float, Str, Range, Instance, on_trait_change
 
-from enthought.traits.ui.api import View, Item, Tabbed, Group, InstanceEditor
+from traitsui.api import View, Item, Tabbed, Group, InstanceEditor
 
 #import mass_stream
 

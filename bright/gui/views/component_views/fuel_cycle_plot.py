@@ -2,20 +2,20 @@
 import numpy as np
 from numpy import arange, sort, compress, arange
 from numpy.random import random
-from enthought.enable.example_support import DemoFrame, demo_main
+from enable.example_support import DemoFrame, demo_main
 # Enthought library imports
-from enthought.enable.api import Component, ComponentEditor, Window
+from enable.api import Component, ComponentEditor, Window
 
-from enthought.traits.api import HasTraits, Instance, Array, Str, File, Any, on_trait_change
-from enthought.traits.ui.api import Item, Group, View, Tabbed, VGroup, HGroup
+from traits.api import HasTraits, Instance, Array, Str, File, Any, on_trait_change
+from traitsui.api import Item, Group, View, Tabbed, VGroup, HGroup
 
 # Chaco imports
-from enthought.chaco.api import AbstractDataSource, ArrayPlotData, Plot, \
+from chaco.api import AbstractDataSource, ArrayPlotData, Plot, \
                                  HPlotContainer, LassoOverlay
-from enthought.chaco.tools.api import LassoSelection, ScatterInspector
+from chaco.tools.api import LassoSelection, ScatterInspector
 
-from enthought.chaco.api import ArrayPlotData
-from enthought.chaco.tools.api import PanTool, ZoomTool
+from chaco.api import ArrayPlotData
+from chaco.tools.api import PanTool, ZoomTool
 
 import tables as tb
 

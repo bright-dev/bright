@@ -2,18 +2,18 @@
 import numpy as np
 from numpy import arange, sort, compress, arange
 from numpy.random import random
-from enthought.enable.example_support import DemoFrame, demo_main
+from enable.example_support import DemoFrame, demo_main
 # Enthought library imports
-from enthought.enable.api import Component, ComponentEditor, Window
-from enthought.traits.api import HasTraits, Instance, Array, Str
-from enthought.traits.ui.api import Item, Group, View
+from enable.api import Component, ComponentEditor, Window
+from traits.api import HasTraits, Instance, Array, Str
+from traitsui.api import Item, Group, View
 # Chaco imports
-from enthought.chaco.api import AbstractDataSource, ArrayPlotData, Plot, \
+from chaco.api import AbstractDataSource, ArrayPlotData, Plot, \
                                  HPlotContainer, LassoOverlay
-from enthought.chaco.tools.api import LassoSelection, ScatterInspector
+from chaco.tools.api import LassoSelection, ScatterInspector
 
-from enthought.chaco.api import ArrayPlotData
-from enthought.chaco.tools.api import PanTool, ZoomTool
+from chaco.api import ArrayPlotData
+from chaco.tools.api import PanTool, ZoomTool
 
 
 ### Display Scatter Plot ######################################################

@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 
 import numpy as np
-from enthought.traits.api import HasTraits, Instance, Str, Float, File, List, on_trait_change, Range
-from enthought.traits.ui.api import View, Item, Group, VGroup, HGroup, TableEditor, InstanceEditor, Tabbed
+from traits.api import HasTraits, Instance, Str, Float, File, List, on_trait_change, Range
+from traitsui.api import View, Item, Group, VGroup, HGroup, TableEditor, InstanceEditor, Tabbed
 
-from enthought.traits.ui.table_column import ObjectColumn
-from enthought.traits.ui.table_filter import EvalFilterTemplate, MenuFilterTemplate, RuleFilterTemplate, EvalTableFilter, TableFilter
+from traitsui.table_column import ObjectColumn
+from traitsui.table_filter import EvalFilterTemplate, MenuFilterTemplate, RuleFilterTemplate, EvalTableFilter, TableFilter
 
 import bright
 from pyne import nucname
