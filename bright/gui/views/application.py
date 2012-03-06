@@ -6,6 +6,7 @@ from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from graph_view import GraphView
 #from graphcanvas.api import GraphVieW
 #TESTESTESTEST
+# kevin like a boss
 import os
 import re
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
