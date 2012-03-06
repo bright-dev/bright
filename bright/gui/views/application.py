@@ -94,7 +94,8 @@ class Application(HasTraits):
 
     def register_views(self):
         localdict = {}
-        comp_list = os.listdir('component_views/')
+        local_dir = os.path.split(__file__)[0]
+        comp_list = os.listdir(os.path.join(local_dir, 'component_views/'))
         comp_list.remove('views')
         comp_list.remove('__init__.py')
         
