@@ -4,7 +4,8 @@ from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from graph_view import GraphView
-#from graphcanvas.api import GraphVie
+#from graphcanvas.api import GraphVieW
+#TESTESTESTEST
 import os
 import re
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
