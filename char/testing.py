@@ -26,7 +26,7 @@ def _run_tests(path):
     global rx_h5, nucs, npert, G
     rx_h5 = tb.openFile(path, 'r')
 
-    nucs = [nuc for nuc in rx_h5.root.transmute_nucs]
+    nucs = rx_h5.root.transmute_nucs_LL[:]
     npert = len(rx_h5.root.perturbations)
     G = len(rx_h5.root.energy[0]) - 1
 
