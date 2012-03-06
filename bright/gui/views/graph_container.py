@@ -13,9 +13,8 @@ class GraphContainer(Container):
     
     bounds = [350, 350]
     graph = Instance(networkx.Graph)
-    import pdb; pdb.set_trace()
     style = Enum('spring', 'tree', 'shell', 'circular')
-
+    print "HELLO THIS WORKS"
     # graph layout is different than Enable's layout: graph layout is
     # the relative positioning on nodes, and is very expensive
     _graph_layout_needed = Bool(True)
