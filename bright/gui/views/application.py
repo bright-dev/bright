@@ -3,7 +3,7 @@ from traitsui.api import View, InstanceEditor, Item, Group, HGroup, VGroup, Tabb
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
-from bright.gui.views.custom_graph_canvas.graph_view import GraphView
+from graph_view import GraphView
 #from graphcanvas.api import GraphView
 import os
 import re
@@ -11,7 +11,7 @@ from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
 from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
 from custom_graph_node_component import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
-from bright.gui.views.custom_graph_canvas.graph_container import GraphContainer
+from graph_container import GraphContainer
 from bright.gui.views.custom_graph_canvas.custom_dag_container import CustomDAGContainer
 from bright.gui.views.custom_graph_canvas.io_coordinate import IOPair
 import random
