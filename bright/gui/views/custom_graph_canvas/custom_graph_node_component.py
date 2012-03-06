@@ -11,7 +11,7 @@ from traitsui.api import View, Item, spring, HGroup
 class CustomGraphNodeComponent(Component):
     """ An Enable Component which represents a graph node.
     """
-
+    circle_node = {}
     # The level from the root. This is used for layout and may not be
     # meaningful in graphs with no root level.
     level = Int(0)
@@ -103,8 +103,8 @@ class CustomGraphNodeComponent(Component):
         gc.begin_path()
         gc.move_to(x + end_radius, y)
         
-        
-        
+        ## pretend that <1,1> for IO circles
+        """
         gc.arc_to(x + self.width, y,
                 x + self.width, y + end_radius,
                 end_radius)
@@ -120,11 +120,22 @@ class CustomGraphNodeComponent(Component):
         gc.arc_to(x, y,
                 x + end_radius, y,
                 end_radius)
-
+	"""
+	
+	# input circle (right side)
+	#import pdb; pdb.set_trace()
+	gc.arc(10,10,3, -numpy.pi/2,numpy.pi/2) 	
+	gc.arc(x, (y+self.height)/2 , 2, -numpy.pi/2, numpy.pi/2)
+	gc.arc(x, (y+self.height)/2 , -2, -numpy.pi/2, numpy.pi/2)
+	
+	#output circle (left side)
+	gc.arc(x+self.width, (y+self.height)/2, 2, -numpy.pi/2, numpy.pi/2)	
+	gc.arc(x+self.width, (y+self.height)/2, -2, -numpy.pi/2, numpy.pi/2)	
+	"""
         gc.linear_gradient(x, y, x, y+100,
                 numpy.array([starting_color, ending_color]),
                 "pad")
-
+	"""
    #     gc.set_fill_color((0.8,0.0,0.1,1.0))
         #gc.set_fill_color(color)
       

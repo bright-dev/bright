@@ -13,6 +13,7 @@ from bright.gui.views.custom_graph_canvas.custom_graph_node_component import Cus
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
 from bright.gui.views.custom_graph_canvas.graph_container import GraphContainer
 from bright.gui.views.custom_graph_canvas.custom_dag_container import CustomDAGContainer
+from bright.gui.views.custom_graph_canvas.io_coordinate import IOPair
 import random
 
 class E_handler(Handler):
@@ -268,10 +269,36 @@ class Application(HasTraits):
 
         fcm = FuelCycleModel()
         list_temp = []
+	#circle_temp = {}
+	#pair = IOPair()
         x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast Reactor", "    CANDU",
                      "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interim Storage Facility",
                       "    Geologic Repository"]
-
+	"""	
+	for name in x:
+	    name.strip()
+	    if name == "Uranium Mine":
+		pair.set_coordinate(0,1)
+		circle_temp[name] = pair
+	    elif name == "Pressurized Water Reactor":
+		pair.set_coordinate(1,1)
+		circle_temp[name] = pair
+	    elif name == "Sodium Fast Reactor":
+		pair.set_coordinate(2,1)
+		circle_temp[name] = pair
+	    elif name == "CANDU" || "Interim Storage Facility":
+		pair.set_coordinate(1,1)
+		circle_temp[name] = pair
+            elif name == "Aqueous Reprocess Plant" || "Electrochemical Reprocessing Plant":
+		pair.set_coordinate(1,4)		
+		circle_temp[name] = pair
+	    elif name == "Geologic Repository"
+                pair.set_coordinate(1,0)
+		circle_temp[name] = pair
+	    else if Enchrichment not in circle_temp:
+		pair.set_coordinate(1,2)
+		circle_temp["Enrichment"] = pair
+        """    					
         for key, value in fcm.classes_available.items():
             list_temp.append(key)
             if(key == "Reactor"):
@@ -349,7 +376,6 @@ class Application(HasTraits):
                 tempdict[i] = [i,0]
         return tempdict
 
-
 def _graph_changed(self, new):
     for component in self._canvas.components:
         component.container = None
@@ -364,8 +390,10 @@ def _graph_changed(self, new):
     self._canvas.request_redraw()
 
 def _GraphView__canvas_default(self):
+    
     """ default setter for _canvas
     """
+    import pdb; pdb.set_trace()
     if self.graph.is_directed():
         container = CustomDAGContainer(style=self.layout)
     else:
@@ -452,7 +480,7 @@ def draw(self, gc, view_bounds=None, mode="default"):
             
         with gc:
             gc.set_fill_color((1,1,1,0))
-
+	    import pdb; pdb.set_trace()
             # Draw the left arrowhead (for an arrow pointing straight up)
             arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
             gc.begin_path()
