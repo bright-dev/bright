@@ -291,10 +291,10 @@ class Application(HasTraits):
 	    elif name == "Sodium Fast Reactor":
 		pair.set_coordinate(2,1)
 		circle_temp[name] = pair
-	    elif name == "CANDU" || "Interim Storage Facility":
+	    elif name == "CANDU" or "Interim Storage Facility":
 		pair.set_coordinate(1,1)
 		circle_temp[name] = pair
-            elif name == "Aqueous Reprocess Plant" || "Electrochemical Reprocessing Plant":
+            elif name == "Aqueous Reprocess Plant" or "Electrochemical Reprocessing Plant":
 		pair.set_coordinate(1,4)		
 		circle_temp[name] = pair
 	    elif name == "Geologic Repository"
@@ -469,6 +469,8 @@ def draw(self, gc, view_bounds=None, mode="default"):
                     gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
                 else:
                     gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
+	    gc.arc(orig_x,orig_y, 2, -numpy.pi,numpy.pi/2)
+	    gc.arc(orig_x, orig_y, -2, -numpy.pi/2,numpy.pi/2)
 
             gc.move_to(orig_x, orig_y)
             gc.line_to(dest_x, dest_y)

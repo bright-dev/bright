@@ -13,7 +13,7 @@ class GraphContainer(Container):
     
     bounds = [350, 350]
     graph = Instance(networkx.Graph)
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     style = Enum('spring', 'tree', 'shell', 'circular')
 
     # graph layout is different than Enable's layout: graph layout is
@@ -142,6 +142,7 @@ class GraphContainer(Container):
                 if self.graph.is_directed():
                     gc.set_fill_color((.5,.5,.5,1))
                     if orig.x < dest.x:
+			import pdb; pdb.set_trace()
                         gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
                     else:
                         gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
@@ -163,6 +164,7 @@ class GraphContainer(Container):
                 gc.set_fill_color((1,1,1,0))
 
                 # Draw the left arrowhead (for an arrow pointing straight up)
+		#import pdb; pdb.set_trace()
                 arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
                 gc.begin_path()
                 gc.line_set(line_ends, arrow_ends)
