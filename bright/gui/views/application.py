@@ -10,11 +10,11 @@ from graph_view import GraphView
 import os
 import re
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
-from CustomNodeSelectionTool import CustomNodeSelectionTool
-from CustomGraphNodeComponent import CustomGraphNodeComponent
+from custom_node_selection_tool import CustomNodeSelectionTool
+from custom_graph_node_component import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
 from graph_container import GraphContainer
-from CustomDagContainer import CustomDAGContainer
+from custom_dag_container import CustomDAGContainer
 import random
 
 class E_handler(Handler):
