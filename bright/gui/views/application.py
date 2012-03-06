@@ -1,9 +1,5 @@
-from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, 
-                       Dict, List, Set, Str, File, Button, Enum, Bool, Event, Int
-from traitsui.api import View, InstanceEditor, Item, Group, HGroup, VGroup, 
-                         Tabbed, TreeEditor, TreeNode, CodeEditor, ShellEditor, 
-                         FileEditor, TitleEditor, TableEditor, ListEditor, 
-                         ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
+from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool, Event, Int
+from traitsui.api import View, InstanceEditor, Item, Group, HGroup, VGroup, Tabbed, TreeEditor, TreeNode, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
@@ -130,7 +126,8 @@ class Application(HasTraits):
     traits_view =View(
                      VGroup(
                         HGroup(
-                            Item('classes_list', 
+                            Item(
+                                 'classes_list', 
                                  editor = ListStrEditor(
                                                         activated = 'activated_formation', 
                                                         title = 'Classes Available', 
@@ -138,20 +135,23 @@ class Application(HasTraits):
                                                        ), 
                                  show_label = False, width =.10
                                 ),
-                            Item('_container', 
+                            Item(
+                                 '_container', 
                                  editor = ComponentEditor(), 
                                  show_label = False, 
                                  resizable = True, 
                                  width =.52
                                 ),
-                            Item('script', 
+                            Item(
+                                 'script', 
                                  editor = CodeEditor(), 
                                  show_label = False, 
                                  resizable = True, 
                                  width = .38)
                             ), 
                         HGroup(
-                            Item('variables_list', 
+                            Item(
+                                 'variables_list', 
                                  editor = ListStrEditor(
                                                         title = 'Variables In Use', 
                                                         editable = False, 
@@ -162,7 +162,8 @@ class Application(HasTraits):
                                  width =.10
                                 ),
 
-                            Item('model_context', 
+                            Item(
+                                 'model_context', 
                                  editor = ShellEditor(share = True), 
                                  show_label = False, 
                                  width = .80
@@ -175,7 +176,18 @@ class Application(HasTraits):
                   handler = handle, 
                   #handler = TreeHandler(),
                   title = "Fuel Cycle Model",
-                  menubar = MenuBar(Menu(handle.open, handle.save, name = "File"),Menu(handle.preset1, handle.preset2, handle.preset3, name = "PreSets")),
+                  menubar = MenuBar(
+                                    Menu(
+                                         handle.open, handle.save, 
+                                         name = "File"
+                                        ),
+                                    Menu(
+                                         handle.preset1, 
+                                         handle.preset2, 
+                                         handle.preset3, 
+                                         name = "PreSets"
+                                        )
+                                    ),
                        
                     
                     )
