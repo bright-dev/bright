@@ -87,7 +87,7 @@ class Pbs(RunChar):
         time_msg = "{0:.3G}".format((t2-t1)/60.0)
         self.env['logger'].info("Transport executed in {0} minutes.".format(time_msg))
         if 0 < self.env['verbosity']:
-            print(message("\nTransport executed in {0:time} minutes.\n", time_msg ))
+            print(message("\nTransport executed in {0} minutes.\n".format(time_msg )))
 
 
     def run_remotely(self):
@@ -164,7 +164,7 @@ class Pbs(RunChar):
 
         if 0 < self.env['verbosity']:
             print(message("{0}Process ID: {1}".format(rflag, self.pid)))
-            print(message("{0}Process Runtime: {1:time} min.", rflag, self.prt))
+            print(message("{0}Process Runtime: {1} min.".format(rflag, self.prt)))
 
         raise SystemExit
 
