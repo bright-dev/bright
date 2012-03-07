@@ -15,3 +15,4 @@ pair = io_pair()
 pair.set_coordinate(1,2)
 print pair.coordinate, pair.left, pair.right
 """
+print "Hello world"

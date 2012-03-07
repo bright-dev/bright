@@ -38,7 +38,6 @@ def graph_from_dict(d):
 class GraphView(HasTraits):
     """ View containing visualization of a networkx graph.
     """
-
     # The graph to be visualized
     graph = Instance(networkx.Graph)
     nodes = Property(List, depends_on='graph')
