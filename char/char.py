@@ -326,7 +326,7 @@ def main():
 
         # Run initial isotope sensitivity calculation
         if options.RUN_DELTAM:
-            n_code.run_deltam(idx, ihm_isos, sidx)
+            n_code.run_deltam_pert(idx, ihm_isos, sidx)
 
     elif options.FETCH_FILES:
         # Fetches files from remote server
