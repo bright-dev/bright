@@ -1,3 +1,5 @@
+#2 wins
+
 class IOPair:
     coordinate = [0,0]
     left = coordinate[0]
