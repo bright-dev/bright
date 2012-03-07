@@ -176,32 +176,6 @@ H5::ArrayType bright::cinder_g_type = H5::ArrayType(H5::PredType::NATIVE_DOUBLE,
 
 
 
-//
-// Isotopic decay HDF5 interface
-//
-
-H5::CompType bright::make_decay_iso_desc()
-{
-  //  Makes a decay isotope compound datatype
-  H5::CompType didesc( sizeof(decay_iso_struct) );
-
-  didesc.insertMember( "from_iso_LL", HOFFSET(decay_iso_struct, from_iso_LL), bright::iso_LL_type);
-  didesc.insertMember( "from_iso_zz", HOFFSET(decay_iso_struct, from_iso_zz), H5::PredType::NATIVE_INT);
-
-  didesc.insertMember( "half_life", HOFFSET(decay_iso_struct, half_life), H5::PredType::NATIVE_DOUBLE);
-  didesc.insertMember( "decay_const", HOFFSET(decay_iso_struct, decay_const), H5::PredType::NATIVE_DOUBLE);
-
-  didesc.insertMember( "to_iso_LL", HOFFSET(decay_iso_struct, to_iso_LL), bright::iso_LL_type);
-  didesc.insertMember( "to_iso_zz", HOFFSET(decay_iso_struct, to_iso_zz), H5::PredType::NATIVE_INT);
-
-  didesc.insertMember( "branch_ratio", HOFFSET(decay_iso_struct, branch_ratio), H5::PredType::NATIVE_DOUBLE);
- 
-  return didesc;
-};
-
-H5::CompType bright::decay_iso_desc = bright::make_decay_iso_desc();
-
-
 
 //
 // Fission Product HDF5 interface

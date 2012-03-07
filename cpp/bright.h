@@ -65,24 +65,6 @@ namespace bright {
   extern H5::ArrayType cinder_g_type;
 
 
-  // Isotopic decay HDF5 interface
-  typedef struct decay_iso_struct {
-    char from_iso_LL[6];
-    int from_iso_zz;
-
-    double half_life;
-    double decay_const;
-
-    char to_iso_LL[6];
-    int to_iso_zz;
-
-    double branch_ratio;
-  } decay_iso_stuct;
-
-  H5::CompType make_decay_iso_desc();
-  extern H5::CompType decay_iso_desc;
-
-
   // Fission Product HDF5 interface
   typedef struct fission_struct {
     char iso_LL[6];
