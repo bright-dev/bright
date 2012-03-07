@@ -299,7 +299,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   //
   // Read in the fission table
   //
-  H5::DataSet fission_set = nuc_data_h5.openDataSet("/neutron/xs_mg/fission");
+  H5::DataSet fission_set = nuc_data_h5.openDataSet("/neutron/cinder_xs/fission");
   H5::DataSpace fission_space = fission_set.getSpace();
   int fission_length = fission_space.getSimpleExtentNpoints(); 
 
@@ -315,7 +315,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   int ty, fy;
   for (l = 0; l < fission_length; l++)
   {
-    i = fission_array[l].iso_zz;
+    i = fission_array[l].nuc_zz;
 
     // skip non-element from-isos
     if (K.count(i) < 1)
@@ -340,7 +340,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
 
 
   // Read in fission product yeilds
-  H5::DataSet fp_yields_set = nuc_data_h5.openDataSet("/neutron/fission_products/yields");
+  H5::DataSet fp_yields_set = nuc_data_h5.openDataSet("/neutron/cinder_fission_products/yields");
   H5::DataSpace fp_yields_space = fp_yields_set.getSpace();
   int fp_yields_length = fp_yields_space.getSimpleExtentNpoints(); 
 
@@ -358,7 +358,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   {
     // Get important data from struct
     index = fp_yields_array[l].index;
-    j = fp_yields_array[l].to_iso_zz;
+    j = fp_yields_array[l].to_nuc_zz;
     jnd = K_ind[j];
     mf = fp_yields_array[l].mass_frac;
 
@@ -409,7 +409,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   // Read in the one group cross sections
   //
   // Thermal
-  H5::DataSet xs_1g_thermal_set = nuc_data_h5.openDataSet("/neutron/xs_1g/Thermal");
+  H5::DataSet xs_1g_thermal_set = nuc_data_h5.openDataSet("/neutron/simple_xs/thermal");
   H5::DataSpace xs_1g_thermal_space = xs_1g_thermal_set.getSpace();
   int xs_1g_thermal_length = xs_1g_thermal_space.getSimpleExtentNpoints(); 
 
@@ -417,7 +417,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   xs_1g_thermal_set.read(xs_1g_thermal_array, bright::xs_1g_desc);
 
   // Fast
-  H5::DataSet xs_1g_fast_set = nuc_data_h5.openDataSet("/neutron/xs_1g/FissionSpectrumAve");
+  H5::DataSet xs_1g_fast_set = nuc_data_h5.openDataSet("/neutron/simple_xs/fission_spectrum_ave");
   H5::DataSpace xs_1g_fast_space = xs_1g_fast_set.getSpace();
   int xs_1g_fast_length = xs_1g_fast_space.getSimpleExtentNpoints(); 
 
@@ -436,7 +436,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
 
   for (l = 0; l < xs_1g_fast_length; l++)
   {
-    i = xs_1g_thermal_array[l].iso_zz;
+    i = xs_1g_thermal_array[l].nuc_zz;
 
     if (J.count(i) == 1)
       continue;
