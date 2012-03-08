@@ -169,38 +169,10 @@ void bright::load_track_nucs_text(std::string filename, bool clear_prev)
 //
 // Some HDF5 helpers
 //
-H5::StrType bright::iso_LL_type = H5::StrType(0, 6);
+H5::StrType bright::nuc_name_type = H5::StrType(0, 6);
 
 hsize_t bright::cinder_g_dims [1] = {63};
 H5::ArrayType bright::cinder_g_type = H5::ArrayType(H5::PredType::NATIVE_DOUBLE, 1, bright::cinder_g_dims);
-
-
-
-//
-// Isotopic decay HDF5 interface
-//
-
-H5::CompType bright::make_decay_iso_desc()
-{
-  //  Makes a decay isotope compound datatype
-  H5::CompType didesc( sizeof(decay_iso_struct) );
-
-  didesc.insertMember( "from_iso_LL", HOFFSET(decay_iso_struct, from_iso_LL), bright::iso_LL_type);
-  didesc.insertMember( "from_iso_zz", HOFFSET(decay_iso_struct, from_iso_zz), H5::PredType::NATIVE_INT);
-
-  didesc.insertMember( "half_life", HOFFSET(decay_iso_struct, half_life), H5::PredType::NATIVE_DOUBLE);
-  didesc.insertMember( "decay_const", HOFFSET(decay_iso_struct, decay_const), H5::PredType::NATIVE_DOUBLE);
-
-  didesc.insertMember( "to_iso_LL", HOFFSET(decay_iso_struct, to_iso_LL), bright::iso_LL_type);
-  didesc.insertMember( "to_iso_zz", HOFFSET(decay_iso_struct, to_iso_zz), H5::PredType::NATIVE_INT);
-
-  didesc.insertMember( "branch_ratio", HOFFSET(decay_iso_struct, branch_ratio), H5::PredType::NATIVE_DOUBLE);
- 
-  return didesc;
-};
-
-H5::CompType bright::decay_iso_desc = bright::make_decay_iso_desc();
-
 
 
 //
@@ -212,8 +184,8 @@ H5::CompType bright::make_fission_desc()
   //  Makes a fission compound datatype
   H5::CompType fdesc( sizeof(fission_struct) );
 
-  fdesc.insertMember( "iso_LL", HOFFSET(fission_struct, iso_LL), bright::iso_LL_type);
-  fdesc.insertMember( "iso_zz", HOFFSET(fission_struct, iso_zz), H5::PredType::NATIVE_INT);
+  fdesc.insertMember( "nuc_name", HOFFSET(fission_struct, nuc_name), bright::nuc_name_type);
+  fdesc.insertMember( "nuc_zz", HOFFSET(fission_struct, nuc_zz), H5::PredType::NATIVE_INT);
 
   fdesc.insertMember( "thermal_yield", HOFFSET(fission_struct, thermal_yield), H5::PredType::NATIVE_INT8);
   fdesc.insertMember( "fast_yield", HOFFSET(fission_struct, fast_yield), H5::PredType::NATIVE_INT8);
@@ -235,11 +207,11 @@ H5::CompType bright::make_fission_product_yields_desc()
 
   fpydesc.insertMember( "index", HOFFSET(fission_product_yields_struct, index), H5::PredType::NATIVE_INT16);
 
-  fpydesc.insertMember( "from_iso_LL", HOFFSET(fission_product_yields_struct, from_iso_LL), bright::iso_LL_type);
-  fpydesc.insertMember( "from_iso_zz", HOFFSET(fission_product_yields_struct, from_iso_zz), H5::PredType::NATIVE_INT);
+  fpydesc.insertMember( "from_nuc_name", HOFFSET(fission_product_yields_struct, from_nuc_name), bright::nuc_name_type);
+  fpydesc.insertMember( "from_nuc_zz", HOFFSET(fission_product_yields_struct, from_nuc_zz), H5::PredType::NATIVE_INT);
 
-  fpydesc.insertMember( "to_iso_LL", HOFFSET(fission_product_yields_struct, to_iso_LL), bright::iso_LL_type);
-  fpydesc.insertMember( "to_iso_zz", HOFFSET(fission_product_yields_struct, to_iso_zz), H5::PredType::NATIVE_INT);
+  fpydesc.insertMember( "to_nuc_name", HOFFSET(fission_product_yields_struct, to_nuc_name), bright::nuc_name_type);
+  fpydesc.insertMember( "to_nuc_zz", HOFFSET(fission_product_yields_struct, to_nuc_zz), H5::PredType::NATIVE_INT);
 
   fpydesc.insertMember( "mass_frac", HOFFSET(fission_product_yields_struct, mass_frac), H5::PredType::NATIVE_DOUBLE);
  
@@ -257,8 +229,8 @@ H5::CompType bright::make_xs_1g_desc()
   //  Makes a decay isotope compound datatype
   H5::CompType xs1gdesc( sizeof(xs_1g_struct) );
 
-  xs1gdesc.insertMember( "iso_LL", HOFFSET(xs_1g_struct, iso_LL), bright::iso_LL_type);
-  xs1gdesc.insertMember( "iso_zz", HOFFSET(xs_1g_struct, iso_zz), H5::PredType::NATIVE_INT);
+  xs1gdesc.insertMember( "nuc_name", HOFFSET(xs_1g_struct, nuc_name), bright::nuc_name_type);
+  xs1gdesc.insertMember( "nuc_zz", HOFFSET(xs_1g_struct, nuc_zz), H5::PredType::NATIVE_INT);
 
   xs1gdesc.insertMember( "sigma_t", HOFFSET(xs_1g_struct, sigma_t), H5::PredType::NATIVE_DOUBLE);
   xs1gdesc.insertMember( "sigma_s", HOFFSET(xs_1g_struct, sigma_s), H5::PredType::NATIVE_DOUBLE);

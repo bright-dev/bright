@@ -216,41 +216,52 @@ void bright::ReactorMG::loadlib(std::string libfile)
   //
   // Create a decay matrix from a file based off of the J isotopes
   //
-  std::string nuc_data_file = bright::BRIGHT_DATA + "/nuc_data.h5";
+  std::string nuc_data_file; 
+  std::string nuc_data_file_bright = bright::BRIGHT_DATA + "/nuc_data.h5";
 
   //Check to see if the file is in HDF5 format.
-  if (!pyne::file_exists(nuc_data_file))
-    throw pyne::FileNotFound(nuc_data_file);
+  if (pyne::file_exists(pyne::NUC_DATA_PATH))
+    nuc_data_file = pyne::NUC_DATA_PATH;
+  else if (pyne::file_exists(bright::BRIGHT_DATA + "/nuc_data.h5"))
+    nuc_data_file = bright::BRIGHT_DATA + "/nuc_data.h5";
+  else
+    throw pyne::FileNotFound("nuc_data.h5");
 
   isH5 = H5::H5File::isHdf5(nuc_data_file);
   if (!isH5)
-  {
-    std::cout << "!!!Warning!!! " << nuc_data_file << " is not a valid HDF5 file!\n";
-    return;
-  };
+    throw h5wrap::FileNotHDF5(nuc_data_file);
 
   // Open the HDF5 file
   H5::H5File nuc_data_h5 (nuc_data_file.c_str(), H5F_ACC_RDONLY );
 
 
   //
-  // Read in the decay data table as an array of bright::decay_iso_desc
+  // Read in the decay data table as an array of pyne::atomic_decay_struct
   //
   int i, j, k, ind, jnd, knd, l, g;
+  // Get the HDF5 compound type (table) description
+  H5::CompType atom_dec_desc(sizeof(pyne::atomic_decay_struct));
+  atom_dec_desc.insertMember("from_nuc_name", HOFFSET(pyne::atomic_decay_struct, from_nuc_name), H5::StrType(0, 6));
+  atom_dec_desc.insertMember("from_nuc_zz",   HOFFSET(pyne::atomic_decay_struct, from_nuc_zz),   H5::PredType::NATIVE_INT);
+  atom_dec_desc.insertMember("level", HOFFSET(pyne::atomic_decay_struct, level), H5::PredType::NATIVE_DOUBLE);
+  atom_dec_desc.insertMember("to_nuc_name", HOFFSET(pyne::atomic_decay_struct, to_nuc_name), H5::StrType(0, 6));
+  atom_dec_desc.insertMember("to_nuc_zz",   HOFFSET(pyne::atomic_decay_struct, to_nuc_zz),   H5::PredType::NATIVE_INT);
+  atom_dec_desc.insertMember("half_life", HOFFSET(pyne::atomic_decay_struct, half_life), H5::PredType::NATIVE_DOUBLE);
+  atom_dec_desc.insertMember("decay_const", HOFFSET(pyne::atomic_decay_struct, decay_const), H5::PredType::NATIVE_DOUBLE);
+  atom_dec_desc.insertMember("branch_ratio", HOFFSET(pyne::atomic_decay_struct, branch_ratio), H5::PredType::NATIVE_DOUBLE);
 
-  H5::DataSet decay_data_set = nuc_data_h5.openDataSet("/decay");
+  H5::DataSet decay_data_set = nuc_data_h5.openDataSet("/atomic_decay");
   H5::DataSpace decay_data_space = decay_data_set.getSpace();
   int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
 
-  bright::decay_iso_stuct * decay_data_array = new bright::decay_iso_stuct [decay_data_length];
-  decay_data_set.read(decay_data_array, bright::decay_iso_desc);
-
+  pyne::atomic_decay_struct * decay_data_array = new pyne::atomic_decay_struct [decay_data_length];
+  decay_data_set.read(decay_data_array, atom_dec_desc);
 
   // Finish initializing K, based on decay info    
   for (l = 0; l < decay_data_length; l++)
   {
-    K.insert(decay_data_array[l].from_iso_zz);
-    K.insert(decay_data_array[l].to_iso_zz);
+    K.insert(decay_data_array[l].from_nuc_zz);
+    K.insert(decay_data_array[l].to_nuc_zz);
   };
 
   K_num = K.size();
@@ -264,8 +275,8 @@ void bright::ReactorMG::loadlib(std::string libfile)
 
   for (l = 0; l < decay_data_length; l++)
   {
-    i = decay_data_array[l].from_iso_zz;
-    j = decay_data_array[l].to_iso_zz;
+    i = decay_data_array[l].from_nuc_zz;
+    j = decay_data_array[l].to_nuc_zz;
 
     if (i == j)
       continue;
@@ -288,7 +299,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   //
   // Read in the fission table
   //
-  H5::DataSet fission_set = nuc_data_h5.openDataSet("/neutron/xs_mg/fission");
+  H5::DataSet fission_set = nuc_data_h5.openDataSet("/neutron/cinder_xs/fission");
   H5::DataSpace fission_space = fission_set.getSpace();
   int fission_length = fission_space.getSimpleExtentNpoints(); 
 
@@ -304,7 +315,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   int ty, fy;
   for (l = 0; l < fission_length; l++)
   {
-    i = fission_array[l].iso_zz;
+    i = fission_array[l].nuc_zz;
 
     // skip non-element from-isos
     if (K.count(i) < 1)
@@ -329,7 +340,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
 
 
   // Read in fission product yeilds
-  H5::DataSet fp_yields_set = nuc_data_h5.openDataSet("/neutron/fission_products/yields");
+  H5::DataSet fp_yields_set = nuc_data_h5.openDataSet("/neutron/cinder_fission_products/yields");
   H5::DataSpace fp_yields_space = fp_yields_set.getSpace();
   int fp_yields_length = fp_yields_space.getSimpleExtentNpoints(); 
 
@@ -347,7 +358,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   {
     // Get important data from struct
     index = fp_yields_array[l].index;
-    j = fp_yields_array[l].to_iso_zz;
+    j = fp_yields_array[l].to_nuc_zz;
     jnd = K_ind[j];
     mf = fp_yields_array[l].mass_frac;
 
@@ -398,7 +409,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   // Read in the one group cross sections
   //
   // Thermal
-  H5::DataSet xs_1g_thermal_set = nuc_data_h5.openDataSet("/neutron/xs_1g/Thermal");
+  H5::DataSet xs_1g_thermal_set = nuc_data_h5.openDataSet("/neutron/simple_xs/thermal");
   H5::DataSpace xs_1g_thermal_space = xs_1g_thermal_set.getSpace();
   int xs_1g_thermal_length = xs_1g_thermal_space.getSimpleExtentNpoints(); 
 
@@ -406,7 +417,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   xs_1g_thermal_set.read(xs_1g_thermal_array, bright::xs_1g_desc);
 
   // Fast
-  H5::DataSet xs_1g_fast_set = nuc_data_h5.openDataSet("/neutron/xs_1g/FissionSpectrumAve");
+  H5::DataSet xs_1g_fast_set = nuc_data_h5.openDataSet("/neutron/simple_xs/fission_spectrum_ave");
   H5::DataSpace xs_1g_fast_space = xs_1g_fast_set.getSpace();
   int xs_1g_fast_length = xs_1g_fast_space.getSimpleExtentNpoints(); 
 
@@ -425,7 +436,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
 
   for (l = 0; l < xs_1g_fast_length; l++)
   {
-    i = xs_1g_thermal_array[l].iso_zz;
+    i = xs_1g_thermal_array[l].nuc_zz;
 
     if (J.count(i) == 1)
       continue;

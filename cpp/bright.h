@@ -59,34 +59,16 @@ namespace bright {
   typedef nuc_set::iterator nuc_iter;
 
   // Some HDF5 helpers
-  extern H5::StrType iso_LL_type;
+  extern H5::StrType nuc_name_type;
 
   extern hsize_t cinder_g_dims [1];
   extern H5::ArrayType cinder_g_type;
 
 
-  // Isotopic decay HDF5 interface
-  typedef struct decay_iso_struct {
-    char from_iso_LL[6];
-    int from_iso_zz;
-
-    double half_life;
-    double decay_const;
-
-    char to_iso_LL[6];
-    int to_iso_zz;
-
-    double branch_ratio;
-  } decay_iso_stuct;
-
-  H5::CompType make_decay_iso_desc();
-  extern H5::CompType decay_iso_desc;
-
-
   // Fission Product HDF5 interface
   typedef struct fission_struct {
-    char iso_LL[6];
-    int iso_zz;
+    char nuc_name[6];
+    int nuc_zz;
 
     int8_t thermal_yield;
     int8_t fast_yield;
@@ -102,11 +84,11 @@ namespace bright {
   typedef struct fission_product_yields_struct {
     int16_t index;
 
-    char from_iso_LL[6];
-    int from_iso_zz;
+    char from_nuc_name[6];
+    int from_nuc_zz;
 
-    char to_iso_LL[6];
-    int to_iso_zz;
+    char to_nuc_name[6];
+    int to_nuc_zz;
 
     double mass_frac;
   } fission_product_yields_struct;
@@ -116,8 +98,8 @@ namespace bright {
 
 
   typedef struct xs_1g_struct {
-    char iso_LL[6];
-    int iso_zz;
+    char nuc_name[6];
+    int nuc_zz;
 
     double sigma_t;
     double sigma_s;
