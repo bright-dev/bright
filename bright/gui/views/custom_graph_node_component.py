@@ -125,12 +125,9 @@ class CustomGraphNodeComponent(Component):
                 x + end_radius, y,
                 end_radius)
 
-	
-	
         gc.linear_gradient(x, y, x, y+100,
                 numpy.array([starting_color, ending_color]),
                 "pad")
-
 
         #gc.set_fill_color((0.8,0.0,0.1,1.0))
         #gc.set_fill_color(color)
