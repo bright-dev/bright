@@ -11,8 +11,8 @@ from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
 from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
 from custom_graph_node_component import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
-from graph_container import GraphContainer
-from bright.gui.views.custom_graph_canvas.custom_dag_container import CustomDAGContainer
+from graph_container import CustomGraphContainer
+from custom_dag_container import CustomDAGContainer
 from bright.gui.views.custom_graph_canvas.io_coordinate import IOPair
 import random
 
@@ -402,7 +402,7 @@ def _GraphView__canvas_default(self):
     if self.graph.is_directed():
         container = CustomDAGContainer(style=self.layout)
     else:
-        container = GraphContainer(style=self.layout)
+        container = CustomGraphContainer(style=self.layout)
 
     container.tools.append(CustomNodeSelectionTool(component=container))
     container.tools.append(GraphNodeHoverTool(component=container,

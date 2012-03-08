@@ -6,9 +6,10 @@ from traits.api import HasTraits, Instance, Dict, Any, Enum, \
         on_trait_change, Property, cached_property, List
 from traitsui.api import View, Item
 
-from bright.gui.views.custom_graph_canvas.custom_dag_container import CustomDAGContainer
-from bright.gui.views.custom_graph_canvas.graph_container import GraphContainer
+from custom_dag_container import CustomDAGContainer
+#from bright.gui.views.custom_graph_canvas.graph_container import GraphContainer
 #from bright.gui.views.graph_container import GraphContainer
+from graph_container import CustomGraphContainer
 from custom_graph_node_component import CustomGraphNodeComponent
 from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
@@ -49,7 +50,7 @@ class GraphView(HasTraits):
     _container = Instance(Scrolled)
 
     # The canvas which the graph will be drawn on
-    _canvas = Instance(GraphContainer)
+    _canvas = Instance(CustomGraphContainer)
 
     traits_view = View(Item('_container', editor=ComponentEditor(),
                             show_label=False),

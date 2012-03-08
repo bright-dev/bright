@@ -7,10 +7,9 @@ from traits.api import Instance, Enum, Bool, Property
 
 from graphcanvas.layout import tree_layout
 
-class GraphContainer(Container):
+class CustomGraphContainer(Container):
     """ Enable Container for Directed Acyclic Graphs
     """
-    
     bounds = [350, 350]
     graph = Instance(networkx.Graph)
     style = Enum('spring', 'tree', 'shell', 'circular')
@@ -140,7 +139,7 @@ class GraphContainer(Container):
                 if self.graph.is_directed():
                     gc.set_fill_color((.5,.5,.5,1))
                     if orig.x < dest.x:
-			import pdb; pdb.set_trace()
+			#import pdb; pdb.set_trace()
                         gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
                     else:
                         gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
