@@ -469,6 +469,7 @@ def draw(self, gc, view_bounds=None, mode="default"):
                     gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
                 else:
                     gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
+	    
 	    gc.arc(orig_x,orig_y, 2, -numpy.pi,numpy.pi/2)
 	    gc.arc(orig_x, orig_y, -2, -numpy.pi/2,numpy.pi/2)
 
@@ -487,7 +488,6 @@ def draw(self, gc, view_bounds=None, mode="default"):
             
         with gc:
             gc.set_fill_color((1,1,1,0))
-	    import pdb; pdb.set_trace()
             # Draw the left arrowhead (for an arrow pointing straight up)
             arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
             gc.begin_path()
