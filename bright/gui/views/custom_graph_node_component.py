@@ -102,18 +102,24 @@ class CustomGraphNodeComponent(Component):
         gc.save_state()
         gc.begin_path()
         
-	gc.move_to(x,y)
-	import pdb; pdb.set_trace()
-        gc.arc(x, (y + self.height)/2, 2, numpy.pi/2, -numpy.pi/2)
-        gc.arc(x, (y + self.height)/2, -2, numpy.pi/2, -numpy.pi/2)
-	import pdb; pdb.set_trace()
+	#gc.move_to(x,y)
+	#gc.move_to(x + end_radius, y)
+	#import pdb; pdb.set_trace()
+	if y == 0:
+            gc.arc(x, (y + self.height)/2, 2, numpy.pi/2, -numpy.pi/2)
+            gc.arc(x, (y + self.height)/2, -2, numpy.pi/2, -numpy.pi/2)
+	if y != 0:
+            gc.arc(x, (self.height/2), 2, numpy.pi/2, -numpy.pi/2)
+            gc.arc(x, (self.height/2), -2, numpy.pi/2, -numpy.pi/2)
+
+	#import pdb; pdb.set_trace()
 
         gc.move_to(x + end_radius, y)
-        
+	#gc.rect(x,y,x+self.width,y+self.height)       
+	
         gc.arc_to(x + self.width, y,
                 x + self.width, y + end_radius,
                 end_radius)
-        
         gc.arc_to(x + self.width, y + self.height,
                 x + self.width - end_radius, y + self.height,
                 end_radius)
@@ -125,15 +131,16 @@ class CustomGraphNodeComponent(Component):
         gc.arc_to(x, y,
                 x + end_radius, y,
                 end_radius)
-
+	
         gc.linear_gradient(x, y, x, y+100,
                 numpy.array([starting_color, ending_color]),
                 "pad")
+	
+	#import pdb; pdb.set_trace()
 
         #gc.set_fill_color((0.8,0.0,0.1,1.0))
         #gc.set_fill_color(color)
         gc.draw_path()
-        
         gc.restore_state()
         #gc.fill_path()
     def __key_default(self):

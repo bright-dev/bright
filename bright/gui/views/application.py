@@ -206,13 +206,12 @@ class Application(HasTraits):
         fcm = FuelCycleModel()
         fcm.add_instance("nu", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
         fcm.add_instance("sr1", "Storage")
-        fcm.calc_comp("sr1","nu")
+        fcm.calc_comp("nu","sr1")
         self.register_views()
         return fcm
 
     #@on_trait_event('model.graph_changed_event')
     def update_graph_view(self):
-        #print "yo dudes i'm workin"
         self.graph_view.graph = self.model.graph
 
         #Either one can be used; which one is better?#
@@ -398,7 +397,7 @@ def _GraphView__canvas_default(self):
     
     """ default setter for _canvas
     """
-    import pdb; pdb.set_trace()
+    
     if self.graph.is_directed():
         container = CustomDAGContainer(style=self.layout)
     else:
@@ -412,6 +411,7 @@ def _GraphView__canvas_default(self):
 
 
 def draw(self, gc, view_bounds=None, mode="default"):
+    import pdb; pdb.set_trace()
     if self._layout_needed:
         self.do_layout()
     # draw each component first to ensure their position and size
@@ -465,13 +465,11 @@ def draw(self, gc, view_bounds=None, mode="default"):
 
             if self.graph.is_directed():
                 gc.set_fill_color((.5,.5,.5,1))
+		import pdb; pdb.set_trace()
                 if orig.x < dest.x:
                     gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
                 else:
                     gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
-	    
-	    gc.arc(orig_x,orig_y, 2, -numpy.pi,numpy.pi/2)
-	    gc.arc(orig_x, orig_y, -2, -numpy.pi/2,numpy.pi/2)
 
             gc.move_to(orig_x, orig_y)
             gc.line_to(dest_x, dest_y)
