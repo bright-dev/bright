@@ -12,7 +12,7 @@ from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import Cust
 from custom_graph_node_component import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
 from graph_container import CustomGraphContainer
-from custom_dag_container import CustomDAGContainer
+from bright.gui.views.custom_dag_container import CustomDAGContainer
 from bright.gui.views.custom_graph_canvas.io_coordinate import IOPair
 import random
 

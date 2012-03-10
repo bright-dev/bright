@@ -98,21 +98,22 @@ class CustomGraphNodeComponent(Component):
 
         x = self.x
         y = self.y
-
+        
+        
         gc.save_state()
         gc.begin_path()
         
-    	gc.move_to(x,y)
+    	#gc.move_to(x,y)
 	
-        gc.arc(x, (y + self.height)/2, 2, numpy.pi/2, -numpy.pi/2)
-        gc.arc(x, (y + self.height)/2, -2, numpy.pi/2, -numpy.pi/2)
+        gc.arc(x, y+(self.height/2), 2, numpy.pi/2, -numpy.pi/2)
+        gc.arc(x, y+(self.height/2), -2, numpy.pi/2, -numpy.pi/2)
 	
         gc.move_to(x + end_radius, y)
         
         gc.arc_to(x + self.width, y,
                 x + self.width, y + end_radius,
                 end_radius)
-        
+       
         gc.arc_to(x + self.width, y + self.height,
                 x + self.width - end_radius, y + self.height,
                 end_radius)
