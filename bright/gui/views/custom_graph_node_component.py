@@ -99,14 +99,13 @@ class CustomGraphNodeComponent(Component):
         x = self.x
         y = self.y
         
-        
         gc.save_state()
         gc.begin_path()
         
     	#gc.move_to(x,y)
 	
-        gc.arc(x, y+(self.height/2), 2, numpy.pi/2, -numpy.pi/2)
-        gc.arc(x, y+(self.height/2), -2, numpy.pi/2, -numpy.pi/2)
+#        gc.arc(x, y+(self.height/2), 2, numpy.pi/2, -numpy.pi/2)
+ #       gc.arc(x, y+(self.height/2), -2, numpy.pi/2, -numpy.pi/2)
 	
         gc.move_to(x + end_radius, y)
         
@@ -129,15 +128,36 @@ class CustomGraphNodeComponent(Component):
         gc.linear_gradient(x, y, x, y+100,
                 numpy.array([starting_color, ending_color]),
                 "pad")
-
+        self.draw_component(gc,x,y,3,2)
         #gc.set_fill_color((0.8,0.0,0.1,1.0))
         #gc.set_fill_color(color)
         gc.draw_path()
         
         gc.restore_state()
+
+        	
         #gc.fill_path()
     def __key_default(self):
         return self.value
+
+    def draw_component(self, gc, x, y, inputs,outputs):
+        n = 0
+        n2 = 0
+        total_input_length = 1/float(inputs + 1)
+        total_output_length = 1/float(outputs + 1)
+        
+        while n < inputs:
+            gc.arc(x + 5, y+(self.height*total_input_length), 2, numpy.pi/2, -numpy.pi/2)
+            gc.arc(x + 5, y+(self.height*total_input_length), -2, numpy.pi/2, -numpy.pi/2)
+            n += 1
+            total_input_length += 1/float(inputs+1)
+        
+        while n2 < outputs:
+            gc.arc(self.x2 - 5, y+(self.height*total_output_length), 2, numpy.pi/2, -numpy.pi/2)
+            gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
+            n2 += 1
+            total_output_length += 1/float(outputs+1)
+            
 
     @cached_property
     def _get_label(self):
