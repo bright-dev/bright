@@ -103,10 +103,11 @@ class CustomGraphNodeComponent(Component):
         gc.begin_path()
         
 	gc.move_to(x,y)
-	
+	import pdb; pdb.set_trace()
         gc.arc(x, (y + self.height)/2, 2, numpy.pi/2, -numpy.pi/2)
         gc.arc(x, (y + self.height)/2, -2, numpy.pi/2, -numpy.pi/2)
-	
+	import pdb; pdb.set_trace()
+
         gc.move_to(x + end_radius, y)
         
         gc.arc_to(x + self.width, y,
