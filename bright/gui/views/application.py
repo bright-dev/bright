@@ -12,7 +12,7 @@ from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import Cust
 from custom_graph_node_component import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
 from graph_container import CustomGraphContainer
-from custom_dag_container import CustomDAGContainer
+from bright.gui.views.custom_dag_container import CustomDAGContainer
 from bright.gui.views.custom_graph_canvas.io_coordinate import IOPair
 import random
 
@@ -393,6 +393,7 @@ def _graph_changed(self, new):
     self._canvas._graph_layout_needed = True
     self._canvas.request_redraw()
 
+
 def _GraphView__canvas_default(self):
     
     """ default setter for _canvas
@@ -497,6 +498,7 @@ def draw(self, gc, view_bounds=None, mode="default"):
             gc.begin_path()
             gc.line_set(line_ends, arrow_ends)
             gc.stroke_path()
+
 
 
 

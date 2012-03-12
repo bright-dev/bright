@@ -10,7 +10,7 @@ from custom_dag_container import CustomDAGContainer
 #from bright.gui.views.custom_graph_canvas.graph_container import GraphContainer
 #from bright.gui.views.graph_container import GraphContainer
 from graph_container import CustomGraphContainer
-from custom_graph_node_component import CustomGraphNodeComponent
+from bright.gui.views.custom_graph_node_component import CustomGraphNodeComponent
 from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
 
@@ -48,9 +48,8 @@ class GraphView(HasTraits):
 
     # Scrolled contained which holds the canvas in a viewport
     _container = Instance(Scrolled)
-
     # The canvas which the graph will be drawn on
-    _canvas = Instance(CustomGraphContainer)
+    _canvas = Instance(CustomDAGContainer)
 
     traits_view = View(Item('_container', editor=ComponentEditor(),
                             show_label=False),
@@ -75,6 +74,7 @@ class GraphView(HasTraits):
         container.tools.append(CustomNodeSelectionTool(component=container))
         container.tools.append(GraphNodeHoverTool(component=container,
                                                   callback=self._on_hover))
+
         return container
 
     def __container_default(self):
@@ -93,22 +93,21 @@ class GraphView(HasTraits):
         return self.graph.nodes()
 
     def _graph_changed(self, new):
-        """ handler for changes to graph attribute
-        """
-
+        #""" handler for changes to graph attribute
+        #"""
         for component in self._canvas.components:
             component.container = None
 
         self._canvas._components = []
-
+        
         for node in new.nodes():
             # creating a component will automatically add it to the canvas
             CustomGraphNodeComponent(container=self._canvas, value=node)
-
+        
         self._canvas.graph = new
         self._canvas._graph_layout_needed = True
         self._canvas.request_redraw()
-
+        
     def _layout_changed(self, new):
         self._canvas.style = new
 

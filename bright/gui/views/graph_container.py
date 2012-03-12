@@ -10,25 +10,26 @@ from graphcanvas.layout import tree_layout
 class CustomGraphContainer(Container):
     """ Enable Container for Directed Acyclic Graphs
     """
+
     bounds = [350, 350]
     graph = Instance(networkx.Graph)
     style = Enum('spring', 'tree', 'shell', 'circular')
+
     # graph layout is different than Enable's layout: graph layout is
     # the relative positioning on nodes, and is very expensive
     _graph_layout_needed = Bool(True)
-    
+
     def do_layout(self, size=None, force=False):
         """ Nodes of the graph will be layed out based on the the style
             attribute
         """
-        
         if not self._graph_layout_needed or len(self.components) == 0:
             return
 
         def _apply_graphviz_layout(layout):
             min_x = min([pos[0] for pos in layout.values()])
             max_y = max([pos[1] for pos in layout.values()])
-            
+
             for component in self.components:
                 component.x = layout[component._key][0] - min_x
                 component.y = self.height - max_y + layout[component._key][1]
@@ -69,38 +70,43 @@ class CustomGraphContainer(Container):
             radius = numpy.log2(len(layout))
             self.bounds = [max(75, self.components[0].width)*2*radius,
                            max(50, self.components[0].height)*2*radius]
-
             _apply_graphviz_layout(layout)
         else:
             layout = networkx.spring_layout(self.graph)
+
             # resize the bounds to fit the graph
             radius = numpy.log2(len(layout))
             self.bounds = [max(75, self.components[0].width)*2*radius,
                            max(50, self.components[0].height)*2*radius]
-
+            print "HELLLLLLLLO"
             for component in self.components:
                 component.x = self.width * layout[component._key][0]
                 component.y = self.height * layout[component._key][1]
+
         self._graph_layout_needed = False
 
 
     def draw(self, gc, view_bounds=None, mode="default"):
         if self._layout_needed:
             self.do_layout()
+        
         # draw each component first to ensure their position and size
         # are more or less finalized
         component_dict = {}
         for component in self.components:
             component.draw(gc, view_bounds, mode)
             component_dict[component.value] = component
+
         # draw the connectors
         # connectors will always originate on a side
         # and terminate on the top or bottom
+
         line_starts = []
         line_ends = []
         for edge in self.graph.edges():
             orig = component_dict[edge[0]]
             dest = component_dict[edge[1]]
+
             if orig.y < dest.y:
                 # up
                 orig_y = orig.y + dest.height/2
@@ -139,7 +145,6 @@ class CustomGraphContainer(Container):
                 if self.graph.is_directed():
                     gc.set_fill_color((.5,.5,.5,1))
                     if orig.x < dest.x:
-			#import pdb; pdb.set_trace()
                         gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
                     else:
                         gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
@@ -156,12 +161,11 @@ class CustomGraphContainer(Container):
             a = 0.707106781   # sqrt(2)/2
             vec = line_ends - line_starts
             unit_vec = vec / numpy.sqrt(vec[:,0] ** 2 + vec[:,1] ** 2)[:, numpy.newaxis]
-            
+
             with gc:
                 gc.set_fill_color((1,1,1,0))
 
                 # Draw the left arrowhead (for an arrow pointing straight up)
-		#import pdb; pdb.set_trace()
                 arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
                 gc.begin_path()
                 gc.line_set(line_ends, arrow_ends)
