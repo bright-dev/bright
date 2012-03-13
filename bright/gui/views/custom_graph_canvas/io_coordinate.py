@@ -1,7 +1,7 @@
 #2 wins
 
 class IOPair:
-    coordinate = [0,0]
+    coordinate = [x,y]
     left = coordinate[0]
     right = coordinate[1]
 

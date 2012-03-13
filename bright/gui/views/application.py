@@ -204,9 +204,9 @@ class Application(HasTraits):
 
     def _model_default(self):
         fcm = FuelCycleModel()
-        fcm.add_instance("nu", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
-        fcm.add_instance("sr1", "Storage")
-        fcm.calc_comp("nu","sr1")
+        fcm.add_instance("uranium_mine0", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
+        fcm.add_instance("candu0", "Storage")
+        fcm.calc_comp("candu0","uranium_mine0")
         self.register_views()
         return fcm
 
@@ -278,31 +278,7 @@ class Application(HasTraits):
         x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast Reactor", "    CANDU",
                      "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interim Storage Facility",
                       "    Geologic Repository"]
-	"""	
-	for name in x:
-	    name.strip()
-	    if name == "Uranium Mine":
-		pair.set_coordinate(0,1)
-		circle_temp[name] = pair
-	    elif name == "Pressurized Water Reactor":
-		pair.set_coordinate(1,1)
-		circle_temp[name] = pair
-	    elif name == "Sodium Fast Reactor":
-		pair.set_coordinate(2,1)
-		circle_temp[name] = pair
-	    elif name == "CANDU" or "Interim Storage Facility":
-		pair.set_coordinate(1,1)
-		circle_temp[name] = pair
-            elif name == "Aqueous Reprocess Plant" or "Electrochemical Reprocessing Plant":
-		pair.set_coordinate(1,4)		
-		circle_temp[name] = pair
-	    elif name == "Geologic Repository"
-                pair.set_coordinate(1,0)
-		circle_temp[name] = pair
-	    else if Enchrichment not in circle_temp:
-		pair.set_coordinate(1,2)
-		circle_temp["Enrichment"] = pair
-        """    					
+	
         for key, value in fcm.classes_available.items():
             list_temp.append(key)
             if(key == "Reactor"):

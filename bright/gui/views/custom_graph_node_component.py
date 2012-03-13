@@ -11,7 +11,7 @@ from traitsui.api import View, Item, spring, HGroup
 class CustomGraphNodeComponent(Component):
     """ An Enable Component which represents a graph node.
     """
-
+    
     # The level from the root. This is used for layout and may not be
     # meaningful in graphs with no root level.
     level = Int(0)
@@ -43,7 +43,7 @@ class CustomGraphNodeComponent(Component):
                            Item('value', style='readonly', show_label=False),
                            spring),
                         width=200, resizable=True)
-
+        
     def draw(self, gc, view_bounds=None, mode="default"):
         """ Draws the graph node
        """
@@ -102,29 +102,10 @@ class CustomGraphNodeComponent(Component):
         gc.save_state()
         gc.begin_path()
         
-
-	#gc.move_to(x,y)
-	#gc.move_to(x + end_radius, y)
 	#import pdb; pdb.set_trace()
-	if y == 0:
-            gc.arc(x, (y + self.height)/2, 2, numpy.pi/2, -numpy.pi/2)
-            gc.arc(x, (y + self.height)/2, -2, numpy.pi/2, -numpy.pi/2)
-	if y != 0:
-            gc.arc(x, (self.height/2), 2, numpy.pi/2, -numpy.pi/2)
-            gc.arc(x, (self.height/2), -2, numpy.pi/2, -numpy.pi/2)
-
-	#import pdb; pdb.set_trace()
-
-
-    	#gc.move_to(x,y)
 	
-#        gc.arc(x, y+(self.height/2), 2, numpy.pi/2, -numpy.pi/2)
- #       gc.arc(x, y+(self.height/2), -2, numpy.pi/2, -numpy.pi/2)
-	
-
         gc.move_to(x + end_radius, y)
-	#gc.rect(x,y,x+self.width,y+self.height)       
-	
+     
         gc.arc_to(x + self.width, y,
                 x + self.width, y + end_radius,
                 end_radius)
@@ -145,12 +126,51 @@ class CustomGraphNodeComponent(Component):
                 numpy.array([starting_color, ending_color]),
                 "pad")
 
-	
+	#calling draw_component
 	#import pdb; pdb.set_trace()
 
+    	node_dictionary = {}
+	b = [1,2]
+    	node_dictionary["enrichment"] = b
+    	a = ["uranium_mine","thorium_mine", "pressurized_water_reactor", "sodium_fast_reactor", "candu",
+         "aqueous_reprocess_plant", "electrochemical_reprocessing_plant","interim_storage_facility",
+         "geologic_repository"]
 
-        self.draw_component(gc,x,y,3,2)
+    	for name in a:
+            if name == "uranium_mine":
+		b = [0,1]
+	        #pair.set_coordinate(0,1)
+	        #node_dictionary[name] = pair
+                node_dictionary[name] = b
+            elif name == "pressurized_water_reactor":
+                b = [1,1]
+                node_dictionary[name] = b
+	        #pair.set_coordinate(1,1)
+	        #node_dictionary[name] = pair
+            elif name == "sodium_fast_reactor":
+                b = [2,1]
+                node_dictionary[name] = b	        
+		#pair.set_coordinate(2,1)
+	        #node_dictionary[name] = pair
+            elif name == "candu" or "interim_storage_facility":
+		b = [1,1]
+                node_dictionary[name] = b	        
+		#pair.set_coordinate(1,1)
+	        #node_dictionary[name] = pair
+            elif name == "aqueous_reprocess_plant" or "electrochemical_reprocessing_plant":
+	        b = [1,1]
+                node_dictionary[name] = b
+		#pair.set_coordinate(1,4)		
+	        #node_dictionary[name] = pair
+            elif name == "geologic_repository":
+	        b = [1,1]
+                node_dictionary[name] = b
+		#pair.set_coordinate(1,0)
+	        #node_dictionary[name] = pair
+	
+        #self.draw_component(gc,x,y,3,2)
 
+	self.draw_component(gc,x,y,node_dictionary)
         #gc.set_fill_color((0.8,0.0,0.1,1.0))
         #gc.set_fill_color(color)
         gc.draw_path()
@@ -160,8 +180,9 @@ class CustomGraphNodeComponent(Component):
         #gc.fill_path()
     def __key_default(self):
         return self.value
-
+    """
     def draw_component(self, gc, x, y, inputs,outputs):
+	#import pdb; pdb.set_trace()
         n = 0
         n2 = 0
         total_input_length = 1/float(inputs + 1)
@@ -178,12 +199,38 @@ class CustomGraphNodeComponent(Component):
             gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
             n2 += 1
             total_output_length += 1/float(outputs+1)
-            
+        
+    """
+    def draw_component(self, gc, x, y, node_dictionary):
+	#import pdb; pdb.set_trace()
+	label_temp = self.label[:-1]
+	if label_temp in node_dictionary:
+	    temp = node_dictionary[label_temp]
+            inputs = temp[0]
+	    outputs = temp[1]
+            n = 0
+            n2 = 0
+            total_input_length = 1/float(inputs + 1)
+            total_output_length = 1/float(outputs + 1)
+        
+            while n < inputs:
+                gc.arc(x + 5, y+(self.height*total_input_length), 2, numpy.pi/2, -numpy.pi/2)
+                gc.arc(x + 5, y+(self.height*total_input_length), -2, numpy.pi/2, -numpy.pi/2)
+                n += 1
+                total_input_length += 1/float(inputs+1)
+        
+            while n2 < outputs:
+                gc.arc(self.x2 - 5, y+(self.height*total_output_length), 2, numpy.pi/2, -numpy.pi/2)
+                gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
+                n2 += 1
+                total_output_length += 1/float(outputs+1)
 
+    
+	
     @cached_property
     def _get_label(self):
         if hasattr(self.value, 'label'):
-            text = self.value.label
+            text = self.value.labeli
         else:
             text = str(self.value)
         #if len(text) > 20:
