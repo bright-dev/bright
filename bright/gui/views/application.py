@@ -204,15 +204,14 @@ class Application(HasTraits):
 
     def _model_default(self):
         fcm = FuelCycleModel()
-        fcm.add_instance("nu", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
-        fcm.add_instance("sr1", "Storage")
-        fcm.calc_comp("sr1","nu")
+        fcm.add_instance("uranium_mine0", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
+        fcm.add_instance("candu0", "Storage")
+        fcm.calc_comp("candu0","uranium_mine0")
         self.register_views()
         return fcm
 
     #@on_trait_event('model.graph_changed_event')
     def update_graph_view(self):
-        #print "yo dudes i'm workin"
         self.graph_view.graph = self.model.graph
 
         #Either one can be used; which one is better?#
@@ -279,31 +278,7 @@ class Application(HasTraits):
         x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast Reactor", "    CANDU",
                      "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interim Storage Facility",
                       "    Geologic Repository"]
-	"""	
-	for name in x:
-	    name.strip()
-	    if name == "Uranium Mine":
-		pair.set_coordinate(0,1)
-		circle_temp[name] = pair
-	    elif name == "Pressurized Water Reactor":
-		pair.set_coordinate(1,1)
-		circle_temp[name] = pair
-	    elif name == "Sodium Fast Reactor":
-		pair.set_coordinate(2,1)
-		circle_temp[name] = pair
-	    elif name == "CANDU" or "Interim Storage Facility":
-		pair.set_coordinate(1,1)
-		circle_temp[name] = pair
-            elif name == "Aqueous Reprocess Plant" or "Electrochemical Reprocessing Plant":
-		pair.set_coordinate(1,4)		
-		circle_temp[name] = pair
-	    elif name == "Geologic Repository"
-                pair.set_coordinate(1,0)
-		circle_temp[name] = pair
-	    else if Enchrichment not in circle_temp:
-		pair.set_coordinate(1,2)
-		circle_temp["Enrichment"] = pair
-        """    					
+	
         for key, value in fcm.classes_available.items():
             list_temp.append(key)
             if(key == "Reactor"):
@@ -393,6 +368,113 @@ def _graph_changed(self, new):
     self._canvas.graph = new
     self._canvas._graph_layout_needed = True
     self._canvas.request_redraw()
+
+
+def _GraphView__canvas_default(self):
+    
+    """ default setter for _canvas
+    """
+    
+    if self.graph.is_directed():
+        container = CustomDAGContainer(style=self.layout)
+    else:
+        container = CustomGraphContainer(style=self.layout)
+
+    container.tools.append(CustomNodeSelectionTool(component=container))
+    container.tools.append(GraphNodeHoverTool(component=container,
+                                                  callback=self._on_hover))
+    return container
+
+
+
+def draw(self, gc, view_bounds=None, mode="default"):
+    import pdb; pdb.set_trace()
+    if self._layout_needed:
+        self.do_layout()
+    # draw each component first to ensure their position and size
+    # are more or less finalized
+    component_dict = {}
+    for component in self.components:
+        component.draw(gc, view_bounds, mode)
+        component_dict[component.value] = component
+    # draw the connectors
+    # connectors will always originate on a side
+    # and terminate on the top or bottom
+    line_starts = []
+    line_ends = []
+    for edge in self.graph.edges():
+        orig = component_dict[edge[0]]
+        dest = component_dict[edge[1]]
+        if orig.y < dest.y:
+            # up
+            orig_y = orig.y + dest.height/2
+            dest_y = dest.y
+        else:
+            # down
+            orig_y = orig.y + dest.height/2
+            dest_y = dest.y + dest.height
+
+        if orig.x < dest.x:
+            # right
+            orig_x = orig.x + orig.width
+            dest_x = dest.x + dest.width/2
+        else:
+            # left
+            orig_x = orig.x
+            dest_x = dest.x + dest.width/2
+
+        line_starts.append([orig_x, orig_y])
+        line_ends.append([dest_x, dest_y])
+
+        with gc:
+            gc.set_stroke_color((.5,.5,.5))
+            gc.set_fill_color((1,1,1,0))
+
+        # TODO: expose weighed parameters
+        attributes = self.graph.get_edge_data(*edge)
+        if 'weight' in attributes:
+            weight = attributes['weight']
+            if weight < 0.5:
+                phase = 3 * 2.5;
+                pattern = 3 * numpy.array((5,5))
+                gc.set_line_dash(pattern,phase)
+                gc.set_line_cap(CAP_BUTT)
+
+            if self.graph.is_directed():
+                gc.set_fill_color((.5,.5,.5,1))
+		import pdb; pdb.set_trace()
+                if orig.x < dest.x:
+                    gc.arc(orig_x, orig_y, 3, -numpy.pi/2, numpy.pi/2)
+                else:
+                    gc.arc(orig_x, orig_y, -3, -numpy.pi/2, numpy.pi/2)
+
+            gc.move_to(orig_x, orig_y)
+            gc.line_to(dest_x, dest_y)
+            gc.draw_path()
+
+    line_starts = numpy.array(line_starts)
+    line_ends = numpy.array(line_ends)
+
+
+    if self.graph.is_directed():
+        a = 0.707106781   # sqrt(2)/2
+        vec = line_ends - line_starts
+        unit_vec = vec / numpy.sqrt(vec[:,0] ** 2 + vec[:,1] ** 2)[:, numpy.newaxis]
+            
+        with gc:
+            gc.set_fill_color((1,1,1,0))
+            # Draw the left arrowhead (for an arrow pointing straight up)
+            arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
+            gc.begin_path()
+            gc.line_set(line_ends, arrow_ends)
+            gc.stroke_path()
+
+            # Draw the right arrowhead (for an arrow pointing straight up)
+            arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, -a], [a, a]])) * 10
+            gc.begin_path()
+            gc.line_set(line_ends, arrow_ends)
+            gc.stroke_path()
+
 
 
 
