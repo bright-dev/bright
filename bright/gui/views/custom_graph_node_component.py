@@ -129,14 +129,12 @@ class CustomGraphNodeComponent(Component):
                 numpy.array([starting_color, ending_color]),
                 "pad")
         self.draw_component(gc,x,y,3,2)
-        #gc.set_fill_color((0.8,0.0,0.1,1.0))
-        #gc.set_fill_color(color)
+
         gc.draw_path()
         
         gc.restore_state()
 
         	
-        #gc.fill_path()
     def __key_default(self):
         return self.value
 
@@ -157,7 +155,8 @@ class CustomGraphNodeComponent(Component):
             gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
             n2 += 1
             total_output_length += 1/float(outputs+1)
-            
+#        gc.set_fill_color((0.8,0.0,0.1,1.0))
+ #       gc.fill_path()
 
     @cached_property
     def _get_label(self):
