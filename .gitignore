@@ -1,4 +1,5 @@
 bright/gui/d3/simple_fc/
+bright/gui/d3/us_once_through/
 build/
 doc/build/
 *.pyc
