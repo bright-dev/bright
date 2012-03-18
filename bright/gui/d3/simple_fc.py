@@ -31,7 +31,7 @@ def main():
         attrs['REC'] = i
         attrs['Label'] = "{}_{}".format(i, node)
 
-    d3_js.export_d3_js(fcm.graph, files_dir="fcmodel", graphname="fcm", 
+    d3_js.export_d3_js(fcm.graph, files_dir="simple_fc", graphname="fcm", 
                        group="REC", node_labels=True)
 
 

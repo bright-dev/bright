@@ -1,4 +1,4 @@
-bright/gui/d3/fcmodel/
+bright/gui/d3/simple_fc/
 build/
 doc/build/
 *.pyc
