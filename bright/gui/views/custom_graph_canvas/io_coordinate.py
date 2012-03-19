@@ -1,14 +1,14 @@
 #2 wins
 
 class IOPair:
-    coordinate = [x,y]
+    coordinate = [0, 0]
     left = coordinate[0]
     right = coordinate[1]
 
-    def set_coordinate(self,x,y):
-        self.coordinate = [x,y]
-	self.left = self.coordinate[0]
-	self.right = self.coordinate[1]
+    def set_coordinate(self, x, y):
+        self.coordinate = [x, y]
+        self.left = self.coordinate[0]
+        self.right = self.coordinate[1]
 
 """
 pair = io_pair()
