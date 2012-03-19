@@ -179,8 +179,8 @@ class CustomGraphNodeComponent(Component):
         	
     def __key_default(self):
         return self.value
-    """
-    def draw_component(self, gc, x, y, inputs,outputs):
+   
+    """def draw_component(self, gc, x, y, inputs,outputs):
 	#import pdb; pdb.set_trace()
         n = 0
         n2 = 0
@@ -197,8 +197,7 @@ class CustomGraphNodeComponent(Component):
             gc.arc(self.x2 - 5, y+(self.height*total_output_length), 2, numpy.pi/2, -numpy.pi/2)
             gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
             n2 += 1
-            total_output_length += 1/float(outputs+1)
-    """
+            total_output_length += 1/float(outputs+1)"""
     def draw_component(self, gc, x, y, node_dictionary):
 	#import pdb; pdb.set_trace()
 	label_temp = self.label[:-1]
@@ -212,14 +211,14 @@ class CustomGraphNodeComponent(Component):
             total_output_length = 1/float(outputs + 1)
         
             while n < inputs:
-                gc.arc(x + 5, y+(self.height*total_input_length), 2, numpy.pi/2, -numpy.pi/2)
-                gc.arc(x + 5, y+(self.height*total_input_length), -2, numpy.pi/2, -numpy.pi/2)
+                gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
+                gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
                 n += 1
                 total_input_length += 1/float(inputs+1)
         
             while n2 < outputs:
-                gc.arc(self.x2 - 5, y+(self.height*total_output_length), 2, numpy.pi/2, -numpy.pi/2)
-                gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
+                gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
+                gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
                 n2 += 1
                 total_output_length += 1/float(outputs+1)
 

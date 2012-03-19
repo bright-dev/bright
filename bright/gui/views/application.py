@@ -1,9 +1,16 @@
-from traits.api import HasTraits, Any, Instance, on_trait_change, DelegatesTo, Dict, List, Set, Str, File, Button, Enum, Bool, Event, Int
-from traitsui.api import View, InstanceEditor, Item, Group, HGroup, VGroup, Tabbed, TreeEditor, TreeNode, CodeEditor, ShellEditor, FileEditor, TitleEditor, TableEditor, ListEditor, ListStrEditor, Handler, ToolBar, Action, MenuBar, Menu
+from traits.api import HasTraits, Any, Instance, on_trait_change, \
+                       DelegatesTo, Dict, List, Set, Str, File, Button, \
+                       Enum, Bool, Event, Int
+from traitsui.api import View, InstanceEditor, Item, Group, HGroup, \
+                         VGroup, Tabbed, TreeEditor, TreeNode, CodeEditor, \
+                         ShellEditor, FileEditor, TitleEditor, TableEditor, \
+                         ListEditor, ListStrEditor, Handler, ToolBar, Action, \
+                         MenuBar, Menu
 from traitsui.file_dialog import open_file, save_file
 from enable.api import ComponentEditor
 from bright.gui.models.fuel_cycle_model import FuelCycleModel
 from graph_view import GraphView
+from enthought.plugins import ipython_shell
 #from graphcanvas.api import GraphView
 import os
 import re
@@ -34,34 +41,34 @@ class E_handler(Handler):
         return
 
     def preconfigured_lwru(self, info):
-        info.object.model.add_instance("LWRU Nu","Material")
-        info.object.model.add_instance("LWRU Enrich","Enrichment")
-        info.object.model.add_instance("LWRU Storage","Storage")
-        info.object.model.add_instance("LWRU Reactor","Reactor")
-        info.object.model.calc_comp("LWRU Storage","LWRU Nu")
-        info.object.model.calc_comp("LWRU Enrich","LWRU Nu")
-        info.object.model.calc_comp("LWRU Reactor","LWRU Enrich")
+        info.object.model.add_instance("lwru_nu","Material")
+        info.object.model.add_instance("lwru_enrich","Enrichment")
+        info.object.model.add_instance("lwru_storage","Storage")
+        info.object.model.add_instance("lwru_reactor","Reactor")
+        info.object.model.calc_comp("lwru_storage","LWRU Nu")
+        info.object.model.calc_comp("lwru_enrich","LWRU Nu")
+        info.object.model.calc_comp("lwru_reactor","LWRU Enrich")
         return
 
     def preconfigured_lwrmox(self, info):
-        info.object.model.add_instance("LWRMOX Reprocess","Reprocess")
-        info.object.model.add_instance("LWRMOX Reactor","Reactor")
-        info.object.model.add_instance("LWRMOX Storage","Storage")
-        info.object.model.calc_comp("LWRMOX Storage","LWRMOX Reprocess")
-        info.object.model.calc_comp("LWRMOX Reactor","LWRMOX Reprocess")
+        info.object.model.add_instance("lwrmox_reprocess","Reprocess")
+        info.object.model.add_instance("lwrmox_reactor","Reactor")
+        info.object.model.add_instance("lwrmox_storage","Storage")
+        info.object.model.calc_comp("lwrmox_storage","LWRMOX Reprocess")
+        info.object.model.calc_comp("lwrmox_reactor","LWRMOX Reprocess")
         return
 
     def preconfigured_candu(self, info):
-        info.object.model.add_instance("LWRCANDU Nu","Material")
-        info.object.model.add_instance("LWRCANDU Reactor","Reactor")
-        info.object.model.calc_comp("LWRCANDU Reactor","LWRCANDU Nu")
+        info.object.model.add_instance("lwrcandu_nu","Material")
+        info.object.model.add_instance("lwrcandu_reactor","Reactor")
+        info.object.model.calc_comp("lwrcandu_reactor","LWRCANDU Nu")
         return
 
     save = Action(name = "Save", action = "save_file")
     open = Action(name = "Open", action = "open_file")
-    preset1 = Action(name = "LWRU Fuel Cycle", action = "preconfigured_lwru")
-    preset2 = Action(name = "LWRMOX Fuel Cycle", action = "preconfigured_lwrmox")
-    preset3 = Action(name = "CANDU Fuel Cycle", action = "preconfigured_candu")
+    preset1 = Action(name = "lwru_fuel_cycle", action = "preconfigured_lwru")
+    preset2 = Action(name = "lwrmox_fuel_cycle", action = "preconfigured_lwrmox")
+    preset3 = Action(name = "candu_fuel_cycle", action = "preconfigured_candu")
 
 
     
@@ -115,10 +122,18 @@ class Application(HasTraits):
                 vname = ''.join(vname_list)
                 if match.group(1) == 'material':
       
-                    exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
-                #exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
-         #       else:
-          #          exec('from bright.gui.views.component_views.{name} import {view_name}View'.format(name=match.group(1), view_name=vname), {}, localdict)
+                    exec('from bright.gui.views.component_views.{name} import \
+                         {view_name}View'.format(name=match.group(1), \
+                         view_name=vname), {}, localdict)
+                #exec('from bright.gui.views.component_views.{name} import 
+                #{view_name}View'.format(name=match.group(1), 
+                #view_name=vname), {}, localdict)
+         
+
+        #       else:
+          #          exec('from bright.gui.views.component_views.{name} import 
+                #{view_name}View'.format(name=match.group(1), 
+                #view_name=vname), {}, localdict)
         for key, value in localdict.items():
             self.component_views[key] = value
         #import pdb; pdb.set_trace()
@@ -134,21 +149,26 @@ class Application(HasTraits):
                                                         title = 'Classes Available', 
                                                         editable = False, operations = []
                                                        ), 
-                                 show_label = False, width =.10
+                                 show_label = False, 
+                                 width =.10,
+                                 height = .90,
                                 ),
                             Item(
                                  '_container', 
                                  editor = ComponentEditor(), 
                                  show_label = False, 
                                  resizable = True, 
-                                 width =.52
+                                 width =.52,
+                                 height = .90
                                 ),
                             Item(
                                  'script', 
                                  editor = CodeEditor(), 
                                  show_label = False, 
                                  resizable = True, 
-                                 width = .38)
+                                 width = .38,
+                                 height = .90
+                                )
                             ), 
                         HGroup(
                             Item(
@@ -160,14 +180,16 @@ class Application(HasTraits):
                                                        ), 
                                  show_label = False, 
                                  resizable = True, 
-                                 width =.10
+                                 width =.10,
+                                 height = .10
                                 ),
 
                             Item(
                                  'model_context', 
                                  editor = ShellEditor(share = True), 
                                  show_label = False, 
-                                 width = .80
+                                 width = .80,
+                                 height = .10
                                 )
                               )
                           ),
@@ -195,9 +217,12 @@ class Application(HasTraits):
     def _activated_formation_changed(self):	
         variable_name = self.activated_formation.strip().lower()
         variable_name = '_'.join(variable_name.split(' '))
-        self.model.add_instance(variable_name + str(self.instancekey[self.activated_formation][1]), self.instancekey[self.activated_formation][0])
+        self.model.add_instance(variable_name + \
+            str(self.instancekey[self.activated_formation][1]), \
+            self.instancekey[self.activated_formation][0])
         self.instancekey[self.activated_formation][1] += 1
-        #self.model.add_instance(self.instancekey[self.activated_formation] + str(random.randint(0,9)), self.activated_formation) 
+        #self.model.add_instance(self.instancekey[self.activated_formation] 
+        #+ str(random.randint(0,9)), self.activated_formation) 
 
             
 
@@ -278,22 +303,22 @@ class Application(HasTraits):
         x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast Reactor", "    CANDU",
                      "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interim Storage Facility",
                       "    Geologic Repository"]
-	
+
         for key, value in fcm.classes_available.items():
             list_temp.append(key)
             if(key == "Reactor"):
-               list_temp.append(x[2])
-               list_temp.append(x[3])
-	       list_temp.append(x[4])
-            elif(key =="Material"):
-	       list_temp.append(x[0])
-               list_temp.append(x[1])
+                list_temp.append(x[2])
+                list_temp.append(x[3])
+                list_temp.append(x[4])
+            elif(key == "Material"):
+                list_temp.append(x[0])
+                list_temp.append(x[1])
             elif(key == "Reprocess"):
-               list_temp.append(x[5])
-               list_temp.append(x[6])
+                list_temp.append(x[5])
+                list_temp.append(x[6])
             elif(key == "Storage"):
-               list_temp.append(x[7])
-               list_temp.append(x[8])
+                list_temp.append(x[7])
+                list_temp.append(x[8])
             
         #import pdb; pdb.set_trace()
        # import pdb; pdb.set_trace()

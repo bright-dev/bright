@@ -78,7 +78,7 @@ class CustomGraphContainer(Container):
             radius = numpy.log2(len(layout))
             self.bounds = [max(75, self.components[0].width)*2*radius,
                            max(50, self.components[0].height)*2*radius]
-            print "HELLLLLLLLO"
+            #print "HELLLLLLLLO"
             for component in self.components:
                 component.x = self.width * layout[component._key][0]
                 component.y = self.height * layout[component._key][1]
