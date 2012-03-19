@@ -6,7 +6,7 @@ from kiva.constants import MODERN
 from kiva.fonttools import Font
 from traits.api import List, Int, Any, Str, cached_property, Property
 from traitsui.api import View, Item, spring, HGroup
-
+from component_node import ComponentNode
 
 class CustomGraphNodeComponent(Component):
     """ An Enable Component which represents a graph node.
@@ -126,55 +126,53 @@ class CustomGraphNodeComponent(Component):
                 numpy.array([starting_color, ending_color]),
                 "pad")
 
-	#calling draw_component
-	#import pdb; pdb.set_trace()
+        #calling draw_component
+        #import pdb; pdb.set_trace()
 
     	node_dictionary = {}
-	b = [1,2]
+        b = [1,2]
     	node_dictionary["enrichment"] = b
-    	a = ["uranium_mine","thorium_mine", "pressurized_water_reactor", "sodium_fast_reactor", "candu",
-         "aqueous_reprocess_plant", "electrochemical_reprocessing_plant","interim_storage_facility",
-         "geologic_repository"]
-
+    	a = ["uranium_mine","thorium_mine", "pressurized_water_reactor", "sodium_fast_reactor", "candu","aqueous_reprocess_plant", "electrochemical_reprocessing_plant","interim_storage_facility","geologic_repository"]
     	for name in a:
             if name == "uranium_mine":
-		b = [0,1]
-	        #pair.set_coordinate(0,1)
-	        #node_dictionary[name] = pair
+                b = [0,1]
+            #pair.set_coordinate(0,1)
+            #node_dictionary[name] = pair
                 node_dictionary[name] = b
             elif name == "pressurized_water_reactor":
                 b = [1,1]
                 node_dictionary[name] = b
-	        #pair.set_coordinate(1,1)
+            #pair.set_coordinate(1,1)
 	        #node_dictionary[name] = pair
             elif name == "sodium_fast_reactor":
                 b = [2,1]
                 node_dictionary[name] = b	        
-		#pair.set_coordinate(2,1)
+		    #pair.set_coordinate(2,1)
 	        #node_dictionary[name] = pair
-            elif name == "candu" or "interim_storage_facility":
-		b = [1,1]
-                node_dictionary[name] = b	        
-		#pair.set_coordinate(1,1)
-	        #node_dictionary[name] = pair
-            elif name == "aqueous_reprocess_plant" or "electrochemical_reprocessing_plant":
-	        b = [1,1]
+            elif name == "candu" or name == "interim_storage_facility":
+                b = [1,1]
                 node_dictionary[name] = b
-		#pair.set_coordinate(1,4)		
-	        #node_dictionary[name] = pair
+            #pair.set_coordinate(1,1)
+            #node_dictionary[name] = pair
+            elif name == "aqueous_reprocess_plant" or name == "electrochemical_reprocessing_plant":
+                b = [1,4]
+                node_dictionary[name] = [1,4]
+            #pair.set_coordinate(1,4)
+            #node_dictionary[name] = pair
             elif name == "geologic_repository":
-	        b = [1,1]
+                b = [1,1]
                 node_dictionary[name] = b
-		#pair.set_coordinate(1,0)
-	        #node_dictionary[name] = pair
-	
-        #self.draw_component(gc,x,y,3,2)
+            #pair.set_coordinate(1,0)
+            #node_dictionary[name] = pair
 
-	self.draw_component(gc,x,y,node_dictionary)
+        #self.draw_component(gc,x,y,3,2)
         #gc.set_fill_color((0.8,0.0,0.1,1.0))
         #gc.set_fill_color(color)
+        
         gc.draw_path()
         gc.restore_state()
+        self.draw_component(gc,x,y,node_dictionary)
+
 
         	
     def __key_default(self):
@@ -199,28 +197,33 @@ class CustomGraphNodeComponent(Component):
             n2 += 1
             total_output_length += 1/float(outputs+1)"""
     def draw_component(self, gc, x, y, node_dictionary):
-	#import pdb; pdb.set_trace()
-	label_temp = self.label[:-1]
-	if label_temp in node_dictionary:
-	    temp = node_dictionary[label_temp]
+        #import pdb; pdb.set_trace()
+        label_temp = self.label[:-1]
+        if label_temp in node_dictionary:
+            temp = node_dictionary[label_temp]
             inputs = temp[0]
-	    outputs = temp[1]
-            n = 0
-            n2 = 0
-            total_input_length = 1/float(inputs + 1)
-            total_output_length = 1/float(outputs + 1)
+            outputs = temp[1]
+        n = 0
+        n2 = 0
+        total_input_length = 1/float(inputs + 1)
+        total_output_length = 1/float(outputs + 1)
         
-            while n < inputs:
-                gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
-                gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
-                n += 1
-                total_input_length += 1/float(inputs+1)
-        
-            while n2 < outputs:
-                gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
-                gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
-                n2 += 1
-                total_output_length += 1/float(outputs+1)
+        while n < inputs:
+            #gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
+            #gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
+            comp_node = ComponentNode(x = x + 5, y = y,height = self.height,length = total_input_length, fill_color = ((0.8,0.0,0.1,1.0)))
+            comp_node.draw(gc)
+            n += 1
+            total_input_length += 1/float(inputs+1)
+            #self.container.add(comp_node)
+                    
+        while n2 < outputs:
+            #gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
+            #gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
+            comp_node2 = ComponentNode(x = self.x2 - 5, y = y,height = self.height,length = total_output_length)
+            comp_node2.draw(gc)
+            n2 += 1
+            total_output_length += 1/float(outputs+1)
 
     
 	
@@ -233,7 +236,7 @@ class CustomGraphNodeComponent(Component):
         #if len(text) > 20:
          #   text =  text[0:17] + "..."
         #if len(text) > 20:
-         #   text =  text[0:17] + "\n    " + text[18:len(text)]
+            #text =  text[0:17] + "\n    " + text[18:len(text)]
         return text
 
     def _value_changed(self):
