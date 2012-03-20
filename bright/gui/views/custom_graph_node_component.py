@@ -203,27 +203,27 @@ class CustomGraphNodeComponent(Component):
             temp = node_dictionary[label_temp]
             inputs = temp[0]
             outputs = temp[1]
-        n = 0
-        n2 = 0
-        total_input_length = 1/float(inputs + 1)
-        total_output_length = 1/float(outputs + 1)
+            n = 0
+            n2 = 0
+            total_input_length = 1/float(inputs + 1)
+            total_output_length = 1/float(outputs + 1)
         
-        while n < inputs:
-            gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
-            gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
+            while n < inputs:
+                gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
+                gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
             #comp_node = ComponentNode(x = x + 5, y = y,height = self.height,length = total_input_length)
             #comp_node.draw(gc)
-            n += 1
-            total_input_length += 1/float(inputs+1)
+                n += 1
+                total_input_length += 1/float(inputs+1)
             #self.container.add(comp_node)
                     
-        while n2 < outputs:
-            gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
-            gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
+            while n2 < outputs:
+                gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
+                gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
             #comp_node2 = ComponentNode(x = self.x2 - 5, y = y,height = self.height,length = total_output_length)
             #comp_node2.draw(gc)
-            n2 += 1
-            total_output_length += 1/float(outputs+1)
+                n2 += 1
+                total_output_length += 1/float(outputs+1)
 
     
 	
