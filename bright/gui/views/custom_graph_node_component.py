@@ -164,6 +164,7 @@ class CustomGraphNodeComponent(Component):
                 node_dictionary[name] = b
             #pair.set_coordinate(1,0)
             #node_dictionary[name] = pair
+        self.draw_component(gc,x,y,node_dictionary)
 
         #self.draw_component(gc,x,y,3,2)
         #gc.set_fill_color((0.8,0.0,0.1,1.0))
@@ -171,7 +172,6 @@ class CustomGraphNodeComponent(Component):
         
         gc.draw_path()
         gc.restore_state()
-        self.draw_component(gc,x,y,node_dictionary)
 
 
         	
