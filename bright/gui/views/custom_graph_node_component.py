@@ -211,7 +211,7 @@ class CustomGraphNodeComponent(Component):
         while n < inputs:
             #gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
             #gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
-            comp_node = ComponentNode(x = x + 5, y = y,height = self.height,length = total_input_length, fill_color = ((0.8,0.0,0.1,1.0)))
+            comp_node = ComponentNode(x = x + 5, y = y,height = self.height,length = total_input_length)
             comp_node.draw(gc)
             n += 1
             total_input_length += 1/float(inputs+1)
