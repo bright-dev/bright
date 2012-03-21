@@ -45,23 +45,23 @@ class E_handler(Handler):
         info.object.model.add_instance("lwru_enrich","Enrichment")
         info.object.model.add_instance("lwru_storage","Storage")
         info.object.model.add_instance("lwru_reactor","Reactor")
-        info.object.model.calc_comp("lwru_storage","LWRU Nu")
-        info.object.model.calc_comp("lwru_enrich","LWRU Nu")
-        info.object.model.calc_comp("lwru_reactor","LWRU Enrich")
+        info.object.model.calc_comp("lwru_storage","lwru_enrich")
+        info.object.model.calc_comp("lwru_enrich","lwru_nu")
+        info.object.model.calc_comp("lwru_reactor","lwru_enrich")
         return
 
     def preconfigured_lwrmox(self, info):
         info.object.model.add_instance("lwrmox_reprocess","Reprocess")
         info.object.model.add_instance("lwrmox_reactor","Reactor")
         info.object.model.add_instance("lwrmox_storage","Storage")
-        info.object.model.calc_comp("lwrmox_storage","LWRMOX Reprocess")
-        info.object.model.calc_comp("lwrmox_reactor","LWRMOX Reprocess")
+        info.object.model.calc_comp("lwrmox_storage","lwrmox_reprocess")
+        info.object.model.calc_comp("lwrmox_reactor","lwrmox_reprocess")
         return
 
     def preconfigured_candu(self, info):
         info.object.model.add_instance("lwrcandu_nu","Material")
         info.object.model.add_instance("lwrcandu_reactor","Reactor")
-        info.object.model.calc_comp("lwrcandu_reactor","LWRCANDU Nu")
+        info.object.model.calc_comp("lwrcandu_reactor","lwrcandu_nu")
         return
 
     save = Action(name = "Save", action = "save_file")
