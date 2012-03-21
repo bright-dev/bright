@@ -232,7 +232,7 @@ class _Material_View(HasTraits):
 # Mass Stream Block
 ###############################################################################
 
-def Material(ms_in):
+def _Material_(ms_in):
     """Mass Stream
     ***********
     This provides a simple, standard way to represent fuel cycle mass flows.  The ``Material`` objects
@@ -244,7 +244,7 @@ def Material(ms_in):
 
     """
 
-    if isinstance(ms_in, pyne.Material):
+    if isinstance(ms_in, Material):
         ms_out = ms_in
 
     return ms_out
@@ -269,11 +269,11 @@ class MaterialView(HasTraits):
         )
 
     def _ms_out_default(self):
-        ms_out = Material()
+        ms_out = Material({})
         return ms_out
 
     def _ms_out_view_default(self):
-        _msov = MaterialView(material=self.ms_out)
+        _msov = _Material_View(material=self.ms_out)
         return _msov
 
     @on_trait_change('ms_out_view.material')
