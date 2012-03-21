@@ -164,7 +164,6 @@ class CustomGraphNodeComponent(Component):
                 node_dictionary[name] = b
             #pair.set_coordinate(1,0)
             #node_dictionary[name] = pair
-        
         #self.draw_component(gc,x,y,node_dictionary)
 
         #self.draw_component(gc,x,y,3,2)
@@ -174,8 +173,6 @@ class CustomGraphNodeComponent(Component):
         gc.draw_path()
         gc.restore_state()
         self.draw_component(gc,x,y,node_dictionary)
-
-
         	
     def __key_default(self):
         return self.value
@@ -198,6 +195,7 @@ class CustomGraphNodeComponent(Component):
             gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
             n2 += 1
             total_output_length += 1/float(outputs+1)"""
+
     def draw_component(self, gc, x, y, node_dictionary):
         #import pdb; pdb.set_trace()
         label_temp = self.label[:-1]
@@ -205,10 +203,10 @@ class CustomGraphNodeComponent(Component):
             temp = node_dictionary[label_temp]
             inputs = temp[0]
             outputs = temp[1]
-        n = 0
-        n2 = 0
-        total_input_length = 1/float(inputs + 1)
-        total_output_length = 1/float(outputs + 1)
+            n = 0
+            n2 = 0
+            total_input_length = 1/float(inputs + 1)
+            total_output_length = 1/float(outputs + 1)
         
         while n < inputs:
             #gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
