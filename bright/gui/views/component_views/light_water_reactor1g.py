@@ -8,12 +8,12 @@ from chaco.tools.cursor_tool import CursorTool, BaseCursorTool
 from chaco.base import n_gon
 from numpy import linspace, sin, sqrt, transpose
 
-import mass_stream
+from pyne.material import Material
 import bright
 import numpy as np
 
 from utils import _init_comp, _get_comp_pass_number, _get_lwr_data_path
-from mass_stream import MassStreamView
+from material import MaterialView
 
 from bright.gui.views.component_views.views.burnup_criticality_estimator import _burnup_criticality_estimator_plot, _k_BU
 
@@ -38,13 +38,13 @@ def _make_pincell_plot(radius, length):
     pincell_plot.title = "Fuel Pin Cell"
     return pincell_plot
 
-class LightWaterReactorView(HasTraits):
+class LightWaterReactor1gView(HasTraits):
 
-    IsosIn  = Instance(mass_stream.MassStream)
-    IsosOut = Instance(mass_stream.MassStream)
+    IsosIn  = Instance(Material)
+    IsosOut = Instance(Material)
 
-    IsosIn_view  = Instance(MassStreamView)
-    IsosOut_view = Instance(MassStreamView)
+    IsosIn_view  = Instance(MaterialView)
+    IsosOut_view = Instance(MaterialView)
 
     name = Str("Light Water Reactor")
 
@@ -142,11 +142,11 @@ class LightWaterReactorView(HasTraits):
     # IsosIn functions
 
     def _IsosIn_default(self):
-        IsosIn = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
+        IsosIn = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
         return IsosIn
 
     def _IsosIn_view_default(self):
-        iiv = MassStreamView(mass_stream=self.IsosIn)
+        iiv = MaterialView(mass_stream=self.IsosIn)
         return iiv
 
     @on_trait_change('IsosIn_view.mass_stream')
@@ -156,11 +156,11 @@ class LightWaterReactorView(HasTraits):
     # IsosIn functions
 
     def _IsosOut_default(self):
-        IsosOut = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
+        IsosOut = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745})
         return IsosOut
 
     def _IsosOut_view_default(self):
-        iov = MassStreamView(mass_stream=self.IsosOut)
+        iov = MaterialView(mass_stream=self.IsosOut)
         return iov
 
     @on_trait_change('IsosOut_view.mass_stream')
@@ -283,7 +283,7 @@ class LightWaterReactorView(HasTraits):
         self.burnup = self.top_cursor.current_position[0]
 
 if __name__ == "__main__":
-    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+    nu = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
 
     _lightwaterreactorview = LightWaterReactorView(IsosIn = nu, IsosOut = nu)
     _lightwaterreactorview.configure_traits()

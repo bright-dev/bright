@@ -5,17 +5,19 @@ from traitsui.api import View, Item, Tabbed, Group, InstanceEditor
 #import mass_stream
 
 import bright
+from pyne.material import Material
 
 from utils import _init_comp, _get_comp_pass_number
 from material import MaterialView
 
+
 class EnrichmentView(HasTraits):
 
-    IsosIn  = Instance(mass_stream.MassStream)
-    IsosOut = Instance(mass_stream.MassStream)
+    IsosIn  = Instance(Material)
+    IsosOut = Instance(Material)
 
-    IsosIn_view  = Instance(MassStreamView)
-    IsosOut_view = Instance(MassStreamView)
+    IsosIn_view  = Instance(MaterialView)
+    IsosOut_view = Instance(MaterialView)
 
     name = Str("Enrichment")
 
@@ -77,7 +79,7 @@ class EnrichmentView(HasTraits):
 
 
 if __name__ == "__main__":
-    nu = mass_stream.MassStream({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
+    nu = Material({922340: 0.000055, 922350: 0.00720, 922380: 0.992745}, 42.0, "Natural Uranium")
     
     _enrichmentview = EnrichmentView(IsosIn = nu, IsoOut = nu)
     _enrichmentview.configure_traits() 

@@ -11,7 +11,7 @@ from custom_dag_container import CustomDAGContainer
 #from bright.gui.views.graph_container import GraphContainer
 from graph_container import CustomGraphContainer
 from bright.gui.views.custom_graph_node_component import CustomGraphNodeComponent
-from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
+from bright.gui.views.custom_node_selection_tool import CustomNodeSelectionTool
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
 
 def graph_from_dict(d):

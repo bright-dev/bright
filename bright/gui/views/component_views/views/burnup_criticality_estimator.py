@@ -10,8 +10,6 @@ from enable.component_editor import ComponentEditor
 from traits.api import HasTraits, Instance, on_trait_change
 from traitsui.api import View, Item, HGroup, VGroup
 
-from metasci import SolveLine
-
 def _k_BU(BU_F_, k_F_, BU):
     """Finds the k from a set of data from and a BU value."""
 
@@ -22,7 +20,8 @@ def _k_BU(BU_F_, k_F_, BU):
     BU_val = BU_F_[BU_ind]
     k_val  = k_F_[BU_ind]
 
-    k = SolveLine(BU, BU_val[1], k_val[1], BU_val[0], k_val[0])
+    # Solve the line
+    k = (BU - BU_val[0]) * ((k_val[1] - k_val[0]) / (BU_val[1] - BU_val[0])) + k_val[0]
 
     return k
 
