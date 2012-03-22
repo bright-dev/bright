@@ -219,6 +219,8 @@ class Application(HasTraits):
     def _activated_formation_changed(self):	
         variable_name = self.activated_formation.strip().lower()
         variable_name = '_'.join(variable_name.split(' '))
+        if (variable_name + str(self.instancekey[self.activated_formation][1])) in self.variables_list:
+            self.instancekey[self.activated_formation][1] += 1 
         self.model.add_instance(variable_name + \
             str(self.instancekey[self.activated_formation][1]), \
             self.instancekey[self.activated_formation][0])
