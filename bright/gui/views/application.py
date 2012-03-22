@@ -15,7 +15,7 @@ from enthought.plugins import ipython_shell
 import os
 import re
 from graphcanvas.graph_node_hover_tool import GraphNodeHoverTool
-from bright.gui.views.custom_graph_canvas.custom_node_selection_tool import CustomNodeSelectionTool
+from bright.gui.views.custom_node_selection_tool import CustomNodeSelectionTool
 from custom_graph_node_component import CustomGraphNodeComponent
 from traits.trait_handlers import BaseTraitHandler, TraitHandler
 from graph_container import CustomGraphContainer
@@ -117,6 +117,7 @@ class Application(HasTraits):
             if 'init' not in i and 'util' not in i and 'lwr' not in i:
                 match = re.search('(.+).py',i)
                 vname_list = match.group(1).split("_")
+                
                 for n in vname_list:
                     vname_list[vname_list.index(n)] = n.capitalize()
                 vname = ''.join(vname_list)
@@ -130,10 +131,11 @@ class Application(HasTraits):
                 #view_name=vname), {}, localdict)
          
 
-        #       else:
-          #          exec('from bright.gui.views.component_views.{name} import 
-                #{view_name}View'.format(name=match.group(1), 
-                #view_name=vname), {}, localdict)
+                else:
+                    exec('from bright.gui.views.component_views.{name} import \
+                    {view_name}View'.format(name=match.group(1), \
+                    view_name=vname), {}, localdict)
+     
         for key, value in localdict.items():
             self.component_views[key] = value
         #import pdb; pdb.set_trace()
@@ -230,8 +232,8 @@ class Application(HasTraits):
     def _model_default(self):
         fcm = FuelCycleModel()
         fcm.add_instance("uranium_mine0", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
-        fcm.add_instance("candu0", "Storage")
-        fcm.calc_comp("candu0","uranium_mine0")
+        fcm.add_instance("interim_storage_facility0", "Storage")
+        fcm.calc_comp("interim_storage_facility0","uranium_mine0")
         self.register_views()
         return fcm
 
