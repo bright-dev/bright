@@ -57,7 +57,8 @@ class StorageView(HasTraits):
         return IsosIn
 
     def _IsosIn_view_default(self):
-        iiv = Material(material=self.IsosIn)
+        #iiv = Material(material=self.IsosIn)
+        iiv = Material({})
         return iiv
 
     @on_trait_change('IsosIn_view.material')
@@ -71,7 +72,8 @@ class StorageView(HasTraits):
         return IsosOut
 
     def _IsosOut_view_default(self):
-        iov = Material(material=self.IsosOut)
+        #iov = Material(material=self.IsosOut)
+        iov = Material({})
         return iov
 
     @on_trait_change('IsosOut_view.material')
