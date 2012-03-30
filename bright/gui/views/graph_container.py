@@ -129,6 +129,7 @@ class CustomGraphContainer(Container):
             line_ends.append([dest_x, dest_y])
 
             with gc:
+                gc.set_line_width(5)
                 gc.set_stroke_color((.5,.5,.5))
                 gc.set_fill_color((1,1,1,0))
 
@@ -168,12 +169,14 @@ class CustomGraphContainer(Container):
                 # Draw the left arrowhead (for an arrow pointing straight up)
                 arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
                 gc.begin_path()
+                gc.set_line_width(5)
                 gc.line_set(line_ends, arrow_ends)
                 gc.stroke_path()
 
                 # Draw the right arrowhead (for an arrow pointing straight up)
                 arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, -a], [a, a]])) * 10
                 gc.begin_path()
+                gc.set_line_width(5)
                 gc.line_set(line_ends, arrow_ends)
                 gc.stroke_path()
 

@@ -496,12 +496,14 @@ def draw(self, gc, view_bounds=None, mode="default"):
             arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, a], [-a, a]])) * 10
             gc.begin_path()
             gc.line_set(line_ends, arrow_ends)
+            gc.set_line_width(7)
             gc.stroke_path()
 
             # Draw the right arrowhead (for an arrow pointing straight up)
             arrow_ends = line_ends - numpy.array(unit_vec*numpy.matrix([[a, -a], [a, a]])) * 10
             gc.begin_path()
             gc.line_set(line_ends, arrow_ends)
+            gc.set_line_width(7)
             gc.stroke_path()
 
 

@@ -35,9 +35,7 @@ class CustomGraphNodeComponent(Component):
     padding_right = 25
     padding_top = 25
     padding_bottom = 25
-
     
-
     traits_view = View(HGroup(
                            spring,
                            Item('value', style='readonly', show_label=False),
@@ -129,41 +127,63 @@ class CustomGraphNodeComponent(Component):
         #calling draw_component
         #import pdb; pdb.set_trace()
 
-    	node_dictionary = {}
-        b = [1,2]
-    	node_dictionary["enrichment"] = b
-    	a = ["uranium_mine","thorium_mine", "pressurized_water_reactor", "sodium_fast_reactor", "candu","aqueous_reprocess_plant", "electrochemical_reprocessing_plant","interim_storage_facility","geologic_repository"]
+    	#node_dictionary = {}
+        node_color_dict = {}
+        #b = [1,2]
+        colors = [[1],[2,3]]
+    	#node_dictionary["enrichment"] = b
+        node_color_dict["enrichment"]= colors
+    	a = ["uranium_mine","thorium_mine", "pressurized_water_reactor", \
+             "sodium_fast_reactor", "candu","aqueous_reprocess_plant", \
+             "electrochemical_reprocessing_plant","interim_storage_facility", \
+             "geologic_repository"]
+
     	for name in a:
             if name == "uranium_mine":
-                b = [0,1]
-            #pair.set_coordinate(0,1)
-            #node_dictionary[name] = pair
-                node_dictionary[name] = b
+                #b = [0,1]
+                colors = [[0],[1]] 
+                #node_dictionary[name] = b
+                node_color_dict[name] = colors
             elif name == "pressurized_water_reactor":
-                b = [1,1]
-                node_dictionary[name] = b
-            #pair.set_coordinate(1,1)
-	        #node_dictionary[name] = pair
+                #b = [1,1]
+                colors = [[2],[4]] 
+                #node_dictionary[name] = b
+                node_color_dict[name] = colors
             elif name == "sodium_fast_reactor":
-                b = [2,1]
-                node_dictionary[name] = b	        
-		    #pair.set_coordinate(2,1)
-	        #node_dictionary[name] = pair
-            elif name == "candu" or name == "interim_storage_facility":
-                b = [1,1]
-                node_dictionary[name] = b
-            #pair.set_coordinate(1,1)
-            #node_dictionary[name] = pair
-            elif name == "aqueous_reprocess_plant" or name == "electrochemical_reprocessing_plant":
-                b = [1,4]
-                node_dictionary[name] = [1,4]
-            #pair.set_coordinate(1,4)
-            #node_dictionary[name] = pair
+                #b = [2,1]
+                colors = [[5,3],[6]] 
+                #node_dictionary[name] = b	        
+                node_color_dict[name] = colors
+            elif name == "candu":
+                #b = [1,1]
+                colors = [[1],[4]] 
+                #node_dictionary[name] = b
+                node_color_dict[name] = colors
+            elif name == "interim_storage_facility":
+                #b = [1,1]
+                colors = [[0],[0]]
+                #node_dictionary[name] = b
+                node_color_dict[name] = colors                
+            elif name == "aqueous_reprocess_plant":
+                #b = [1,4]
+                colors = [[4],[5,7,8,3]]
+                #node_dictionary[name] = [1,4]
+                node_color_dict[name] = colors
+            elif name == "electrochemical_reprocessing_plant":
+                #b = [1,4]
+                colors = [[6],[5,7,8,3]]
+                #node_dictionary[name] = [1,4]
+                node_color_dict[name] = colors
             elif name == "geologic_repository":
-                b = [1,1]
-                node_dictionary[name] = b
-            #pair.set_coordinate(1,0)
-            #node_dictionary[name] = pair
+                #b = [1,1]
+                colors = [[0],[0]]
+                #node_dictionary[name] = b
+                node_color_dict[name] = colors
+
+        color_tuples = [(1.0,1.0,1.0,1.0),(1.0,0.0,0.0,1.0),(0.0,1.0,0.0,1.0),(0.0,0.0,1.0,1.0),\
+              (1.0,1.0,0.0,1.0),(1.0,0.0,1.0,1.0),(0.0,1.0,1.0,1.0),(0.5,1.0,0.0,1.0),\
+              (0,0.5,1.0,1.0)]
+
         #self.draw_component(gc,x,y,node_dictionary)
 
         #self.draw_component(gc,x,y,3,2)
@@ -172,30 +192,12 @@ class CustomGraphNodeComponent(Component):
         
         gc.draw_path()
         gc.restore_state()
-        self.draw_component(gc,x,y,node_dictionary)
-        	
+        #self.draw_component(gc,x,y,node_dictionary)
+        self.draw_component(gc,x,y,node_color_dict,color_tuples)
+	
     def __key_default(self):
         return self.value
-   
-    """def draw_component(self, gc, x, y, inputs,outputs):
-    	#import pdb; pdb.set_trace()
-        n = 0
-        n2 = 0
-        total_input_length = 1/float(inputs + 1)
-        total_output_length = 1/float(outputs + 1)
-        
-        while n < inputs:
-            gc.arc(x + 5, y+(self.height*total_input_length), 2, numpy.pi/2, -numpy.pi/2)
-            gc.arc(x + 5, y+(self.height*total_input_length), -2, numpy.pi/2, -numpy.pi/2)
-            n += 1
-            total_input_length += 1/float(inputs+1)
-        
-        while n2 < outputs:
-            gc.arc(self.x2 - 5, y+(self.height*total_output_length), 2, numpy.pi/2, -numpy.pi/2)
-            gc.arc(self.x2 - 5, y+(self.height*total_output_length), -2, numpy.pi/2, -numpy.pi/2)
-            n2 += 1
-            total_output_length += 1/float(outputs+1)"""
-
+    """
     def draw_component(self, gc, x, y, node_dictionary):
         label_temp = self.label[:-1]
         #import pdb; pdb.set_trace()
@@ -225,9 +227,46 @@ class CustomGraphNodeComponent(Component):
                 comp_node2.draw(gc)
                 n2 += 1
                 total_output_length += 1/float(outputs+1)
+    """
 
-    
-	
+    def draw_component(self, gc, x, y, node_color_dict,color_tuples):
+        label_temp = self.label[:-1]
+        #import pdb; pdb.set_trace()
+
+        if label_temp in node_color_dict:
+            temp = node_color_dict[label_temp]
+            inputs = len(temp[0])
+            outputs = len(temp[1])
+            n = 0
+            n2 = 0
+            total_input_length = 1/float(inputs + 1)
+            total_output_length = 1/float(outputs + 1)
+            #import pdb; pdb.set_trace()
+            IO_colors = node_color_dict[label_temp]
+        
+            while n < inputs:
+                #gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
+                #gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
+                input_colors_arr = IO_colors[0]
+                color_index = input_colors_arr[n]
+                input_color = color_tuples[color_index]
+                comp_node = ComponentNode(x = x + 5, y = y,height = self.height,length = total_input_length, fill_color = input_color)
+                comp_node.draw(gc)
+                n += 1
+                total_input_length += 1/float(inputs+1)
+                #self.container.add(comp_node)
+                    
+            while n2 < outputs:
+                #gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
+                #gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
+                output_colors_arr = IO_colors[1]
+                color_index = output_colors_arr[n2]
+                output_color = color_tuples[color_index]
+                comp_node2 = ComponentNode(x = self.x2 - 5, y = y,height = self.height,length = total_output_length, fill_color = output_color)
+                comp_node2.draw(gc)
+                n2 += 1
+                total_output_length += 1/float(outputs+1)
+
     @cached_property
     def _get_label(self):
         if hasattr(self.value, 'label'):
