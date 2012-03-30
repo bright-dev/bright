@@ -180,7 +180,8 @@ class CustomGraphNodeComponent(Component):
                 #node_dictionary[name] = b
                 node_color_dict[name] = colors
 
-        color_tuples = [(1.0,1.0,1.0,1.0),(1.0,0.0,0.0,1.0),(0.0,1.0,0.0,1.0),(0.0,0.0,1.0,1.0),\
+        # First color (black) means any
+        color_tuples = [(0.0,0.0,0.0,1.0),(1.0,0.0,0.0,1.0),(0.0,1.0,0.0,1.0),(0.0,0.0,1.0,1.0),\
               (1.0,1.0,0.0,1.0),(1.0,0.0,1.0,1.0),(0.0,1.0,1.0,1.0),(0.5,1.0,0.0,1.0),\
               (0,0.5,1.0,1.0)]
 
@@ -235,7 +236,11 @@ class CustomGraphNodeComponent(Component):
 
         if label_temp in node_color_dict:
             temp = node_color_dict[label_temp]
-            inputs = len(temp[0])
+            #import pdb; pdb.set_trace()
+            if(temp[0] == [0]):
+                inputs = 0
+            else:
+                inputs = len(temp[0])
             outputs = len(temp[1])
             n = 0
             n2 = 0
