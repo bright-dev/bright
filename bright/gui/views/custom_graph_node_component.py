@@ -11,7 +11,6 @@ from component_node import ComponentNode
 class CustomGraphNodeComponent(Component):
     """ An Enable Component which represents a graph node.
     """
-    
     # The level from the root. This is used for layout and may not be
     # meaningful in graphs with no root level.
     level = Int(0)
