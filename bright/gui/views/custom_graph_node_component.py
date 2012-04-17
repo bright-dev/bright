@@ -7,6 +7,8 @@ from kiva.fonttools import Font
 from traits.api import List, Int, Any, Str, cached_property, Property
 from traitsui.api import View, Item, spring, HGroup
 from component_node import ComponentNode
+from traits.api import Enum
+from enthought.block_canvas.canvas.i_selectable import ISelectable
 
 class CustomGraphNodeComponent(Component):
     """ An Enable Component which represents a graph node.
@@ -29,6 +31,8 @@ class CustomGraphNodeComponent(Component):
     padding_right = 5
     padding_top = 5
     padding_bottom = 5"""
+
+    selection_state = Enum('unselected', 'selected', 'coselected')
 
     padding_left = 25
     padding_right = 25
@@ -197,37 +201,6 @@ class CustomGraphNodeComponent(Component):
 	
     def __key_default(self):
         return self.value
-    """
-    def draw_component(self, gc, x, y, node_dictionary):
-        label_temp = self.label[:-1]
-        #import pdb; pdb.set_trace()
-
-        if label_temp in node_dictionary:
-            temp = node_dictionary[label_temp]
-            inputs = temp[0]
-            outputs = temp[1]
-            n = 0
-            n2 = 0
-            total_input_length = 1/float(inputs + 1)
-            total_output_length = 1/float(outputs + 1)
-        
-            while n < inputs:
-                #gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
-                #gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
-                comp_node = ComponentNode(x = x + 5, y = y,height = self.height,length = total_input_length)
-                comp_node.draw(gc)
-                n += 1
-                total_input_length += 1/float(inputs+1)
-                #self.container.add(comp_node)
-                    
-            while n2 < outputs:
-                #gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
-                #gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
-                comp_node2 = ComponentNode(x = self.x2 - 5, y = y,height = self.height,length = total_output_length)
-                comp_node2.draw(gc)
-                n2 += 1
-                total_output_length += 1/float(outputs+1)
-    """
 
     def draw_component(self, gc, x, y, node_color_dict,color_tuples):
         label_temp = self.label[:-1]
