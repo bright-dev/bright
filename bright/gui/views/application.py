@@ -147,9 +147,9 @@ class Application(HasTraits):
                             Item(
                                  'classes_list', 
                                  editor = ListStrEditor(
-                                                        activated = 'activated_formation', 
-                                                        title = 'Classes Available', 
-                                                        editable = False, operations = []
+                                             activated = 'activated_formation', 
+                                             title = 'Classes Available', 
+                                             editable = False, operations = []
                                                        ), 
                                  show_label = False, 
                                  width =.10,
@@ -176,9 +176,9 @@ class Application(HasTraits):
                             Item(
                                  'variables_list', 
                                  editor = ListStrEditor(
-                                                        title = 'Variables In Use', 
-                                                        editable = False, 
-                                                        operations = []
+                                             title = 'Variables In Use', 
+                                             editable = False, 
+                                             operations = []
                                                        ), 
                                  show_label = False, 
                                  resizable = True, 
@@ -219,7 +219,8 @@ class Application(HasTraits):
     def _activated_formation_changed(self):	
         variable_name = self.activated_formation.strip().lower()
         variable_name = '_'.join(variable_name.split(' '))
-        if (variable_name + str(self.instancekey[self.activated_formation][1])) in self.variables_list:
+        if (variable_name + str(self.instancekey[self.activated_formation][1]))\
+        in self.variables_list:
             self.instancekey[self.activated_formation][1] += 1 
         self.model.add_instance(variable_name + \
             str(self.instancekey[self.activated_formation][1]), \
@@ -233,7 +234,8 @@ class Application(HasTraits):
 
     def _model_default(self):
         fcm = FuelCycleModel()
-        fcm.add_instance("uranium_mine0", "Material", {922380:0.992745, 922350:0.0072, 922340:0.000055})
+        fcm.add_instance("uranium_mine0", "Material", \
+            {922380:0.992745, 922350:0.0072, 922340:0.000055})
         fcm.add_instance("interim_storage_facility0", "Storage")
         fcm.calc_comp("interim_storage_facility0","uranium_mine0")
         self.register_views()
@@ -252,11 +254,12 @@ class Application(HasTraits):
         #self.graph_view._GraphView__canvas_default(self.graph_view)
         
         self.graph_view._canvas.tools.pop(1)            
-        self.graph_view._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, 
-                                                                     variables_available = self.model.variables, 
-                                                                     class_views = self.component_views, 
-                                                                     component=self.graph_view._canvas
-                                                                    )
+        self.graph_view._canvas.tools.append(CustomNodeSelectionTool(
+                            classes_available = self.model.classes_available, 
+                            variables_available = self.model.variables, 
+                            class_views = self.component_views, 
+                            component=self.graph_view._canvas
+                                                                   )
                                             )
 
     def _graph_view_default(self):
@@ -275,7 +278,8 @@ class Application(HasTraits):
 
 
 
-        #Either this or the three lines above can be used; which one is better though?#
+        #Either this or the three lines above can be used; 
+        #which one is better though?#
         #GraphView._graph_changed = _graph_changed
         #gv = GraphView(graph = self.model.graph)
         #gv._graph_changed(self.model.graph)
@@ -284,10 +288,11 @@ class Application(HasTraits):
 
 
         gv._canvas.tools.pop(0)
-        gv._canvas.tools.append(CustomNodeSelectionTool(classes_available = self.model.classes_available, 
-                                                        variables_available = self.model.variables, 
-                                                        class_views = self.component_views, 
-                                                        component=gv._canvas
+        gv._canvas.tools.append(CustomNodeSelectionTool(
+                            classes_available = self.model.classes_available, 
+                            variables_available = self.model.variables, 
+                            class_views = self.component_views, 
+                            component=gv._canvas
                                                         )
                                 )
 
@@ -304,9 +309,15 @@ class Application(HasTraits):
         list_temp = []
 	#circle_temp = {}
 	#pair = IOPair()
-        x = ["    Uranium Mine","    Thorium Mine", "    Pressurized Water Reactor", "    Sodium Fast Reactor", "    CANDU",
-                     "    Aqueous Reprocess Plant", "    Electrochemical Reprocessing Plant","    Interim Storage Facility",
-                      "    Geologic Repository"]
+        x = ["    Uranium Mine",
+             "    Thorium Mine", 
+             "    Pressurized Water Reactor", 
+             "    Sodium Fast Reactor", 
+             "    CANDU",
+             "    Aqueous Reprocess Plant", 
+             "    Electrochemical Reprocessing Plant",
+             "    Interim Storage Facility",
+             "    Geologic Repository"]
 
         for key, value in fcm.classes_available.items():
             list_temp.append(key)
