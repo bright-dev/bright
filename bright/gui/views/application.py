@@ -95,6 +95,7 @@ class Application(HasTraits):
     loaded_script = Str
     handle = E_handler()
     activated_formation = Any
+    selected = Any
     instancekey = Dict
     count = Int(1)
 
@@ -148,8 +149,10 @@ class Application(HasTraits):
                                  'classes_list', 
                                  editor = ListStrEditor(
                                              activated = 'activated_formation', 
+                                             selected = 'selected',
                                              title = 'Classes Available', 
-                                             editable = False, operations = []
+                                             editable = False, 
+                                             operations = []
                                                        ), 
                                  show_label = False, 
                                  width =.10,
@@ -217,7 +220,10 @@ class Application(HasTraits):
                     
                     )
     def _activated_formation_changed(self):	
+        if self.activated_formation == "":
+            return
         variable_name = self.activated_formation.strip().lower()
+        #variable_name = self.selected.strip().lower()
         variable_name = '_'.join(variable_name.split(' '))
         if (variable_name + str(self.instancekey[self.activated_formation][1]))\
         in self.variables_list:
@@ -226,6 +232,7 @@ class Application(HasTraits):
             str(self.instancekey[self.activated_formation][1]), \
             self.instancekey[self.activated_formation][0])
         self.instancekey[self.activated_formation][1] += 1
+        self.activated_formation = ""
         #self.model.add_instance(self.instancekey[self.activated_formation] 
         #+ str(random.randint(0,9)), self.activated_formation) 
 

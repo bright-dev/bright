@@ -46,6 +46,7 @@ class GraphView(HasTraits):
     # How the graph's visualization should be layed out
     layout = Enum('spring', 'tree', 'shell', 'circular')
 
+    
     # Scrolled contained which holds the canvas in a viewport
     _container = Instance(Scrolled)
     # The canvas which the graph will be drawn on

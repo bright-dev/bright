@@ -14,7 +14,7 @@ class CustomGraphContainer(Container):
     bounds = [350, 350]
     graph = Instance(networkx.Graph)
     style = Enum('spring', 'tree', 'shell', 'circular')
-
+    
     # graph layout is different than Enable's layout: graph layout is
     # the relative positioning on nodes, and is very expensive
     _graph_layout_needed = Bool(True)
@@ -25,7 +25,7 @@ class CustomGraphContainer(Container):
         """
         if not self._graph_layout_needed or len(self.components) == 0:
             return
-
+        import pdb; pdb.set_trace()
         def _apply_graphviz_layout(layout):
             min_x = min([pos[0] for pos in layout.values()])
             max_y = max([pos[1] for pos in layout.values()])
