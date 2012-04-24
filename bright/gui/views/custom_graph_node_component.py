@@ -222,24 +222,53 @@ class CustomGraphNodeComponent(Component):
             IO_colors = node_color_dict[label_temp]
         
             while n < inputs:
-                #gc.arc(x + 5, y+(self.height*total_input_length), 3, numpy.pi/2, -numpy.pi/2)
-                #gc.arc(x + 5, y+(self.height*total_input_length), -3, numpy.pi/2, -numpy.pi/2)
+                """gc.arc(x + 5, 
+                        y+(self.height*total_input_length), 
+                        3, 
+                        numpy.pi/2, 
+                        -numpy.pi/2)
+                gc.arc(x + 5, 
+                       y+(self.height*total_input_length), 
+                       -3, 
+                       numpy.pi/2, 
+                       -numpy.pi/2)"""
+                
+
+
                 input_colors_arr = IO_colors[0]
                 color_index = input_colors_arr[n]
                 input_color = color_tuples[color_index]
-                comp_node = ComponentNode(x = x + 5, y = y,height = self.height,length = total_input_length, fill_color = input_color)
+                comp_node = ComponentNode(x = x + 5, 
+                                          y = y,
+                                          height = self.height,
+                                          length = total_input_length, 
+                                          fill_color = input_color)
                 comp_node.draw(gc)
                 n += 1
                 total_input_length += 1/float(inputs+1)
                 #self.container.add(comp_node)
                     
             while n2 < outputs:
-                #gc.arc(self.x2 - 5, y+(self.height*total_output_length), 3, numpy.pi/2, -numpy.pi/2)
-                #gc.arc(self.x2 - 5, y+(self.height*total_output_length), -3, numpy.pi/2, -numpy.pi/2)
+                """gc.arc(self.x2 - 5, 
+                       y+(self.height*total_output_length), 
+                       3, 
+                       numpy.pi/2, 
+                       -numpy.pi/2)
+                gc.arc(self.x2 - 5, 
+                       y+(self.height*total_output_length), 
+                       -3, 
+                       numpy.pi/2, 
+                       -numpy.pi/2)"""
+                
+
+
                 output_colors_arr = IO_colors[1]
                 color_index = output_colors_arr[n2]
                 output_color = color_tuples[color_index]
-                comp_node2 = ComponentNode(x = self.x2 - 5, y = y,height = self.height,length = total_output_length, fill_color = output_color)
+                comp_node2 = ComponentNode(x = self.x2 - 5, 
+                                           y = y,height = self.height,
+                                           length = total_output_length, 
+                                           fill_color = output_color)
                 comp_node2.draw(gc)
                 n2 += 1
                 total_output_length += 1/float(outputs+1)

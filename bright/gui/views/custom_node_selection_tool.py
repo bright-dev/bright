@@ -16,7 +16,8 @@ class CustomNodeSelectionTool(BaseTool):
         for node in self.component.components:
             if node.is_in(event.x, event.y):
                     for key, value in self.classes_available.items():
-                        if self.variables_available[str(node.value)].__class__ == value:
+                        if self.variables_available[str(node.value)].__class__ \
+                        == value:
                             #x =  self.class_views[str(key)]()
                             #import pdb; pdb.set_trace()
                             #print self.class_views
