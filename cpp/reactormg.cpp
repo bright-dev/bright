@@ -814,7 +814,7 @@ void bright::ReactorMG::calc_mass_weights()
   for (nuc_iter iso = K.begin(); iso != K.end(); iso++)
   {
     mass_HM += T_it[*iso][bt_s];
-    inverse_A_HM += (T_it[*iso][bt_s] / pyne::nuc_weight(*iso));
+    inverse_A_HM += (T_it[*iso][bt_s] / pyne::atomic_mass(*iso));
   };
   A_HM_t[bt_s] = mass_HM / inverse_A_HM;
 
@@ -832,7 +832,7 @@ void bright::ReactorMG::calc_mass_weights()
     else
     {
       key_zz = pyne::nucname::zzaaam(key->first);
-      MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * pyne::nuc_weight(key_zz);
+      MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * pyne::atomic_mass(key_zz);
     };
   };
 
@@ -840,14 +840,14 @@ void bright::ReactorMG::calc_mass_weights()
   for (std::map<std::string, double>::iterator key = chemical_form_clad.begin(); key != chemical_form_clad.end(); key++)
   {
     key_zz = pyne::nucname::zzaaam(key->first);
-    MW_clad_t[bt_s] += chemical_form_clad[key->first] * pyne::nuc_weight(key_zz);
+    MW_clad_t[bt_s] += chemical_form_clad[key->first] * pyne::atomic_mass(key_zz);
   };
 
   // Coolant Molecular Weight
   for (std::map<std::string, double>::iterator key = chemical_form_cool.begin(); key != chemical_form_cool.end(); key++)
   {
     key_zz = pyne::nucname::zzaaam(key->first);
-    MW_cool_t[bt_s] += chemical_form_cool[key->first] * pyne::nuc_weight(key_zz);
+    MW_cool_t[bt_s] += chemical_form_cool[key->first] * pyne::atomic_mass(key_zz);
   };
 
 
@@ -913,7 +913,7 @@ void bright::ReactorMG::calc_mass_weights()
 
   for (nuc_iter iso = K.begin(); iso != K.end(); iso++)
   {
-    iso_weight = pyne::nuc_weight(*iso);
+    iso_weight = pyne::atomic_mass(*iso);
 
     // Fuel mass weight
     m_fuel_it[*iso][bt_s] =  n_fuel_it[*iso][bt_s] * iso_weight / A_HM_t[bt_s];
@@ -951,7 +951,7 @@ void bright::ReactorMG::fold_mass_weights()
     N_clad_i_cm2pb = pyne::cm2_per_barn * N_clad_it[*iso][bt_s];
     N_cool_i_cm2pb = pyne::cm2_per_barn * N_cool_it[*iso][bt_s];
 
-    AW_ig = pyne::nuc_weight(*iso);
+    AW_ig = pyne::atomic_mass(*iso);
 
     // Loop over all groups
     for (g = 0; g < G; g++)

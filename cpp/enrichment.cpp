@@ -204,7 +204,7 @@ void bright::Enrichment::FindNM()
 
   double PoF = PoverF(mat_feed.comp[j], xP_j, xW_j);
   double WoF = WoverF(mat_feed.comp[j], xP_j, xW_j);
-  double alphastar_j = get_alphastar_i(pyne::nuc_weight(j));
+  double alphastar_j = get_alphastar_i(pyne::atomic_mass(j));
 
   // Save original state of N & M
   double origN = N;
@@ -272,7 +272,7 @@ void bright::Enrichment::FindNM()
 
 double bright::Enrichment::xP_i(int i)
 {
-  double alphastar_i = get_alphastar_i(pyne::nuc_weight(i));
+  double alphastar_i = get_alphastar_i(pyne::atomic_mass(i));
   double numerator = mat_feed.comp[i]*(pow(alphastar_i, M+1.0) - 1.0);
   double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / PoverF(mat_feed.comp[j], xP_j, xW_j);
   return numerator / denominator;
@@ -281,7 +281,7 @@ double bright::Enrichment::xP_i(int i)
 
 double bright::Enrichment::xW_i(int i)
 {
-  double alphastar_i = get_alphastar_i(pyne::nuc_weight(i));
+  double alphastar_i = get_alphastar_i(pyne::atomic_mass(i));
   double numerator = mat_feed.comp[i] * (1.0 - pow(alphastar_i, -N));
 	double denominator = (pow(alphastar_i, M+1.0) - pow(alphastar_i, -N)) / WoverF(mat_feed.comp[j], xP_j, xW_j);
   return numerator / denominator;
@@ -526,8 +526,8 @@ double bright::Enrichment::deltaU_i_OverG(int i)
   // To link to this article: DOI: 10.1081/SS-100100654
   // URL: http://dx.doi.org/10.1081/SS-100100654
 
-  double alphastar_i = get_alphastar_i(pyne::nuc_weight(i));
-  return log(pow( alpha_0, (Mstar - pyne::nuc_weight(j)) )) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
+  double alphastar_i = get_alphastar_i(pyne::atomic_mass(i));
+  return log(pow( alpha_0, (Mstar - pyne::atomic_mass(j)) )) * ((alphastar_i - 1.0)/(alphastar_i + 1.0));
 };
 
 

@@ -279,7 +279,7 @@ void bright::Reactor1G::fold_mass_weights()
     if (0 == I.count(iso->first))
       continue;
 
-    inverseA_IHM = inverseA_IHM + (iso->second)/ pyne::nuc_weight(iso->first);
+    inverseA_IHM = inverseA_IHM + (iso->second)/ pyne::atomic_mass(iso->first);
   };
   A_IHM = 1.0 / inverseA_IHM;
 
@@ -322,7 +322,7 @@ void bright::Reactor1G::fold_mass_weights()
     if (niF[iso->first] == 0.0)
       continue;
     else
-      miF[iso->first] = niF[iso->first] * pyne::nuc_weight(iso->first) / A_IHM;
+      miF[iso->first] = niF[iso->first] * pyne::atomic_mass(iso->first) / A_IHM;
   };
 
   // Coolant mass weight Calculation...requires MWF
@@ -335,7 +335,7 @@ void bright::Reactor1G::fold_mass_weights()
     else
     {
       int key_zz = pyne::nucname::zzaaam(key->first);
-      MWF = MWF + (fuel_chemical_form[key->first] * pyne::nuc_weight(key_zz));
+      MWF = MWF + (fuel_chemical_form[key->first] * pyne::atomic_mass(key_zz));
     }
   };
 
@@ -344,7 +344,7 @@ void bright::Reactor1G::fold_mass_weights()
   for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
   {
     int key_zz = pyne::nucname::zzaaam(key->first);
-    MWC = MWC + (coolant_chemical_form[key->first] * pyne::nuc_weight(key_zz));
+    MWC = MWC + (coolant_chemical_form[key->first] * pyne::atomic_mass(key_zz));
   };
   miC.clear();
   double rel_Vol_coef = (rhoC * MWF * VC) / (rhoF * MWC * VF);
@@ -353,7 +353,7 @@ void bright::Reactor1G::fold_mass_weights()
     if (niC[iso->first] == 0.0)
       continue;
     else
-      miC[iso->first] = (niC[iso->first] * pyne::nuc_weight(iso->first) / A_IHM) * rel_Vol_coef;
+      miC[iso->first] = (niC[iso->first] * pyne::atomic_mass(iso->first) / A_IHM) * rel_Vol_coef;
   };
 
   // Fuel Number Density
@@ -1189,7 +1189,7 @@ void bright::Reactor1G::calc_zeta()
         SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * di_F_[iso->first][f] * pyne::cm2_per_barn);
 
         SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * pyne::cm2_per_barn * (di_F_[iso->first][f] + \
-                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nuc_weight(iso->first))) ) );
+                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::atomic_mass(iso->first))) ) );
       }
       else
       {
@@ -1199,7 +1199,7 @@ void bright::Reactor1G::calc_zeta()
         SigmaFa_F_[f]  = SigmaFa_F_[f]  + (NiF[iso->first] * sig_a * pyne::cm2_per_barn);
 
         SigmaFtr_F_[f] = SigmaFtr_F_[f] + (NiF[iso->first] * pyne::cm2_per_barn * (sig_a + \
-                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nuc_weight(iso->first))) ) );
+                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::atomic_mass(iso->first))) ) );
       };
     };
 
@@ -1231,7 +1231,7 @@ void bright::Reactor1G::calc_zeta()
         SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * di_F_[iso->first][f] * pyne::cm2_per_barn);
 
         SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * pyne::cm2_per_barn * (di_F_[iso->first][f] + \
-                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nuc_weight(iso->first))) ) );
+                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::atomic_mass(iso->first))) ) );
       }
       else
       {
@@ -1241,7 +1241,7 @@ void bright::Reactor1G::calc_zeta()
         SigmaCa_F_[f]  = SigmaCa_F_[f]  + (NiC[iso->first] * sig_a * pyne::cm2_per_barn);
 
         SigmaCtr_F_[f] = SigmaCtr_F_[f] + (NiC[iso->first] * pyne::cm2_per_barn * (sig_a + \
-                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::nuc_weight(iso->first))) ) );
+                         sigma_s_therm[iso->first]*(1.0 - 2.0/(3.0*pyne::atomic_mass(iso->first))) ) );
       };
     };
 
