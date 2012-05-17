@@ -14,7 +14,7 @@ import tables as tb
 import numpy as np
 
 import bright.reactor_parameters
-import mass_stream
+#from pyne import material
 
 ReactorParameters = bright.reactor_parameters.ReactorParameters
 
