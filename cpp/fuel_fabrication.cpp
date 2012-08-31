@@ -94,7 +94,6 @@ pyne::Material bright::FuelFabrication::calc_core_input()
     core_input = core_input + ( (*materials[(*mws).first]) * (*mws).second );
 
   core_input.normalize();
-  core_input.name = "CoreInput";
   return core_input;
 };
 

@@ -115,15 +115,16 @@ void bright::ReactorMG::loadlib(std::string libfile)
 
   // Open file
   H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
+  hid_t rmglibid = rmglib.getId();
 
   // Load isos
   std::string load_zz, transmute_zz;
-  if (h5wrap::path_exists(&rmglib, "/load_isos_zz"))
+  if (h5wrap::path_exists(rmglibid, "/load_isos_zz"))
   {
     load_zz = "/load_isos_zz";
     transmute_zz = "/transmute_isos_zz";
   }
-  else if (h5wrap::path_exists(&rmglib, "/load_nucs_zz"))
+  else if (h5wrap::path_exists(rmglibid, "/load_nucs_zz"))
   {
     load_zz = "/load_nucs_zz";
     transmute_zz = "/transmute_nucs_zz";
@@ -131,12 +132,12 @@ void bright::ReactorMG::loadlib(std::string libfile)
   else
     throw h5wrap::PathNotFound(libfile, "/load_nucs_zz or /load_nucs_zz");
 
-  I = h5wrap::h5_array_to_cpp_set<int>(&rmglib, load_zz,       H5::PredType::NATIVE_INT);
-  J = h5wrap::h5_array_to_cpp_set<int>(&rmglib, transmute_zz, H5::PredType::NATIVE_INT);
-  K = h5wrap::h5_array_to_cpp_set<int>(&rmglib, transmute_zz, H5::PredType::NATIVE_INT);
+  I = h5wrap::h5_array_to_cpp_set<int>(rmglibid, load_zz,      H5T_NATIVE_INT);
+  J = h5wrap::h5_array_to_cpp_set<int>(rmglibid, transmute_zz, H5T_NATIVE_INT);
+  K = h5wrap::h5_array_to_cpp_set<int>(rmglibid, transmute_zz, H5T_NATIVE_INT);
 
   // Load perturbation table
-  perturbations = h5wrap::HomogenousTypeTable<double>(&rmglib, "/perturbations");
+  perturbations = h5wrap::HomogenousTypeTable<double>(rmglibid, "/perturbations");
   nperturbations = perturbations.shape[0];
 
   // Calculate perturbed fields
@@ -153,18 +154,18 @@ void bright::ReactorMG::loadlib(std::string libfile)
   };
 
   // Load in energy structure
-  pert_data_g full_E_g = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/energy");
+  pert_data_g full_E_g = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/energy");
   E_g = full_E_g[0];
   G = E_g.size() - 1;
 
   // Load fluxes and fluence
-  phi_g = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/phi_g");
-  phi = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/phi");
-  Phi = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Phi");
+  phi_g = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/phi_g");
+  phi = h5wrap::h5_array_to_cpp_vector_1d<double>(rmglibid, "/phi");
+  Phi = h5wrap::h5_array_to_cpp_vector_1d<double>(rmglibid, "/Phi");
 
   // Load time and burnup
-  time0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/time0");
-  BU0 = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/BU0");
+  time0 = h5wrap::h5_array_to_cpp_vector_1d<double>(rmglibid, "/time0");
+  BU0 = h5wrap::h5_array_to_cpp_vector_1d<double>(rmglibid, "/BU0");
 
   // Clear transmutation vectors and cross sections before reading in
   Ti0.clear();
@@ -191,22 +192,22 @@ void bright::ReactorMG::loadlib(std::string libfile)
     iso_LL = pyne::nucname::name(iso_zz);
 
     // Add transmutation vector
-    Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(&rmglib, "/Ti0/" + iso_LL);
+    Ti0[iso_zz] = h5wrap::h5_array_to_cpp_vector_1d<double>(rmglibid, "/Ti0/" + iso_LL);
 
     // Add cross sections
-    sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_t/" + iso_LL);
-    sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_a/" + iso_LL);
-    nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/nubar_sigma_f/" + iso_LL);
-    chi_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/chi/" + iso_LL);
-    sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(&rmglib, "/sigma_s_gh/" + iso_LL);
-    sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_f/" + iso_LL);
-    sigma_gamma_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_gamma/" + iso_LL);
-    sigma_2n_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_2n/" + iso_LL);
-    sigma_3n_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_3n/" + iso_LL);
-    sigma_alpha_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_alpha/" + iso_LL);
-    sigma_proton_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_proton/" + iso_LL);
-    sigma_gamma_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_gamma_x/" + iso_LL);
-    sigma_2n_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(&rmglib, "/sigma_2n_x/" + iso_LL);
+    sigma_t_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_t/" + iso_LL);
+    sigma_a_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_a/" + iso_LL);
+    nubar_sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/nubar_sigma_f/" + iso_LL);
+    chi_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/chi/" + iso_LL);
+    sigma_s_pgh[iso_zz] = h5wrap::h5_array_to_cpp_vector_3d<double>(rmglibid, "/sigma_s_gh/" + iso_LL);
+    sigma_f_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_f/" + iso_LL);
+    sigma_gamma_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_gamma/" + iso_LL);
+    sigma_2n_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_2n/" + iso_LL);
+    sigma_3n_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_3n/" + iso_LL);
+    sigma_alpha_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_alpha/" + iso_LL);
+    sigma_proton_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_proton/" + iso_LL);
+    sigma_gamma_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_gamma_x/" + iso_LL);
+    sigma_2n_x_pg[iso_zz] = h5wrap::h5_array_to_cpp_vector_2d<double>(rmglibid, "/sigma_2n_x/" + iso_LL);
   };
 
   // close the reactor library
@@ -241,11 +242,9 @@ void bright::ReactorMG::loadlib(std::string libfile)
   int i, j, k, ind, jnd, knd, l, g;
   // Get the HDF5 compound type (table) description
   H5::CompType atom_dec_desc(sizeof(pyne::atomic_decay_struct));
-  atom_dec_desc.insertMember("from_nuc_name", HOFFSET(pyne::atomic_decay_struct, from_nuc_name), H5::StrType(0, 6));
-  atom_dec_desc.insertMember("from_nuc_zz",   HOFFSET(pyne::atomic_decay_struct, from_nuc_zz),   H5::PredType::NATIVE_INT);
+  atom_dec_desc.insertMember("from_nuc",   HOFFSET(pyne::atomic_decay_struct, from_nuc),   H5::PredType::NATIVE_INT);
   atom_dec_desc.insertMember("level", HOFFSET(pyne::atomic_decay_struct, level), H5::PredType::NATIVE_DOUBLE);
-  atom_dec_desc.insertMember("to_nuc_name", HOFFSET(pyne::atomic_decay_struct, to_nuc_name), H5::StrType(0, 6));
-  atom_dec_desc.insertMember("to_nuc_zz",   HOFFSET(pyne::atomic_decay_struct, to_nuc_zz),   H5::PredType::NATIVE_INT);
+  atom_dec_desc.insertMember("to_nuc",   HOFFSET(pyne::atomic_decay_struct, to_nuc),   H5::PredType::NATIVE_INT);
   atom_dec_desc.insertMember("half_life", HOFFSET(pyne::atomic_decay_struct, half_life), H5::PredType::NATIVE_DOUBLE);
   atom_dec_desc.insertMember("decay_const", HOFFSET(pyne::atomic_decay_struct, decay_const), H5::PredType::NATIVE_DOUBLE);
   atom_dec_desc.insertMember("branch_ratio", HOFFSET(pyne::atomic_decay_struct, branch_ratio), H5::PredType::NATIVE_DOUBLE);
@@ -260,8 +259,8 @@ void bright::ReactorMG::loadlib(std::string libfile)
   // Finish initializing K, based on decay info    
   for (l = 0; l < decay_data_length; l++)
   {
-    K.insert(decay_data_array[l].from_nuc_zz);
-    K.insert(decay_data_array[l].to_nuc_zz);
+    K.insert(decay_data_array[l].from_nuc);
+    K.insert(decay_data_array[l].to_nuc);
   };
 
   K_num = K.size();
@@ -275,8 +274,8 @@ void bright::ReactorMG::loadlib(std::string libfile)
 
   for (l = 0; l < decay_data_length; l++)
   {
-    i = decay_data_array[l].from_nuc_zz;
-    j = decay_data_array[l].to_nuc_zz;
+    i = decay_data_array[l].from_nuc;
+    j = decay_data_array[l].to_nuc;
 
     if (i == j)
       continue;
