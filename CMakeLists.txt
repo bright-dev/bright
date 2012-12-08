@@ -2,7 +2,7 @@
 cmake_minimum_required( VERSION 2.8.5 )
 
 # Set the project name
-project( pyne )
+project(bright)
 
 # Make the scripts available in the 'cmake' directory available for the
 # 'include()' command, 'find_package()' command.
@@ -24,12 +24,15 @@ set(LIBS ${LIBS} ${HDF5_C_LIBRARIES})
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibsNew REQUIRED)
 
+# Find the Pyne installation
+find_package(Pyne REQUIRED)
+
 # Include the CMake script UseCython.cmake.  This defines add_cython_module().
 # Instruction for use can be found at the top of cmake/UseCython.cmake.
-include( UseCython )
+include(UseCython)
 
-# Also, there are some custom pyne macros to make for less verbosity
-include( PyneMacros )
+# Also, there are some custom bright macros to make for less verbosity
+include(BrightMacros)
 
 # Beware of dragons
 print_logo()
@@ -58,12 +61,11 @@ add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
 # Add cython version info to source tree
 message("-- Making Cython Version.")
 execute_process(COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/configure.py cython_version)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pyne/_includes/
-     DESTINATION ${CMAKE_BINARY_DIR}/pyne/_includes/)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/bright/_includes/
+     DESTINATION ${CMAKE_BINARY_DIR}/bright/_includes/)
 
 add_subdirectory(cpp)
-add_subdirectory(pyne)
-add_subdirectory(pyne/xs)
+add_subdirectory(bright)
 
 # Print include dir
 get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
@@ -71,11 +73,11 @@ message("-- C_INCLUDE_PATH for ${CMAKE_CURRENT_SOURCE_DIR}: ${inc_dirs}")
 
 message("-- Copying C/C++ header files.")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ DESTINATION
-    ${CMAKE_BINARY_DIR}/pyne/include/ FILES_MATCHING PATTERN "*.h")
+    ${CMAKE_BINARY_DIR}/bright/include/ FILES_MATCHING PATTERN "*.h")
 
 message("-- Copying Cython header files.")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pyne/ 
-    DESTINATION ${CMAKE_BINARY_DIR}/pyne/include/pyne/ 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/bright/ 
+    DESTINATION ${CMAKE_BINARY_DIR}/bright/include/bright/ 
     FILES_MATCHING PATTERN "*.pxd"
                    PATTERN "lib" EXCLUDE
                    PATTERN "include" EXCLUDE)

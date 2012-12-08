@@ -13,7 +13,7 @@ from Cython.Compiler.Version import version as CYTHON_VERSION
 
 
 INFO = {
-    'version': '0.2-dev',
+    'version': '0.6-dev',
     }
 
 
@@ -35,7 +35,7 @@ def main():
             raise SystemExit(cmd + " not callable")
 
 
-def metadata(path="pyne/metadata.json"):
+def metadata(path="bright/metadata.json"):
     """Build a metadata file."""
     md = {}
     md.update(INFO)
@@ -54,7 +54,7 @@ def final_message(success=True):
         return
 
     metadata = None
-    mdpath = os.path.join('pyne', 'metadata.json')
+    mdpath = os.path.join('bright', 'metadata.json')
     if os.path.exists(mdpath):
         with open(mdpath) as f:
             metadata = json.load(f)
@@ -84,7 +84,7 @@ def final_message(success=True):
            "    3. Unzip them to the C-drive (C:\\hdf5-{h5ver}).\n"
            "    4. Re-run setup with the '--hdf5' option:\n\n"
            "        python setup.py install --user --hdf5=C:\\hdf5-{h5ver}\n\n"
-           "Should this still fail, please report your problem to pyne-dev@googlegroups.com\n\n"
+           "Should this still fail, please report your problem to scopatz@gmail.com\n\n"
            "[1] http://www.enthought.com/products/epd.php\n"
            "[2] http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-{h5ver}/bin/windows/\n"
            ).format(h5ver=h5ver)
@@ -102,7 +102,7 @@ def cython_version():
     cyver = dict([(k, int(cv)) for k, cv in zip(['major', 'minor', 'micro'], cyver)])
     pxi = pxi.format(**cyver)
     basedir = os.path.split(__file__)[0]
-    incldir = os.path.join(basedir, 'pyne', 'include')
+    incldir = os.path.join(basedir, 'bright', 'include')
     if not os.path.exists(incldir):
         os.mkdir(incldir)
     with open(os.path.join(incldir, 'cython_version.pxi'), 'w') as f:
@@ -113,35 +113,34 @@ def setup():
     scripts = [os.path.join('scripts', f) for f in os.listdir('scripts')]
     scripts = [s for s in scripts if (os.name == 'nt' and s.endswith('.bat')) or 
                                      (os.name != 'nt' and not s.endswith('.bat'))]
-    packages = ['pyne', 'pyne.lib', 'pyne.dbgen', 'pyne.apigen', 'pyne.xs', 
-                'pyne.simplesim', 'pyne.gui']
+    packages = ['bright', 'bright.lib', 'bright.gui', 'bright.gui.models',
+                'bright.gui.models.class_models', 'bright.gui.views', 'bright.gui.d3',
+                'bright.gui.views.component_views', 
+                'bright.gui.views.custom_graph_canvas',
+                'bright.gui.views.component_views.views', 'bright.data']
     pack_dir = {
-        'pyne': 'pyne',
-        'pyne.xs': 'pyne/xs',
-        'pyne.lib': 'pyne/lib',
-        'pyne.gui': 'pyne/gui',
-        'pyne.dbgen': 'pyne/dbgen',
-        'pyne.apigen': 'pyne/apigen',
-        'pyne.simplesim': 'pyne/simplesim',
+        'bright': 'bright',
+        'bright.lib': 'bright/lib',
+        'bright.gui': 'bright/gui',
+        'bright.data': 'data',
         }
     extpttn = ['*.dll', '*.so', '*.dylib', '*.pyd', '*.pyo']
     pack_data = {
-        'pyne': ['includes/*.h', 'includes/*/*.h', 'includes/*/*/*.h',
-                 'includes/*/*/*/*.h', 'includes/pyne/*.pxd', 'includes/pyne/*/*.pxd'
-                 'includes/pyne/*/*/*.pxd', 'includes/pyne/*/*/*/*.pxd', '*.json',
-                 ] + extpttn,
-        'pyne.xs': extpttn,
-        'pyne.lib': extpttn,
-        'pyne.gui': ['*.pyw'],
-        'pyne.dbgen': ['*.html', '*.csv'],
+        'bright': ['includes/*.h', 'includes/*/*.h', 'includes/*/*/*.h',
+                   'includes/*/*/*/*.h', 'includes/bright/*.pxd', 
+                   'includes/bright/*/*.pxd', 'includes/bright/*/*/*.pxd', 
+                   'includes/bright/*/*/*/*.pxd', '*.json',] + extpttn,
+        'bright.lib': extpttn,
+        'bright.gui': ['*.pyw'],
+        'bright.data': ['*.h5',],
         }
     setup_kwargs = {
-        "name": "pyne",
+        "name": "bright",
         "version": INFO['version'],
-        "description": 'Python for Nuclear Engineering',
-        "author": 'PyNE Development Team',
+        "description": 'Bright Nuclear Fuel Cycle Components',
+        "author": 'Anthony Scopatz',
         "author_email": 'scopatz@gmail.com',
-        "url": 'http://pyne.github.com/',
+        "url": 'http://bright-dev.github.com/bright/',
         "packages": packages,
         "package_dir": pack_dir,
         "package_data": pack_data,
