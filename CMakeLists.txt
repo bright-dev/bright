@@ -26,6 +26,8 @@ find_package(PythonLibsNew REQUIRED)
 
 # Find the Pyne installation
 find_package(Pyne REQUIRED)
+link_directories(${PYNE_LIBS_DIR})
+include_directories(${PYNE_INCLUDE_DIR})
 
 # Include the CMake script UseCython.cmake.  This defines add_cython_module().
 # Instruction for use can be found at the top of cmake/UseCython.cmake.
