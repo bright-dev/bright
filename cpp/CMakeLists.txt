@@ -8,7 +8,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # bright
 add_library(bright_bright bright.cpp)
 set_target_properties(bright_bright PROPERTIES 
-                      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bright/lib")
+                      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bright/lib")
 target_link_libraries(bright_bright ${PYNE_LINK_LIBS})
 install_lib(bright_bright)
 

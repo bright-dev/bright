@@ -8,6 +8,12 @@ project(bright)
 # 'include()' command, 'find_package()' command.
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
 
+# Here are some custom bright macros to make for less verbosity
+include(BrightMacros)
+
+# Beware of dragons
+print_logo()
+
 # Include the HDF5 library and c++ headers
 find_package( HDF5 COMPONENTS C )
 include_directories(${HDF5_INCLUDE_DIRS})
@@ -33,15 +39,28 @@ include_directories(${PYNE_INCLUDE_DIR})
 # Instruction for use can be found at the top of cmake/UseCython.cmake.
 include(UseCython)
 
-# Also, there are some custom bright macros to make for less verbosity
-include(BrightMacros)
-
-# Beware of dragons
-print_logo()
-
 # This makes all the libraries build as SHARED
 set(BUILD_SHARED_LIBS true)
 message("-- CMake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
+
+# RPATH Settings
+set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+if(APPLE)
+    # I think that this is the right thing to do for MacOSX 10.5+ --Anthony
+    set(CMAKE_INSTALL_RPATH "@rpath/lib")
+elseif(WIN32)
+    if(MSVC)
+        # ??? Who knows what to do here?! --Anthony
+    elseif(CMAKE_COMPILER_IS_GNUC OR CMAKE_COMPILER_IS_GNUCXX)
+        set(CMAKE_INSTALL_RPATH "\$ORIGIN/lib")
+    endif(MSVC)
+else(APPLE)
+    # For linux
+    set(CMAKE_INSTALL_RPATH "\$ORIGIN/lib")
+endif(APPLE)
+message("-- RPATH: ${CMAKE_INSTALL_RPATH}")
 
 # find numpy and include the numpy headers
 find_package(Numpy REQUIRED)
@@ -61,10 +80,8 @@ add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 # Add cython version info to source tree
-message("-- Making Cython Version.")
-execute_process(COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/configure.py cython_version)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/bright/_includes/
-     DESTINATION ${CMAKE_BINARY_DIR}/bright/_includes/)
+#message("-- Making Cython Version.")
+#execute_process(COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/configure.py cython_version)
 
 add_subdirectory(cpp)
 add_subdirectory(bright)
