@@ -1,6 +1,10 @@
 # Python extension modules
 include_directories(${BRIGHT_INCLUDE_DIRS})
 
+# Print include dir
+get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
+message("-- C_INCLUDE_PATH for ${CMAKE_CURRENT_SOURCE_DIR}: ${inc_dirs}")
+
 # bright config
 set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/bright_config.pyx
                             PROPERTIES CYTHON_IS_CXX TRUE)

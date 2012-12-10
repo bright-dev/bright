@@ -2,8 +2,8 @@
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.vector cimport vector
+from libcpp.string cimport string as std_string
 
-from pyne cimport std
 from pyne cimport cpp_material
 from pyne cimport material
 
@@ -16,18 +16,18 @@ cdef extern from "reactormg.h" namespace "bright":
     cdef cppclass ReactorMG(FCComp):
         # Constructors        
         ReactorMG() except +
-        ReactorMG(std.string) except +
-        ReactorMG(set[std.string], std.string) except +
-        ReactorMG(ReactorParameters, std.string) except +
-        ReactorMG(ReactorParameters, set[std.string], std.string) except +
+        ReactorMG(std_string) except +
+        ReactorMG(set[std_string], std_string) except +
+        ReactorMG(ReactorParameters, std_string) except +
+        ReactorMG(ReactorParameters, set[std_string], std_string) except +
 
         # Attributes
         int B
         double flux
 
-        map[std.string, double] chemical_form_fuel
-        map[std.string, double] chemical_form_clad
-        map[std.string, double] chemical_form_cool
+        map[std_string, double] chemical_form_fuel
+        map[std_string, double] chemical_form_clad
+        map[std_string, double] chemical_form_cool
 
         double rho_fuel
         double rho_clad
@@ -43,9 +43,9 @@ cdef extern from "reactormg.h" namespace "bright":
         vector[double] burn_times
 
         bint use_zeta
-        std.string lattice_flag
+        std_string lattice_flag
         bint rescale_hydrogen_xs
-        std.string burnup_via_constant
+        std_string burnup_via_constant
         double branch_ratio_cutoff
 
         double r_fuel
@@ -59,7 +59,7 @@ cdef extern from "reactormg.h" namespace "bright":
         double V_clad
         double V_cool
 
-        std.string libfile
+        std_string libfile
 
         set[int] I
         set[int] J
@@ -76,7 +76,7 @@ cdef extern from "reactormg.h" namespace "bright":
 
         # Perturbation table goes here
         int nperturbations
-        map[std.string, vector[double]] perturbed_fields
+        map[std_string, vector[double]] perturbed_fields
 
         int G
         vector[double] E_g
@@ -229,7 +229,7 @@ cdef extern from "reactormg.h" namespace "bright":
 
         # Methods
         void initialize(ReactorParameters) except +
-        void loadlib(std.string) except +
+        void loadlib(std_string) except +
         void interpolate_cross_sections() except +
         void calc_mass_weights() except +
         void fold_mass_weights() except +

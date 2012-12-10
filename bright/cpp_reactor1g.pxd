@@ -1,9 +1,9 @@
 """Cython header for reactor1g library."""
 from libcpp.map cimport map
-from libcpp.set cimport set
+from libcpp.set cimport set as cpp_set
 from libcpp.vector cimport vector
+from libcpp.string cimport string as std_string
 
-from pyne cimport std
 from pyne cimport cpp_material
 from pyne cimport material
 
@@ -17,22 +17,22 @@ cdef extern from "reactor1g.h" namespace "bright":
     cdef cppclass Reactor1G(FCComp):
         # Constructors        
         Reactor1G() except +
-        Reactor1G(std.string) except +
-        Reactor1G(set[std.string], std.string) except +
-        Reactor1G(ReactorParameters, std.string) except +
-        Reactor1G(ReactorParameters, set[std.string], std.string) except +
+        Reactor1G(std_string) except +
+        Reactor1G(cpp_set[std_string], std_string) except +
+        Reactor1G(ReactorParameters, std_string) except +
+        Reactor1G(ReactorParameters, cpp_set[std_string], std_string) except +
 
         # Attributes
         int B
         double phi
-        map[std.string, double] fuel_chemical_form
-        map[std.string, double] coolant_chemical_form
+        map[std_string, double] fuel_chemical_form
+        map[std_string, double] coolant_chemical_form
         double rhoF
         double rhoC
         double P_NL
         double target_BU
         bint use_zeta
-        std.string lattice_flag
+        std_string lattice_flag
         bint rescale_hydrogen_xs
 
         double r
@@ -42,7 +42,7 @@ cdef extern from "reactor1g.h" namespace "bright":
         double VF
         double VC
 
-        std.string libfile
+        std_string libfile
         vector[double] F
         map[int, vector[double]] BUi_F_
         map[int, vector[double]] pi_F_
@@ -98,7 +98,7 @@ cdef extern from "reactor1g.h" namespace "bright":
 
         # Methods
         void initialize(ReactorParameters) except +
-        void loadlib(std.string) except +
+        void loadlib(std_string) except +
         void fold_mass_weights() except +
 
         void calc_Mj_F_() except +
@@ -113,7 +113,7 @@ cdef extern from "reactor1g.h" namespace "bright":
         double calc_deltaR(cpp_material.Material) except +
 
         FluencePoint fluence_at_BU(double) except +
-        double batch_average(double, std.string) except +
+        double batch_average(double, std_string) except +
         double batch_average_k(double) except +
         void BUd_bisection_method() except +
         void run_P_NL(double) except +

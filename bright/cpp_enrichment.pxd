@@ -9,7 +9,7 @@ from pyne cimport material
 
 from bright.cpp_fccomp cimport FCComp
 
-cdef extern from "enrichment.h" namespace "bright":
+cdef extern from "include/enrichment.h" namespace "bright":
 
     cdef cppclass EnrichmentParameters:
         # Constructors

@@ -7,11 +7,11 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
 
-from pyne cimport std
 from pyne cimport nucname
 
 from pyne cimport stlconverters as conv
@@ -76,7 +76,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
     def __init__(self, reactor_parameters=None, track_params=None, char * name="", *args, **kwargs):
         cdef ReactorParameters rp
-        cdef std.string cpp_name = std.string(name)
+        cdef std_string cpp_name = std_string(name)
 
         if (reactor_parameters is None) and (track_params is None):
             self._inst = new cpp_reactor1g.Reactor1G(cpp_name)
@@ -147,24 +147,24 @@ cdef class Reactor1G(fccomp.FCComp):
             return self._fuel_chemical_form
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = m
             else:
@@ -199,24 +199,24 @@ cdef class Reactor1G(fccomp.FCComp):
             return self._coolant_chemical_form
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = m
             else:
@@ -277,11 +277,11 @@ cdef class Reactor1G(fccomp.FCComp):
         """Flag (str) that represents what lattice type the fuel assemblies are arranged in.  
         Currently accepted values are "Planar", "Spherical", and "Cylindrical"."""
         def __get__(self):
-            cdef std.string value = (<cpp_reactor1g.Reactor1G *> self._inst).lattice_flag
+            cdef std_string value = (<cpp_reactor1g.Reactor1G *> self._inst).lattice_flag
             return value.c_str()
 
         def __set__(self, char * value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).lattice_flag = std.string(value)
+            (<cpp_reactor1g.Reactor1G *> self._inst).lattice_flag = std_string(value)
 
 
     property rescale_hydrogen_xs:
@@ -364,11 +364,11 @@ cdef class Reactor1G(fccomp.FCComp):
     property libfile:
         """The path (str) to the reactor data library; usually something like "LWR.h5" or "FR.h5"."""
         def __get__(self):
-            cdef std.string value = (<cpp_reactor1g.Reactor1G *> self._inst).libfile
+            cdef std_string value = (<cpp_reactor1g.Reactor1G *> self._inst).libfile
             return value.c_str()
 
         def __set__(self, char * value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).libfile = std.string(value)
+            (<cpp_reactor1g.Reactor1G *> self._inst).libfile = std_string(value)
 
 
     property F:
@@ -1036,7 +1036,7 @@ cdef class Reactor1G(fccomp.FCComp):
             Path to the reactor library.
 
         """
-        (<cpp_reactor1g.Reactor1G *> self._inst).loadlib(std.string(libfile))
+        (<cpp_reactor1g.Reactor1G *> self._inst).loadlib(std_string(libfile))
 
 
     def fold_mass_weights(self):
@@ -1203,7 +1203,7 @@ cdef class Reactor1G(fccomp.FCComp):
             factor as determined by the input flag.
 
         """
-        cdef double PDk = (<cpp_reactor1g.Reactor1G *> self._inst).batch_average(BUd, std.string(PDk_flag))
+        cdef double PDk = (<cpp_reactor1g.Reactor1G *> self._inst).batch_average(BUd, std_string(PDk_flag))
         return PDk
 
 
