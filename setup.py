@@ -2,57 +2,6 @@
  
 
 """\
-#
-# For extensions
-# 
-exts = []
-pyne_libs = ['pyne', 'pyne_nucname', 'pyne_data', 'pyne_material']
-
-# Pure C/C++ share libraries
-# bright lib
-exts.append(cpp_ext("bright.lib.libbright", ['bright.cpp'], pyne_libs))
-
-# fccomp lib
-exts.append(cpp_ext("bright.lib.libbright_fccomp", ['fccomp.cpp'], ['bright'] + pyne_libs))
-
-# enrichment lib
-exts.append(cpp_ext("bright.lib.libbright_enrichment", ['enrichment.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
-
-# reprocess lib
-exts.append(cpp_ext("bright.lib.libbright_reprocess", ['reprocess.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
-
-# storage lib
-exts.append(cpp_ext("bright.lib.libbright_storage", ['storage.cpp'], ['bright', 'bright_fccomp'] + pyne_libs))
-
-# reactor parameters lib
-exts.append(cpp_ext("bright.lib.libbright_reactor_parameters", ['reactor_parameters.cpp'], None, False))
-
-# fluence point lib
-exts.append(cpp_ext("bright.lib.libbright_fluence_point", ['fluence_point.cpp'], None, False))
-
-# reactor1g lib
-exts.append(cpp_ext("bright.lib.libbright_reactor1g", ['reactor1g.cpp'], 
-            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point'] + pyne_libs))
-
-# light_water_reactor1g lib
-exts.append(cpp_ext("bright.lib.libbright_light_water_reactor1g", ['light_water_reactor1g.cpp'], 
-            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
-            'bright_reactor1g'] + pyne_libs))
-
-# fast_reactor1g lib
-exts.append(cpp_ext("bright.lib.libbright_fast_reactor1g", ['fast_reactor1g.cpp'], 
-            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
-            'bright_reactor1g'] + pyne_libs))
-
-# fuel fabrication lib
-exts.append(cpp_ext("bright.lib.libbright_fuel_fabrication", ['fuel_fabrication.cpp'], 
-            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point', 
-            'bright_reactor1g'] + pyne_libs))
-
-# reactormg lib
-exts.append(cpp_ext("bright.lib.libbright_reactormg", ['reactormg.cpp'], 
-            ['bright', 'bright_fccomp', 'bright_reactor_parameters', 'bright_fluence_point'] + pyne_libs))
-
 
 
 # Bright extensions
