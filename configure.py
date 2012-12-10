@@ -126,10 +126,10 @@ def setup():
         }
     extpttn = ['*.dll', '*.so', '*.dylib', '*.pyd', '*.pyo']
     pack_data = {
-        'bright': ['includes/*.h', 'includes/*/*.h', 'includes/*/*/*.h',
-                   'includes/*/*/*/*.h', 'includes/bright/*.pxd', 
-                   'includes/bright/*/*.pxd', 'includes/bright/*/*/*.pxd', 
-                   'includes/bright/*/*/*/*.pxd', '*.json',] + extpttn,
+        'bright': ['*.pxd', 'include/*.h', 'include/*/*.h', 'include/*/*/*.h',
+                   'include/*/*/*/*.h', 'include/bright/*.pxd', 
+                   'include/bright/*/*.pxd', 'include/bright/*/*/*.pxd', 
+                   'include/bright/*/*/*/*.pxd', '*.json',] + extpttn,
         'bright.lib': extpttn,
         'bright.gui': ['*.pyw'],
         'bright.data': ['*.h5',],

@@ -24,11 +24,11 @@ import os
 
 import bright.__init__
 
-_local_dir = os.path.split(bright.__init__.__file__)[0]
+prefix = os.path.split(bright.__init__.__file__)[0]
 
-lib = os.path.join(_local_dir, 'lib')
-includes = os.path.join(_local_dir, 'includes')
-bright_data = os.path.join(_local_dir, 'data')
+lib = os.path.join(prefix, 'lib')
+includes = os.path.join(prefix, 'include')
+bright_data = os.path.join(prefix, 'data')
 
 
 ######################################
@@ -37,7 +37,8 @@ bright_data = os.path.join(_local_dir, 'data')
 
 # Expose the C-code start up routine
 def bright_start():
-    """Handles bright initialization.  Reads in the 'BRIGHT_DATA' environment variable."""
+    """Handles bright initialization.  Reads in the 'BRIGHT_DATA' 
+    environment variable."""
     # Specifiy the BRIGHT_DATA directory
     if "BRIGHT_DATA" not in os.environ:
         os.environ['BRIGHT_DATA'] = bright_data
@@ -55,8 +56,8 @@ bright_start()
 #######################################
 
 cdef class BrightConf:
-    """A class whose attributes expose C++ bright namespace variables.  The bright_conf object is a 
-    singleton instance of this class."""
+    """A class whose attributes expose C++ bright namespace variables.
+    The bright_conf object is a singleton instance of this class."""
 
     cdef object _track_nucs
 
@@ -66,7 +67,8 @@ cdef class BrightConf:
     # From bright namespace
 
     property BRIGHT_DATA:
-        """Overide for directory path which is (by default) read in from an environmental variable of the same name."""
+        """Overide for directory path which is (by default) read in from an
+        environmental variable of the same name."""
         def __get__(self):
             cdef std.string value = cpp_bright.BRIGHT_DATA
             return value.c_str()

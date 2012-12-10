@@ -96,7 +96,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ DESTINATION
 
 message("-- Copying Cython header files.")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/bright/ 
-    DESTINATION ${CMAKE_BINARY_DIR}/bright/include/bright/ 
+    DESTINATION ${CMAKE_BINARY_DIR}/bright/
     FILES_MATCHING PATTERN "*.pxd"
                    PATTERN "lib" EXCLUDE
                    PATTERN "include" EXCLUDE)
