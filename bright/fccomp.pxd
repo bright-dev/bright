@@ -7,7 +7,6 @@ from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 
 
-from pyne cimport std
 from pyne cimport nucname
 from pyne cimport cpp_material
 from pyne cimport material

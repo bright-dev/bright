@@ -2,8 +2,8 @@
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.vector cimport vector
+from libcpp.string cimport string as std_string
 
-from pyne cimport std
 from pyne cimport cpp_material
 from pyne cimport material
 
@@ -33,8 +33,8 @@ cdef extern from "include/enrichment.h" namespace "bright":
     cdef cppclass Enrichment(FCComp): 
         # Constructors
         Enrichment() except +
-        Enrichment(std.string) except +
-        Enrichment(EnrichmentParameters, std.string) except +
+        Enrichment(std_string) except +
+        Enrichment(EnrichmentParameters, std_string) except +
 
         # Attributes
         double alpha_0

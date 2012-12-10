@@ -2,19 +2,18 @@
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.vector cimport vector
-
-from pyne cimport std
+from libcpp.string cimport string as std_string
 
 cdef extern from "bright.h" namespace "bright":
-    std.string BRIGHT_DATA
+    std_string BRIGHT_DATA
 
     void bright_start() except +
 
     set[int] track_nucs
     vector[int] track_nucs_order
 
-    void load_track_nucs_hdf5(std.string, std.string, bint) except +
-    void load_track_nucs_text(std.string, bint) except +
+    void load_track_nucs_hdf5(std_string, std_string, bint) except +
+    void load_track_nucs_text(std_string, bint) except +
 
     void sort_track_nucs()
 
@@ -22,6 +21,6 @@ cdef extern from "bright.h" namespace "bright":
     bint write_hdf5
     bint write_text
 
-    std.string output_filename
+    std_string output_filename
 
 

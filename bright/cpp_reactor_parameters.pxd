@@ -2,8 +2,7 @@
 from libcpp.map cimport map
 from libcpp.vector cimport vector
 
-from pyne cimport std
-
+from libcpp.string cimport string as std_string
 
 cdef extern from "reactor_parameters.h" namespace "bright":
 
@@ -15,9 +14,9 @@ cdef extern from "reactor_parameters.h" namespace "bright":
         int batches
         double flux
 
-        map[std.string, double] fuel_form
-        map[std.string, double] cladding_form
-        map[std.string, double] coolant_form
+        map[std_string, double] fuel_form
+        map[std_string, double] cladding_form
+        map[std_string, double] coolant_form
 
         double fuel_density
         double cladding_density
@@ -30,9 +29,9 @@ cdef extern from "reactor_parameters.h" namespace "bright":
         vector[double] burn_times
 
         bint use_disadvantage_factor
-        std.string lattice_type
+        std_string lattice_type
         bint rescale_hydrogen
-        std.string burnup_via_constant
+        std_string burnup_via_constant
         double branch_ratio_cutoff
 
         double fuel_radius

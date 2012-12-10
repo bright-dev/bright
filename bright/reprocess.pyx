@@ -7,11 +7,11 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
 
-from pyne cimport std
 from pyne cimport nucname 
 
 from pyne cimport stlconverters as conv
@@ -80,7 +80,7 @@ cdef class Reprocess(fccomp.FCComp):
         cdef dict sepdict = {}
         for key, val in sepeff.items():
             sepdict[convert_sepeff_key(key)] = val
-        self._inst = new cpp_reprocess.Reprocess(conv.dict_to_map_int_dbl(sepdict), std.string(name))
+        self._inst = new cpp_reprocess.Reprocess(conv.dict_to_map_int_dbl(sepdict), std_string(name))
 
 
     #

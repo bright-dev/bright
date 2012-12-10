@@ -6,12 +6,12 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
 
 # pyne imports 
-from pyne cimport std
 from pyne cimport stlconverters as conv
 from pyne import stlconverters as conv
 
@@ -70,11 +70,11 @@ cdef class BrightConf:
         """Overide for directory path which is (by default) read in from an
         environmental variable of the same name."""
         def __get__(self):
-            cdef std.string value = cpp_bright.BRIGHT_DATA
+            cdef std_string value = cpp_bright.BRIGHT_DATA
             return value.c_str()
 
         def __set__(self, char * value):
-            cpp_bright.BRIGHT_DATA = std.string(value)
+            cpp_bright.BRIGHT_DATA = std_string(value)
         
 
     property track_nucs:
@@ -148,11 +148,11 @@ cdef class BrightConf:
     property output_filename:
         """Path to outputh file."""
         def __get__(self):
-            cdef std.string value = cpp_bright.output_filename
+            cdef std_string value = cpp_bright.output_filename
             return value.c_str()
 
         def __set__(self, char * value):
-            cpp_bright.output_filename = std.string(value)
+            cpp_bright.output_filename = std_string(value)
 
 
 # Make a singleton of the Bright config object
@@ -195,7 +195,7 @@ def load_track_nucs_hdf5(char * filename, char * datasetname="", bint clear=Fals
         "/FromIso_MCNP"
 
     """
-    cpp_bright.load_track_nucs_hdf5(std.string(filename), std.string(datasetname), clear)
+    cpp_bright.load_track_nucs_hdf5(std_string(filename), std_string(datasetname), clear)
 
 
 def load_track_nucs_text(char * filename, bint clear=False):
@@ -212,7 +212,7 @@ def load_track_nucs_text(char * filename, bint clear=False):
         Flag that if set removes the currrent entries from track_nucs prior to loading in new values.
 
     """
-    cpp_bright.load_track_nucs_text(std.string(filename), clear)
+    cpp_bright.load_track_nucs_text(std_string(filename), clear)
 
 
 

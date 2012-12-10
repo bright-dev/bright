@@ -2,8 +2,8 @@
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.vector cimport vector
+from libcpp.string cimport string as std_string
 
-from pyne cimport std
 from pyne cimport cpp_material
 from pyne cimport material
 
@@ -14,7 +14,7 @@ cdef extern from "reprocess.h" namespace "bright":
     cdef cppclass Reprocess(FCComp):
         # Constructors
         Reprocess() except +
-        Reprocess(map[int, double], std.string) except +
+        Reprocess(map[int, double], std_string) except +
 
         # Attributes
         map[int, double] sepeff

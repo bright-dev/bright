@@ -6,11 +6,11 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
 
-from pyne cimport std
 from pyne cimport nucname
 from pyne cimport stlconverters as conv
 
@@ -59,14 +59,14 @@ cdef class FastReactor1G(reactor1g.Reactor1G):
 
     def __init__(self, libfile=None, reactor_parameters=None, char * name="", *args, **kwargs):
         cdef ReactorParameters rp
-        cdef std.string cpp_name = std.string(name)
+        cdef std_string cpp_name = std_string(name)
 
         if (libfile is None) and (reactor_parameters is None):
             self._inst = new cpp_fast_reactor1g.FastReactor1G()
             (<cpp_fast_reactor1g.FastReactor1G *> self._inst).name = cpp_name
 
         elif isinstance(libfile, basestring) and (reactor_parameters is None):
-            self._inst = new cpp_fast_reactor1g.FastReactor1G(std.string(libfile), cpp_name)
+            self._inst = new cpp_fast_reactor1g.FastReactor1G(std_string(<char *> libfile), cpp_name)
 
         elif (libfile is None) and isinstance(reactor_parameters, ReactorParameters):
             rp = reactor_parameters
@@ -74,7 +74,7 @@ cdef class FastReactor1G(reactor1g.Reactor1G):
 
         elif isinstance(libfile, basestring) and isinstance(reactor_parameters, ReactorParameters):
             rp = reactor_parameters
-            self._inst = new cpp_fast_reactor1g.FastReactor1G(std.string(libfile), <cpp_reactor_parameters.ReactorParameters> rp.rp_pointer[0], cpp_name)
+            self._inst = new cpp_fast_reactor1g.FastReactor1G(std_string(<char *> libfile), <cpp_reactor_parameters.ReactorParameters> rp.rp_pointer[0], cpp_name)
 
         else:
             if libfile is not None:

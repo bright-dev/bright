@@ -7,11 +7,11 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
 
-from pyne cimport std
 from pyne cimport nucname
 
 from pyne cimport stlconverters as conv
@@ -83,11 +83,11 @@ cdef class FuelFabrication(fccomp.FCComp):
 
 
     def __init__(self, materials=None, mass_weights_in=None, reactor=None, track_params=None, char * name="", *args, **kwargs):
-        cdef std.string cpp_name = std.string(name)
+        cdef std_string cpp_name = std_string(name)
         cdef Reactor1G r1g 
 
         if (materials is None) and (mass_weights_in is None) and (reactor is None) and (track_params is None):
-            self._inst = new cpp_fuel_fabrication.FuelFabrication(std.string(name))
+            self._inst = new cpp_fuel_fabrication.FuelFabrication(std_string(name))
 
         elif (materials is None) and (mass_weights_in is None) and (reactor is None) and isinstance(track_params, set):
             self._inst = new cpp_fuel_fabrication.FuelFabrication(conv.py_to_cpp_set_str(track_params), cpp_name)
@@ -98,7 +98,7 @@ cdef class FuelFabrication(fccomp.FCComp):
                                 pyne.material.dict_to_map_str_matp(materials), 
                                 conv.dict_to_map_str_dbl(mass_weights_in), 
                                 deref(<cpp_reactor1g.Reactor1G *> r1g._inst), 
-                                std.string(name))
+                                std_string(name))
 
         elif isinstance(materials, dict) and isinstance(mass_weights_in, dict) and isinstance(reactor, Reactor1G) and isinstance(track_params, set):
             r1g = reactor
@@ -107,7 +107,7 @@ cdef class FuelFabrication(fccomp.FCComp):
                                 conv.dict_to_map_str_dbl(mass_weights_in), 
                                 deref(<cpp_reactor1g.Reactor1G *> r1g._inst), 
                                 conv.py_to_cpp_set_str(track_params),
-                                std.string(name))
+                                std_string(name))
 
         else:
             if materials is not None:
@@ -142,7 +142,7 @@ cdef class FuelFabrication(fccomp.FCComp):
             return self._materials
 
         def __set__(self, value):
-            cdef std.string s
+            cdef std_string s
             cdef pyne.material._MapStrMaterial proxy
 
             if isinstance(value, pyne.material._MapStrMaterial):
@@ -178,24 +178,24 @@ cdef class FuelFabrication(fccomp.FCComp):
             return self._mass_weights_in
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = m
             else:
@@ -218,24 +218,24 @@ cdef class FuelFabrication(fccomp.FCComp):
             return self._mass_weights_out
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = m
             else:
@@ -257,24 +257,24 @@ cdef class FuelFabrication(fccomp.FCComp):
             return self._deltaRs
 
         def __set__(self, dict value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = m
             else:

@@ -6,11 +6,10 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
-
-from pyne cimport std
 
 from pyne cimport nucname
 from pyne import nucname
@@ -194,10 +193,10 @@ cdef class Enrichment(fccomp.FCComp):
         cdef EnrichmentParameters enr_par
 
         if enrich_params is None:
-            self._inst = new cpp_enrichment.Enrichment(std.string(name))
+            self._inst = new cpp_enrichment.Enrichment(std_string(name))
         elif isinstance(enrich_params, EnrichmentParameters):
             enr_par = enrich_params
-            self._inst = new cpp_enrichment.Enrichment(<cpp_enrichment.EnrichmentParameters> enr_par.ep_pointer[0], std.string(name))
+            self._inst = new cpp_enrichment.Enrichment(<cpp_enrichment.EnrichmentParameters> enr_par.ep_pointer[0], std_string(name))
 
 
     #

@@ -7,11 +7,11 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
 
-from pyne cimport std
 from pyne cimport nucname
 
 from pyne cimport stlconverters as conv
@@ -53,13 +53,13 @@ cdef class FCComp:
 
 
     def __init__(self, params=None, char * name="", *args, **kwargs):
-        cdef cpp_set[std.string] param_set
+        cdef cpp_set[std_string] param_set
 
         if params is None:
-            self._inst = new cpp_fccomp.FCComp(std.string(name))
+            self._inst = new cpp_fccomp.FCComp(std_string(name))
         else:
             param_set = conv.py_to_cpp_set_str(params)
-            self._inst = new cpp_fccomp.FCComp(param_set, std.string(name))
+            self._inst = new cpp_fccomp.FCComp(param_set, std_string(name))
 
 
     def __dealloc__(self):
@@ -74,21 +74,21 @@ cdef class FCComp:
     property name:
         """The string identifier for the component.  Defaults to an empty string."""
         def __get__(self):
-            cdef std.string n = (<cpp_fccomp.FCComp *> self._inst).name
+            cdef std_string n = (<cpp_fccomp.FCComp *> self._inst).name
             return n.c_str()
 
         def __set__(self, char * n):
-            (<cpp_fccomp.FCComp *> self._inst).name = std.string(n)
+            (<cpp_fccomp.FCComp *> self._inst).name = std_string(n)
 
 
     property natural_name:
         """The natural name string identifier for the component. Computed from name value."""
         def __get__(self):
-            cdef std.string n = (<cpp_fccomp.FCComp *> self._inst).natural_name
+            cdef std_string n = (<cpp_fccomp.FCComp *> self._inst).natural_name
             return n.c_str()
 
         def __set__(self, char * n):
-            (<cpp_fccomp.FCComp *> self._inst).natural_name = std.string(n)
+            (<cpp_fccomp.FCComp *> self._inst).natural_name = std_string(n)
 
 
     property mat_feed:
@@ -134,24 +134,24 @@ cdef class FCComp:
             return self._params_prior_calc
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = m
             else:
@@ -177,24 +177,24 @@ cdef class FCComp:
             return self._params_after_calc
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_fccomp.FCComp *> self._inst).params_after_calc = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_fccomp.FCComp *> self._inst).params_after_calc = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_fccomp.FCComp *> self._inst).params_after_calc = m
             else:
@@ -229,15 +229,15 @@ cdef class FCComp:
             return self._track_params
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_set[std.string] tp
+            cdef std_string s
+            cdef cpp_set[std_string] tp
 
             if isinstance(value, conv._SetStr):
                 (<cpp_fccomp.FCComp *> self._inst).track_params = deref((<conv._SetStr> value).set_ptr)
             elif hasattr(value, '__len__'):
-                tp = cpp_set[std.string]()
+                tp = cpp_set[std_string]()
                 for val in value:
-                    s = std.string(val)
+                    s = std_string(<char *> val)
                     tp.insert(s)
                 (<cpp_fccomp.FCComp *> self._inst).track_params = tp
             else:

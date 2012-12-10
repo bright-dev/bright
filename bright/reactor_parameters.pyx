@@ -6,8 +6,7 @@ from libcpp.vector cimport vector as cpp_vector
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
-
-from pyne cimport std
+from libcpp.string cimport string as std_string
 
 from pyne cimport stlconverters as conv
 from pyne import stlconverters as conv
@@ -89,24 +88,24 @@ cdef class ReactorParameters:
             return self._fuel_form
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).fuel_form = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).fuel_form = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).fuel_form = m
             else:
@@ -131,24 +130,24 @@ cdef class ReactorParameters:
             return self._cladding_form
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).cladding_form = m
             else:
@@ -183,24 +182,24 @@ cdef class ReactorParameters:
             return self._coolant_form
 
         def __set__(self, value):
-            cdef std.string s
-            cdef cpp_pair[std.string, double] item
-            cdef cpp_map[std.string, double]  m
+            cdef std_string s
+            cdef cpp_pair[std_string, double] item
+            cdef cpp_map[std_string, double]  m
 
             if isinstance(value, conv._MapStrDouble):
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).coolant_form = deref((<conv._MapStrDouble> value).map_ptr)
             elif hasattr(value, 'items'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for k, v in value.items():
-                    s = std.string(k)
-                    item = cpp_pair[std.string, double](s, v)
+                    s = std_string(<char *> k)
+                    item = cpp_pair[std_string, double](s, v)
                     m.insert(item)
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).coolant_form = m
             elif hasattr(value, '__len__'):
-                m = cpp_map[std.string, double]()
+                m = cpp_map[std_string, double]()
                 for i in value:
-                    s = std.string(i[0])
-                    item = cpp_pair[std.string, double](s, i[1])
+                    s = std_string(<char *> i[0])
+                    item = cpp_pair[std_string, double](s, i[1])
                     m.insert(item)
                 (<cpp_reactor_parameters.ReactorParameters *> self.rp_pointer).coolant_form = m
             else:
@@ -306,11 +305,11 @@ cdef class ReactorParameters:
         """Flag (str) that represents what lattice type the fuel assemblies are arranged in.  
         Currently accepted values are "Planar", "Spherical", and "Cylindrical"."""
         def __get__(self):
-            cdef std.string value = self.rp_pointer.lattice_type
+            cdef std_string value = self.rp_pointer.lattice_type
             return value.c_str()
 
         def __set__(self, char * value):
-            self.rp_pointer.lattice_type = std.string(value)
+            self.rp_pointer.lattice_type = std_string(value)
 
 
     property rescale_hydrogen:
@@ -331,11 +330,11 @@ cdef class ReactorParameters:
     property burnup_via_constant:
         """Flag (str) for constant "flux" or "power" calculations."""
         def __get__(self):
-            cdef std.string value = self.rp_pointer.burnup_via_constant
+            cdef std_string value = self.rp_pointer.burnup_via_constant
             return value.c_str()
 
         def __set__(self, char * value):
-            self.rp_pointer.burnup_via_constant = std.string(value)
+            self.rp_pointer.burnup_via_constant = std_string(value)
 
 
     property branch_ratio_cutoff:

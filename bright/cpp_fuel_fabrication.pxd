@@ -1,8 +1,8 @@
 """Cython header for Fuel Fabrication library."""
 from libcpp.map cimport map
 from libcpp.set cimport set
+from libcpp.string cimport string as std_string
 
-from pyne cimport std
 from pyne cimport cpp_material
 from pyne cimport material
 
@@ -15,21 +15,21 @@ cdef extern from "fuel_fabrication.h" namespace "bright":
     cdef cppclass FuelFabrication(FCComp):
         # Constructors        
         FuelFabrication() except +
-        FuelFabrication(std.string) except +
-        FuelFabrication(set[std.string], std.string) except +
-        FuelFabrication(map[std.string, material.matp], map[std.string, double], Reactor1G, std.string) except +
-        FuelFabrication(map[std.string, material.matp], map[std.string, double], Reactor1G, set[std.string], std.string) except +
+        FuelFabrication(std_string) except +
+        FuelFabrication(set[std_string], std_string) except +
+        FuelFabrication(map[std_string, material.matp], map[std_string, double], Reactor1G, std_string) except +
+        FuelFabrication(map[std_string, material.matp], map[std_string, double], Reactor1G, set[std_string], std_string) except +
 
         # Attributes
-        map[std.string, material.matp] materials
-        map[std.string, double] mass_weights_in
-        map[std.string, double] mass_weights_out
-        map[std.string, double] deltaRs
+        map[std_string, material.matp] materials
+        map[std_string, double] mass_weights_in
+        map[std_string, double] mass_weights_out
+        map[std_string, double] deltaRs
 
         Reactor1G reactor
 
         # Methods
-        void initialize(map[std.string, material.matp], map[std.string, double], Reactor1G) except +
+        void initialize(map[std_string, material.matp], map[std_string, double], Reactor1G) except +
         void calc_params() except +
 
         void calc_deltaRs() except +
@@ -37,6 +37,6 @@ cdef extern from "fuel_fabrication.h" namespace "bright":
         void calc_mass_ratios() except +
 
         cpp_material.Material calc() except +
-        cpp_material.Material calc(map[std.string, material.matp], map[std.string, double], Reactor1G) except +
+        cpp_material.Material calc(map[std_string, material.matp], map[std_string, double], Reactor1G) except +
 
 

@@ -6,11 +6,11 @@ from cython cimport pointer
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from libc.stdlib cimport free
+from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
 
-from pyne cimport std
 from pyne cimport nucname
 from pyne cimport stlconverters as conv
 
@@ -44,7 +44,7 @@ cdef class Storage(fccomp.FCComp):
         pass
 
     def __init__(self, char * name="", *args, **kwargs):
-        self._inst = new cpp_storage.Storage(std.string(name))
+        self._inst = new cpp_storage.Storage(std_string(name))
 
 
     #

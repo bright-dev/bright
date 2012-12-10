@@ -1,7 +1,7 @@
 """Cython header for  library."""
 from libcpp.map cimport map
+from libcpp.string cimport string as std_string
 
-from pyne cimport std
 from pyne cimport cpp_material
 from pyne cimport material
 
@@ -13,7 +13,7 @@ cdef extern from "storage.h" namespace "bright":
     cdef cppclass Storage(FCComp):
         # Constructors
         Storage() except +
-        Storage(std.string) except +
+        Storage(std_string) except +
 
         # Attributes
         double decay_time
