@@ -114,6 +114,7 @@ def setup():
     scripts = [s for s in scripts if (os.name == 'nt' and s.endswith('.bat')) or 
                                      (os.name != 'nt' and not s.endswith('.bat'))]
     packages = ['bright', 'bright.lib', 'bright.gui', 'bright.gui.models',
+                'bright.apigen',
                 'bright.gui.models.class_models', 'bright.gui.views', 'bright.gui.d3',
                 'bright.gui.views.component_views', 
                 'bright.gui.views.custom_graph_canvas',
@@ -123,6 +124,7 @@ def setup():
         'bright.lib': 'bright/lib',
         'bright.gui': 'bright/gui',
         'bright.data': 'data',
+        'bright.apigen': 'bright/apigen',
         }
     extpttn = ['*.dll', '*.so', '*.dylib', '*.pyd', '*.pyo']
     pack_data = {
@@ -133,6 +135,7 @@ def setup():
         'bright.lib': extpttn,
         'bright.gui': ['*.pyw'],
         'bright.data': ['*.h5',],
+        'bright.apigen': ['*.h', '*.json'],
         }
     setup_kwargs = {
         "name": "bright",
