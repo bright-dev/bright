@@ -2,6 +2,9 @@
 description dictionaries or from header files.
 """
 
+from bright.apigen.utils import indent
+from bright.apigen.typesystem import ctype
+
 _cpppxd_template = \
 """################################################
 #                 Warning!                     #
@@ -15,6 +18,11 @@ _cpppxd_template = \
 cdef extern from "{header_filename}" namespace "{namespace}":
 
     cdef cppclass {name}({parents_csv}):
+        # attributes
+{attrs_block}
+
+        # methods
+{methods_block}
 """
 
 
@@ -24,6 +32,16 @@ def gencpppxd(desc):
     """
     d = dict(desc.items())
     d['parents_csv'] = ', '.join(d['parents'])
+
+    alines = []
+    attritems = sorted(d['attrs'].items())
+    for aname, atype in attritems:
+        alines.append("{0} {1}".format(ctype(atype), aname))
+    d['attrs_block'] = indent(alines, 8)
+
+    mblock = ""
+    d['methods_block'] = mblock
+
     cpppxd = _cpppxd_template.format(**d)
     return cpppxd
     

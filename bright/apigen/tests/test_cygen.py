@@ -7,7 +7,12 @@ toaster_desc = {
     'header_filename': 'toaster.h',
     'namespace': 'bright',
     'library_docstring': "I am the Toaster lib! Hear me sizzle!", 
-    'parents': ['FCComp']
+    'parents': ['FCComp'],
+    'attrs': {
+        'nslices': 'uint',
+        'toastiness': 'str',
+        'rate': 'float',
+        },
     }
 
 
@@ -24,6 +29,13 @@ exp_cpppxd = \
 cdef extern from "toaster.h" namespace "bright":
 
     cdef cppclass Toaster(FCComp):
+        # attributes
+        uint nslices
+        float rate
+        str toastiness
+
+        # methods
+
 """
 
 def test_gencpppxd():
