@@ -57,8 +57,11 @@ def canon(t):
         elif t in refined_types:
             return (canon(refined_types[t]), t)
         else:
-            #parse_type(t)
             _raise_type_error(t)
+            # BELOW this would be for complicated string representations, 
+            # such as 'char *' or 'map<nucid, double>'.  Would need to write
+            # the parse_type() function and that might be a lot of work.
+            #parse_type(t)  
     elif isinstance(t, Sequence):
         tlen = len(t)
         if 0 == tlen:
@@ -77,7 +80,9 @@ def canon(t):
         elif isinstance(t[0], Sequence):
             if 2 < tlen:
                 _raise_type_error(t)
-            return (tuple([canon(subt) for subt in t[0]]), last_val)
+            return (canon(t[0]), last_val)
+            # BELOW is for possible compound types...
+            #return (tuple([canon(subt) for subt in t[0]]), last_val)
         else:
             _raise_type_error(t)
     else:
