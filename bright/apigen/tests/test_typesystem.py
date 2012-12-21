@@ -42,6 +42,10 @@ def test_canon():
                                         ('range', 'int32',
                                             ('low', 'int32', 1), 
                                             ('high', 'int32', 2)))), 
+        (['range', 'nucid', 92000, 93000], (('int32', 'nucid'), 
+                                        ('range', ('int32', 'nucid'),
+                                            ('low', ('int32', 'nucid'), 92000), 
+                                            ('high', ('int32', 'nucid'), 93000)))), 
     )
     for t, exp in cases:
         yield check_canon, t, exp            # Check that the case works,
