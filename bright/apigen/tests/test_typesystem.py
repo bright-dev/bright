@@ -23,6 +23,9 @@ def test_canon():
         (['char', 42], ('char', 42)),
         (['map', 'nucid', ['set', 'nucname']], 
             ('map', ('int32', 'nucid'), ('set', ('str', 'nucname'), 0), 0)),
+        (['intrange', 1, 2], ('int32', ('intrange', 
+                                            ('low', 'int32', 1), 
+                                            ('high', 'int32', 2)))), 
     )
     for t, exp in cases:
         yield check_canon, t, exp            # Check that the case works,
