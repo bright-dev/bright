@@ -42,7 +42,6 @@ template_types = {
 refined_types = {
     'nucid': 'int32',
     'nucname': 'str',
-    ('intrange', ('low', 'int32'), ('high', 'int32')): 'int32',
     ('range', ('low', 'value_type'), ('high', 'value_type')): ('value_type',),
     }
 
@@ -56,8 +55,8 @@ def _resolve_dependent_type(tname, tinst=None):
         return depkey
     else:
         assert len(tinst) == len(depkey)
-        return canon(depval), (tname,) + \
-                    tuple([tuple(k) + (ti,) for k, ti in zip(depkey[1:], tinst[1:])])
+        return canon(depval), (tname,) + tuple([(kname, canon(ktype), instval) \
+                        for (kname, ktype), instval in zip(depkey[1:], tinst[1:])])
 
 def canon(t):
     """Turns the type into a canonical form."""

@@ -9,7 +9,14 @@ def check_canon(t, exp):
     return obs
 
 def test_canon():
-    ts.refined_types['comp_map'] = ['map', 'nucid', 'float64']
+    # Add some test refinement cases
+    new_refined = {
+        'comp_map': ['map', 'nucid', 'float64'],
+        ('intrange', ('low', 'int32'), ('high', 'int32')): 'int32',
+        ('nucrange', ('low', 'nucid'), ('high', 'nucid')): 'nucid',
+        }
+    ts.refined_types.update(new_refined)    
+
     cases = (
         ('str', 'str'),
         (['str'], ('str', 0)),
@@ -26,9 +33,15 @@ def test_canon():
         (['intrange', 1, 2], ('int32', ('intrange', 
                                             ('low', 'int32', 1), 
                                             ('high', 'int32', 2)))), 
+        (['nucrange', 92000, 93000], (('int32', 'nucid'), 
+                                        ('nucrange', 
+                                            ('low', ('int32', 'nucid'), 92000), 
+                                            ('high', ('int32', 'nucid'), 93000)))), 
     )
     for t, exp in cases:
         yield check_canon, t, exp            # Check that the case works,
         yield check_canon, ts.canon(t), exp  # And that it actually is canonical.
 
-    del ts.refined_types['comp_map']
+    # remove refinement cases
+    for key in new_refined:
+        del ts.refined_types[key]
