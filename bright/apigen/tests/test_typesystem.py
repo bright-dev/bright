@@ -14,8 +14,9 @@ def test_canon():
         'comp_map': ['map', 'nucid', 'float64'],
         ('intrange', ('low', 'int32'), ('high', 'int32')): 'int32',
         ('nucrange', ('low', 'nucid'), ('high', 'nucid')): 'nucid',
+        ('range', 'vtype', ('low', 'vtype'), ('high', 'vtype')): 'vtype',
         }
-    ts.refined_types.update(new_refined)    
+    ts.refined_types.update(new_refined)
 
     cases = (
         ('str', 'str'),
@@ -37,10 +38,14 @@ def test_canon():
                                         ('nucrange', 
                                             ('low', ('int32', 'nucid'), 92000), 
                                             ('high', ('int32', 'nucid'), 93000)))), 
+        (['range', 'int32', 1, 2], ('int32', 
+                                        ('range', 'int32',
+                                            ('low', 'int32', 1), 
+                                            ('high', 'int32', 2)))), 
     )
     for t, exp in cases:
         yield check_canon, t, exp            # Check that the case works,
-        yield check_canon, ts.canon(t), exp  # And that it actually is canonical.
+        yield check_canon, ts.canon(t), exp  # And that it is actually canonical.
 
     # remove refinement cases
     for key in new_refined:

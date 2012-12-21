@@ -42,7 +42,6 @@ template_types = {
 refined_types = {
     'nucid': 'int32',
     'nucname': 'str',
-    ('range', ('low', 'value_type'), ('high', 'value_type')): ('value_type',),
     }
 
 def _raise_type_error(t):
@@ -51,8 +50,25 @@ def _raise_type_error(t):
 def _resolve_dependent_type(tname, tinst=None):
     depkey = [k for k in refined_types if k[0] == tname][0]
     depval = refined_types[depkey]
+    istemplated = any([isinstance(x, basestring) for x in depkey[1:]])
     if tinst is None:
         return depkey
+    elif istemplated:
+        assert len(tinst) == len(depkey)
+        typemap = {k: tinst[i] for i, k in enumerate(depkey[1:], 1) \
+                                                    if isinstance(k, basestring)}
+        for k in typemap:
+            if k in type_aliases:
+                raise TypeError('template type {0} already exists'.format(k))
+        type_aliases.update(typemap)
+        resotype = canon(depval), (tname,) + \
+                        tuple([canon(k) for k in depkey[1:] if k in typemap]) + \
+                        tuple([(k[0], canon(k[1]), instval) \
+                            for k, instval in zip(depkey[1:], tinst[1:])
+                            if k not in typemap])
+        for k in typemap:
+            del type_aliases[k]
+        return resotype
     else:
         assert len(tinst) == len(depkey)
         return canon(depval), (tname,) + tuple([(kname, canon(ktype), instval) \
@@ -64,7 +80,7 @@ def canon(t):
         if t in BASE_TYPES:
             return t
         elif t in type_aliases:
-            return type_aliases[t]
+            return canon(type_aliases[t])
         elif t in refined_types:
             return (canon(refined_types[t]), t)
         elif t in set([k[0] for k in refined_types if not isinstance(k, basestring)]):
@@ -90,7 +106,6 @@ def canon(t):
             elif t0 in set([k[0] for k in refined_types if not isinstance(k, basestring)]):
                 return _resolve_dependent_type(t0, t)
             else:
-                print "saw " + repr(t)
                 #if 2 < tlen:
                 #    _raise_type_error(t)
                 return (canon(t0), last_val)
