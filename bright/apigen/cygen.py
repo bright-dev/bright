@@ -3,7 +3,7 @@ description dictionaries or from header files.
 """
 
 from bright.apigen.utils import indent
-from bright.apigen.typesystem import ctype
+from bright.apigen.typesystem import cython_ctype
 
 _cpppxd_template = \
 """################################################
@@ -36,7 +36,7 @@ def gencpppxd(desc):
     alines = []
     attritems = sorted(d['attrs'].items())
     for aname, atype in attritems:
-        alines.append("{0} {1}".format(ctype(atype), aname))
+        alines.append("{0} {1}".format(cython_ctype(atype), aname))
     d['attrs_block'] = indent(alines, 8)
 
     mblock = ""

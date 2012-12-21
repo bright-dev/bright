@@ -124,6 +124,9 @@ def canon(t):
     else:
         _raise_type_error(t)
 
+#################### Type System Above This Line ##########################
+
+
 _cython_c_base_types = {
     'char': 'char',
     'str': 'std_string',
@@ -138,3 +141,10 @@ _cython_c_base_types = {
 def cython_ctype(t):
     """Given a type t, returns the cooresponding Cython C type declaration."""
     t = canon(t)
+    if isinstance(t, basestring):
+        if  t in BASE_TYPES:
+            return _cython_c_base_types[t]
+    # must be tuple below this line
+    if 2 == len(t):
+        if 0 == t[1]:
+            return _cython_c_base_types[t[0]]

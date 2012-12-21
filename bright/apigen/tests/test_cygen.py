@@ -40,4 +40,5 @@ cdef extern from "toaster.h" namespace "bright":
 
 def test_gencpppxd():
     obs = cg.gencpppxd(toaster_desc)
+    print obs
     assert_equal(obs, exp_cpppxd)
