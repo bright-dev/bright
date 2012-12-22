@@ -13,6 +13,11 @@ toaster_desc = {
         'toastiness': 'str',
         'rate': 'float',
         },
+    'methods': {
+        ('Toaster',): None,
+        ('~Toaster',): None, 
+        ('make_toast', ('when', 'str'), ('nslices', 'unit', 1)): 'int',
+        },
     }
 
 
@@ -31,12 +36,18 @@ from pyne cimport extra_types
 cdef extern from "toaster.h" namespace "bright":
 
     cdef cppclass Toaster(FCComp):
+        # constructors
+        Toaster() except +
+        ~Toaster()
+
         # attributes
         extra_types.uint nslices
         double rate
         std_string toastiness
 
         # methods
+        int make_toast(std_string) except +
+        int make_toast(std_string, extra_types.uint) except +
 
 
 """

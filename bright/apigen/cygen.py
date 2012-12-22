@@ -1,8 +1,9 @@
 """Generates a Cython wrapper for various Bright classes from either
 description dictionaries or from header files.
 """
+from copy import deepcopy
 
-from bright.apigen.utils import indent
+from bright.apigen.utils import indent, expand_default_args
 from bright.apigen.typesystem import cython_ctype, cython_cimport_tuples, \
     cython_cimports
 
@@ -20,6 +21,9 @@ _cpppxd_template = \
 cdef extern from "{header_filename}" namespace "{namespace}":
 
     cdef cppclass {name}({parents_csv}):
+        # constructors
+{constructors_block}
+
         # attributes
 {attrs_block}
 
@@ -28,23 +32,41 @@ cdef extern from "{header_filename}" namespace "{namespace}":
 """
 
 
-def gencpppxd(desc):
+def gencpppxd(desc, exception_type='+'):
     """Generates a cpp_*.pxd Cython header file for exposing C/C++ data from to 
     other Cython wrappers based off of a dictionary (desc)ription.
     """
-    d = dict(desc.items())
+    d = deepcopy(desc)
     d['parents_csv'] = ', '.join(d['parents'])
 
     alines = []
     cimport_tups = set()
     attritems = sorted(d['attrs'].items())
     for aname, atype in attritems:
+        if aname.startswith('_'):
+            continue
         alines.append("{0} {1}".format(cython_ctype(atype), aname))
         cython_cimport_tuples(atype, cimport_tups)    
     d['attrs_block'] = indent(alines, 8)
 
-    mblock = ""
-    d['methods_block'] = mblock
+    mlines = []
+    clines = []
+    estr = str() if exception_type is None else  ' except {0}'.format(exception_type)
+    methitems = sorted(expand_default_args(d['methods'].items()))
+    for mkey, mrtn in methitems:
+        mname, margs = mkey[0], mkey[1:]
+        argfill = ", ".join([cython_ctype(a[1]) for a in margs])
+        line = "{0}({1}){2}".format(mname, argfill, estr)
+        if mrtn is None:
+            # this must be a constructor
+            clines.append(line)
+        else:
+            # this is a normal method
+            rtype = cython_ctype(mrtn)
+            line = rtype + " " + line
+            mlines.append(line)
+    d['methods_block'] = indent(mlines, 8)
+    d['constructors_block'] = indent(clines, 8)
 
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
     cpppxd = _cpppxd_template.format(**d)
