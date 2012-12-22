@@ -1,5 +1,5 @@
 """Implements a simple type system for API generation."""
-from collections import Sequence
+from collections import Sequence, Set
 
 BASE_TYPES = set(['char', 'str', 'int32', 'int64', 'uint32', 'uint64', 'float32', 
                   'float64', 'complex128', 'void', 'bool'])
@@ -144,7 +144,6 @@ def canon(t):
 
 #################### Type System Above This Line ##########################
 
-
 _cython_c_base_types = {
     'char': 'char',
     'str': 'std_string',
@@ -161,7 +160,6 @@ _cython_c_template_types = {
     'set': 'cpp_set',
     'vector': 'cpp_vector',
     }
-
 
 def cython_ctype(t):
     """Given a type t, returns the cooresponding Cython C type declaration."""
@@ -191,3 +189,55 @@ def cython_ctype(t):
             cyct += ' {0}'.format(last)
         return cyct
 
+
+_cython_cimport_base_types = {
+    'char': None,
+    'str': ('libcpp.string', 'string', 'std_string'),
+    'int32': None,
+    'uint32': ('pyne', 'extra_types'),  # 'unsigned int'
+    'float32': None,
+    'float64': None,
+    'complex128': ('pyne', 'extra_types'),
+    }
+
+_cython_cimport_template_types = {
+    'map': ('libcpp.map', 'map', 'cpp_map'),
+    'dict': None,
+    'set': ('libcpp.set', 'set', 'cpp_set'),
+    'vector': ('libcpp.vector', 'vector', 'cpp_vector'),
+    }
+
+def cython_cimport_tuples(t, seen=None):
+    """Given a type t, and possibily previously seen cimport tuples, return 
+    the set of all seen cimport tuples."""
+    t = canon(t)
+    if seen is None:
+        seen = set()
+    if isinstance(t, basestring):
+        if  t in BASE_TYPES:
+            seen.add(_cython_cimport_base_types[t])
+            seen.discard(None)
+            return seen
+    # must be tuple below this line
+    tlen = len(t)
+    if 2 == tlen:
+        return cython_cimport_tuples(t[0], seen)
+    elif 3 <= tlen:
+        assert t[0] in template_types
+        seen.add(_cython_cimport_template_types[t[0]])
+        for x in t[1:-1]:
+            cython_cimport_tuples(x, seen)
+        seen.discard(None)
+        return seen
+
+_cython_cimport_cases = {
+    1: lambda tup: "cimport {0}".format(*tup),
+    2: lambda tup: "from {0} cimport {1}".format(*tup),
+    3: lambda tup: "from {0} cimport {1} as {2}".format(*tup),
+    }
+
+def cython_cimports(x):
+    """Retuns the cimport lines associtated with a type or a set of seen tuples."""
+    if not isinstance(x, Set):
+        x = cython_cimport_tuples(x)
+    return set([_cython_cimport_cases[len(tup)](tup) for tup in x])

@@ -79,3 +79,54 @@ def test_cython_ctype():
     )
     for t, exp in cases:
         yield check_cython_ctype, t, exp  # Check that the case works,
+
+
+def check_cython_cimport_tuples(t, exp):
+    obs = ts.cython_cimport_tuples(t)
+    assert_equal(obs, exp)
+
+@with_setup(add_new_refined, del_new_refined)
+def test_cython_cimport_tuples():
+    cases = (
+        ('str', set([('libcpp.string', 'string', 'std_string')])),
+        (['str'], set([('libcpp.string', 'string', 'std_string')])),
+        ('f4', set()),
+        ('nucid', set()),
+        (['nucid'], set()), 
+        (['set', 'complex'], set([('libcpp.set', 'set', 'cpp_set'), 
+                                  ('pyne', 'extra_types')])),
+        (['map', 'nucid', 'float'], set([('libcpp.map', 'map', 'cpp_map')])),
+        ('comp_map', set([('libcpp.map', 'map', 'cpp_map')])),
+        (['char', '*'], set()),
+        (['char', 42], set()),
+        (['map', 'nucid', ['set', 'nucname']], set([('libcpp.set', 'set', 'cpp_set'),
+                                                    ('libcpp.map', 'map', 'cpp_map'),
+                                        ('libcpp.string', 'string', 'std_string')])),
+        (['intrange', 1, 2], set()), 
+        (['nucrange', 92000, 93000], set()),
+        (['range', 'int32', 1, 2], set()), 
+        (['range', 'nucid', 92000, 93000], set()), 
+    )
+    for t, exp in cases:
+        yield check_cython_cimport_tuples, t, exp  # Check that the case works,
+
+
+def check_cython_cimports(t, exp):
+    obs = ts.cython_cimports(t)
+    assert_equal(obs, exp)
+
+def test_cython_cimports():
+    cases = (
+        # type checks
+        ('str', set(['from libcpp.string cimport string as std_string',])),
+        ('f4', set()),
+        # seen checks
+        (set([('orly',)]), set(['cimport orly',])),
+        (set([('orly','yarly')]), set(['from orly cimport yarly',])),
+        (set([('orly','yarly','nowai')]), set(['from orly cimport yarly as nowai',])),
+        (set([('orly',), ('orly','yarly')]), 
+            set(['cimport orly', 'from orly cimport yarly'])),
+    )
+    for t, exp in cases:
+        yield check_cython_cimports, t, exp  # Check that the case works,
+
