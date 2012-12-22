@@ -48,7 +48,11 @@ refined_types = {
 def isdependent(t):
     """Returns whether t is a dependent type or not."""
     deptypes = set([k[0] for k in refined_types if not isinstance(k, basestring)])
-    return t in deptypes
+    if isinstance(t, basestring):
+        return t in deptypes
+    if isinstance(t, Sequence):
+        return isdependent(t[0])
+    return False
 
 
 def isrefinement(t):
