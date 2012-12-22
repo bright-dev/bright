@@ -57,6 +57,8 @@ def gencpppxd(desc, exception_type='+'):
     methitems = sorted(expand_default_args(desc['methods'].items()))
     for mkey, mrtn in methitems:
         mname, margs = mkey[0], mkey[1:]
+        if mname.startswith('_'):
+            continue
         argfill = ", ".join([cython_ctype(a[1]) for a in margs])
         line = "{0}({1}){2}".format(mname, argfill, estr)
         if mrtn is None:
