@@ -16,7 +16,7 @@ toaster_desc = {
     'methods': {
         ('Toaster',): None,
         ('~Toaster',): None, 
-        ('make_toast', ('when', 'str'), ('nslices', 'unit', 1)): 'int',
+        ('make_toast', ('when', 'str'), ('nslices', 'uint', 1)): 'int',
         },
     }
 
@@ -38,7 +38,7 @@ cdef extern from "toaster.h" namespace "bright":
     cdef cppclass Toaster(FCComp):
         # constructors
         Toaster() except +
-        ~Toaster()
+        ~Toaster() except +
 
         # attributes
         extra_types.uint nslices
@@ -48,10 +48,11 @@ cdef extern from "toaster.h" namespace "bright":
         # methods
         int make_toast(std_string) except +
         int make_toast(std_string, extra_types.uint) except +
-
-
 """
 
 def test_gencpppxd():
-    obs = cg.gencpppxd(toaster_desc)
-    assert_equal(obs, exp_cpppxd)
+    obs = cg.gencpppxd(toaster_desc).splitlines()
+    exp = exp_cpppxd.splitlines()
+    assert_equal(len(obs), len(exp))
+    for o, e in zip(obs, exp):
+        assert_equal(o, e)

@@ -36,12 +36,14 @@ def gencpppxd(desc, exception_type='+'):
     """Generates a cpp_*.pxd Cython header file for exposing C/C++ data from to 
     other Cython wrappers based off of a dictionary (desc)ription.
     """
-    d = deepcopy(desc)
-    d['parents_csv'] = ', '.join(d['parents'])
+    d = {'parents_csv': ', '.join(desc['parents']), }
+    copy_from_desc = ['name', 'namespace', 'header_filename']
+    for key in copy_from_desc:
+        d[key] = desc[key]
 
     alines = []
     cimport_tups = set()
-    attritems = sorted(d['attrs'].items())
+    attritems = sorted(desc['attrs'].items())
     for aname, atype in attritems:
         if aname.startswith('_'):
             continue
@@ -52,7 +54,7 @@ def gencpppxd(desc, exception_type='+'):
     mlines = []
     clines = []
     estr = str() if exception_type is None else  ' except {0}'.format(exception_type)
-    methitems = sorted(expand_default_args(d['methods'].items()))
+    methitems = sorted(expand_default_args(desc['methods'].items()))
     for mkey, mrtn in methitems:
         mname, margs = mkey[0], mkey[1:]
         argfill = ", ".join([cython_ctype(a[1]) for a in margs])
