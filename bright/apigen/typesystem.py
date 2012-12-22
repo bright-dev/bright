@@ -44,6 +44,20 @@ refined_types = {
     'nucname': 'str',
     }
 
+
+def isdependent(t):
+    """Returns whether t is a dependent type or not."""
+    deptypes = set([k[0] for k in refined_types if not isinstance(k, basestring)])
+    return t in deptypes
+
+
+def isrefinement(t):
+    """Returns whether t is a refined type."""
+    if isinstance(t, basestring):
+        return t in refined_types
+    return isdependent(t)
+        
+
 def _raise_type_error(t):
     raise TypeError("type of {0!r} could not be determined".format(t))
 
@@ -83,7 +97,7 @@ def canon(t):
             return canon(type_aliases[t])
         elif t in refined_types:
             return (canon(refined_types[t]), t)
-        elif t in set([k[0] for k in refined_types if not isinstance(k, basestring)]):
+        elif isdependent(t):
             return _resolve_dependent_type(t)
         else:
             _raise_type_error(t)
@@ -103,7 +117,7 @@ def canon(t):
                 last_val = 0 if tlen == 1 + templen else t[-1]
                 filledt = [t0] + [canon(tt) for tt in t[1:1+templen]] + [last_val]
                 return tuple(filledt)
-            elif t0 in set([k[0] for k in refined_types if not isinstance(k, basestring)]):
+            elif isdependent(t0):
                 return _resolve_dependent_type(t0, t)
             else:
                 #if 2 < tlen:
@@ -137,6 +151,13 @@ _cython_c_base_types = {
     'complex128': 'extra_types.complex_t',
     }
 
+_cython_c_template_types = {
+    'map': 'cpp_map',
+    'dict': 'dict',
+    'set': 'cpp_set',
+    'vector': 'cpp_vector',
+    }
+
 
 def cython_ctype(t):
     """Given a type t, returns the cooresponding Cython C type declaration."""
@@ -145,6 +166,24 @@ def cython_ctype(t):
         if  t in BASE_TYPES:
             return _cython_c_base_types[t]
     # must be tuple below this line
-    if 2 == len(t):
+    tlen = len(t)
+    if 2 == tlen:
         if 0 == t[1]:
-            return _cython_c_base_types[t[0]]
+            return cython_ctype(t[0])
+        elif isrefinement(t[1]):
+            return cython_ctype(t[0])
+        else:
+            last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
+            return cython_ctype(t[0]) + ' {0}'.format(last)
+    elif 3 <= tlen:
+        assert t[0] in template_types
+        assert len(t) == len(template_types[t[0]]) + 2
+        template_name = _cython_c_template_types[t[0]]
+        assert template_name is not NotImplemented
+        template_filling = ', '.join([cython_ctype(x) for x in t[1:-1]])
+        cyct = '{0}[{1}]'.format(template_name, template_filling)
+        if 0 != t[-1]:
+            last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
+            cyct += ' {0}'.format(last)
+        return cyct
+
