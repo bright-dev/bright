@@ -3,7 +3,8 @@ description dictionaries or from header files.
 """
 
 from bright.apigen.utils import indent
-from bright.apigen.typesystem import cython_ctype
+from bright.apigen.typesystem import cython_ctype, cython_cimport_tuples, \
+    cython_cimports
 
 _cpppxd_template = \
 """################################################
@@ -14,6 +15,7 @@ _cpppxd_template = \
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+{cimports}
 
 cdef extern from "{header_filename}" namespace "{namespace}":
 
@@ -34,14 +36,17 @@ def gencpppxd(desc):
     d['parents_csv'] = ', '.join(d['parents'])
 
     alines = []
+    cimport_tups = set()
     attritems = sorted(d['attrs'].items())
     for aname, atype in attritems:
         alines.append("{0} {1}".format(cython_ctype(atype), aname))
+        cython_cimport_tuples(atype, cimport_tups)    
     d['attrs_block'] = indent(alines, 8)
 
     mblock = ""
     d['methods_block'] = mblock
 
+    d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
     cpppxd = _cpppxd_template.format(**d)
     return cpppxd
     

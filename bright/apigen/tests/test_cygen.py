@@ -25,20 +25,22 @@ exp_cpppxd = \
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+from libcpp.string cimport string as std_string
+from pyne cimport extra_types
 
 cdef extern from "toaster.h" namespace "bright":
 
     cdef cppclass Toaster(FCComp):
         # attributes
-        uint nslices
-        float rate
-        str toastiness
+        extra_types.uint nslices
+        double rate
+        std_string toastiness
 
         # methods
+
 
 """
 
 def test_gencpppxd():
     obs = cg.gencpppxd(toaster_desc)
-    print obs
     assert_equal(obs, exp_cpppxd)
