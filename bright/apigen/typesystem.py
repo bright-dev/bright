@@ -284,6 +284,22 @@ _cython_template_class_names = {
     'vector': 'Vector{value_type}',    
     }
 
+
+def _fill_cycyt(cycyt, t):
+    # this is goddamn magical!  have fun debugging...   
+    print cycyt, t
+    d = {}
+    for key, x in zip(template_types[t[0]], t[1:-1]):
+        if isinstance(x, basestring):
+            val = _cython_template_class_names[x]
+        elif x[0] in BASE_TYPES:
+            val = _cython_template_class_names[x[0]]
+        else: 
+            val, _ = _fill_cycyt(_cython_template_class_names[x[0]], x)
+        d[key] = val
+    return cycyt.format(**d), t
+    
+
 def cython_cytype(t):
     """Given a type t, returns the cooresponding Cython type."""
     t = canon(t)
@@ -306,9 +322,7 @@ def cython_cytype(t):
         template_name = _cython_cy_template_types[t[0]]
         assert template_name is not NotImplemented        
         cycyt = _cython_cy_template_types[t[0]]
-        while '{' in cycyt or '}' in cycyt:
-            cycyt = cycyt.format(**dict(zip(template_types[t[0]], 
-                   [_cython_template_class_names[cython_cytype(x)] for x in t[1:-1]])))
+        cycyt, t = _fill_cycyt(cycyt, t)
         if 0 != t[-1]:
             last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
             cycyt += ' {0}'.format(last)
