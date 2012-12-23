@@ -308,7 +308,7 @@ def cython_cytype(t):
         cycyt = _cython_cy_template_types[t[0]]
         while '{' in cycyt or '}' in cycyt:
             cycyt = cycyt.format(**dict(zip(template_types[t[0]], 
-                        [_cython_template_class_names[x] for x in t[1:-1]])))
+                   [_cython_template_class_names[cython_cytype(x)] for x in t[1:-1]])))
         if 0 != t[-1]:
             last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
             cycyt += ' {0}'.format(last)
