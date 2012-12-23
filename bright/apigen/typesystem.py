@@ -237,7 +237,61 @@ _cython_cimport_cases = {
     }
 
 def cython_cimports(x):
-    """Retuns the cimport lines associtated with a type or a set of seen tuples."""
+    """Retuns the cimport lines associtated with a type or a set of seen tuples.
+    """
     if not isinstance(x, Set):
         x = cython_cimport_tuples(x)
     return set([_cython_cimport_cases[len(tup)](tup) for tup in x])
+
+
+
+######################  Some utility functions for the typesystem #############
+
+
+
+def register_class(tname, template_args=None, cython_c_type=None, 
+                   cython_cimport=None):
+    """Classes are user specified types.  This function will add a class to 
+    the type system so that it may be used normally with the rest of the 
+    type system.
+
+    """
+    # register the class name
+    isbase = True
+    if template_args is None: 
+        BASE_TYPES.add(tname)  # normal class        
+    elif isinstance(template_args, Sequence)):
+        if 0 == len(template_args):
+            BASE_TYPES.add(tname)  # normal class
+        elif isinstance(template_args, basestring):
+            _raise_type_error(tname)
+        else:
+            template_types[tname] = tuple(template_args)  # templated class...
+            isbase = False
+
+    # Register with Cython C/C++ types
+    if cython_c_type is not None:
+        if isbase:
+            _cython_c_base_types[tname] = cython_c_type
+            _cython_cimport_base_types[tname] = cython_cimport
+        else:
+            _cython_c_template_types[tname] = cython_c_type
+            _cython_cimport_template_types[tname] = cython_cimport
+
+
+def deregister_class(tname):
+    """This function will remove previously registered classes from the type
+    system.
+    """
+    isbase = tname in BASE_TYPES
+    if not isbase and tname not in template_types:
+        _raise_type_error(tname)
+
+    if isbase:
+        BASE_TYPES.remove(tname)
+        _cython_c_base_types.pop(tname, None)
+        _cython_cimport_base_types.pop(tname, None)
+    else:
+        template_types.pop(tname, None)
+        _cython_c_template_types.pop(tname, None)
+        _cython_cimport_template_types.pop(tname, None)
