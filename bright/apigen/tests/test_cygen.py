@@ -63,8 +63,11 @@ cdef class Toaster(fccomp.FCComp):
 """
 
 def test_genpxd():
-    ts.register_class('FCComp', cython_c_type='fccomp.FCComp', 
-                      cython_cimport='fccomp')
+    ts.register_class('FCComp', 
+                      cython_c_type='cpp_fccomp.FCComp', 
+                      cython_cimport='cpp_fccomp', 
+                      cython_cy_type='fccomp.FCComp', 
+                      cython_cyimport='fccomp')
     obs = cg.genpxd(toaster_desc).splitlines()
     ts.deregister_class('FCComp')
     exp = exp_pxd.splitlines()

@@ -82,7 +82,7 @@ def test_cython_ctype():
 
 
 def check_cython_cimport_tuples_no_cy(t, exp):
-    obs = ts.cython_cimport_tuples(t, include_cy=False)
+    obs = ts.cython_cimport_tuples(t, inc=set(['c']))
     assert_equal(obs, exp)
 
 @with_setup(add_new_refined, del_new_refined)
@@ -112,7 +112,7 @@ def test_cython_cimport_tuples_no_cy():
 
 
 def check_cython_cimport_tuples_with_cy(t, exp):
-    obs = ts.cython_cimport_tuples(t, include_cy=True)
+    obs = ts.cython_cimport_tuples(t)
     assert_equal(obs, exp)
 
 @with_setup(add_new_refined, del_new_refined)

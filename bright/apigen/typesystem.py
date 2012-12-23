@@ -228,7 +228,7 @@ _cython_cyimport_template_types = {
     'vector': ('pyne', 'stlconverters', 'conv'),
     }
 
-def cython_cimport_tuples(t, seen=None, include_cy=True):
+def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
     """Given a type t, and possibily previously seen cimport tuples, return 
     the set of all seen cimport tuples."""
     t = canon(t)
@@ -236,22 +236,24 @@ def cython_cimport_tuples(t, seen=None, include_cy=True):
         seen = set()
     if isinstance(t, basestring):
         if  t in BASE_TYPES:
-            seen.add(_cython_cimport_base_types[t])
-            if include_cy:
+            if 'c' in inc:
+                seen.add(_cython_cimport_base_types[t])
+            if 'cy' in inc:
                 seen.add(_cython_cyimport_base_types[t])
             seen.discard(None)
             return seen
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
-        return cython_cimport_tuples(t[0], seen, include_cy)
+        return cython_cimport_tuples(t[0], seen, inc)
     elif 3 <= tlen:
         assert t[0] in template_types
-        seen.add(_cython_cimport_template_types[t[0]])
-        if include_cy:
+        if 'c' in inc:
+            seen.add(_cython_cimport_template_types[t[0]])
+        if 'cy' in inc:
             seen.add(_cython_cyimport_template_types[t[0]])
         for x in t[1:-1]:
-            cython_cimport_tuples(x, seen, include_cy)
+            cython_cimport_tuples(x, seen, inc)
         seen.discard(None)
         return seen
 
@@ -261,11 +263,11 @@ _cython_cimport_cases = {
     3: lambda tup: "from {0} cimport {1} as {2}".format(*tup),
     }
 
-def cython_cimports(x):
+def cython_cimports(x, inc=frozenset(['c', 'cy'])):
     """Retuns the cimport lines associtated with a type or a set of seen tuples.
     """
     if not isinstance(x, Set):
-        x = cython_cimport_tuples(x)
+        x = cython_cimport_tuples(x, inc=inc)
     return set([_cython_cimport_cases[len(tup)](tup) for tup in x])
 
 
@@ -376,7 +378,8 @@ _cython_py_template_types = {
 
 
 def register_class(tname, template_args=None, cython_c_type=None, 
-                   cython_cimport=None):
+                   cython_cimport=None, cython_cy_type=None, 
+                   cython_template_class_name=None, cython_cyimport=None):
     """Classes are user specified types.  This function will add a class to 
     the type system so that it may be used normally with the rest of the 
     type system.
@@ -396,16 +399,24 @@ def register_class(tname, template_args=None, cython_c_type=None,
             isbase = False
 
     # Register with Cython C/C++ types
-    if cython_c_type is not None:
+    if (cython_c_type is not None) or (cython_cy_type is not None):
         if isinstance(cython_cimport, basestring):
             cython_cimport = (cython_cimport,)
+        if isinstance(cython_cyimport, basestring):
+            cython_cyimport = (cython_cyimport,)
 
         if isbase:
             _cython_c_base_types[tname] = cython_c_type
+            _cython_cy_base_types[tname] = cython_cy_type
             _cython_cimport_base_types[tname] = cython_cimport
+            _cython_cyimport_base_types[tname] = cython_cyimport
         else:
             _cython_c_template_types[tname] = cython_c_type
+            _cython_cy_template_types[tname] = cython_cy_type
             _cython_cimport_template_types[tname] = cython_cimport
+            _cython_cyimport_template_types[tname] = cython_cyimport
+
+        _cython_template_class_names[tname] = cython_template_class_name
 
 
 def deregister_class(tname):
@@ -419,8 +430,14 @@ def deregister_class(tname):
     if isbase:
         BASE_TYPES.remove(tname)
         _cython_c_base_types.pop(tname, None)
+        _cython_cy_base_types.pop(tname, None)
         _cython_cimport_base_types.pop(tname, None)
+        _cython_cyimport_base_types.pop(tname, None)
     else:
         template_types.pop(tname, None)
         _cython_c_template_types.pop(tname, None)
+        _cython_cy_template_types.pop(tname, None)
         _cython_cimport_template_types.pop(tname, None)
+        _cython_cyimport_template_types.pop(tname, None)
+
+    _cython_template_class_names.pop(tname, None)
