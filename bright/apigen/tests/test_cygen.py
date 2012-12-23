@@ -8,7 +8,8 @@ toaster_desc = {
     'header_filename': 'toaster.h',
     'cpppxd_filename': 'cpp_toaster.pxd',
     'namespace': 'bright',
-    'library_docstring': "I am the Toaster lib! Hear me sizzle!", 
+    'module_docstring': "I am the Toaster lib! Hear me sizzle!", 
+    'class_docstring': "I am the Toaster! FORKS DO NOT GO IN ME!", 
     'parents': ['FCComp'],
     'attrs': {
         'nslices': 'uint',

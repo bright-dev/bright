@@ -130,3 +130,30 @@ def test_cython_cimports():
     for t, exp in cases:
         yield check_cython_cimports, t, exp  # Check that the case works,
 
+
+def check_cython_cytype(t, exp):
+    obs = ts.cython_cytype(t)
+    assert_equal(obs, exp)
+
+@with_setup(add_new_refined, del_new_refined)
+def test_cython_cytype():
+    cases = (
+        ('str', 'char *'),
+        (['str'], 'char *'),
+        ('f4', 'float'),
+        ('nucid', 'int'),
+        (['nucid'], 'int'), 
+        (['set', 'complex'], 'conv._SetComplex'),
+#        (['map', 'nucid', 'float'], 'cpp_map[int, double]'),
+#        ('comp_map', 'cpp_map[int, double]'),
+#        (['char', '*'], 'char *'),
+#        (['char', 42], 'char [42]'),
+#        (['map', 'nucid', ['set', 'nucname']], 'cpp_map[int, cpp_set[std_string]]'),
+#        (['intrange', 1, 2], 'int'), 
+#        (['nucrange', 92000, 93000], 'int'),
+#        (['range', 'int32', 1, 2], 'int'), 
+#        (['range', 'nucid', 92000, 93000], 'int'), 
+    )
+    for t, exp in cases:
+        yield check_cython_cytype, t, exp  # Check that the case works,
+

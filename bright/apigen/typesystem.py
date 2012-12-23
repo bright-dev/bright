@@ -31,6 +31,7 @@ type_aliases = {
 template_types = {
     'map': ('key_type', 'value_type'),
     'dict': ('key_type', 'value_type'),
+    'pair': ('key_type', 'value_type'),
     'set': ('value_type',),
     'vector': ('value_type',),
     }
@@ -157,6 +158,7 @@ _cython_c_base_types = {
 _cython_c_template_types = {
     'map': 'cpp_map',
     'dict': 'dict',
+    'pair': 'cpp_pair',
     'set': 'cpp_set',
     'vector': 'cpp_vector',
     }
@@ -203,6 +205,7 @@ _cython_cimport_base_types = {
 _cython_cimport_template_types = {
     'map': ('libcpp.map', 'map', 'cpp_map'),
     'dict': None,
+    'pair': ('libcpp.utility', 'pair', 'cpp_pair'),
     'set': ('libcpp.set', 'set', 'cpp_set'),
     'vector': ('libcpp.vector', 'vector', 'cpp_vector'),
     }
@@ -243,6 +246,94 @@ def cython_cimports(x):
         x = cython_cimport_tuples(x)
     return set([_cython_cimport_cases[len(tup)](tup) for tup in x])
 
+
+_cython_cy_base_types = {
+    'char': 'char',
+    'str': 'char *',
+    'int32': 'int',
+    'uint32': 'long',  # 'unsigned int'
+    'float32': 'float',
+    'float64': 'float',
+    'complex128': 'object',
+    }
+
+
+_cython_cy_template_types = {
+    'map': 'conv._Map{key_type}{value_type}',
+    'dict': 'dict',
+    'pair': 'conv._Pair{value_type}',
+    'set': 'conv._Set{value_type}',
+    'vector': 'conv._Vector{value_type}',
+    }
+
+
+_cython_template_class_names = {
+    # base types
+    'char': 'Str',
+    'str': 'Str',
+    'int32': 'Int',
+    'uint32': 'UInt',
+    'float32': 'Float',
+    'float64': 'Double',
+    'complex128': 'Complex',
+    # template types
+    'map': 'Map{key_type}{value_type}',
+    'dict': 'Dict',
+    'pair': 'Pair{value_type}',
+    'set': 'Set{value_type}',
+    'vector': 'Vector{value_type}',    
+    }
+
+def cython_cytype(t):
+    """Given a type t, returns the cooresponding Cython type."""
+    t = canon(t)
+    if isinstance(t, basestring):
+        if  t in BASE_TYPES:
+            return _cython_cy_base_types[t]
+    # must be tuple below this line
+    tlen = len(t)
+    if 2 == tlen:
+        if 0 == t[1]:
+            return cython_cytype(t[0])
+        elif isrefinement(t[1]):
+            return cython_cytype(t[0])
+        else:
+            last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
+            return cython_cytype(t[0]) + ' {0}'.format(last)
+    elif 3 <= tlen:
+        assert t[0] in template_types
+        assert len(t) == len(template_types[t[0]]) + 2
+        template_name = _cython_cy_template_types[t[0]]
+        assert template_name is not NotImplemented        
+        cycyt = _cython_cy_template_types[t[0]]
+        while '{' in cycyt or '}' in cycyt:
+            cycyt = cycyt.format(**dict(zip(template_types[t[0]], 
+                        [_cython_template_class_names[x] for x in t[1:-1]])))
+        if 0 != t[-1]:
+            last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
+            cycyt += ' {0}'.format(last)
+        return cycyt
+
+
+
+_cython_py_base_types = {
+    'char': ['basestring'],
+    'str': ['basestring'],
+    'int32': ['int'],
+    'uint32': ['int', 'long'],  # 'unsigned int'
+    'float32': ['float'],
+    'float64': ['float'],
+    'complex128': ['complex'],
+    }
+
+
+_cython_py_template_types = {
+    'map': ['collections.Mapping'],
+    'dict': ['collections.Mapping'],
+    'pair':  ['collections.Sequence'],
+    'set':  ['collections.Sequence'],
+    'vector':  ['collections.Sequence'],
+    }
 
 
 ######################  Some utility functions for the typesystem #############
