@@ -260,7 +260,7 @@ def register_class(tname, template_args=None, cython_c_type=None,
     isbase = True
     if template_args is None: 
         BASE_TYPES.add(tname)  # normal class        
-    elif isinstance(template_args, Sequence)):
+    elif isinstance(template_args, Sequence):
         if 0 == len(template_args):
             BASE_TYPES.add(tname)  # normal class
         elif isinstance(template_args, basestring):

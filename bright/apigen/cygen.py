@@ -100,6 +100,9 @@ def genpxd(desc):
     """Generates a *.pxd Cython header file for exposing C/C++ data from to 
     other Cython wrappers based off of a dictionary (desc)ription.
     """
+    if 'pxd_filename' not in desc:
+        desc['pxd_filename'] = '{0}.pxd'.format(d['name'].lower())
+
     d = {'parents': ', '.join(desc['parents']), }
     copy_from_desc = ['name',]
     for key in copy_from_desc:
@@ -109,13 +112,13 @@ def genpxd(desc):
     for parent in desc['parents']:
         cython_cimport_tuples(parent, cimport_tups)
 
-    register_class(desc)
+    from_cpppxd = desc['cpppxd_filename'].rsplit('.', 1)[0]
+    register_class(desc['name'], cython_cimport=from_cpppxd,
+                   cython_c_type="{0}.{1}".format(from_cpppxd, desc['name']),)
     d['name_type'] = cython_ctype(desc['name'])
     cython_cimport_tuples(desc['name'], cimport_tups)
 
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
     pxd = _pxd_template.format(**d)
-    if 'pxd_filename' not in desc:
-        desc['pxd_filename'] = '{0}.pxd'.format(d['name'].lower())
     return pxd
     
