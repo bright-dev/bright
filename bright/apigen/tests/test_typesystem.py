@@ -81,12 +81,12 @@ def test_cython_ctype():
         yield check_cython_ctype, t, exp  # Check that the case works,
 
 
-def check_cython_cimport_tuples(t, exp):
-    obs = ts.cython_cimport_tuples(t)
+def check_cython_cimport_tuples_no_cy(t, exp):
+    obs = ts.cython_cimport_tuples(t, include_cy=False)
     assert_equal(obs, exp)
 
 @with_setup(add_new_refined, del_new_refined)
-def test_cython_cimport_tuples():
+def test_cython_cimport_tuples_no_cy():
     cases = (
         ('str', set([('libcpp.string', 'string', 'std_string')])),
         (['str'], set([('libcpp.string', 'string', 'std_string')])),
@@ -108,7 +108,41 @@ def test_cython_cimport_tuples():
         (['range', 'nucid', 92000, 93000], set()), 
     )
     for t, exp in cases:
-        yield check_cython_cimport_tuples, t, exp  # Check that the case works,
+        yield check_cython_cimport_tuples_no_cy, t, exp  # Check that the case works
+
+
+def check_cython_cimport_tuples_with_cy(t, exp):
+    obs = ts.cython_cimport_tuples(t, include_cy=True)
+    assert_equal(obs, exp)
+
+@with_setup(add_new_refined, del_new_refined)
+def test_cython_cimport_tuples_with_cy():
+    cases = (
+        ('str', set([('libcpp.string', 'string', 'std_string')])),
+        (['str'], set([('libcpp.string', 'string', 'std_string')])),
+        ('f4', set()),
+        ('nucid', set()),
+        (['nucid'], set()), 
+        (['set', 'complex'], set([('libcpp.set', 'set', 'cpp_set'), 
+                                  ('pyne', 'stlconverters', 'conv'),
+                                  ('pyne', 'extra_types')])),
+        (['map', 'nucid', 'float'], set([('libcpp.map', 'map', 'cpp_map'), 
+                                         ('pyne', 'stlconverters', 'conv')])),
+        ('comp_map', set([('libcpp.map', 'map', 'cpp_map'), 
+                          ('pyne', 'stlconverters', 'conv')])),
+        (['char', '*'], set()),
+        (['char', 42], set()),
+        (['map', 'nucid', ['set', 'nucname']], set([('libcpp.set', 'set', 'cpp_set'),
+                                                    ('libcpp.map', 'map', 'cpp_map'),
+                                                    ('pyne', 'stlconverters', 'conv'),
+                                        ('libcpp.string', 'string', 'std_string')])),
+        (['intrange', 1, 2], set()), 
+        (['nucrange', 92000, 93000], set()),
+        (['range', 'int32', 1, 2], set()), 
+        (['range', 'nucid', 92000, 93000], set()), 
+    )
+    for t, exp in cases:
+        yield check_cython_cimport_tuples_with_cy, t, exp  # Check that the case works
 
 
 def check_cython_cimports(t, exp):

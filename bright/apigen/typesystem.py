@@ -210,7 +210,25 @@ _cython_cimport_template_types = {
     'vector': ('libcpp.vector', 'vector', 'cpp_vector'),
     }
 
-def cython_cimport_tuples(t, seen=None):
+_cython_cyimport_base_types = {
+    'char': None,
+    'str': None,
+    'int32': None,
+    'uint32': None,
+    'float32': None,
+    'float64': None,
+    'complex128': None,
+    }
+
+_cython_cyimport_template_types = {
+    'map': ('pyne', 'stlconverters', 'conv'),
+    'dict': None,
+    'pair': ('pyne', 'stlconverters', 'conv'),
+    'set': ('pyne', 'stlconverters', 'conv'),
+    'vector': ('pyne', 'stlconverters', 'conv'),
+    }
+
+def cython_cimport_tuples(t, seen=None, include_cy=True):
     """Given a type t, and possibily previously seen cimport tuples, return 
     the set of all seen cimport tuples."""
     t = canon(t)
@@ -219,17 +237,21 @@ def cython_cimport_tuples(t, seen=None):
     if isinstance(t, basestring):
         if  t in BASE_TYPES:
             seen.add(_cython_cimport_base_types[t])
+            if include_cy:
+                seen.add(_cython_cyimport_base_types[t])
             seen.discard(None)
             return seen
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
-        return cython_cimport_tuples(t[0], seen)
+        return cython_cimport_tuples(t[0], seen, include_cy)
     elif 3 <= tlen:
         assert t[0] in template_types
         seen.add(_cython_cimport_template_types[t[0]])
+        if include_cy:
+            seen.add(_cython_cyimport_template_types[t[0]])
         for x in t[1:-1]:
-            cython_cimport_tuples(x, seen)
+            cython_cimport_tuples(x, seen, include_cy)
         seen.discard(None)
         return seen
 
@@ -286,8 +308,7 @@ _cython_template_class_names = {
 
 
 def _fill_cycyt(cycyt, t):
-    # this is goddamn magical!  have fun debugging...   
-    print cycyt, t
+    """Helper for cython_cytype()."""
     d = {}
     for key, x in zip(template_types[t[0]], t[1:-1]):
         if isinstance(x, basestring):
