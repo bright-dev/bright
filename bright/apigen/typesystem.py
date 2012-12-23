@@ -271,6 +271,9 @@ def register_class(tname, template_args=None, cython_c_type=None,
 
     # Register with Cython C/C++ types
     if cython_c_type is not None:
+        if isinstance(cython_cimport, basestring):
+            cython_cimport = (cython_cimport,)
+
         if isbase:
             _cython_c_base_types[tname] = cython_c_type
             _cython_cimport_base_types[tname] = cython_cimport

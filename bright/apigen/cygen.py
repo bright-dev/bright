@@ -92,7 +92,6 @@ _pxd_template = AUTOGEN_WARNING + \
 cdef class {name}({parents}):
     cdef {name_type} * _inst
     cdef public bint _free_inst
-
 """
 
 
@@ -101,9 +100,9 @@ def genpxd(desc):
     other Cython wrappers based off of a dictionary (desc)ription.
     """
     if 'pxd_filename' not in desc:
-        desc['pxd_filename'] = '{0}.pxd'.format(d['name'].lower())
+        desc['pxd_filename'] = '{0}.pxd'.format(desc['name'].lower())
 
-    d = {'parents': ', '.join(desc['parents']), }
+    d = {'parents': ', '.join([cython_ctype(p) for p in desc['parents']]), }
     copy_from_desc = ['name',]
     for key in copy_from_desc:
         d[key] = desc[key]
