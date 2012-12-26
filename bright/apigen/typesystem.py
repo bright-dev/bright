@@ -428,21 +428,39 @@ _cython_c2py_conv = {
     'float64': ('float({var})',),
     'complex128': ('complex(float({var}.re), float({var}.im))',),
     # template types
-    'map': ('{cytype}({var})', None, 
+    'map': ('{pytype}({var})', 
+           ('{proxy_name} = {pytype}(False, False)\n'
+            '{proxy_name}.map_ptr = &{inst_name}.{var}\n'),
            ('if {cache_name} is None:\n'
             '    {proxy_name} = {pytype}(False, False)\n'
             '    {proxy_name}.map_ptr = &{inst_name}.{var}\n'
             '    {cache_name} = {proxy_name}\n'
             )),
-    'dict': 'Dict',
-    'pair': 'Pair{value_type}',
-    'set': ('{cytype}({var})', None, 
+    'dict': ('dict({var})',),
+    'pair': ('{pytype}({var})',
+            ('{proxy_name} = {pytype}(False, False)\n'
+             '{proxy_name}.pair_ptr = &{inst_name}.{var}\n'),
+            ('if {cache_name} is None:\n'
+             '    {proxy_name} = {pytype}(False, False)\n'
+             '    {proxy_name}.pair_ptr = &{inst_name}.{var}\n'
+             '    {cache_name} = {proxy_name}\n'
+             )),
+    'set': ('{pytype}({var})',
+           ('{proxy_name} = {pytype}(False, False)\n'
+            '{proxy_name}.vector_ptr = &{inst_name}.{var}\n'),
            ('if {cache_name} is None:\n'
             '    {proxy_name} = {pytype}(False, False)\n'
-            '    {proxy_name}.set_ptr = &{inst_name}.{var}\n'
+            '    {proxy_name}.vector_ptr = &{inst_name}.{var}\n'
             '    {cache_name} = {proxy_name}\n'
             )),
-    'vector': 'Vector{value_type}',    
+    'vector': ('{pytype}({var})',
+              ('{proxy_name} = {pytype}(False, False)\n'
+               '{proxy_name}.pair_ptr = &{inst_name}.{var}\n'),
+              ('if {cache_name} is None:\n'
+               '    {proxy_name} = {pytype}(False, False)\n'
+               '    {proxy_name}.pair_ptr = &{inst_name}.{var}\n'
+               '    {cache_name} = {proxy_name}\n'
+               )),
     }
 
 def cython_c2py(name, t, view=True, cached=True, inst_name='self._inst', 
@@ -454,18 +472,28 @@ def cython_c2py(name, t, view=True, cached=True, inst_name='self._inst',
     while not isinstance(tkey, basestring):
         tkey = tkey[0]
     c2pyt = _cython_c2py_conv[tkey]
-    ind = int(view) + int(cached)
-    if cached and not view:
-        raise ValueError('cached views require view=True.')
     if 1 == len(c2pyt) or 0 == ind:
         return None, None, c2pyt[0].format(var=name)
+    ind = int(view) + int(cached)
     c2pyt = c2pyt[ind]
+    if cached and not view:
+        raise ValueError('cached views require view=True.')
+    if c2pyt is NotImplemented:
+        raise NotImplementedError('conversion from C/C++ to Python for ' + \
+                                  t + 'has not been implemented for when ' + \
+                                  'view={0}, cached={1}'.format(view, cached))
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
     cache_name = "self._{0}".format(name) if cache_name is None else cache_name
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
-    if ind == 1:
-        raise NotImplemented
+    if ind == 0:
+        decl = body = None
+        rtn = c2py.format(var=name, pytype=pyt)
+    elif ind == 1:
+        decl = "cdef {0} {1}".format(cyt, proxy_name)
+        body = c2pyt.format(var=name, pytype=pyt, proxy_name=proxy_name, 
+                            inst_name=inst_name)
+        rtn = proxy_name
     elif ind == 2:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
         body = c2pyt.format(var=name, cache_name=cache_name, pytype=pyt,
