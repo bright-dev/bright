@@ -352,6 +352,30 @@ def cython_cytype(t):
         return cycyt
 
 
+_cython_c2py_conv = {
+    'char': ('str(<char *> {var})',),
+    'str': ('str(<char *> {var}.c_str())',),
+    'int32': ('int({var})',),
+    'uint32': ('int({var})',),
+    'float32': ('float({var})',),
+    'float64': ('float({var})',),
+    'complex128': ('complex(float({var}.re), float({var}.im))',),
+    }
+
+def cython_c2py(name, t):
+    """Given a varibale name and type, returns cython code (declaration, body, 
+    and return)to convert the variable from C/C++ to Python."""
+    t = canon(t)
+    tkey = t if isinstance(t, basestring) else t[0]
+    c2pyt = _cython_c2py_conv[tkey]
+    if 1 == len(c2pyt):
+        return None, None, c2pyt[0].format(var=name)
+    basename = name.rsplit('.', 1)[-1]
+    pyname = '_py_' + basename
+    cyt = cython_cytype(t)
+    decl = "cdef {0} {1}".format(cyt, pyname)
+    return decl, body, rtn
+ 
 
 _cython_py_base_types = {
     'char': ['basestring'],

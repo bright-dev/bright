@@ -75,7 +75,7 @@ cdef class Reprocess(fccomp.FCComp):
 
     def __init__(self, sepeff=None, char * name="", *args, **kwargs):
         if sepeff is None:
-            sepeff = {}
+             sepeff = {}
 
         cdef dict sepdict = {}
         for key, val in sepeff.items():
