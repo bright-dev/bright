@@ -352,7 +352,74 @@ def cython_cytype(t):
         return cycyt
 
 
+_cython_py_base_types = {
+    'char': 'str',
+    'str': 'str',
+    'int32': 'int',
+    'uint32': 'int',  # 'unsigned int'
+    'float32': 'float',
+    'float64': 'float',
+    'complex128': 'object',
+    }
+
+
+_cython_py_template_types = {
+    'map': 'conv.Map{key_type}{value_type}',
+    'dict': 'dict',
+    'pair': 'conv.Pair{value_type}',
+    'set': 'conv.Set{value_type}',
+    'vector': 'conv.Vector{value_type}',
+    }
+
+def _fill_cypyt(cypyt, t):
+    """Helper for cython_pytype()."""
+    d = {}
+    for key, x in zip(template_types[t[0]], t[1:-1]):
+        if isinstance(x, basestring):
+            val = _cython_template_class_names[x]
+        elif x[0] in BASE_TYPES:
+            val = _cython_template_class_names[x[0]]
+        else: 
+            val, _ = _fill_cypyt(_cython_template_class_names[x[0]], x)
+        d[key] = val
+    return cypyt.format(**d), t
+    
+
+def cython_pytype(t):
+    """Given a type t, returns the cooresponding Python type."""
+    t = canon(t)
+    if isinstance(t, basestring):
+        if  t in BASE_TYPES:
+            return _cython_py_base_types[t]
+    # must be tuple below this line
+    tlen = len(t)
+    if 2 == tlen:
+        if 0 == t[1]:
+            return cython_pytype(t[0])
+        elif isrefinement(t[1]):
+            return cython_pytype(t[0])
+        else:
+            # FIXME last is ignored for strings, but what about other types?
+            #last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
+            #return cython_pytype(t[0]) + ' {0}'.format(last)
+            return cython_pytype(t[0])
+    elif 3 <= tlen:
+        assert t[0] in template_types
+        assert len(t) == len(template_types[t[0]]) + 2
+        template_name = _cython_py_template_types[t[0]]
+        assert template_name is not NotImplemented        
+        cypyt = _cython_py_template_types[t[0]]
+        cypyt, t = _fill_cypyt(cypyt, t)
+        # FIXME last is ignored for strings, but what about other types?
+        #if 0 != t[-1]:
+        #    last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
+        #    cypyt += ' {0}'.format(last)
+        return cypyt
+
+
 _cython_c2py_conv = {
+    # Has tuple form of (copy, [view, [cached_view]])
+    # base types
     'char': ('str(<char *> {var})',),
     'str': ('str(<char *> {var}.c_str())',),
     'int32': ('int({var})',),
@@ -360,41 +427,52 @@ _cython_c2py_conv = {
     'float32': ('float({var})',),
     'float64': ('float({var})',),
     'complex128': ('complex(float({var}.re), float({var}.im))',),
+    # template types
+    'map': ('{cytype}({var})', None, 
+           ('if {cache_name} is None:\n'
+            '    {proxy_name} = {pytype}(False, False)\n'
+            '    {proxy_name}.map_ptr = &{inst_name}.{var}\n'
+            '    {cache_name} = {proxy_name}\n'
+            )),
+    'dict': 'Dict',
+    'pair': 'Pair{value_type}',
+    'set': ('{cytype}({var})', None, 
+           ('if {cache_name} is None:\n'
+            '    {proxy_name} = {pytype}(False, False)\n'
+            '    {proxy_name}.set_ptr = &{inst_name}.{var}\n'
+            '    {cache_name} = {proxy_name}\n'
+            )),
+    'vector': 'Vector{value_type}',    
     }
 
-def cython_c2py(name, t):
+def cython_c2py(name, t, view=True, cached=True, inst_name='self._inst', 
+                proxy_name=None, cache_name=None):
     """Given a varibale name and type, returns cython code (declaration, body, 
     and return)to convert the variable from C/C++ to Python."""
     t = canon(t)
-    tkey = t if isinstance(t, basestring) else t[0]
+    tkey = t
+    while not isinstance(tkey, basestring):
+        tkey = tkey[0]
     c2pyt = _cython_c2py_conv[tkey]
-    if 1 == len(c2pyt):
+    ind = int(view) + int(cached)
+    if cached and not view:
+        raise ValueError('cached views require view=True.')
+    if 1 == len(c2pyt) or 0 == ind:
         return None, None, c2pyt[0].format(var=name)
-    basename = name.rsplit('.', 1)[-1]
-    pyname = '_py_' + basename
+    c2pyt = c2pyt[ind]
     cyt = cython_cytype(t)
-    decl = "cdef {0} {1}".format(cyt, pyname)
+    pyt = cython_pytype(t)
+    cache_name = "self._{0}".format(name) if cache_name is None else cache_name
+    proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
+    if ind == 1:
+        raise NotImplemented
+    elif ind == 2:
+        decl = "cdef {0} {1}".format(cyt, proxy_name)
+        body = c2pyt.format(var=name, cache_name=cache_name, pytype=pyt,
+                            proxy_name=proxy_name, inst_name=inst_name)
+        rtn = cache_name
     return decl, body, rtn
  
-
-_cython_py_base_types = {
-    'char': ['basestring'],
-    'str': ['basestring'],
-    'int32': ['int'],
-    'uint32': ['int', 'long'],  # 'unsigned int'
-    'float32': ['float'],
-    'float64': ['float'],
-    'complex128': ['complex'],
-    }
-
-
-_cython_py_template_types = {
-    'map': ['collections.Mapping'],
-    'dict': ['collections.Mapping'],
-    'pair':  ['collections.Sequence'],
-    'set':  ['collections.Sequence'],
-    'vector':  ['collections.Sequence'],
-    }
 
 
 ######################  Some utility functions for the typesystem #############

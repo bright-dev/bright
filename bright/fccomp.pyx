@@ -95,7 +95,7 @@ cdef class FCComp:
         """A pyne.material.Material object that represents the flow of material into 
         this component for this pass."""
         def __get__(self):
-e            cdef pyne.material._Material pymat = pyne.material.Material()
+            cdef pyne.material._Material pymat = pyne.material.Material()
             pymat.mat_pointer[0] = (<cpp_fccomp.FCComp *> self._inst).mat_feed
             return pymat
 
