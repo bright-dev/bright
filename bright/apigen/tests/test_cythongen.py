@@ -1,5 +1,5 @@
 from bright.apigen import typesystem as ts
-from bright.apigen import cygen as cg
+from bright.apigen import cythongen as cg
 
 from nose.tools import assert_equal
 
