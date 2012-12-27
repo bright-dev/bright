@@ -430,41 +430,41 @@ _cython_c2py_conv = {
     # template types
     'map': ('{pytype}({var})', 
            ('{proxy_name} = {pytype}(False, False)\n'
-            '{proxy_name}.map_ptr = &{inst_name}.{var}\n'),
+            '{proxy_name}.map_ptr = &{var}\n'),
            ('if {cache_name} is None:\n'
             '    {proxy_name} = {pytype}(False, False)\n'
-            '    {proxy_name}.map_ptr = &{inst_name}.{var}\n'
+            '    {proxy_name}.map_ptr = &{var}\n'
             '    {cache_name} = {proxy_name}\n'
             )),
     'dict': ('dict({var})',),
     'pair': ('{pytype}({var})',
             ('{proxy_name} = {pytype}(False, False)\n'
-             '{proxy_name}.pair_ptr = &{inst_name}.{var}\n'),
+             '{proxy_name}.pair_ptr = &{var}\n'),
             ('if {cache_name} is None:\n'
              '    {proxy_name} = {pytype}(False, False)\n'
-             '    {proxy_name}.pair_ptr = &{inst_name}.{var}\n'
+             '    {proxy_name}.pair_ptr = &{var}\n'
              '    {cache_name} = {proxy_name}\n'
              )),
     'set': ('{pytype}({var})',
            ('{proxy_name} = {pytype}(False, False)\n'
-            '{proxy_name}.vector_ptr = &{inst_name}.{var}\n'),
+            '{proxy_name}.vector_ptr = &{var}\n'),
            ('if {cache_name} is None:\n'
             '    {proxy_name} = {pytype}(False, False)\n'
-            '    {proxy_name}.vector_ptr = &{inst_name}.{var}\n'
+            '    {proxy_name}.set_ptr = &{var}\n'
             '    {cache_name} = {proxy_name}\n'
             )),
     'vector': ('{pytype}({var})',
               ('{proxy_name} = {pytype}(False, False)\n'
-               '{proxy_name}.pair_ptr = &{inst_name}.{var}\n'),
+               '{proxy_name}.pair_ptr = &{var}\n'),
               ('if {cache_name} is None:\n'
                '    {proxy_name} = {pytype}(False, False)\n'
-               '    {proxy_name}.pair_ptr = &{inst_name}.{var}\n'
+               '    {proxy_name}.vector_ptr = &{var}\n'
                '    {cache_name} = {proxy_name}\n'
                )),
     }
 
-def cython_c2py(name, t, view=True, cached=True, inst_name='self._inst', 
-                proxy_name=None, cache_name=None):
+def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None, 
+                cache_name=None):
     """Given a varibale name and type, returns cython code (declaration, body, 
     and return)to convert the variable from C/C++ to Python."""
     t = canon(t)
@@ -472,10 +472,7 @@ def cython_c2py(name, t, view=True, cached=True, inst_name='self._inst',
     while not isinstance(tkey, basestring):
         tkey = tkey[0]
     c2pyt = _cython_c2py_conv[tkey]
-    if 1 == len(c2pyt) or 0 == ind:
-        return None, None, c2pyt[0].format(var=name)
     ind = int(view) + int(cached)
-    c2pyt = c2pyt[ind]
     if cached and not view:
         raise ValueError('cached views require view=True.')
     if c2pyt is NotImplemented:
@@ -484,20 +481,20 @@ def cython_c2py(name, t, view=True, cached=True, inst_name='self._inst',
                                   'view={0}, cached={1}'.format(view, cached))
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
+    var = name if inst_name is None else "{0}.{1}".format(inst_name, name)
     cache_name = "self._{0}".format(name) if cache_name is None else cache_name
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
-    if ind == 0:
+    if 1 == len(c2pyt) or ind == 0:
         decl = body = None
-        rtn = c2py.format(var=name, pytype=pyt)
+        rtn = c2pyt[0].format(var=var, pytype=pyt)
     elif ind == 1:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
-        body = c2pyt.format(var=name, pytype=pyt, proxy_name=proxy_name, 
-                            inst_name=inst_name)
+        body = c2pyt[1].format(var=var, pytype=pyt, proxy_name=proxy_name)
         rtn = proxy_name
     elif ind == 2:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
-        body = c2pyt.format(var=name, cache_name=cache_name, pytype=pyt,
-                            proxy_name=proxy_name, inst_name=inst_name)
+        body = c2pyt[2].format(var=var, cache_name=cache_name, pytype=pyt,
+                            proxy_name=proxy_name)
         rtn = cache_name
     return decl, body, rtn
  

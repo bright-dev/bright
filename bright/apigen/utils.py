@@ -1,10 +1,13 @@
 """Helper functions for bright API generation."""
 
-def indent(s, n):
+def indent(s, n=4, join=True):
     """Indents all lines in the string or list s by n spaces."""
     spaces = " " * n
     lines = s.splitlines() if isinstance(s, basestring) else s
-    return '\n'.join([spaces + l for l in lines])
+    if join:
+        return '\n'.join([spaces + l for l in lines])
+    else:
+        return [spaces + l for l in lines]
 
 
 def expand_default_args(methods):

@@ -8,8 +8,14 @@ toaster_desc = {
     'header_filename': 'toaster.h',
     'cpppxd_filename': 'cpp_toaster.pxd',
     'namespace': 'bright',
-    'module_docstring': "I am the Toaster lib! Hear me sizzle!", 
-    'class_docstring': "I am the Toaster! FORKS DO NOT GO IN ME!", 
+    'docstrings': {
+        'module': "I am the Toaster lib! Hear me sizzle!", 
+        'class': "I am the Toaster! FORKS DO NOT GO IN ME!",
+        'attrs': {
+            'toastiness': "white as snow or black as hell?", 
+            'rate': "The rate at which the toaster can process slices.", 
+            },
+        },
     'parents': ['FCComp'],
     'attrs': {
         'nslices': 'uint',
@@ -71,6 +77,30 @@ def test_genpxd():
     obs = cg.genpxd(toaster_desc).splitlines()
     ts.deregister_class('FCComp')
     exp = exp_pxd.splitlines()
+    assert_equal(len(obs), len(exp))
+    for o, e in zip(obs, exp):
+        assert_equal(o, e)
+
+
+exp_pyx = cg.AUTOGEN_WARNING + \
+"""cimport cpp_toaster
+cimport fccomp
+
+cdef class Toaster(fccomp.FCComp):
+    cdef cpp_toaster.Toaster * _inst
+    cdef public bint _free_inst
+"""
+
+def test_genpyx():
+    ts.register_class('FCComp', 
+                      cython_c_type='cpp_fccomp.FCComp', 
+                      cython_cimport='cpp_fccomp', 
+                      cython_cy_type='fccomp.FCComp', 
+                      cython_cyimport='fccomp')
+    obs = cg.genpyx(toaster_desc).splitlines()
+    ts.deregister_class('FCComp')
+    print "\n".join(obs)
+    exp = exp_pyx.splitlines()
     assert_equal(len(obs), len(exp))
     for o, e in zip(obs, exp):
         assert_equal(o, e)

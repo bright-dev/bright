@@ -5,7 +5,7 @@ from copy import deepcopy
 
 from bright.apigen.utils import indent, expand_default_args
 from bright.apigen.typesystem import cython_ctype, cython_cimport_tuples, \
-    cython_cimports, register_class, cython_cytype
+    cython_cimports, register_class, cython_cytype, cython_pytype, cython_c2py
 
 AUTOGEN_WARNING = \
 """################################################
@@ -155,15 +155,49 @@ cdef class {name}({parents}):
 {methods_block}
 '''
 
+def _gen_property_get(name, t):
+    """This generates a Cython property getter for a variable of a given 
+    name and type."""
+    lines = ['def __get__(self):']
+    decl, body, rtn = cython_c2py(name, t, inst_name="self._inst")
+    if decl is not None: 
+        lines += indent(decl, join=False)
+    if body is not None:
+        lines += indent(body, join=False)
+    lines += indent("return {0}".format(rtn), join=False)
+    return lines
+
+
+def _gen_property_set(name, t):
+    """This generates a Cython property setter for a variable of a given 
+    name and type."""
+    return []
+
+
+def _gen_property(name, t, doc=None):
+    """This generates a Cython property for a variable of a given name and type."""
+    lines  = ['property {0}:'.format(name)] 
+    lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
+    lines += indent(_gen_property_get(name, t), join=False)
+    lines += ['']
+    lines += indent(_gen_property_set(name, t), join=False)
+    lines += ['', ""]
+    return lines
+
 
 def genpyx(desc):
     """Generates a *.pyx Cython wrapper implementation for exposing a C/C++ 
     class based off of a dictionary (desc)ription.
     """
+    nodocmsg = "no docstring for {0}, please file a bug report!"
     d = {'parents': ', '.join([cython_cytype(p) for p in desc['parents']]), }
     copy_from_desc = ['name', 'namespace', 'header_filename']
     for key in copy_from_desc:
         d[key] = desc[key]
+    d['module_docstring'] = desc.get('docstrings', {})\
+                                .get('module', nodocmsg.format(desc['name'].lower()))
+    class_doc = desc.get('docstrings', {}).get('class', nodocmsg.format(desc['name']))
+    d['class_docstring'] = indent('\"\"\"{0}\"\"\"'.format(class_doc))
 
     alines = []
     cimport_tups = set()
@@ -171,36 +205,39 @@ def genpyx(desc):
     for aname, atype in attritems:
         if aname.startswith('_'):
             continue
-        alines.append("{0} {1}".format(cython_ctype(atype), aname))
-        cython_cimport_tuples(atype, cimport_tups)    
-    d['attrs_block'] = indent(alines, 8)
+        adoc = desc.get('docstrings', {}).get('attrs', {})\
+                                         .get(aname, nodocmsg.format(aname))
+        alines += _gen_property(aname, atype, adoc)
+        cython_cimport_tuples(atype, cimport_tups)
+    d['attrs_block'] = indent(alines)
 
     mlines = []
     clines = []
-    estr = str() if exception_type is None else  ' except {0}'.format(exception_type)
-    methitems = sorted(expand_default_args(desc['methods'].items()))
-    for mkey, mrtn in methitems:
-        mname, margs = mkey[0], mkey[1:]
-        if mname.startswith('_'):
-            continue
-        argfill = ", ".join([cython_ctype(a[1]) for a in margs])
-        for a in margs:
-            cython_cimport_tuples(a[1], cimport_tups)
-        line = "{0}({1}){2}".format(mname, argfill, estr)
-        if mrtn is None:
-            # this must be a constructor
-            clines.append(line)
-        else:
-            # this is a normal method
-            rtype = cython_ctype(mrtn)
-            cython_cimport_tuples(mrtn, cimport_tups)
-            line = rtype + " " + line
-            mlines.append(line)
-    d['methods_block'] = indent(mlines, 8)
-    d['constructors_block'] = indent(clines, 8)
+    #methitems = sorted(expand_default_args(desc['methods'].items()))
+    #for mkey, mrtn in methitems:
+    #    mname, margs = mkey[0], mkey[1:]
+    #    if mname.startswith('_'):
+    #        continue
+    #    argfill = ", ".join([cython_ctype(a[1]) for a in margs])
+    #    for a in margs:
+    #        cython_cimport_tuples(a[1], cimport_tups)
+    #    line = "{0}({1}){2}".format(mname, argfill, estr)
+    #    if mrtn is None:
+    #        # this must be a constructor
+    #        clines.append(line)
+    #    else:
+    #        # this is a normal method
+    #        rtype = cython_ctype(mrtn)
+    #        cython_cimport_tuples(mrtn, cimport_tups)
+    #        line = rtype + " " + line
+    #        mlines.append(line)
+    d['methods_block'] = indent(mlines)
+    d['constructors_block'] = indent(clines)
 
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
-    cpppxd = _cpppxd_template.format(**d)
-    if 'cpppxd_filename' not in desc:
-        desc['cpppxd_filename'] = 'cpp_{0}.pxd'.format(d['name'].lower())
-    return cpppxd
+    d['imports'] = ""
+    d['pyconstructor'] = ""
+    pyx = _pyx_template.format(**d)
+    if 'pyx_filename' not in desc:
+        desc['pyx_filename'] = '{0}.pyx'.format(d['name'].lower())
+    return pyx
