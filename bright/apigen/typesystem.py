@@ -659,7 +659,7 @@ def register_class(tname, template_args=None, cython_c_type=None,
 
         if isinstance(cython_c2py, basestring):
             cython_c2py = (cython_c2py,)
-        cython_c2py = tuple(cython_c2py)
+        cython_c2py = None if cython_c2py is None else tuple(cython_c2py)
 
         if isinstance(cython_py2c, basestring):
             cython_py2c = (cython_py2c, False)
@@ -708,3 +708,10 @@ def deregister_class(tname):
     _cython_c2py_conv.pop(tname, None)
     _cython_py2c_conv.pop(tname, None)
     _cython_template_class_names.pop(tname, None)
+
+    # clear all caches
+    funcs = [isdependent, isrefinement, _resolve_dependent_type, canon, 
+             cython_ctype, cython_cimport_tuples, cython_cimports, _fill_cycyt,
+             cython_cytype, _fill_cypyt, cython_pytype, cython_c2py, cython_py2c]
+    for f in funcs:
+        f.cache.clear()
