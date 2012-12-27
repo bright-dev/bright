@@ -1,5 +1,29 @@
 """Implements a simple type system for API generation."""
+import functools
 from collections import Sequence, Set
+
+def _ishashable(x):
+    try:
+        hash(x)
+        return True
+    except TypeError:
+        return False 
+
+def _memoize(obj):
+    # based off code from http://wiki.python.org/moin/PythonDecoratorLibrary
+    cache = obj.cache = {}
+    @functools.wraps(obj)
+    def memoizer(*args, **kwargs):
+        key = args + tuple(sorted(kwargs.items()))
+        hashable = _ishashable(key)
+        if hashable:
+            if key not in cache:
+                cache[key] = obj(*args, **kwargs)
+            return cache[key]
+        else:
+            return obj(*args, **kwargs)
+    return memoizer
+
 
 BASE_TYPES = set(['char', 'str', 'int32', 'int64', 'uint32', 'uint64', 'float32', 
                   'float64', 'complex128', 'void', 'bool'])
@@ -45,7 +69,7 @@ refined_types = {
     'nucname': 'str',
     }
 
-
+@_memoize
 def isdependent(t):
     """Returns whether t is a dependent type or not."""
     deptypes = set([k[0] for k in refined_types if not isinstance(k, basestring)])
@@ -56,6 +80,7 @@ def isdependent(t):
     return False
 
 
+@_memoize
 def isrefinement(t):
     """Returns whether t is a refined type."""
     if isinstance(t, basestring):
@@ -66,6 +91,7 @@ def isrefinement(t):
 def _raise_type_error(t):
     raise TypeError("type of {0!r} could not be determined".format(t))
 
+@_memoize
 def _resolve_dependent_type(tname, tinst=None):
     depkey = [k for k in refined_types if k[0] == tname][0]
     depval = refined_types[depkey]
@@ -87,12 +113,14 @@ def _resolve_dependent_type(tname, tinst=None):
                             if k not in typemap])
         for k in typemap:
             del type_aliases[k]
+            canon.cache.pop((k,), None)
         return resotype
     else:
         assert len(tinst) == len(depkey)
         return canon(depval), (tname,) + tuple([(kname, canon(ktype), instval) \
                         for (kname, ktype), instval in zip(depkey[1:], tinst[1:])])
 
+@_memoize
 def canon(t):
     """Turns the type into a canonical form."""
     if isinstance(t, basestring):
@@ -163,6 +191,7 @@ _cython_c_template_types = {
     'vector': 'cpp_vector',
     }
 
+@_memoize
 def cython_ctype(t):
     """Given a type t, returns the cooresponding Cython C type declaration."""
     t = canon(t)
@@ -228,6 +257,7 @@ _cython_cyimport_template_types = {
     'vector': ('pyne', 'stlconverters', 'conv'),
     }
 
+@_memoize
 def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
     """Given a type t, and possibily previously seen cimport tuples, return 
     the set of all seen cimport tuples."""
@@ -263,6 +293,7 @@ _cython_cimport_cases = {
     3: lambda tup: "from {0} cimport {1} as {2}".format(*tup),
     }
 
+@_memoize
 def cython_cimports(x, inc=frozenset(['c', 'cy'])):
     """Retuns the cimport lines associtated with a type or a set of seen tuples.
     """
@@ -309,6 +340,7 @@ _cython_template_class_names = {
     }
 
 
+@_memoize
 def _fill_cycyt(cycyt, t):
     """Helper for cython_cytype()."""
     d = {}
@@ -323,6 +355,7 @@ def _fill_cycyt(cycyt, t):
     return cycyt.format(**d), t
     
 
+@_memoize
 def cython_cytype(t):
     """Given a type t, returns the cooresponding Cython type."""
     t = canon(t)
@@ -371,6 +404,7 @@ _cython_py_template_types = {
     'vector': 'conv.Vector{value_type}',
     }
 
+@_memoize
 def _fill_cypyt(cypyt, t):
     """Helper for cython_pytype()."""
     d = {}
@@ -385,6 +419,7 @@ def _fill_cypyt(cypyt, t):
     return cypyt.format(**d), t
     
 
+@_memoize
 def cython_pytype(t):
     """Given a type t, returns the cooresponding Python type."""
     t = canon(t)
@@ -463,6 +498,7 @@ _cython_c2py_conv = {
                )),
     }
 
+@_memoize
 def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None, 
                 cache_name=None):
     """Given a varibale name and type, returns cython code (declaration, body, 
@@ -500,7 +536,7 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
 
 
 _cython_py2c_conv = {
-    # Has tuple form of (expr, declration needed?)
+    # Has tuple form of (body or return,  return or False)
     # base types
     'char': ('<char{last}> {var}', False),
     'str': ('std_string(<char *> {var})', False),
@@ -524,6 +560,7 @@ _cython_py2c_conv = {
     'nucname': ('nucname.name({var})', False),
     }
 
+@_memoize
 def cython_py2c(name, t, inst_name=None, proxy_name=None):
     """Given a varibale name and type, returns cython code (declaration, body, 
     and return) to convert the variable from Python to C/C++."""
@@ -593,7 +630,7 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
 def register_class(tname, template_args=None, cython_c_type=None, 
                    cython_cimport=None, cython_cy_type=None, cython_py_type=None,
                    cython_template_class_name=None, cython_cyimport=None, 
-                   cython_c2py=None):
+                   cython_c2py=None, cython_py2c=None):
     """Classes are user specified types.  This function will add a class to 
     the type system so that it may be used normally with the rest of the 
     type system.
@@ -616,11 +653,16 @@ def register_class(tname, template_args=None, cython_c_type=None,
     if (cython_c_type is not None) or (cython_cy_type is not None):
         if isinstance(cython_cimport, basestring):
             cython_cimport = (cython_cimport,)
+
         if isinstance(cython_cyimport, basestring):
             cython_cyimport = (cython_cyimport,)
+
         if isinstance(cython_c2py, basestring):
             cython_c2py = (cython_c2py,)
         cython_c2py = tuple(cython_c2py)
+
+        if isinstance(cython_py2c, basestring):
+            cython_py2c = (cython_py2c, False)
 
         if isbase:
             _cython_c_base_types[tname] = cython_c_type
@@ -636,6 +678,7 @@ def register_class(tname, template_args=None, cython_c_type=None,
             _cython_cyimport_template_types[tname] = cython_cyimport
 
         _cython_c2py_conv[tname] = cython_c2py
+        _cython_py2c_conv[tname] = cython_py2c
         _cython_template_class_names[tname] = cython_template_class_name
 
 
@@ -663,4 +706,5 @@ def deregister_class(tname):
         _cython_cyimport_template_types.pop(tname, None)
 
     _cython_c2py_conv.pop(tname, None)
+    _cython_py2c_conv.pop(tname, None)
     _cython_template_class_names.pop(tname, None)
