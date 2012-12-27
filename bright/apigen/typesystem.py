@@ -535,7 +535,9 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
     else:
         last = ' ' + t[-1]
     tkey = t
+    tinst = None
     while not isinstance(tkey, basestring):
+        tinst = tkey
         tkey = tkey[1] if (0 < len(tkey) and isrefinement(tkey[1])) else tkey[0]
     py2ct = _cython_py2c_conv[tkey]
     if py2ct is NotImplemented:
@@ -548,6 +550,21 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
     template_kw = dict(var=var, proxy_name=proxy_name, pytype=pyt, cytype=cyt, 
                        last=last)
+    nested = False
+    if isdependent(tkey):
+        tsig = [ts for ts in refined_types if ts[0] == tkey][0]
+        for ts, ti in zip(tsig[1:], tinst[1:]):
+            if isinstance(ts, basestring):
+                template_kw[ts] = cython_ctype(ti)
+            else:
+                template_kw[ti[0]] = ti[2]
+        vartype = refined_types[tsig]
+        if vartype in tsig[1:]:
+            vartype = tinst[tsig.index(vartype)][1]
+        if isrefinement(vartype):
+            nested = True
+            vdecl, vbody, vrtn = cython_py2c(var, vartype)
+            template_kw['var'] = vrtn
     body_filled = body_template.format(**template_kw)
     if rtn_template:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
@@ -556,6 +573,15 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
     else:
         decl = body = None
         rtn = body_filled
+    if nested:
+        decl = '' if decl is None else decl
+        vdecl = '' if vdecl is None else vdecl
+        decl = (vdecl + '\n' + decl).strip()
+        decl = None if 0 == len(decl) else decl
+        body = '' if body is None else body
+        vbody = '' if vbody is None else vbody
+        body = (vbody + '\n' + body).strip()
+        body = None if 0 == len(body) else body
     return decl, body, rtn
  
 
