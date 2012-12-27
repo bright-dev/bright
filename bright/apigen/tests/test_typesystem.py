@@ -12,6 +12,15 @@ new_refined = {
 add_new_refined = lambda: ts.refined_types.update(new_refined)
 del_new_refined = lambda: [ts.refined_types.pop(key) for key in new_refined]
 
+new_py2c = {
+    'comp_map': ('conv.dict_to_map_int_dbl({var})', False),
+    ('intrange', ('low', 'int32'), ('high', 'int32')): 'int32',
+    ('nucrange', ('low', 'nucid'), ('high', 'nucid')): 'nucid',
+    ('range', 'vtype', ('low', 'vtype'), ('high', 'vtype')): 'vtype',
+    }
+add_new_py2c = lambda: ts._cython_py2c_conv.update(new_py2c)
+del_new_py2c = lambda: [ts._cython_py2c_conv.pop(key) for key in new_py2c]
+
 
 
 def check_canon(t, exp):
@@ -265,4 +274,47 @@ def test_cython_c2py():
     )
     for (name, t, inst_name), exp in cases:
         yield check_cython_c2py, name, t, inst_name, exp  # Check that the case works,
+
+
+def check_cython_py2c(name, t, inst_name, exp):
+    obs = ts.cython_py2c(name, t, inst_name=inst_name)
+    assert_equal(obs, exp)
+
+@with_setup(add_new_refined, del_new_refined)
+@with_setup(add_new_py2c, del_new_py2c)
+def test_cython_py2c():
+    cases = (
+        (('frog', 'str', None), (None, None, 'std_string(<char *> frog)')),
+        (('frog', ['str'], None), (None, None, 'std_string(<char *> frog)')),
+        (('frog', 'f4', None), (None, None, '<float> frog')),
+        (('frog', 'nucid', None), (None, None, 'nucname.zzaaam(frog)')),
+        (('frog', ['nucid'], None), (None, None, 'nucname.zzaaam(frog)')), 
+        (('frog', ['set', 'complex'], 'self._inst'), 
+            ('cdef conv._SetComplex frog_proxy', 
+            ('frog_proxy = conv.SetComplex(self._inst.frog, '
+             'not isinstance(self._inst.frog, conv._SetComplex))'), 
+             'frog_proxy.set_ptr[0]')),
+        (('frog', ['map', 'nucid', 'float'], 'self._inst'), 
+            ('cdef conv._MapIntDouble frog_proxy', 
+            ('frog_proxy = conv.MapIntDouble(self._inst.frog, '
+             'not isinstance(self._inst.frog, conv._MapIntDouble))'), 
+             'frog_proxy.map_ptr[0]')),
+        (('frog', 'comp_map', 'self._inst'), (None, None, 
+            'conv.dict_to_map_int_dbl(self._inst.frog)')),
+        (('frog', ['char', '*'], None), (None, None, '<char *> frog')),
+        (('frog', ['char', 42], None), (None, None, '<char [42]> frog')),
+#        (('frog', ['map', 'nucid', ['set', 'nucname']], 'self._inst'), 
+#            ('cdef conv._MapIntSetStr frog_proxy', 
+#            ('if self._frog is None:\n'
+#             '    frog_proxy = conv.MapIntSetStr(False, False)\n'
+#             '    frog_proxy.map_ptr = &self._inst.frog\n'
+#             '    self._frog = frog_proxy\n'), 'self._frog')),
+#        (('frog', ['intrange', 1, 2], None), (None, None, 'int(frog)')), 
+#        (('frog', ['nucrange', 92000, 93000], None), (None, None, 'int(frog)')),
+#        (('frog', ['range', 'int32', 1, 2], None), (None, None, 'int(frog)')), 
+#        (('frog', ['range', 'nucid', 92000, 93000], None), 
+#            (None, None, 'int(frog)')),
+    )
+    for (name, t, inst_name), exp in cases:
+        yield check_cython_py2c, name, t, inst_name, exp  # Check that the case works,
 
