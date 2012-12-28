@@ -235,42 +235,45 @@ def check_cython_c2py(name, t, inst_name, exp):
 @with_setup(add_new_refined, del_new_refined)
 def test_cython_c2py():
     cases = (
-        (('llama', 'str', None), (None, None, 'str(<char *> llama.c_str())')),
-        (('llama', ('str',), None), (None, None, 'str(<char *> llama.c_str())')),
-        (('llama', 'f4', None), (None, None, 'float(llama)')),
-        (('llama', 'nucid', None), (None, None, 'int(llama)')),
-        (('llama', ('nucid',), None), (None, None, 'int(llama)')), 
+        (('llama', 'str', None), (None, None, 'str(<char *> llama.c_str())', False)),
+        (('llama', ('str',), None), 
+            (None, None, 'str(<char *> llama.c_str())', False)),
+        (('llama', 'f4', None), (None, None, 'float(llama)', False)),
+        (('llama', 'nucid', None), (None, None, 'int(llama)', False)),
+        (('llama', ('nucid',), None), (None, None, 'int(llama)', False)), 
         (('llama', ('set', 'complex'), 'self._inst'), 
             ('cdef conv._SetComplex llama_proxy', 
             ('if self._llama is None:\n'
              '    llama_proxy = conv.SetComplex(False, False)\n'
              '    llama_proxy.set_ptr = &self._inst.llama\n'
-             '    self._llama = llama_proxy\n'), 'self._llama')),
+             '    self._llama = llama_proxy\n'), 'self._llama', True)),
         (('llama', ('map', 'nucid', 'float'), 'self._inst'), 
             ('cdef conv._MapIntDouble llama_proxy', 
             ('if self._llama is None:\n'
              '    llama_proxy = conv.MapIntDouble(False, False)\n'
              '    llama_proxy.map_ptr = &self._inst.llama\n'
-             '    self._llama = llama_proxy\n'), 'self._llama')),
+             '    self._llama = llama_proxy\n'), 'self._llama', True)),
         (('llama', 'comp_map', 'self._inst'), 
             ('cdef conv._MapIntDouble llama_proxy', 
             ('if self._llama is None:\n'
              '    llama_proxy = conv.MapIntDouble(False, False)\n'
              '    llama_proxy.map_ptr = &self._inst.llama\n'
-             '    self._llama = llama_proxy\n'), 'self._llama')),
-        (('llama', ('char', '*'), None), (None, None, 'str(<char *> llama)')),
-        (('llama', ('char', 42), None), (None, None, 'str(<char *> llama)')),
+             '    self._llama = llama_proxy\n'), 'self._llama', True)),
+        (('llama', ('char', '*'), None), (None, None, 'str(<char *> llama)', False)),
+        (('llama', ('char', 42), None), (None, None, 'str(<char *> llama)', False)),
         (('llama', ('map', 'nucid', ('set', 'nucname')), 'self._inst'), 
             ('cdef conv._MapIntSetStr llama_proxy', 
             ('if self._llama is None:\n'
              '    llama_proxy = conv.MapIntSetStr(False, False)\n'
              '    llama_proxy.map_ptr = &self._inst.llama\n'
-             '    self._llama = llama_proxy\n'), 'self._llama')),
-        (('llama', ('intrange', 1, 2), None), (None, None, 'int(llama)')), 
-        (('llama', ('nucrange', 92000, 93000), None), (None, None, 'int(llama)')),
-        (('llama', ('range', 'int32', 1, 2), None), (None, None, 'int(llama)')), 
+             '    self._llama = llama_proxy\n'), 'self._llama', True)),
+        (('llama', ('intrange', 1, 2), None), (None, None, 'int(llama)', False)), 
+        (('llama', ('nucrange', 92000, 93000), None), 
+            (None, None, 'int(llama)', False)),
+        (('llama', ('range', 'int32', 1, 2), None), 
+            (None, None, 'int(llama)', False)), 
         (('llama', ('range', 'nucid', 92000, 93000), None), 
-            (None, None, 'int(llama)')),
+            (None, None, 'int(llama)', False)),
     )
     for (name, t, inst_name), exp in cases:
         yield check_cython_c2py, name, t, inst_name, exp  # Check that the case works,

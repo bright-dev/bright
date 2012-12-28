@@ -520,6 +520,7 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
     var = name if inst_name is None else "{0}.{1}".format(inst_name, name)
     cache_name = "self._{0}".format(name) if cache_name is None else cache_name
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
+    iscached = False
     if 1 == len(c2pyt) or ind == 0:
         decl = body = None
         rtn = c2pyt[0].format(var=var, pytype=pyt)
@@ -532,7 +533,8 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
         body = c2pyt[2].format(var=var, cache_name=cache_name, pytype=pyt,
                             proxy_name=proxy_name)
         rtn = cache_name
-    return decl, body, rtn
+        iscached = True
+    return decl, body, rtn, iscached
 
 
 _cython_py2c_conv = {

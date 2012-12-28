@@ -15,6 +15,9 @@ toaster_desc = {
             'toastiness': "white as snow or black as hell?", 
             'rate': "The rate at which the toaster can process slices.", 
             },
+        'methods': {
+            'make_toast': "I'll make you some toast you can't refuse...", 
+            },
         },
     'parents': ['FCComp'],
     'attrs': {

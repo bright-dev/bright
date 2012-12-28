@@ -140,9 +140,7 @@ cdef class {name}({parents}):
         self._free_inst = True
 
 
-{pyconstructor}
-
-
+{constructor_block}
     def __dealloc__(self):
         if self._free_inst:
             free(self._inst)
@@ -150,21 +148,21 @@ cdef class {name}({parents}):
 
     # attributes
 {attrs_block}
-
-
     # methods
 {methods_block}
 '''
 
-def _gen_property_get(name, t):
+def _gen_property_get(name, t, cached_names=None):
     """This generates a Cython property getter for a variable of a given 
     name and type."""
     lines = ['def __get__(self):']
-    decl, body, rtn = cython_c2py(name, t, inst_name="self._inst")
+    decl, body, rtn, iscached = cython_c2py(name, t, inst_name="self._inst")
     if decl is not None: 
         lines += indent(decl, join=False)
     if body is not None:
         lines += indent(body, join=False)
+    if iscached and cached_names is not None:
+        cached_names.append(rtn)
     lines += indent("return {0}".format(rtn), join=False)
     return lines
 
@@ -182,11 +180,11 @@ def _gen_property_set(name, t):
     return lines
 
 
-def _gen_property(name, t, doc=None):
+def _gen_property(name, t, doc=None, cached_names=None):
     """This generates a Cython property for a variable of a given name and type."""
     lines  = ['property {0}:'.format(name)] 
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
-    lines += indent(_gen_property_get(name, t), join=False)
+    lines += indent(_gen_property_get(name, t, cached_names=cached_names), join=False)
     lines += ['']
     lines += indent(_gen_property_set(name, t), join=False)
     lines += ['', ""]
@@ -213,7 +211,7 @@ def _gen_method(name, args, rtn, doc=None):
     argvals = ', '.join([argrtns[a[0]] for a in args])
     fcall = 'self._inst.{0}({1})'.format(name, argvals)
     if hasrtn:
-        fcdecl, fcbody, fcrtn = cython_c2py('rtnval', rtype)
+        fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtype, cached=False)
         decls += indent("cdef {0} {1}".format(rtype, 'rtnval'), join=False)
         func_call = indent('rtnval = {0}'.format(fcall), join=False)
         if fcdecl is not None: 
@@ -228,6 +226,37 @@ def _gen_method(name, args, rtn, doc=None):
     lines += argbodies
     lines += func_call
     lines += func_rtn
+    lines += ['', ""]
+    return lines
+
+
+def _gen_constructor(classname, args, doc=None, cpppxd_filename=None, 
+                     cached_names=None):
+    argfill = ", ".join(['self'] + [a[0] for a in args if 2 == len(a)] + \
+                        ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)] +\
+                        ['*args', '**kwargs'])
+    lines  = ['def __init__({0}):'.format(argfill)]
+    lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
+    decls = []
+    argbodies = []
+    argrtns = {}
+    for a in args:
+        adecl, abody, artn = cython_py2c(a[0], a[1])
+        if adecl is not None: 
+            decls += indent(adecl, join=False)
+        if abody is not None:
+            argbodies += indent(abody, join=False)
+        argrtns[a[0]] = artn
+    argvals = ', '.join([argrtns[a[0]] for a in args])
+    classname = classname if cpppxd_filename is None else \
+                    "{0}.{1}".format(cpppxd_filename.rsplit('.', 1)[0], classname)
+    fcall = 'self._inst = new {0}({1})'.format(classname, argvals)
+    func_call = indent(fcall, join=False)
+    lines += decls
+    lines += argbodies
+    lines += func_call
+    if cached_names is not None:
+        lines += indent(["{0} = None".format(n) for n in cached_names], join=False)
     lines += ['', ""]
     return lines
 
@@ -247,14 +276,15 @@ def genpyx(desc):
     d['class_docstring'] = indent('\"\"\"{0}\"\"\"'.format(class_doc))
 
     alines = []
+    cached_names = []
     cimport_tups = set()
     attritems = sorted(desc['attrs'].items())
     for aname, atype in attritems:
         if aname.startswith('_'):
-            continue
+            continue  # skip private
         adoc = desc.get('docstrings', {}).get('attrs', {})\
                                          .get(aname, nodocmsg.format(aname))
-        alines += _gen_property(aname, atype, adoc)
+        alines += _gen_property(aname, atype, adoc, cached_names=cached_names)
         cython_cimport_tuples(atype, cimport_tups)
     d['attrs_block'] = indent(alines)
 
@@ -264,26 +294,28 @@ def genpyx(desc):
     for mkey, mrtn in methitems:
         mname, margs = mkey[0], mkey[1:]
         if mname.startswith('_'):
-            continue
+            continue  # skip private
         for a in margs:
             cython_cimport_tuples(a[1], cimport_tups)
-        mdoc = desc.get('docstrings', {}).get('methods', {})\
-                                         .get(mname, nodocmsg.format(mname))
         if mrtn is None:
             # this must be a constructor
-            continue # FIXME skip constructors
-            clines.append(line)
+            if mname not in [desc['name'], '__init__']:
+                continue  # skip destuctors
+            mdoc = desc.get('docstrings', {}).get('methods', {}).get(mname, '')
+            clines += _gen_constructor(desc['name'], margs, doc=mdoc, 
+                                       cpppxd_filename=desc['cpppxd_filename'],
+                                       cached_names=cached_names)
         else:
             # this is a normal method
             cython_cimport_tuples(mrtn, cimport_tups)
-            lines = _gen_method(mname, margs, mrtn, mdoc)
-            mlines += lines
+            mdoc = desc.get('docstrings', {}).get('methods', {})\
+                                             .get(mname, nodocmsg.format(mname))
+            mlines += _gen_method(mname, margs, mrtn, mdoc)
     d['methods_block'] = indent(mlines)
-    d['constructors_block'] = indent(clines)
+    d['constructor_block'] = indent(clines)
 
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
     d['imports'] = ""
-    d['pyconstructor'] = ""
     pyx = _pyx_template.format(**d)
     if 'pyx_filename' not in desc:
         desc['pyx_filename'] = '{0}.pyx'.format(d['name'].lower())
