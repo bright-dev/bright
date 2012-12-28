@@ -86,13 +86,69 @@ def test_genpxd():
 
 
 exp_pyx = cg.AUTOGEN_WARNING + \
-"""cimport cpp_toaster
-cimport fccomp
+'''"""I am the Toaster lib! Hear me sizzle!
+"""
+from libcpp.string cimport string as std_string
+from pyne cimport extra_types
+
+
 
 cdef class Toaster(fccomp.FCComp):
-    cdef cpp_toaster.Toaster * _inst
-    cdef public bint _free_inst
-"""
+    """I am the Toaster! FORKS DO NOT GO IN ME!"""
+
+    # constuctors
+    def __cinit__(self, *args, **kwargs):
+        self._inst = NULL
+        self._free_inst = True
+
+
+    def __init__(self, *args, **kwargs):
+        """"""
+        self._inst = new cpp_toaster.Toaster()
+    
+    
+    def __dealloc__(self):
+        if self._free_inst:
+            free(self._inst)
+
+
+    # attributes
+    property nslices:
+        """no docstring for nslices, please file a bug report!"""
+        def __get__(self):
+            return int(self._inst.nslices)
+    
+        def __set__(self, value):
+            self._inst.nslices = <extra_types.uint> long(value)
+    
+    
+    property rate:
+        """The rate at which the toaster can process slices."""
+        def __get__(self):
+            return float(self._inst.rate)
+    
+        def __set__(self, value):
+            self._inst.rate = <double> value
+    
+    
+    property toastiness:
+        """white as snow or black as hell?"""
+        def __get__(self):
+            return str(<char *> self._inst.toastiness.c_str())
+    
+        def __set__(self, value):
+            self._inst.toastiness = std_string(<char *> value)
+    
+    
+    # methods
+    def make_toast(self, when, nslices=1):
+        """I'll make you some toast you can't refuse..."""
+        cdef int rtnval
+        rtnval = self._inst.make_toast(std_string(<char *> when), <extra_types.uint> long(nslices))
+        return int(rtnval)
+    
+    
+'''
 
 def test_genpyx():
     ts.register_class('FCComp', 
@@ -102,7 +158,7 @@ def test_genpyx():
                       cython_cyimport='fccomp')
     obs = cg.genpyx(toaster_desc).splitlines()
     ts.deregister_class('FCComp')
-    print "\n".join(obs)
+    #print "\n".join(obs)
     exp = exp_pyx.splitlines()
     assert_equal(len(obs), len(exp))
     for o, e in zip(obs, exp):
