@@ -113,12 +113,20 @@ def setup():
     scripts = [os.path.join('scripts', f) for f in os.listdir('scripts')]
     scripts = [s for s in scripts if (os.name == 'nt' and s.endswith('.bat')) or 
                                      (os.name != 'nt' and not s.endswith('.bat'))]
-    packages = ['bright', 'bright.lib', 'bright.gui', 'bright.gui.models',
+    packages = ['bright', 
+                'bright.lib', 
+                'bright.gui', 
+                'bright.gui.models',
                 'bright.apigen',
-                'bright.gui.models.class_models', 'bright.gui.views', 'bright.gui.d3',
+                'bright.apigen.clang',
+                'bright.gui.models.class_models', 
+                'bright.gui.views', 
+                'bright.gui.d3',
                 'bright.gui.views.component_views', 
                 'bright.gui.views.custom_graph_canvas',
-                'bright.gui.views.component_views.views', 'bright.data']
+                'bright.gui.views.component_views.views', 
+                'bright.data',
+                ]
     pack_dir = {
         'bright': 'bright',
         'bright.lib': 'bright/lib',
