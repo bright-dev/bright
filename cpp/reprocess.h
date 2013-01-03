@@ -22,20 +22,20 @@ namespace bright {
   // Reprocessing class
   public:
     // Reprocessing Constructors
-    Reprocess ();
-    Reprocess (sep_eff_dict, std::string = "");
-    Reprocess (std::map<std::string, double>, std::string = "");
-    ~Reprocess ();
+    Reprocess();
+    Reprocess(sep_eff_dict sed, std::string n="");
+    Reprocess(std::map<std::string, double> ssed, std::string n="");
+    ~Reprocess();
     
     // Public data
     sep_eff_dict sepeff;			// separation efficiency dictionary
 
     // Public access functions
-    void initialize(sep_eff_dict);		// Initializes the constructors.
-    void calc_params ();
-    pyne::Material calc ();
-    pyne::Material calc (pyne::comp_map);
-    pyne::Material calc (pyne::Material);	
+    void initialize(sep_eff_dict sed);		// Initializes the constructors.
+    void calc_params();
+    pyne::Material calc();
+    pyne::Material calc(pyne::comp_map incomp);
+    pyne::Material calc(pyne::Material instream);	
   };
 
 // end namespace
