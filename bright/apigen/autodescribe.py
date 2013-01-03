@@ -51,6 +51,20 @@ def clang_describe(filename, classname):
     return describer.desc
 
 
+def clang_loc_in_range(location, source_range):
+    """Returns whether a given Clang location is part of a source file range."""
+    if source_range is None or location is None:
+        return False
+    start = source_range.start
+    stop = source_range.end
+    file = location.file
+    if file != start.file or file != stop.file:
+        return False
+    line = location.line
+    if line < start.line or stop.line < line:
+        return False
+    return start.column <= location.column <= stop.column
+
 class ClangClassDescriber(object):
 
     def __init__(self, classname, onlyin=None, verbose=False):
@@ -60,12 +74,12 @@ class ClangClassDescriber(object):
         onlyin = [onlyin] if isinstance(onlyin, basestring) else onlyin
         self.onlyin = [] if onlyin is None else onlyin
         self._currfunc = None
+        self._currfuncrange = None
         self._currclass = None
 
     def _pprint(self, node, typename):
         if self.verbose:
             print("{0}: {1}".format(typename, node.displayname))
-            print self._currfunc
 
     def visit(self, root):
         for node in root.get_children():
@@ -77,6 +91,11 @@ class ClangClassDescriber(object):
                 meth(node)
             if hasattr(node, 'get_children'):
                 self.visit(node)
+            # reset the current function and class
+            print "  " + node.displayname
+            if not clang_loc_in_range(node.location, self._currfuncrange):
+                self._currfunc = None
+                self._currfuncrange = None
             self._currclass = None
 
     def visit_class_decl(self, node):
@@ -85,18 +104,23 @@ class ClangClassDescriber(object):
 
     def visit_function_decl(self, node):
         self._currfunc = node.spelling  # This could also be node.displayname
+        self._currfuncrange = node.extent
         self._pprint(node, "Function")
-        print node.extent
 
     visit_cxx_method = visit_function_decl
 
     def visit_constructor(self, node):
+        self._currfunc = node.spelling  # This could also be node.displayname
+        self._currfuncrange = node.extent
         self._pprint(node, "Constructor")
 
     def visit_destructor(self, node):
+        self._currfunc = node.spelling  # This could also be node.displayname
+        self._currfuncrange = node.extent
         self._pprint(node, "Destructor")
 
     def visit_parm_decl(self, node):
+        print node.displayname, self._currfunc, self._currclass
         self._pprint(node, "Function Argument")
 
     def visit_field_decl(self, node):
