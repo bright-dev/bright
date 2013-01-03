@@ -81,8 +81,8 @@ cdef class Reactor1G(fccomp.FCComp):
         if (reactor_parameters is None) and (track_params is None):
             self._inst = new cpp_reactor1g.Reactor1G(cpp_name)
 
-        elif (reactor_parameters is None) and isinstance(track_params, set):
-            self._inst = new cpp_reactor1g.Reactor1G(conv.py_to_cpp_set_str(track_params), cpp_name)
+        #elif (reactor_parameters is None) and isinstance(track_params, set):
+        #    self._inst = new cpp_reactor1g.Reactor1G(conv.py_to_cpp_set_str(track_params), cpp_name)
 
         elif isinstance(reactor_parameters, ReactorParameters) and (track_params is None):
             rp = reactor_parameters

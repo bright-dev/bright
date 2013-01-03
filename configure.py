@@ -119,6 +119,8 @@ def setup():
                 'bright.gui.models',
                 'bright.apigen',
                 'bright.apigen.clang',
+                'bright.apigen.clang.v3_1',
+                'bright.apigen.clang.v3_2',
                 'bright.gui.models.class_models', 
                 'bright.gui.views', 
                 'bright.gui.d3',
