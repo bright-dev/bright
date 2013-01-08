@@ -72,34 +72,36 @@ class ClangClassDescriber(object):
         self.classname = classname
         self.verbose = verbose
         onlyin = [onlyin] if isinstance(onlyin, basestring) else onlyin
-        self.onlyin = [] if onlyin is None else onlyin
+        self.onlyin = set() if onlyin is None else set(onlyin)
         self._currfunc = None
         self._currfuncrange = None
-        self._currclass = None
+        self._currclass = []  # this must be a stack to handle nested classes  
 
     def _pprint(self, node, typename):
         if self.verbose:
-            print("{0}: {1}".format(typename, node.displayname))
+            print("{0}: {1}".format(typename, node.displayname) + "  CURRCLASS={0}".format(self._currclass))
 
     def visit(self, root):
         for node in root.get_children():
             if not node.location.file or node.location.file.name not in self.onlyin:
                 continue  # Ignore AST elements not from the desired source files
-            meth_name = 'visit_' + node.kind.name.lower()
+            kind = node.kind.name.lower()
+            meth_name = 'visit_' + kind
             meth = getattr(self, meth_name, None)
             if meth is not None:
                 meth(node)
             if hasattr(node, 'get_children'):
                 self.visit(node)
             # reset the current function and class
-            print "  " + node.displayname
+            #print "  " + node.displayname
             if not clang_loc_in_range(node.location, self._currfuncrange):
                 self._currfunc = None
                 self._currfuncrange = None
-            self._currclass = None
+            if 'class_decl' == kind and node.spelling == self._currclass[-1]:
+                self._currclass.pop()
 
     def visit_class_decl(self, node):
-        self._currclass = node.spelling  # This could also be node.displayname
+        self._currclass.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Class")
 
     def visit_function_decl(self, node):
@@ -120,7 +122,7 @@ class ClangClassDescriber(object):
         self._pprint(node, "Destructor")
 
     def visit_parm_decl(self, node):
-        print node.displayname, self._currfunc, self._currclass
+        #print node.displayname, self._currfunc, self._currclass
         self._pprint(node, "Function Argument")
 
     def visit_field_decl(self, node):
