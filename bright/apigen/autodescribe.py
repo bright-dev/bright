@@ -67,19 +67,20 @@ def clang_loc_in_range(location, source_range):
 
 class ClangClassDescriber(object):
 
+    _funckinds = set(['function_decl', 'cxx_method', 'constructor', 'destructor'])
+
     def __init__(self, classname, onlyin=None, verbose=False):
         self.desc = {'name': classname, 'attrs': {}, 'methods': {}}
         self.classname = classname
         self.verbose = verbose
         onlyin = [onlyin] if isinstance(onlyin, basestring) else onlyin
         self.onlyin = set() if onlyin is None else set(onlyin)
-        self._currfunc = None
-        self._currfuncrange = None
+        self._currfunc = []  # this must be a stack to handle nested functions
         self._currclass = []  # this must be a stack to handle nested classes  
 
     def _pprint(self, node, typename):
         if self.verbose:
-            print("{0}: {1}".format(typename, node.displayname) + "  CURRCLASS={0}".format(self._currclass))
+            print("{0}: {1}".format(typename, node.displayname) + "  CURRFUNC={0}".format(self._currfunc))
 
     def visit(self, root):
         for node in root.get_children():
@@ -93,11 +94,9 @@ class ClangClassDescriber(object):
             if hasattr(node, 'get_children'):
                 self.visit(node)
             # reset the current function and class
-            #print "  " + node.displayname
-            if not clang_loc_in_range(node.location, self._currfuncrange):
-                self._currfunc = None
-                self._currfuncrange = None
-            if 'class_decl' == kind and node.spelling == self._currclass[-1]:
+            if kind in self._funckinds and node.spelling == self._currfunc[-1]:
+                self._currfunc.pop()
+            elif 'class_decl' == kind and node.spelling == self._currclass[-1]:
                 self._currclass.pop()
 
     def visit_class_decl(self, node):
@@ -105,24 +104,24 @@ class ClangClassDescriber(object):
         self._pprint(node, "Class")
 
     def visit_function_decl(self, node):
-        self._currfunc = node.spelling  # This could also be node.displayname
-        self._currfuncrange = node.extent
+        self._currfunc.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Function")
+        print node.type.get_result().kind.name
+        print node.type.get_result().kind.value
+        print dir(node.type.get_result().kind)
+        import pdb; pdb.set_trace()
 
     visit_cxx_method = visit_function_decl
 
     def visit_constructor(self, node):
-        self._currfunc = node.spelling  # This could also be node.displayname
-        self._currfuncrange = node.extent
+        self._currfunc.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Constructor")
 
     def visit_destructor(self, node):
-        self._currfunc = node.spelling  # This could also be node.displayname
-        self._currfuncrange = node.extent
+        self._currfunc.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Destructor")
 
     def visit_parm_decl(self, node):
-        #print node.displayname, self._currfunc, self._currclass
         self._pprint(node, "Function Argument")
 
     def visit_field_decl(self, node):
