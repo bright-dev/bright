@@ -76,11 +76,12 @@ class ClangClassDescriber(object):
         onlyin = [onlyin] if isinstance(onlyin, basestring) else onlyin
         self.onlyin = set() if onlyin is None else set(onlyin)
         self._currfunc = []  # this must be a stack to handle nested functions
+        self._currfuncsig = None
         self._currclass = []  # this must be a stack to handle nested classes  
 
     def _pprint(self, node, typename):
         if self.verbose:
-            print("{0}: {1}".format(typename, node.displayname) + "  CURRFUNC={0}".format(self._currfunc))
+            print("{0}: {1}".format(typename, node.displayname))
 
     def visit(self, root):
         for node in root.get_children():
@@ -93,33 +94,39 @@ class ClangClassDescriber(object):
                 meth(node)
             if hasattr(node, 'get_children'):
                 self.visit(node)
+
             # reset the current function and class
             if kind in self._funckinds and node.spelling == self._currfunc[-1]:
+                _key, _value = self._currfuncsig
+                _key = tuple(_key)
+                self.desc['methods'][_key] = _value
                 self._currfunc.pop()
+                self._currfuncsig = None
             elif 'class_decl' == kind and node.spelling == self._currclass[-1]:
                 self._currclass.pop()
 
     def visit_class_decl(self, node):
-        self._currclass.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Class")
+        self._currclass.append(node.spelling)  # This could also be node.displayname
 
     def visit_function_decl(self, node):
-        self._currfunc.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Function")
-        print node.type.get_result().kind.name
-        print node.type.get_result().kind.value
-        print dir(node.type.get_result().kind)
-        import pdb; pdb.set_trace()
+        self._currfunc.append(node.spelling)  # This could also be node.displayname
+        rtntype = node.type.get_result()
+        rtnname = clang_canonize(rtntype)
+        self._currfuncsig = ([node.spelling], rtnname)
 
     visit_cxx_method = visit_function_decl
 
     def visit_constructor(self, node):
-        self._currfunc.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Constructor")
+        self._currfunc.append(node.spelling)  # This could also be node.displayname
+        self._currfuncsig = ([node.spelling], None)
 
     def visit_destructor(self, node):
-        self._currfunc.append(node.spelling)  # This could also be node.displayname
         self._pprint(node, "Destructor")
+        self._currfunc.append(node.spelling)  # This could also be node.displayname
+        self._currfuncsig = ([node.spelling], None)
 
     def visit_parm_decl(self, node):
         self._pprint(node, "Function Argument")
@@ -161,3 +168,27 @@ def clang_find_attributes(node):
     """Finds attributes one level below the Clang node."""
     return [n for n in node.get_children() if n.kind.is_attribute()]
 
+
+# maps Clang TypeKinds to typesystem types
+clang_typekinds = {
+    cindex.TypeKind.VOID: 'void',
+    cindex.TypeKind.BOOL: 'bool',
+    cindex.TypeKind.CHAR_U: 'char',
+    cindex.TypeKind.UCHAR: 'char',
+    cindex.TypeKind.UINT: 'uint32',
+    cindex.TypeKind.ULONG: 'uint64',
+    cindex.TypeKind.INT: 'int32',
+    cindex.TypeKind.LONG: 'int64',
+    cindex.TypeKind.FLOAT: 'float32',
+    cindex.TypeKind.DOUBLE: 'float64',
+    cindex.TypeKind.COMPLEX: 'complex128',
+    }
+
+def clang_canonize(t):
+    """For a Clang type t, return the cooresponding typesystem name.
+    """
+    if t.kind == cindex.TypeKind.UNEXPOSED:
+        name = t.get_declaration().spelling
+    else:
+        name = clang_typekinds[t.kind]
+    return name
