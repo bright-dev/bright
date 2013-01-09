@@ -130,6 +130,13 @@ class ClangClassDescriber(object):
 
     def visit_parm_decl(self, node):
         self._pprint(node, "Function Argument")
+        name = node.spelling
+        t = clang_canonize(node.type)
+        de = node.get_definition()
+        print "  ", de
+        print dir(de)
+        import pdb; pdb.set_trace()
+        self._currfuncsig[0].append((name, t))
 
     def visit_field_decl(self, node):
         self._pprint(node, "Field")
@@ -170,7 +177,7 @@ def clang_find_attributes(node):
 
 
 # maps Clang TypeKinds to typesystem types
-clang_typekinds = {
+clang_base_typekinds = {
     cindex.TypeKind.VOID: 'void',
     cindex.TypeKind.BOOL: 'bool',
     cindex.TypeKind.CHAR_U: 'char',
@@ -187,8 +194,13 @@ clang_typekinds = {
 def clang_canonize(t):
     """For a Clang type t, return the cooresponding typesystem name.
     """
-    if t.kind == cindex.TypeKind.UNEXPOSED:
+    kind = t.kind
+    if kind in clang_base_typekinds:
+        name = clang_base_typekinds[kind]
+    elif kind == cindex.TypeKind.UNEXPOSED:
         name = t.get_declaration().spelling
+    elif kind == cindex.TypeKind.TYPEDEF:
+        name = "<fixme>"
     else:
-        name = clang_typekinds[t.kind]
+        name = "<error:{0}>".format(kind)
     return name
