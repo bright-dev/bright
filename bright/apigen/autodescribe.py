@@ -1,6 +1,7 @@
 """This module creates Bright facility descriptions from C++ source code.
 """
 import os
+import linecache
 import subprocess
 
 try:
@@ -51,7 +52,7 @@ def clang_describe(filename, classname):
     return describer.desc
 
 
-def clang_loc_in_range(location, source_range):
+def clang_is_loc_in_range(location, source_range):
     """Returns whether a given Clang location is part of a source file range."""
     if source_range is None or location is None:
         return False
@@ -65,6 +66,24 @@ def clang_loc_in_range(location, source_range):
         return False
     return start.column <= location.column <= stop.column
 
+
+def clang_range_str(source_range):
+    """Get the text present on a source range."""
+    start = source_range.start
+    stop = source_range.end
+    filename = start.file.name
+    if filename != stop.file.name:
+        msg = 'range spans multiple files: {0!r} & {1!r}'
+        msg = msg.format(filename, stop.file.name)
+        raise ValueError(msg)
+    lines = [linecache.getline(filename, n) for n in range(start.line, stop.line+1)]
+    lines[-1] = lines[-1][:stop.column-1]  # stop slice must come first for 
+    lines[0] = lines[0][start.column-1:]   # len(lines) == 1
+    s = "".join(lines)
+    return s
+    
+
+
 class ClangClassDescriber(object):
 
     _funckinds = set(['function_decl', 'cxx_method', 'constructor', 'destructor'])
@@ -77,7 +96,11 @@ class ClangClassDescriber(object):
         self.onlyin = set() if onlyin is None else set(onlyin)
         self._currfunc = []  # this must be a stack to handle nested functions
         self._currfuncsig = None
+        self._currfuncarg = None
         self._currclass = []  # this must be a stack to handle nested classes  
+
+    def __del__(self):
+        linecache.clearcache()
 
     def _pprint(self, node, typename):
         if self.verbose:
@@ -98,12 +121,14 @@ class ClangClassDescriber(object):
             # reset the current function and class
             if kind in self._funckinds and node.spelling == self._currfunc[-1]:
                 _key, _value = self._currfuncsig
-                _key = tuple(_key)
+                _key = (_key[0],) + tuple([tuple(k) for k in _key[1:]])
                 self.desc['methods'][_key] = _value
                 self._currfunc.pop()
                 self._currfuncsig = None
             elif 'class_decl' == kind and node.spelling == self._currclass[-1]:
                 self._currclass.pop()
+            elif 'unexposed_expr' == kind and node.spelling == self._currfuncarg:
+                self._currfuncarg = None
 
     def visit_class_decl(self, node):
         self._pprint(node, "Class")
@@ -132,17 +157,29 @@ class ClangClassDescriber(object):
         self._pprint(node, "Function Argument")
         name = node.spelling
         t = clang_canonize(node.type)
-        de = node.get_definition()
-        print "  ", de
-        print dir(de)
-        import pdb; pdb.set_trace()
-        self._currfuncsig[0].append((name, t))
+        self._currfuncsig[0].append([name, t])
+        self._currfuncarg = name
 
     def visit_field_decl(self, node):
         self._pprint(node, "Field")
 
     def visit_var_decl(self, node):
         self._pprint(node, "Variable")
+
+    def visit_unexposed_expr(self, node):
+        self._pprint(node, "Default Parameter (Unexposed Expression)")
+        # a little hacky reading from the file, 
+        # but Clang doesn't expose this data...
+        if self._currfuncsig is None:
+            return
+        currarg = self._currfuncsig[0][-1]
+        assert currarg[0] == self._currfuncarg
+        r = node.extent
+        default_val = clang_range_str(r)
+        if 2 == len(currarg):
+            currarg.append(default_val)
+        elif 3 == len(currarg):
+            currarg[2] = default_val
 
 
 
