@@ -1,5 +1,7 @@
 """This module creates Bright facility descriptions from C++ source code.
 """
+import faulthandler
+faulthandler.enable()
 import os
 import linecache
 import subprocess
@@ -11,7 +13,7 @@ except ImportError:
 
 import pyne
 
-def describe(filename, classname=None, parser='clang'):
+def describe(filename, classname=None, parser='clang', verbose=False):
     """Automatically describes a class in a file.
 
     Parameters
@@ -36,17 +38,17 @@ def describe(filename, classname=None, parser='clang'):
         classname = os.path.split(filename)[-1].rsplit('.', 1)[0].capitalize()
     describers = {'clang': clang_describe}
     describer = describers[parser]
-    desc = describer(filename, classname)
+    desc = describer(filename, classname, verbose=verbose)
     return desc
 
 
-def clang_describe(filename, classname):
+def clang_describe(filename, classname, verbose=False):
     """Use clang to describe the class."""
     index = cindex.Index.create()
     tu = index.parse(filename, args=['-cc1', '-I' + pyne.includes])
     #onlyin = set([filename, filename.replace('.cpp', '.h')])
     onlyin = set([filename.replace('.cpp', '.h')])
-    describer = ClangClassDescriber(classname, onlyin=onlyin, verbose=True)
+    describer = ClangClassDescriber(classname, onlyin=onlyin, verbose=verbose)
     describer.visit(tu.cursor)
     print describer.desc
     return describer.desc
@@ -138,7 +140,7 @@ class ClangClassDescriber(object):
         self._pprint(node, "Function")
         self._currfunc.append(node.spelling)  # This could also be node.displayname
         rtntype = node.type.get_result()
-        rtnname = clang_canonize(rtntype)
+        rtnname = ClangTypeVisitor(verbose=self.verbose).visit(rtntype)
         self._currfuncsig = ([node.spelling], rtnname)
 
     visit_cxx_method = visit_function_decl
@@ -156,7 +158,7 @@ class ClangClassDescriber(object):
     def visit_parm_decl(self, node):
         self._pprint(node, "Function Argument")
         name = node.spelling
-        t = clang_canonize(node.type)
+        t = ClangTypeVisitor(verbose=self.verbose).visit(node)
         self._currfuncsig[0].append([name, t])
         self._currfuncarg = name
 
@@ -213,30 +215,103 @@ def clang_find_attributes(node):
     return [n for n in node.get_children() if n.kind.is_attribute()]
 
 
-# maps Clang TypeKinds to typesystem types
-clang_base_typekinds = {
-    cindex.TypeKind.VOID: 'void',
-    cindex.TypeKind.BOOL: 'bool',
-    cindex.TypeKind.CHAR_U: 'char',
-    cindex.TypeKind.UCHAR: 'char',
-    cindex.TypeKind.UINT: 'uint32',
-    cindex.TypeKind.ULONG: 'uint64',
-    cindex.TypeKind.INT: 'int32',
-    cindex.TypeKind.LONG: 'int64',
-    cindex.TypeKind.FLOAT: 'float32',
-    cindex.TypeKind.DOUBLE: 'float64',
-    cindex.TypeKind.COMPLEX: 'complex128',
-    }
+class ClangTypeVisitor(object):
+    """For a Clang type located at a root node, compute the cooresponding 
+    typesystem type.
+    """
+
+    def __init__(self, verbose=False):
+        self.type = []
+        self.verbose = verbose
+        self.namespace = []  # this must be a stack to handle nested namespaces
+        self._atrootlevel = True
+        self._currtype = []
+
+    def _pprint(self, node, typename):
+        if self.verbose:
+            print("{0}: {1}".format(typename, node.kind.name))
+
+    def visit(self, root):
+        """Takes a root type."""
+        if isinstance(root, cindex.Cursor):
+            root = root.type
+        atrootlevel = self._atrootlevel
+        if atrootlevel:
+            self._atrootlevel = False
+
+        typekind = root.kind.name.lower()
+        methname = 'visit_' + typekind
+        meth = getattr(self, methname, None)
+        if meth is not None:
+            meth(root)
+
+        currtype = self._currtype
+        currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
+        self.type.append(currtype)
+        self._currtype = []
+
+        if atrootlevel:
+            self._atrootlevel = True
+            self.type = self.type[0] if 1 == len(self.type) else tuple(self.type)
+            return self.type
+
+    def visit_void(self, node):
+        self._pprint(node, "void")
+        self._currtype.append("void")
+
+    def visit_bool(self, node):
+        self._pprint(node, "boolean")
+        self._currtype.append("bool")
+
+    def visit_char_u(self, node):
+        self._pprint(node, "character")
+        self._currtype.append("char")
+
+    visit_uchar = visit_char_u
+
+    def visit_uint(self, node):
+        self._pprint(node, "unsigned integer, 32-bit")
+        self._currtype.append("uint32")
+
+    def visit_ulong(self, node):
+        self._pprint(node, "unsigned integer, 64-bit")
+        self._currtype.append("uint64")
+
+    def visit_int(self, node):
+        self._pprint(node, "integer, 32-bit")
+        self._currtype.append("int32")
+
+    def visit_long(self, node):
+        self._pprint(node, "integer, 64-bit")
+        self._currtype.append("int64")
+
+    def visit_float(self, node):
+        self._pprint(node, "float, 32-bit")
+        self._currtype.append("float32")
+
+    def visit_double(self, node):
+        self._pprint(node, "float, 64-bit")
+        self._currtype.append("float64")
+
+    def visit_complex(self, node):
+        self._pprint(node, "complex, 128-bit")
+        self._currtype.append("complex128")
+
+    def visit_unexposed(self, node):
+        self._pprint(node, "unexposed")
+        name = node.get_declaration().spelling
+        self._currtype.append(name)
+
 
 def clang_canonize(t):
-    """For a Clang type t, return the cooresponding typesystem name.
-    """
     kind = t.kind
     if kind in clang_base_typekinds:
         name = clang_base_typekinds[kind]
     elif kind == cindex.TypeKind.UNEXPOSED:
         name = t.get_declaration().spelling
     elif kind == cindex.TypeKind.TYPEDEF:
+        print [n.displayname for n in t.get_declaration().get_children()]
+        print [n.kind.name for n in t.get_declaration().get_children()]
         name = "<fixme>"
     else:
         name = "<error:{0}>".format(kind)
