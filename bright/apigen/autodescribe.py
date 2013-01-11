@@ -229,15 +229,22 @@ class ClangTypeVisitor(object):
 
     def _pprint(self, node, typename):
         if self.verbose:
-            print("{0}: {1}".format(typename, node.kind.name))
+            msg = "{0}: {1}"
+            if isinstance(node, cindex.Type):
+                msg = msg.format(typename, node.kind.spelling)
+            elif isinstance(node, cindex.Cursor):
+                msg = msg.format(typename, node.displayname)
+            else:
+                msg = msg.format(typename, node)
+            print(msg)
 
     def visit(self, root):
         """Takes a root type."""
         if isinstance(root, cindex.Cursor):
             root = root.type
         atrootlevel = self._atrootlevel
-        if atrootlevel:
-            self._atrootlevel = False
+        #if atrootlevel:
+        #    self._atrootlevel = False
 
         typekind = root.kind.name.lower()
         methname = 'visit_' + typekind
@@ -245,62 +252,98 @@ class ClangTypeVisitor(object):
         if meth is not None:
             meth(root)
 
-        currtype = self._currtype
-        currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
-        self.type.append(currtype)
-        self._currtype = []
-
-        if atrootlevel:
-            self._atrootlevel = True
+        if self._atrootlevel:
+        #if atrootlevel:
+            #self._atrootlevel = True
+            currtype = self._currtype
+            currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
+            self.type.append(currtype)
+            self._currtype = []
             self.type = self.type[0] if 1 == len(self.type) else tuple(self.type)
             return self.type
 
-    def visit_void(self, node):
-        self._pprint(node, "void")
+    def _visit_declaration(self, decl):
+        atrootlevel = self._atrootlevel
+        for child in decl.get_children():
+            if child.type.kind != cindex.TypeKind.INVALID: 
+                self._atrootlevel = False
+                self.visit(child.type)
+                self._atrootlevel = atrootlevel
+                continue
+            kindname = child.kind.name.lower()
+            methname = 'visit_' + kindname
+            print "  METHNAME = " + methname
+            meth = getattr(self, methname, None)
+            if meth is not None:
+                meth(child)
+        #currtype = self._currtype
+        #currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
+        #self.type.append(currtype)
+        #self._currtype = []
+
+    def visit_void(self, typ):
+        self._pprint(typ, "void")
         self._currtype.append("void")
 
-    def visit_bool(self, node):
-        self._pprint(node, "boolean")
+    def visit_bool(self, typ):
+        self._pprint(typ, "boolean")
         self._currtype.append("bool")
 
-    def visit_char_u(self, node):
-        self._pprint(node, "character")
+    def visit_char_u(self, typ):
+        self._pprint(typ, "character")
         self._currtype.append("char")
 
     visit_uchar = visit_char_u
 
-    def visit_uint(self, node):
-        self._pprint(node, "unsigned integer, 32-bit")
+    def visit_uint(self, typ):
+        self._pprint(typ, "unsigned integer, 32-bit")
         self._currtype.append("uint32")
 
-    def visit_ulong(self, node):
-        self._pprint(node, "unsigned integer, 64-bit")
+    def visit_ulong(self, typ):
+        self._pprint(typ, "unsigned integer, 64-bit")
         self._currtype.append("uint64")
 
-    def visit_int(self, node):
-        self._pprint(node, "integer, 32-bit")
+    def visit_int(self, typ):
+        self._pprint(typ, "integer, 32-bit")
         self._currtype.append("int32")
 
-    def visit_long(self, node):
-        self._pprint(node, "integer, 64-bit")
+    def visit_long(self, typ):
+        self._pprint(typ, "integer, 64-bit")
         self._currtype.append("int64")
 
-    def visit_float(self, node):
-        self._pprint(node, "float, 32-bit")
+    def visit_float(self, typ):
+        self._pprint(typ, "float, 32-bit")
         self._currtype.append("float32")
 
-    def visit_double(self, node):
-        self._pprint(node, "float, 64-bit")
+    def visit_double(self, typ):
+        self._pprint(typ, "float, 64-bit")
         self._currtype.append("float64")
 
-    def visit_complex(self, node):
-        self._pprint(node, "complex, 128-bit")
+    def visit_complex(self, typ):
+        self._pprint(typ, "complex, 128-bit")
         self._currtype.append("complex128")
 
-    def visit_unexposed(self, node):
-        self._pprint(node, "unexposed")
-        name = node.get_declaration().spelling
-        self._currtype.append(name)
+    def visit_unexposed(self, typ):
+        self._pprint(typ, "unexposed")
+        decl = typ.get_declaration()
+        #self._visit_declaration(decl, select=['namespace_ref'])
+        self._currtype.append(decl.spelling)
+
+    def visit_typedef(self, typ):
+        self._pprint(typ, "typedef")
+        self._visit_declaration(typ.get_declaration())
+
+    def visit_invalid(self, typ):
+        self._pprint(typ, "invalid")
+
+    def visit_namespace_ref(self, cur):
+        self._pprint(cur, "namespace")
+        if self._atrootlevel:
+            self.namespace.append(cur.displayname)
+            print self.namespace
+
+    def visit_template_ref(self, cur):
+        self._pprint(cur, "template")
 
 
 def clang_canonize(t):
