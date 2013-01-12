@@ -185,7 +185,6 @@ class ClangClassDescriber(object):
 
 
 
-
 def clang_find_class(node, classname, namespace=None):
     """Find the node for a given class underneath the current node.
     """
@@ -257,7 +256,9 @@ class ClangTypeVisitor(object):
             #self._atrootlevel = True
             currtype = self._currtype
             currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
-            self.type.append(currtype)
+            self.type = [self.type, currtype] if isinstance(self.type, basestring) \
+                        else list(self.type) + [currtype]
+            #self.type.append(currtype)
             self._currtype = []
             self.type = self.type[0] if 1 == len(self.type) else tuple(self.type)
             return self.type
@@ -265,17 +266,22 @@ class ClangTypeVisitor(object):
     def _visit_declaration(self, decl):
         atrootlevel = self._atrootlevel
         for child in decl.get_children():
+            kindname = child.kind.name.lower()
+            methname = 'visit_' + kindname
+            print "  METHNAME = " + methname
+            print "  DISPNAME = " + child.displayname
+
             if child.type.kind != cindex.TypeKind.INVALID: 
                 self._atrootlevel = False
                 self.visit(child.type)
                 self._atrootlevel = atrootlevel
                 continue
-            kindname = child.kind.name.lower()
-            methname = 'visit_' + kindname
-            print "  METHNAME = " + methname
+
             meth = getattr(self, methname, None)
             if meth is not None:
                 meth(child)
+            if hasattr(child, 'get_children'):
+                self._visit_declaration(child)
         #currtype = self._currtype
         #currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
         #self.type.append(currtype)
@@ -325,26 +331,49 @@ class ClangTypeVisitor(object):
 
     def visit_unexposed(self, typ):
         self._pprint(typ, "unexposed")
+        #typ = typ.get_canonical()
         decl = typ.get_declaration()
-        #self._visit_declaration(decl, select=['namespace_ref'])
         self._currtype.append(decl.spelling)
+        print "   canon: ",  typ.get_canonical().get_declaration().displayname
+        #import pdb; pdb.set_trace()        
+        #self._visit_declaration(decl)
+        #self._visit_declaration(typ.get_canonical().get_declaration())
+        #self.visit(typ.get_canonical())
 
     def visit_typedef(self, typ):
         self._pprint(typ, "typedef")
+        decl = typ.get_declaration()
+        t = decl.underlying_typedef_type
+        self.visit(t.get_canonical())
+
+    def visit_record(self, typ):
+        self._pprint(typ, "record")
         self._visit_declaration(typ.get_declaration())
 
     def visit_invalid(self, typ):
         self._pprint(typ, "invalid")
+        self._visit_declaration(typ.get_declaration())
 
     def visit_namespace_ref(self, cur):
         self._pprint(cur, "namespace")
         if self._atrootlevel:
             self.namespace.append(cur.displayname)
-            print self.namespace
 
     def visit_template_ref(self, cur):
         self._pprint(cur, "template")
+        self._currtype.append(cur.displayname)
+        #for argtype in cur.type.argument_types():
+        #    self.visit(argtype)
 
+        #import pdb; pdb.set_trace()
+        #self._visit_declaration(cur)
+        #print "   canon: ",  cur.type.get_canonical().get_declaration().displayname
+
+    def visit_template_type_parameter(self, cur):
+        self._pprint(cur, "template param")
+
+    def visit_class_template_partial_specialization(self, cur):
+        self._pprint(cur, "class template partial specialization")
 
 def clang_canonize(t):
     kind = t.kind
