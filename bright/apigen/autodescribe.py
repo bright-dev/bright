@@ -5,15 +5,44 @@ faulthandler.enable()
 import os
 import linecache
 import subprocess
+from pprint import pprint, pformat
 
+# CLang conditional imports
 try:
     from clang import cindex
 except ImportError:
-    from .clang.v3_1 import cindex
+    try:
+        from .clang.v3_1 import cindex
+    except ImportError:
+        pass
 
+# GCC-XML conditional imports
+try:
+    from lxml import etree
+except ImportError:
+    try:
+        # Python 2.5
+        import xml.etree.cElementTree as etree
+    except ImportError:
+        try:
+          # Python 2.5
+          import xml.etree.ElementTree as etree
+        except ImportError:
+            try:
+                # normal cElementTree install
+                import cElementTree as etree
+            except ImportError:
+                try:
+                  # normal ElementTree install
+                  import elementtree.ElementTree as etree
+                except ImportError:
+                    pass
+import tempfile
+
+# Other imports
 import pyne
 
-def describe(filename, classname=None, parser='clang', verbose=False):
+def describe(filename, classname=None, parser='gccxml', verbose=False):
     """Automatically describes a class in a file.
 
     Parameters
@@ -25,7 +54,7 @@ def describe(filename, classname=None, parser='clang', verbose=False):
         filename.
     parser : str
         The parser / AST to use to use for the C++ file.  Currently only
-        'clang' is supported, though others (such as gccxml) may be 
+        'clang' and 'gccxml' are supported, though others may be 
         implemented in the future.
 
     Returns
@@ -36,11 +65,100 @@ def describe(filename, classname=None, parser='clang', verbose=False):
     """
     if classname is None:
         classname = os.path.split(filename)[-1].rsplit('.', 1)[0].capitalize()
-    describers = {'clang': clang_describe}
+    describers = {'clang': clang_describe, 'gccxml': gccxml_describe}
     describer = describers[parser]
     desc = describer(filename, classname, verbose=verbose)
     return desc
 
+
+#
+# GCC-XML Describers
+#
+
+
+def gccxml_describe(filename, classname, verbose=False):
+    """Use GCC-XML to describe the class."""
+    f = tempfile.NamedTemporaryFile()
+    cmd = ['gccxml', filename, '-fxml=' + f.name, '-I' + pyne.includes]
+    subprocess.call(cmd)
+    f.seek(0)
+    root = etree.parse(f)
+    onlyin = set([filename, filename.replace('.cpp', '.h')])
+    #onlyin = set([filename.replace('.cpp', '.h')])
+    describer = GccxmlClassDescriber(classname, root, onlyin=onlyin, verbose=verbose)
+    describer.visit(root)
+    f.close()
+    print describer.desc
+    return describer.desc
+
+
+class GccxmlClassDescriber(object):
+
+    def __init__(self, classname, root=None, onlyin=None, verbose=False):
+        self.desc = {'name': classname, 'attrs': {}, 'methods': {}}
+        self.classname = classname
+        self.verbose = verbose
+        self._root = root
+        onlyin = [onlyin] if isinstance(onlyin, basestring) else onlyin
+        onlyin = set() if onlyin is None else set(onlyin)
+        self.onlyin = set([root.find("File[@name='{0}']".format(oi)).attrib['id'] \
+                           for oi in onlyin])
+        self._currfunc = []  # this must be a stack to handle nested functions
+        self._currfuncsig = None
+        self._currfuncarg = None
+        self._currclass = []  # this must be a stack to handle nested classes  
+        self._indent = -1
+
+    def __str__(self):
+        return pformat(self.desc)
+
+    def __del__(self):
+        linecache.clearcache()
+
+    def _pprint(self, node):
+        if self.verbose:
+            print("{0}{1}: {2}".format(self._indent * "  ", node.tag, 
+                                       node.attrib.get('name', None)))
+
+    def visit(self, node):
+        self._indent += 1
+        for child in node.iterfind('*'):
+            if child.attrib.get('file', None) in self.onlyin:
+                tag = child.tag.lower()
+                meth_name = 'visit_' + tag
+                meth = getattr(self, meth_name, None)
+                if meth is not None:
+                    meth(child)
+        self._indent -= 1
+
+    def visit_class(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+
+    def visit_constructor(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+
+    def visit_destructor(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+
+    def visit_method(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+
+    def visit_argument(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+
+    def visit_field(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+
+
+#
+# Clang Describers
+#
 
 def clang_describe(filename, classname, verbose=False):
     """Use clang to describe the class."""
@@ -90,7 +208,7 @@ class ClangClassDescriber(object):
 
     _funckinds = set(['function_decl', 'cxx_method', 'constructor', 'destructor'])
 
-    def __init__(self, classname, onlyin=None, verbose=False):
+    def __init__(self, classname, root=None, onlyin=None, verbose=False):
         self.desc = {'name': classname, 'attrs': {}, 'methods': {}}
         self.classname = classname
         self.verbose = verbose
@@ -100,6 +218,9 @@ class ClangClassDescriber(object):
         self._currfuncsig = None
         self._currfuncarg = None
         self._currclass = []  # this must be a stack to handle nested classes  
+
+    def __str__(self):
+        return pformat(self.desc)
 
     def __del__(self):
         linecache.clearcache()
