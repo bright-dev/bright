@@ -50,7 +50,7 @@ def clang_describe(filename, classname, verbose=False):
     onlyin = set([filename.replace('.cpp', '.h')])
     describer = ClangClassDescriber(classname, onlyin=onlyin, verbose=verbose)
     describer.visit(tu.cursor)
-    print describer.desc
+    from pprint import pprint; pprint(describer.desc)
     return describer.desc
 
 
@@ -183,6 +183,28 @@ class ClangClassDescriber(object):
         elif 3 == len(currarg):
             currarg[2] = default_val
 
+    ##########
+
+    def visit_type_ref(self, cur):
+        self._pprint(cur, "type ref")
+
+    def visit_template_ref(self, cur):
+        self._pprint(cur, "template ref")
+
+    def visit_template_type_parameter(self, cur):
+        self._pprint(cur, "template type param")
+
+    def visit_template_non_type_parameter(self, cur):
+        self._pprint(cur, "template non-type param")
+
+    def visit_template_template_parameter(self, cur):
+        self._pprint(cur, "template template param")
+
+    def visit_class_template(self, cur):
+        self._pprint(cur, "class template")
+
+    def visit_class_template_partial_specialization(self, cur):
+        self._pprint(cur, "class template partial specialization")
 
 
 def clang_find_class(node, classname, namespace=None):
@@ -239,53 +261,37 @@ class ClangTypeVisitor(object):
 
     def visit(self, root):
         """Takes a root type."""
-        if isinstance(root, cindex.Cursor):
-            root = root.type
         atrootlevel = self._atrootlevel
-        #if atrootlevel:
-        #    self._atrootlevel = False
 
-        typekind = root.kind.name.lower()
-        methname = 'visit_' + typekind
-        meth = getattr(self, methname, None)
-        if meth is not None:
-            meth(root)
+        if isinstance(root, cindex.Type):
+            typekind = root.kind.name.lower()
+            methname = 'visit_' + typekind
+            meth = getattr(self, methname, None)
+            if meth is not None and root.kind != cindex.TypeKind.INVALID:
+                meth(root)
+        elif isinstance(root, cindex.Cursor):
+            self.visit(root.type)
+            for child in root.get_children():
+                kindname = child.kind.name.lower()
+                methname = 'visit_' + kindname
+                meth = getattr(self, methname, None)
+                if meth is not None:
+                    meth(child)
+                if hasattr(child, 'get_children'):
+                    self._atrootlevel = False
+                    self.visit(child)
+                    self._atrootlevel = atrootlevel
+                else:
+                    self.visit(child.type)
 
         if self._atrootlevel:
-        #if atrootlevel:
-            #self._atrootlevel = True
             currtype = self._currtype
             currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
             self.type = [self.type, currtype] if isinstance(self.type, basestring) \
                         else list(self.type) + [currtype]
-            #self.type.append(currtype)
             self._currtype = []
             self.type = self.type[0] if 1 == len(self.type) else tuple(self.type)
             return self.type
-
-    def _visit_declaration(self, decl):
-        atrootlevel = self._atrootlevel
-        for child in decl.get_children():
-            kindname = child.kind.name.lower()
-            methname = 'visit_' + kindname
-            print "  METHNAME = " + methname
-            print "  DISPNAME = " + child.displayname
-
-            if child.type.kind != cindex.TypeKind.INVALID: 
-                self._atrootlevel = False
-                self.visit(child.type)
-                self._atrootlevel = atrootlevel
-                continue
-
-            meth = getattr(self, methname, None)
-            if meth is not None:
-                meth(child)
-            if hasattr(child, 'get_children'):
-                self._visit_declaration(child)
-        #currtype = self._currtype
-        #currtype = currtype[0] if 1 == len(currtype) else tuple(currtype)
-        #self.type.append(currtype)
-        #self._currtype = []
 
     def visit_void(self, typ):
         self._pprint(typ, "void")
@@ -336,44 +342,67 @@ class ClangTypeVisitor(object):
         self._currtype.append(decl.spelling)
         print "   canon: ",  typ.get_canonical().get_declaration().displayname
         #import pdb; pdb.set_trace()        
-        #self._visit_declaration(decl)
-        #self._visit_declaration(typ.get_canonical().get_declaration())
+        #self.visit(decl)
+        #self.visit(typ.get_canonical().get_declaration())
         #self.visit(typ.get_canonical())
 
     def visit_typedef(self, typ):
         self._pprint(typ, "typedef")
         decl = typ.get_declaration()
         t = decl.underlying_typedef_type
-        self.visit(t.get_canonical())
+        #self.visit(t.get_canonical())
 
     def visit_record(self, typ):
         self._pprint(typ, "record")
-        self._visit_declaration(typ.get_declaration())
+        self.visit(typ.get_declaration())
 
     def visit_invalid(self, typ):
         self._pprint(typ, "invalid")
-        self._visit_declaration(typ.get_declaration())
+        self.visit(typ.get_declaration())
 
     def visit_namespace_ref(self, cur):
         self._pprint(cur, "namespace")
         if self._atrootlevel:
             self.namespace.append(cur.displayname)
 
-    def visit_template_ref(self, cur):
-        self._pprint(cur, "template")
+    def visit_type_ref(self, cur):
+        self._pprint(cur, "type ref")
         self._currtype.append(cur.displayname)
-        #for argtype in cur.type.argument_types():
-        #    self.visit(argtype)
+#        print "    cur type kin =", cur.type.kind
+        #self.visit(cur.type)
+        #self.visit(cur)
+
+    def visit_template_ref(self, cur):
+        self._pprint(cur, "template ref")
+        self._currtype.append(cur.displayname)
+        #self.visit(cur)
 
         #import pdb; pdb.set_trace()
-        #self._visit_declaration(cur)
-        #print "   canon: ",  cur.type.get_canonical().get_declaration().displayname
+#        self.visit(cur)
+        print "   canon: ",  cur.type.get_canonical().get_declaration().displayname
 
     def visit_template_type_parameter(self, cur):
-        self._pprint(cur, "template param")
+        self._pprint(cur, "template type param")
+
+    def visit_template_non_type_parameter(self, cur):
+        self._pprint(cur, "template non-type param")
+
+    def visit_template_template_parameter(self, cur):
+        self._pprint(cur, "template template param")
+
+    def visit_function_template(self, cur):
+        self._pprint(cur, "function template")
+
+#    def visit_class_template(self, cur):
+#        self._pprint(cur, "class template")
 
     def visit_class_template_partial_specialization(self, cur):
         self._pprint(cur, "class template partial specialization")
+
+#    def visit_var_decl(self, cur):
+#        self._pprint(cur, "variable")
+
+
 
 def clang_canonize(t):
     kind = t.kind
