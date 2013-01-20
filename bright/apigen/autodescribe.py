@@ -5,6 +5,7 @@ faulthandler.enable()
 import os
 import linecache
 import subprocess
+import itertools
 from pprint import pprint, pformat
 
 # CLang conditional imports
@@ -94,6 +95,8 @@ def gccxml_describe(filename, classname, verbose=False):
 
 class GccxmlClassDescriber(object):
 
+    _constructor_tags = set(['Constructor', 'Destructor'])
+
     def __init__(self, classname, root=None, onlyin=None, verbose=False):
         self.desc = {'name': classname, 'attrs': {}, 'methods': {}}
         self.classname = classname
@@ -121,31 +124,52 @@ class GccxmlClassDescriber(object):
                                        node.attrib.get('name', None)))
 
     def visit(self, node):
+        if node is self._root:
+            children = itertools.chain(*[node.iterfind("*[@file='{0}']".format(ftag))\
+                                         for ftag in self.onlyin])
+        else:
+            children = node.iterfind('*')
+
         self._indent += 1
-        for child in node.iterfind('*'):
-            if child.attrib.get('file', None) in self.onlyin:
-                tag = child.tag.lower()
-                meth_name = 'visit_' + tag
-                meth = getattr(self, meth_name, None)
-                if meth is not None:
-                    meth(child)
+        for child in children:
+            tag = child.tag.lower()
+            meth_name = 'visit_' + tag
+            meth = getattr(self, meth_name, None)
+            if meth is not None:
+                meth(child)
         self._indent -= 1
 
     def visit_class(self, node):
         self._pprint(node)
+        self._currclass.append(node.attrib['name'])
         self.visit(node)  # Walk farther down the tree
+        self._currclass.pop()
+
+    def visit_base(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+
+    def _visit_func(self, node):
+        self._currfunc.append(node.attrib['name'])
+        self.visit(node)  # Walk farther down the tree
+        if node.tag in self._constructor_tags:
+            rtntype = None
+        else: 
+            rtntype = node.attrib['returns']
+        funcname = self._currfunc.pop()
+        self.desc['methods'][funcname] = rtntype
 
     def visit_constructor(self, node):
         self._pprint(node)
-        self.visit(node)  # Walk farther down the tree
+        self._visit_func(node)
 
     def visit_destructor(self, node):
         self._pprint(node)
-        self.visit(node)  # Walk farther down the tree
+        self._visit_func(node)
 
     def visit_method(self, node):
         self._pprint(node)
-        self.visit(node)  # Walk farther down the tree
+        self._visit_func(node)
 
     def visit_argument(self, node):
         self._pprint(node)
