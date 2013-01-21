@@ -89,7 +89,6 @@ def gccxml_describe(filename, classname, verbose=False):
     describer = GccxmlClassDescriber(classname, root, onlyin=onlyin, verbose=verbose)
     describer.visit()
     f.close()
-    print describer
     return describer.desc
 
 
@@ -106,7 +105,6 @@ class GccxmlClassDescriber(object):
                            for oi in onlyin])
         self._currfunc = []  # this must be a stack to handle nested functions
         self._currfuncsig = None
-        #self._currfuncarg = None
         self._currclass = []  # this must be a stack to handle nested classes  
         self._level = -1
 
@@ -157,7 +155,8 @@ class GccxmlClassDescriber(object):
     def _visit_template(self, node):
         name = node.attrib['name']
         members = node.attrib.get('members', '').strip().split()
-        children = [child for m in members for child in self._root.iterfind(".//*[@id='{0}']".format(m))]
+        children = [child for m in members for child in \
+                                self._root.iterfind(".//*[@id='{0}']".format(m))]
         tags = [child.tag for child in children]
         template_name = children[tags.index('Constructor')].attrib['name']  # 'map'
         if template_name == 'basic_string':
@@ -184,6 +183,9 @@ class GccxmlClassDescriber(object):
             bases = node.attrib['bases'].split()
             bases = None if len(bases) == 0 else [self.type(b) for b in bases]
             self.desc['parents'] = bases
+            ns = self.context(node.attrib['context'])
+            if ns is not None:
+                self.desc['namespace'] = ns
         if '<' in name and name.endswith('>'):
             name = self._visit_template(node)
         self._currclass.pop()
@@ -245,7 +247,12 @@ class GccxmlClassDescriber(object):
 
     def visit_field(self, node):
         self._pprint(node)
-        self.visit(node)  # Walk farther down the tree
+        context = self._root.find(".//*[@id='{0}']".format(node.attrib['context']))
+        if context.attrib['name'] == self.classname:
+            # assert this field is member of the class we are trying to parse
+            name = node.attrib['name']
+            t = self.type(node.attrib['type'])
+            self.desc['attrs'][name] = t
 
     def visit_typedef(self, node):
         self._pprint(node)
@@ -286,6 +293,24 @@ class GccxmlClassDescriber(object):
             t = meth(node)
             self._level -= 1
         return t
+
+    def visit_namespace(self, node):
+        self._pprint(node)
+        name = node.attrib['name']
+        return name
+
+    def context(self, id):
+        """Resolves the context from its id and information in the element tree."""
+        node = self._root.find(".//*[@id='{0}']".format(id))
+        tag = node.tag.lower()
+        meth_name = 'visit_' + tag
+        meth = getattr(self, meth_name, None)
+        c = None
+        if meth is not None:
+            self._level += 1
+            c = meth(node)
+            self._level -= 1
+        return c
 
 #
 # Clang Describers
