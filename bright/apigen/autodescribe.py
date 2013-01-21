@@ -1,8 +1,7 @@
 """This module creates Bright facility descriptions from C++ source code.
 """
-import faulthandler
-faulthandler.enable()
 import os
+from copy import deepcopy
 import linecache
 import subprocess
 import itertools
@@ -694,3 +693,39 @@ def clang_canonize(t):
     else:
         name = "<error:{0}>".format(kind)
     return name
+
+
+
+#
+#  General utilities
+#
+
+
+def merge_descriptions(descritptions):
+    """Given a sequence of descriptions, in order of increasing precednece, 
+    merge them into a single description dictionary."""
+    attrsmeths = frozenset(['attrs', 'methods'])
+    desc = {}
+    for description in descriptions:
+        for key, value in description.items():
+            if key not in desc:
+                desc[key] = deepcopy(value)
+                continue
+
+            if key in attrsmeths:
+                desc[key].update(value)
+            elif key == 'docstrings':
+                for dockey, docvalue in value.items():
+                    if dockey in attrsmeths:
+                        desc[key][dockey].update(docvalue)
+                    else:
+                        desc[key][dockey] = deepcopy(docvalue)
+            else:
+                desc[key] = deepcopy(value)
+    # now sanitize methods
+    name = desc['name']
+    methods = desc['methods']
+    for methkey, methval in methods.items():
+        if methval is None and not methkey[0].endswith(name):
+            del methods[methkey]  # constructor for parent
+    return desc
