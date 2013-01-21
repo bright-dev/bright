@@ -110,7 +110,7 @@ class GccxmlClassDescriber(object):
         self._currfuncsig = None
         #self._currfuncarg = None
         self._currclass = []  # this must be a stack to handle nested classes  
-        self._indent = -1
+        self._level = -1
 
     def __str__(self):
         return pformat(self.desc)
@@ -120,7 +120,7 @@ class GccxmlClassDescriber(object):
 
     def _pprint(self, node):
         if self.verbose:
-            print("{0}{1} {2}: {3}".format(self._indent * "  ", node.tag,
+            print("{0}{1} {2}: {3}".format(self._level * "  ", node.tag,
                                        node.attrib.get('id', ''),
                                        node.attrib.get('name', None)))
 
@@ -131,20 +131,25 @@ class GccxmlClassDescriber(object):
         else:
             children = node.iterfind('*')
 
-        self._indent += 1
+        self._level += 1
         for child in children:
             tag = child.tag.lower()
             meth_name = 'visit_' + tag
             meth = getattr(self, meth_name, None)
             if meth is not None:
                 meth(child)
-        self._indent -= 1
+        self._level -= 1
 
     def visit_class(self, node):
         self._pprint(node)
-        self._currclass.append(node.attrib['name'])
+        name = node.attrib['name']
+        if name == self.classname:
+            bases = node.attrib['bases'].split()
+            bases = None if len(bases) == 0 else [self.type(b) for b in bases]
+            self.desc['parents'] = bases
+        self._currclass.append(name)
         self.visit(node)  # Walk farther down the tree
-        name = self._currclass.pop()
+        self._currclass.pop()
         return name
 
     def visit_base(self, node):
@@ -226,9 +231,9 @@ class GccxmlClassDescriber(object):
         meth = getattr(self, meth_name, None)
         t = None
         if meth is not None:
-            self._indent += 1
+            self._level += 1
             t = meth(node)
-            self._indent -= 1
+            self._level -= 1
         return t
 
 #
