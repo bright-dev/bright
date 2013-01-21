@@ -138,6 +138,22 @@ class GccxmlClassDescriber(object):
                 meth(child)
         self._level -= 1
 
+    _template_args = {
+        'array': ('value_type',),
+        'deque': ('value_type',),
+        'forward_list': ('value_type',),
+        'list': ('value_type',),
+        'map': ('key_type', 'mapped_type'),
+        'multimap': ('key_type', 'mapped_type'),
+        'set': ('key_type',),
+        'multiset': ('key_type',),
+        'unordered_map': ('key_type', 'mapped_type'),
+        'unordered_multimap': ('key_type', 'mapped_type'),
+        'unordered_set': ('key_type',),
+        'unordered_multiset': ('key_type',),
+        'vector': ('value_type',),
+        }
+
     def _visit_template(self, node):
         name = node.attrib['name']
         members = node.attrib.get('members', '').strip().split()
@@ -146,13 +162,15 @@ class GccxmlClassDescriber(object):
         template_name = children[tags.index('Constructor')].attrib['name']  # 'map'
         inst = [template_name]
         self._level += 1
-        for child in children:
-            tag = child.tag.lower()
-            self._pprint(child)
-            #meth_name = 'visit_' + tag
-            #meth = getattr(self, meth_name, None)
-            #if meth is not None:
-            #    meth(child)
+        if template_name in self._template_args:
+            for targ in self._template_args[template_name]:
+                targ_nodes = [c for c in children if c.attrib['name'] == targ]
+                targ_node = targ_nodes[0]
+                #targ_type = self.type(targ_node.attrib['id'])
+                targ_type = self.type(targ_node.attrib['id'])
+                inst.append(targ_type)
+        else:
+            pass
         self._level -= 1
         return tuple(inst)
 
@@ -225,17 +243,26 @@ class GccxmlClassDescriber(object):
         self._pprint(node)
         self.visit(node)  # Walk farther down the tree
 
+    def visit_struct(self, node):
+        self._pprint(node)
+        #self.visit(node)  # Walk farther down the tree
+
     def visit_typedef(self, node):
         self._pprint(node)
-        self.visit(node)  # Walk farther down the tree
-        return node.attrib['name']
+        #self.visit(node)  # Walk farther down the tree
+        #return node.attrib['name']
+        name = node.attrib.get('name', None)
+        if name == 'string':
+            return 'str'
+        else:
+            return self.type(node.attrib['type'])
 
     _fundemntal_to_base = {
         'char': 'char', 
         'int': 'int32', 
-        'long': 'int64', 
+        'long int': 'int64', 
         'unsigned int': 'uint32',
-        'unsigned long': 'uint64',
+        'long unsigned int': 'uint64',
         'float': 'float32',
         'double': 'float64',
         'complex': 'complex128', 
