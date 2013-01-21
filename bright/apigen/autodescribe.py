@@ -1,6 +1,7 @@
 """This module creates Bright facility descriptions from C++ source code.
 """
 import os
+import re
 from copy import deepcopy
 import linecache
 import subprocess
@@ -41,6 +42,10 @@ import tempfile
 
 # Other imports
 import pyne
+
+RE_INT = re.compile('^\d+$')
+RE_FLOAT = re.compile('^[+-]?\.?\d+\.?\d*?(e[+-]?\d+)?$')
+
 
 def describe(filename, classname=None, parser='gccxml', verbose=False):
     """Automatically describes a class in a file.
@@ -92,6 +97,8 @@ def gccxml_describe(filename, classname, verbose=False):
 
 
 class GccxmlClassDescriber(object):
+
+    _integer_types = frozenset(['int32', 'int64', 'uint32', 'uint64'])
 
     def __init__(self, classname, root=None, onlyin=None, verbose=False):
         self.desc = {'name': classname, 'attrs': {}, 'methods': {}}
@@ -241,7 +248,12 @@ class GccxmlClassDescriber(object):
         tid = node.attrib['type']
         t = self.type(tid)
         default = node.attrib.get('default', None)
-        arg = (name, t, default)[:2 + (default is not None)]
+        if default is None:
+            arg = (name, t)
+        else:
+            if t in self._integer_types:
+                default = int(default)
+            arg = (name, t, default)
         self._currfuncsig.append(arg)
 
     def visit_field(self, node):
@@ -701,7 +713,7 @@ def clang_canonize(t):
 #
 
 
-def merge_descriptions(descritptions):
+def merge_descriptions(descriptions):
     """Given a sequence of descriptions, in order of increasing precednece, 
     merge them into a single description dictionary."""
     attrsmeths = frozenset(['attrs', 'methods'])
