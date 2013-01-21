@@ -89,7 +89,7 @@ def gccxml_describe(filename, classname, verbose=False):
     describer = GccxmlClassDescriber(classname, root, onlyin=onlyin, verbose=verbose)
     describer.visit(root)
     f.close()
-    print describer.desc
+    print describer
     return describer.desc
 
 
@@ -108,7 +108,7 @@ class GccxmlClassDescriber(object):
                            for oi in onlyin])
         self._currfunc = []  # this must be a stack to handle nested functions
         self._currfuncsig = None
-        self._currfuncarg = None
+        #self._currfuncarg = None
         self._currclass = []  # this must be a stack to handle nested classes  
         self._indent = -1
 
@@ -120,7 +120,8 @@ class GccxmlClassDescriber(object):
 
     def _pprint(self, node):
         if self.verbose:
-            print("{0}{1}: {2}".format(self._indent * "  ", node.tag, 
+            print("{0}{1} {2}: {3}".format(self._indent * "  ", node.tag,
+                                       node.attrib.get('id', ''),
                                        node.attrib.get('name', None)))
 
     def visit(self, node):
@@ -143,7 +144,8 @@ class GccxmlClassDescriber(object):
         self._pprint(node)
         self._currclass.append(node.attrib['name'])
         self.visit(node)  # Walk farther down the tree
-        self._currclass.pop()
+        name = self._currclass.pop()
+        return name
 
     def visit_base(self, node):
         self._pprint(node)
@@ -151,13 +153,18 @@ class GccxmlClassDescriber(object):
 
     def _visit_func(self, node):
         self._currfunc.append(node.attrib['name'])
+        self._currfuncsig = []
         self.visit(node)  # Walk farther down the tree
         if node.tag in self._constructor_tags:
             rtntype = None
         else: 
-            rtntype = node.attrib['returns']
+            rtntype = self.type(node.attrib['returns'])
         funcname = self._currfunc.pop()
-        self.desc['methods'][funcname] = rtntype
+        if self._currfuncsig is None:
+            return 
+        key = (funcname,) + tuple(self._currfuncsig)
+        self.desc['methods'][key] = rtntype
+        self._currfuncsig = None
 
     def visit_constructor(self, node):
         self._pprint(node)
@@ -173,12 +180,56 @@ class GccxmlClassDescriber(object):
 
     def visit_argument(self, node):
         self._pprint(node)
-        self.visit(node)  # Walk farther down the tree
+        name = node.attrib.get('name', None)
+        if name is None:
+            self._currfuncsig = None
+            return 
+        tid = node.attrib['type']
+        t = self.type(tid)
+        default = node.attrib.get('default', None)
+        arg = (name, t, default)[:2 + (default is not None)]
+        self._currfuncsig.append(arg)
 
     def visit_field(self, node):
         self._pprint(node)
         self.visit(node)  # Walk farther down the tree
 
+    def visit_typedef(self, node):
+        self._pprint(node)
+        self.visit(node)  # Walk farther down the tree
+        return node.attrib['name']
+
+    _fundemntal_to_base = {
+        'char': 'char', 
+        'int': 'int32', 
+        'long': 'int64', 
+        'unsigned int': 'uint32',
+        'unsigned long': 'uint64',
+        'float': 'float32',
+        'double': 'float64',
+        'complex': 'complex128', 
+        'void': 'void', 
+        'bool': 'bool',
+        }
+
+    def visit_fundamentaltype(self, node):
+        self._pprint(node)
+        tname = node.attrib['name']
+        t = self._fundemntal_to_base[tname]
+        return t
+
+    def type(self, id):
+        """Resolves the type from its id and information in the root element tree."""
+        node = self._root.find(".//*[@id='{0}']".format(id))
+        tag = node.tag.lower()
+        meth_name = 'visit_' + tag
+        meth = getattr(self, meth_name, None)
+        t = None
+        if meth is not None:
+            self._indent += 1
+            t = meth(node)
+            self._indent -= 1
+        return t
 
 #
 # Clang Describers
