@@ -87,15 +87,13 @@ def gccxml_describe(filename, classname, verbose=False):
     onlyin = set([filename, filename.replace('.cpp', '.h')])
     #onlyin = set([filename.replace('.cpp', '.h')])
     describer = GccxmlClassDescriber(classname, root, onlyin=onlyin, verbose=verbose)
-    describer.visit(root)
+    describer.visit()
     f.close()
     print describer
     return describer.desc
 
 
 class GccxmlClassDescriber(object):
-
-    _constructor_tags = set(['Constructor', 'Destructor'])
 
     def __init__(self, classname, root=None, onlyin=None, verbose=False):
         self.desc = {'name': classname, 'attrs': {}, 'methods': {}}
@@ -124,13 +122,13 @@ class GccxmlClassDescriber(object):
                                        node.attrib.get('id', ''),
                                        node.attrib.get('name', None)))
 
-    def visit(self, node):
-        if node is self._root:
-            children = itertools.chain(*[node.iterfind("*[@file='{0}']".format(ftag))\
-                                         for ftag in self.onlyin])
-        else:
-            children = node.iterfind('*')
-
+    def visit(self, node=None):
+        if node is None:
+            node = self._root.find("Class[@name='{0}']".format(self.classname))
+            assert node.attrib['file'] in self.onlyin
+            self.visit_class(node)
+        members = node.attrib.get('members', '').strip().split()
+        children = [self._root.find(".//*[@id='{0}']".format(m)) for m in members]
         self._level += 1
         for child in children:
             tag = child.tag.lower()
@@ -140,15 +138,34 @@ class GccxmlClassDescriber(object):
                 meth(child)
         self._level -= 1
 
+    def _visit_template(self, node):
+        name = node.attrib['name']
+        members = node.attrib.get('members', '').strip().split()
+        children = [child for m in members for child in self._root.iterfind(".//*[@id='{0}']".format(m))]
+        tags = [child.tag for child in children]
+        template_name = children[tags.index('Constructor')].attrib['name']  # 'map'
+        inst = [template_name]
+        self._level += 1
+        for child in children:
+            tag = child.tag.lower()
+            self._pprint(child)
+            #meth_name = 'visit_' + tag
+            #meth = getattr(self, meth_name, None)
+            #if meth is not None:
+            #    meth(child)
+        self._level -= 1
+        return tuple(inst)
+
     def visit_class(self, node):
         self._pprint(node)
         name = node.attrib['name']
+        self._currclass.append(name)
         if name == self.classname:
             bases = node.attrib['bases'].split()
             bases = None if len(bases) == 0 else [self.type(b) for b in bases]
             self.desc['parents'] = bases
-        self._currclass.append(name)
-        self.visit(node)  # Walk farther down the tree
+        if '<' in name and name.endswith('>'):
+            name = self._visit_template(node)
         self._currclass.pop()
         return name
 
@@ -157,11 +174,20 @@ class GccxmlClassDescriber(object):
         self.visit(node)  # Walk farther down the tree
 
     def _visit_func(self, node):
-        self._currfunc.append(node.attrib['name'])
+        name = node.attrib['name']
+        if name.startswith('_'):
+            return
+        self._currfunc.append(name)
         self._currfuncsig = []
-        self.visit(node)  # Walk farther down the tree
-        if node.tag in self._constructor_tags:
+        self._level += 1
+        for child in node.iterfind('Argument'):
+            self.visit_argument(child)
+        self._level -= 1
+        if node.tag == 'Constructor':
             rtntype = None
+        elif node.tag == 'Destructor':
+            rtntype = None
+            self._currfunc[-1] = '~' + self._currfunc[-1]
         else: 
             rtntype = self.type(node.attrib['returns'])
         funcname = self._currfunc.pop()
