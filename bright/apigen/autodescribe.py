@@ -160,16 +160,18 @@ class GccxmlClassDescriber(object):
         children = [child for m in members for child in self._root.iterfind(".//*[@id='{0}']".format(m))]
         tags = [child.tag for child in children]
         template_name = children[tags.index('Constructor')].attrib['name']  # 'map'
+        if template_name == 'basic_string':
+            return 'str'
         inst = [template_name]
         self._level += 1
         if template_name in self._template_args:
             for targ in self._template_args[template_name]:
                 targ_nodes = [c for c in children if c.attrib['name'] == targ]
                 targ_node = targ_nodes[0]
-                #targ_type = self.type(targ_node.attrib['id'])
                 targ_type = self.type(targ_node.attrib['id'])
                 inst.append(targ_type)
         else:
+            # fill in later with string parsing of node name if needed.
             pass
         self._level -= 1
         return tuple(inst)
@@ -186,6 +188,8 @@ class GccxmlClassDescriber(object):
             name = self._visit_template(node)
         self._currclass.pop()
         return name
+
+    visit_struct = visit_class
 
     def visit_base(self, node):
         self._pprint(node)
@@ -243,14 +247,8 @@ class GccxmlClassDescriber(object):
         self._pprint(node)
         self.visit(node)  # Walk farther down the tree
 
-    def visit_struct(self, node):
-        self._pprint(node)
-        #self.visit(node)  # Walk farther down the tree
-
     def visit_typedef(self, node):
         self._pprint(node)
-        #self.visit(node)  # Walk farther down the tree
-        #return node.attrib['name']
         name = node.attrib.get('name', None)
         if name == 'string':
             return 'str'
