@@ -18,6 +18,9 @@ CLASSES = [
     ]
 
 class DescriptionCache(object):
+    """A quick persistent cache for descriptions from files.  
+    The keys are (classname, filename) tuples.  The values are 
+    (hashes-of-the-file, description-dictionary) tuples."""
 
     def __init__(self, cachefile=os.path.join('build', 'desc.cache')):
         self.cachefile = cachefile
@@ -28,6 +31,8 @@ class DescriptionCache(object):
             self.cache = {}
 
     def isvalid(self, classname, filename):
+        """Boolean on whether the cach value for a (classname, filename)
+        tuple matches the state of the file on the system."""
         key = (classname, filename)
         if key not in self.cache:
             return False
@@ -51,6 +56,7 @@ class DescriptionCache(object):
         del self.cache[key]
 
     def dump(self):
+        """Writes the cache out to the filesystem."""
         with open(self.cachefile, 'w') as f:
             pickle.dump(self.cache, f, pickle.HIGHEST_PROTOCOL)
 
@@ -60,6 +66,8 @@ cache = DescriptionCache()
 
 
 def describe_class(classname, filename, verbose=False):
+    """Returns a description dictionary for a class (called classname) 
+    living in a file (called filename)."""
     # C++ description
     cppfilename = filename + '.cpp'
     if cache.isvalid(classname, cppfilename):
@@ -94,6 +102,7 @@ def describe_class(classname, filename, verbose=False):
 
 
 def main():
+    """Entry point for Bright API generation."""
     parser = argparse.ArgumentParser("Generates Bright API")
     parser.add_argument('--debug', action='store_true', default=False, 
                         help='build with debugging flags')
