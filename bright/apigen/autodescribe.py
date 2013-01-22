@@ -13,7 +13,7 @@ try:
     from clang import cindex
 except ImportError:
     try:
-        from .clang.v3_1 import cindex
+        from clang.v3_1 import cindex
     except ImportError:
         pass
 
