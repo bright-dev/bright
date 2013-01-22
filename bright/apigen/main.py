@@ -6,22 +6,19 @@ from pprint import pprint
 from autodescribe import describe, merge_descriptions
 
 CLASSES = [
-    # classname, filename, make cython bindings, make cyclus bindings
-    ('FCComp', 'fccomp.h', False, False),
-    ('Reprocess', 'reprocess.h', True, True),
+    # classname, base filename, make cython bindings, make cyclus bindings
+    ('FCComp', 'fccomp', False, False),
+    ('Reprocess', 'reprocess', True, True),
     ]
 
-def describe_class(classname, filename, env=None, description_filename=None, 
-                   verbose=False):
+def describe_class(classname, filename, env=None, verbose=False):
     if env is None:
         env = {}
-    if description_filename is None:
-        description_filename = filename.rsplit('.', 1)[0] + '.py'
-    descs = [describe(filename, classname=classname, verbose=verbose)]
-    if os.path.isfile(description_filename):
+    descs = [describe(filename + '.cpp', classname=classname, verbose=verbose)]
+    if os.path.isfile(filename + '.py'):
         glbs = globals()
         locs = {}
-        execfile(description_filename, glbs, locs)
+        execfile(filename + '.py', glbs, locs)
         if 'desc' not in locs:
             pydesc = {}
         elif callable(locs['desc']):
@@ -30,6 +27,12 @@ def describe_class(classname, filename, env=None, description_filename=None,
             pydesc = locs['desc']
         descs.append(pydesc)
     desc = merge_descriptions(descs)
+    basefilename = os.path.split(filename)[-1]
+    desc['cpp_filename'] = '{0}.cpp'.format(basefilename)
+    desc['header_filename'] = '{0}.h'.format(basefilename)
+    desc['pxd_filename'] = '{0}.pxd'.format(basefilename)
+    desc['pyx_filename'] = '{0}.pyx'.format(basefilename)
+    desc['cpppxd_filename'] = 'cpp_{0}.pxd'.format(basefilename)
     return desc
 
 
