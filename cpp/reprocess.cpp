@@ -82,7 +82,7 @@ bright::Reprocess::~Reprocess ()
 
 void bright::Reprocess::calc_params ()
 {
-  params_prior_calc["Mass"]  = mat_feed.mass;
+  params_prior_calc["Mass"] = mat_feed.mass;
   params_after_calc["Mass"] = mat_prod.mass;	
 };
 

@@ -2,6 +2,10 @@
 import os
 import argparse
 from pprint import pprint
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 from bright.apigen import typesystem as ts
 from bright.apigen.cythongen import gencpppxd, genpxd, genpyx
@@ -13,10 +17,58 @@ CLASSES = [
     ('Reprocess', 'reprocess', True, True),
     ]
 
-def describe_class(classname, filename, env=None, verbose=False):
-    if env is None:
-        env = {}
-    descs = [describe(filename + '.cpp', classname=classname, verbose=verbose)]
+class DescriptionCache(object):
+
+    def __init__(self, cachefile=os.path.join('build', 'desc.cache')):
+        self.cachefile = cachefile
+        if os.path.isfile(cachefile):
+            with open(cachefile, 'r') as f:
+                self.cache = pickle.load(f)
+        else:
+            self.cache = {}
+
+    def isvalid(self, classname, filename):
+        key = (classname, filename)
+        if key not in self.cache:
+            return False
+        cachehash = self.cache[key][0]
+        with open(filename, 'r') as f:
+            filestr = f.read()
+        currhash = hash(filestr)
+        return cachehash == currhash
+
+    def __getitem__(self, key):
+        return self.cache[key][1]  # return the description only
+
+    def __setitem__(self, key, value):
+        classname, filename = key
+        with open(filename, 'r') as f:
+            filestr = f.read()
+        currhash = hash(filestr)
+        self.cache[key] = (currhash, value)
+
+    def __delitem__(self, key):
+        del self.cache[key]
+
+    def dump(self):
+        with open(self.cachefile, 'w') as f:
+            pickle.dump(self.cache, f, pickle.HIGHEST_PROTOCOL)
+
+
+# singleton
+cache = DescriptionCache()
+
+
+def describe_class(classname, filename, verbose=False):
+    # C++ description
+    cppfilename = filename + '.cpp'
+    if cache.isvalid(classname, cppfilename):
+        cppdesc = cache[classname, cppfilename]
+    else:
+        cppdesc = describe(cppfilename, classname=classname, verbose=verbose)
+        cache[classname, cppfilename] = cppdesc
+
+    # python description
     if os.path.isfile(filename + '.py'):
         glbs = globals()
         locs = {}
@@ -27,8 +79,10 @@ def describe_class(classname, filename, env=None, verbose=False):
             pydesc = eval('desc()', glbs, locs)
         else:
             pydesc = locs['desc']
-        descs.append(pydesc)
-    desc = merge_descriptions(descs)
+    else:
+        pydesc = {}
+
+    desc = merge_descriptions([cppdesc, pydesc])
     basefilename = os.path.split(filename)[-1]
     desc['cpp_filename'] = '{0}.cpp'.format(basefilename)
     desc['header_filename'] = '{0}.h'.format(basefilename)
@@ -57,10 +111,23 @@ def main():
     env = {}
     for classname, fname, mkcython, mkcyclus in CLASSES:
         print("parsing " + classname)
-        env[classname] = describe_class(classname, os.path.join('cpp', fname), 
-                                        env=env, verbose=ns.verbose)
+        desc = env[classname] = describe_class(classname, 
+                                               os.path.join('cpp', fname), 
+                                               verbose=ns.verbose)
         if ns.verbose:
             pprint(env[classname])
+
+        print("registering " + classname)
+        pxd_base = desc['pxd_filename'].rsplit('.', 1)[0]        # eg, fccomp
+        cpppxd_base = desc['cpppxd_filename'].rsplit('.', 1)[0]  # eg, cpp_fccomp
+        ts.register_class(classname,                             # FCComp
+            cython_c_type=cpppxd_base + '.' + classname,         # cpp_fccomp.FCComp
+            cython_cimport=cpppxd_base,                          # cpp_fccomp
+            cython_cy_type=pxd_base + '.' + classname,           # fccomp.FCComp
+            cython_cyimport=pxd_base,                            # fccomp
+            )
+    cache.dump()
+
 
     # next, make cython bindings
     for classname, fname, mkcython, mkcyclus in CLASSES:
