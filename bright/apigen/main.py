@@ -3,7 +3,9 @@ import os
 import argparse
 from pprint import pprint
 
-from autodescribe import describe, merge_descriptions
+from bright.apigen import typesystem as ts
+from bright.apigen.cythongen import gencpppxd, genpxd, genpyx
+from bright.apigen.autodescribe import describe, merge_descriptions
 
 CLASSES = [
     # classname, base filename, make cython bindings, make cyclus bindings
@@ -30,6 +32,7 @@ def describe_class(classname, filename, env=None, verbose=False):
     basefilename = os.path.split(filename)[-1]
     desc['cpp_filename'] = '{0}.cpp'.format(basefilename)
     desc['header_filename'] = '{0}.h'.format(basefilename)
+    desc['metadata_filename'] = '{0}.py'.format(basefilename)
     desc['pxd_filename'] = '{0}.pxd'.format(basefilename)
     desc['pyx_filename'] = '{0}.pyx'.format(basefilename)
     desc['cpppxd_filename'] = 'cpp_{0}.pxd'.format(basefilename)
