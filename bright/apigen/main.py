@@ -35,11 +35,19 @@ def describe_class(classname, filename, env=None, description_filename=None,
 
 def main():
     parser = argparse.ArgumentParser("Generates Bright API")
-    parser.add_argument('--debug', action='store_true', default=False)
-    parser.add_argument('-v', '--verbose', action='store_true', 
-                                           dest='verbose', default=False)
+    parser.add_argument('--debug', action='store_true', default=False, 
+                        help='build with debugging flags')
+    parser.add_argument('--no-cython', action='store_false', dest='cython', 
+                        default=True, help="don't make cython bindings")
+    parser.add_argument('--no-cyclus', action='store_false', dest='cyclus', 
+                        default=True, help="don't make cyclus bindings")
+    parser.add_argument('-v', '--verbose', action='store_true', dest='verbose', 
+                        default=False, help="print more output")
     ns = parser.parse_args()
 
+    ns.cyclus = False  # FIXME cyclus bindings don't exist yet!
+
+    # compute all descriptions first 
     env = {}
     for classname, fname, mkcython, mkcyclus in CLASSES:
         print("parsing " + classname)
@@ -47,10 +55,18 @@ def main():
                                         env=env, verbose=ns.verbose)
         if ns.verbose:
             pprint(env[classname])
-        if mkcython:
-            pass
-        if mkcyclus:
-            pass
+
+    # next, make cython bindings
+    for classname, fname, mkcython, mkcyclus in CLASSES:
+        if not mkcython or not ns.cython:
+            continue
+        print("making cython bindings for " + classname)
+
+    # next, make cyclus bindings
+    for classname, fname, mkcython, mkcyclus in CLASSES:
+        if not mkcyclus or not ns.cyclus:
+            continue
+        print("making cyclus bindings for " + classname)
 
 
 if __name__ == '__main__':
