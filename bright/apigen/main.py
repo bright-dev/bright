@@ -143,6 +143,10 @@ def main():
         if not mkcython or not ns.cython:
             continue
         print("making cython bindings for " + classname)
+        desc = env[classname]
+        gencpppxd(desc)
+        genpxd(desc)
+        genpyx(desc)
 
     # next, make cyclus bindings
     for classname, fname, mkcython, mkcyclus in CLASSES:
