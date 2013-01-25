@@ -100,6 +100,15 @@ def describe_class(classname, filename, verbose=False):
     desc['cpppxd_filename'] = 'cpp_{0}.pxd'.format(basefilename)
     return desc
 
+# Classes and type to preregister with the typesyetem prior to doing any code 
+# generation.  
+PREREGISTER_KEYS = ['name', 'cython_c_type', 'cython_cimport', 'cython_cy_type',
+                    'cython_cyimport',]
+PREREGISTER_CLASSES = [
+    ('Material', 'cpp_material.Material', ('pyne', 'cpp_material'), 
+     'material.Material', ('pyne', 'material')),
+    ]
+
 
 def main():
     """Entry point for Bright API generation."""
@@ -137,6 +146,9 @@ def main():
             )
     cache.dump()
 
+    # now preregister types with the type system
+    for prc in PREREGISTER_CLASSES:
+        ts.register_class(**dict(zip(PREREGISTER_KEYS, prc)))
 
     # next, make cython bindings
     for classname, fname, mkcython, mkcyclus in CLASSES:
@@ -144,9 +156,9 @@ def main():
             continue
         print("making cython bindings for " + classname)
         desc = env[classname]
-        gencpppxd(desc)
-        genpxd(desc)
-        genpyx(desc)
+        print gencpppxd(desc)
+        print genpxd(desc)
+        print genpyx(desc)
 
     # next, make cyclus bindings
     for classname, fname, mkcython, mkcyclus in CLASSES:
