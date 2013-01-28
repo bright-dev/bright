@@ -49,7 +49,7 @@ calc_params_ds = """calc_params()
 Here the parameters for Reprocess are set.  For reprocessing, this amounts 
 to just a "Mass" parameter::
 
-    self.params_prior_calc["Mass"]  = self.mat_feed.mass
+    self.params_prior_calc["Mass"] = self.mat_feed.mass
     self.params_after_calc["Mass"] = self.mat_prod.mass
 
 """

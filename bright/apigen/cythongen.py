@@ -191,7 +191,7 @@ def _gen_property(name, t, doc=None, cached_names=None, inst_name="self._inst"):
     return lines
 
 
-def _gen_method(name, args, rtn, doc=None):
+def _gen_method(name, args, rtn, doc=None, inst_name="self._inst"):
     argfill = ", ".join(['self'] + [a[0] for a in args if 2 == len(a)] + \
                         ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)])
     lines  = ['def {0}({1}):'.format(name, argfill)]
@@ -209,7 +209,7 @@ def _gen_method(name, args, rtn, doc=None):
     rtype = cython_ctype(rtn)
     hasrtn = rtype not in set(['None', None, 'NULL', 'void'])
     argvals = ', '.join([argrtns[a[0]] for a in args])
-    fcall = 'self._inst.{0}({1})'.format(name, argvals)
+    fcall = '{0}.{1}({2})'.format(inst_name, name, argvals)
     if hasrtn:
         #fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtype, cached=False)
         fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtn, cached=False)
@@ -232,7 +232,7 @@ def _gen_method(name, args, rtn, doc=None):
 
 
 def _gen_constructor(classname, args, doc=None, cpppxd_filename=None, 
-                     cached_names=None):
+                     cached_names=None, inst_name="self._inst"):
     argfill = ", ".join(['self'] + [a[0] for a in args if 2 == len(a)] + \
                         ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)] +\
                         ['*args', '**kwargs'])
@@ -262,10 +262,25 @@ def _gen_constructor(classname, args, doc=None, cpppxd_filename=None,
     return lines
 
 
-def genpyx(desc):
+def _method_instance_name(desc, env, key, rtn):
+    classnames = (desc['parents'] or []) + [desc['name']]
+    for classname in classnames:
+        classrtn = env.get(classname, {}).get('methods', {}).get(key, NotImplemented)
+        print  key, rtn, classrtn
+        if rtn != classrtn:
+            continue
+        class_ctype = cython_ctype(desc['name'])
+        inst_name = "(<{0} *> self._inst)".format(class_ctype)
+        return inst_name
+
+
+def genpyx(desc, env=None):
     """Generates a *.pyx Cython wrapper implementation for exposing a C/C++ 
-    class based off of a dictionary (desc)ription.
+    class based off of a dictionary (desc)ription.  The (env)ironment is a 
+    dictionary of all class names known to their descriptions.
     """
+    if env is None:
+        env = {desc['name']: desc}
     nodocmsg = "no docstring for {0}, please file a bug report!"
     d = {'parents': ', '.join([cython_cytype(p) for p in desc['parents']]), }
     copy_from_desc = ['name', 'namespace', 'header_filename']
@@ -279,9 +294,12 @@ def genpyx(desc):
     class_ctype = cython_ctype(desc['name'])
     inst_name = "(<{0} *> self._inst)".format(class_ctype)
 
+    cimport_tups = set()
+    for parent in desc['parents']:
+        cython_cimport_tuples(parent, cimport_tups)
+
     alines = []
     cached_names = []
-    cimport_tups = set()
     attritems = sorted(desc['attrs'].items())
     for aname, atype in attritems:
         if aname.startswith('_'):
@@ -302,6 +320,10 @@ def genpyx(desc):
             continue  # skip private
         for a in margs:
             cython_cimport_tuples(a[1], cimport_tups)
+        minst_name = _method_instance_name(desc, env, mkey, mrtn) or inst_name
+        print 
+        print minst_name
+        print 
         if mrtn is None:
             # this must be a constructor
             if mname not in [desc['name'], '__init__']:
@@ -309,13 +331,13 @@ def genpyx(desc):
             mdoc = desc.get('docstrings', {}).get('methods', {}).get(mname, '')
             clines += _gen_constructor(desc['name'], margs, doc=mdoc, 
                                        cpppxd_filename=desc['cpppxd_filename'],
-                                       cached_names=cached_names)
+                                       cached_names=cached_names, inst_name=minst_name)
         else:
             # this is a normal method
             cython_cimport_tuples(mrtn, cimport_tups)
             mdoc = desc.get('docstrings', {}).get('methods', {})\
                                              .get(mname, nodocmsg.format(mname))
-            mlines += _gen_method(mname, margs, mrtn, mdoc)
+            mlines += _gen_method(mname, margs, mrtn, mdoc, inst_name=minst_name)
     d['methods_block'] = indent(mlines)
     d['constructor_block'] = indent(clines)
 

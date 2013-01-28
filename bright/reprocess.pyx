@@ -8,6 +8,8 @@
 ################################################
 """Python wrapper for Reprocess.
 """
+cimport fccomp
+from bright.cpp_fccomp cimport FCComp
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
@@ -112,7 +114,7 @@ cdef class Reprocess(fccomp.FCComp):
         """
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        rtnval = self._inst.calc()
+        rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc()
         rtnval_proxy = None(rtnval)
         return rtnval_proxy
     
@@ -146,7 +148,7 @@ cdef class Reprocess(fccomp.FCComp):
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
         incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
-        rtnval = self._inst.calc(incomp_proxy.map_ptr[0])
+        rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(incomp_proxy.map_ptr[0])
         rtnval_proxy = None(rtnval)
         return rtnval_proxy
     
@@ -180,7 +182,7 @@ cdef class Reprocess(fccomp.FCComp):
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
         instream_proxy = None(instream, not isinstance(instream, material._Material))
-        rtnval = self._inst.calc(instream_proxy.mat_pointer[0])
+        rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(instream_proxy.mat_pointer[0])
         rtnval_proxy = None(rtnval)
         return rtnval_proxy
     
@@ -190,11 +192,11 @@ cdef class Reprocess(fccomp.FCComp):
         Here the parameters for Reprocess are set.  For reprocessing, this amounts 
         to just a "Mass" parameter::
         
-            self.params_prior_calc["Mass"]  = self.mat_feed.mass
+            self.params_prior_calc["Mass"] = self.mat_feed.mass
             self.params_after_calc["Mass"] = self.mat_prod.mass
         
         """
-        self._inst.calc_params()
+        (<cpp_reprocess.Reprocess *> self._inst).calc_params()
     
     
     def initialize(self, sed):
@@ -213,6 +215,6 @@ cdef class Reprocess(fccomp.FCComp):
         """
         cdef conv._MapIntDouble sed_proxy
         sed_proxy = conv.MapIntDouble(sed, not isinstance(sed, conv._MapIntDouble))
-        self._inst.initialize(sed_proxy.map_ptr[0])
+        (<cpp_reprocess.Reprocess *> self._inst).initialize(sed_proxy.map_ptr[0])
     
     

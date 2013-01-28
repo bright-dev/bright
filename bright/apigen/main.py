@@ -162,7 +162,7 @@ def main():
         desc = env[classname]
         cpppxd = gencpppxd(desc)
         pxd = genpxd(desc)
-        pyx = genpyx(desc)
+        pyx = genpyx(desc, env)
         with open(os.path.join('bright', desc['cpppxd_filename']), 'w') as f:
             f.write(cpppxd)
         with open(os.path.join('bright', desc['pxd_filename']), 'w') as f:
