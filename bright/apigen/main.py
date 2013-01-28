@@ -139,13 +139,13 @@ def main():
             pprint(env[classname])
 
         print("registering " + classname)
-        pxd_base = desc['pxd_filename'].rsplit('.', 1)[0]        # eg, fccomp
-        cpppxd_base = desc['cpppxd_filename'].rsplit('.', 1)[0]  # eg, cpp_fccomp
-        ts.register_class(classname,                             # FCComp
-            cython_c_type=cpppxd_base + '.' + classname,         # cpp_fccomp.FCComp
-            cython_cimport=cpppxd_base,                          # cpp_fccomp
-            cython_cy_type=pxd_base + '.' + classname,           # fccomp.FCComp
-            cython_cyimport=pxd_base,                            # fccomp
+        pxd_base = desc['pxd_filename'].rsplit('.', 1)[0]         # eg, fccomp
+        cpppxd_base = desc['cpppxd_filename'].rsplit('.', 1)[0]   # eg, cpp_fccomp
+        ts.register_class(classname,                              # FCComp
+            cython_c_type=cpppxd_base + '.' + classname,          # cpp_fccomp.FCComp
+            cython_cimport=('bright.' + cpppxd_base, classname),  # from bright.cpp_fccomp import FCComp
+            cython_cy_type=pxd_base + '.' + classname,            # fccomp.FCComp   
+            cython_cyimport=pxd_base,                             # fccomp
             )
     cache.dump()
 
