@@ -66,10 +66,6 @@ cdef class Reprocess(fccomp.FCComp):
         self._sepeff = None
     
     
-    def __dealloc__(self):
-        if self._free_inst:
-            free(self._inst)
-
 
     # attributes
     property sepeff:
@@ -78,14 +74,14 @@ cdef class Reprocess(fccomp.FCComp):
             cdef conv._MapIntDouble sepeff_proxy
             if self._sepeff is None:
                 sepeff_proxy = conv.MapIntDouble(False, False)
-                sepeff_proxy.map_ptr = &self._inst.sepeff
+                sepeff_proxy.map_ptr = &(<cpp_reprocess.Reprocess *> self._inst).sepeff
                 self._sepeff = sepeff_proxy
             return self._sepeff
     
         def __set__(self, value):
             cdef conv._MapIntDouble value_proxy
             value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
-            self._inst.sepeff = value_proxy.map_ptr[0]
+            (<cpp_reprocess.Reprocess *> self._inst).sepeff = value_proxy.map_ptr[0]
     
     
     # methods

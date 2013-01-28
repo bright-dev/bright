@@ -144,10 +144,6 @@ cdef class {name}({parents}):
 
 
 {constructor_block}
-    def __dealloc__(self):
-        if self._free_inst:
-            free(self._inst)
-
 
     # attributes
 {attrs_block}
@@ -155,11 +151,11 @@ cdef class {name}({parents}):
 {methods_block}
 '''
 
-def _gen_property_get(name, t, cached_names=None):
+def _gen_property_get(name, t, cached_names=None, inst_name="self._inst"):
     """This generates a Cython property getter for a variable of a given 
     name and type."""
     lines = ['def __get__(self):']
-    decl, body, rtn, iscached = cython_c2py(name, t, inst_name="self._inst")
+    decl, body, rtn, iscached = cython_c2py(name, t, inst_name=inst_name)
     if decl is not None: 
         lines += indent(decl, join=False)
     if body is not None:
@@ -170,7 +166,7 @@ def _gen_property_get(name, t, cached_names=None):
     return lines
 
 
-def _gen_property_set(name, t):
+def _gen_property_set(name, t, inst_name="self._inst"):
     """This generates a Cython property setter for a variable of a given 
     name and type."""
     lines = ['def __set__(self, value):']
@@ -179,17 +175,18 @@ def _gen_property_set(name, t):
         lines += indent(decl, join=False)
     if body is not None:
         lines += indent(body, join=False)
-    lines += indent("self._inst.{0} = {1}".format(name, rtn), join=False)
+    lines += indent("{0}.{1} = {2}".format(inst_name, name, rtn), join=False)
     return lines
 
 
-def _gen_property(name, t, doc=None, cached_names=None):
+def _gen_property(name, t, doc=None, cached_names=None, inst_name="self._inst"):
     """This generates a Cython property for a variable of a given name and type."""
     lines  = ['property {0}:'.format(name)] 
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
-    lines += indent(_gen_property_get(name, t, cached_names=cached_names), join=False)
+    lines += indent(_gen_property_get(name, t, cached_names=cached_names, 
+                                      inst_name=inst_name), join=False)
     lines += ['']
-    lines += indent(_gen_property_set(name, t), join=False)
+    lines += indent(_gen_property_set(name, t, inst_name=inst_name), join=False)
     lines += ['', ""]
     return lines
 
@@ -279,6 +276,9 @@ def genpyx(desc):
     class_doc = desc.get('docstrings', {}).get('class', nodocmsg.format(desc['name']))
     d['class_docstring'] = indent('\"\"\"{0}\"\"\"'.format(class_doc))
 
+    class_ctype = cython_ctype(desc['name'])
+    inst_name = "(<{0} *> self._inst)".format(class_ctype)
+
     alines = []
     cached_names = []
     cimport_tups = set()
@@ -288,7 +288,8 @@ def genpyx(desc):
             continue  # skip private
         adoc = desc.get('docstrings', {}).get('attrs', {})\
                                          .get(aname, nodocmsg.format(aname))
-        alines += _gen_property(aname, atype, adoc, cached_names=cached_names)
+        alines += _gen_property(aname, atype, adoc, cached_names=cached_names, 
+                                inst_name=inst_name)
         cython_cimport_tuples(atype, cimport_tups)
     d['attrs_block'] = indent(alines)
 
