@@ -46,8 +46,11 @@ def gencpppxd(desc, exception_type='+'):
         d[key] = desc[key]
     inc = set(['c'])
 
-    alines = []
     cimport_tups = set()
+    for parent in desc['parents']:
+        cython_cimport_tuples(parent, cimport_tups, inc)
+
+    alines = []
     attritems = sorted(desc['attrs'].items())
     for aname, atype in attritems:
         if aname.startswith('_'):
@@ -62,8 +65,8 @@ def gencpppxd(desc, exception_type='+'):
     methitems = sorted(expand_default_args(desc['methods'].items()))
     for mkey, mrtn in methitems:
         mname, margs = mkey[0], mkey[1:]
-        if mname.startswith('_'):
-            continue
+        if mname.startswith('_') or mname.startswith('~'):
+            continue  # private or destructor
         argfill = ", ".join([cython_ctype(a[1]) for a in margs])
         for a in margs:
             cython_cimport_tuples(a[1], cimport_tups, inc)
@@ -294,7 +297,6 @@ def genpyx(desc):
     methitems = sorted(desc['methods'].items())
     for mkey, mrtn in methitems:
         mname, margs = mkey[0], mkey[1:]
-        print mname, margs
         if mname.startswith('_'):
             continue  # skip private
         for a in margs:

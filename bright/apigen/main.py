@@ -158,10 +158,17 @@ def main():
         if not mkcython or not ns.cython:
             continue
         print("making cython bindings for " + classname)
+        # generate first, then write out this is atomic per-class
         desc = env[classname]
-        print gencpppxd(desc)
-        print genpxd(desc)
-        print genpyx(desc)
+        cpppxd = gencpppxd(desc)
+        pxd = genpxd(desc)
+        pyx = genpyx(desc)
+        with open(os.path.join('bright', desc['cpppxd_filename']), 'w') as f:
+            f.write(cpppxd)
+        with open(os.path.join('bright', desc['pxd_filename']), 'w') as f:
+            f.write(pxd)
+        with open(os.path.join('bright', desc['pyx_filename']), 'w') as f:
+            f.write(pyx)
 
     # next, make cyclus bindings
     for classname, fname, mkcython, mkcyclus in CLASSES:
