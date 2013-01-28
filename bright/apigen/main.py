@@ -103,10 +103,13 @@ def describe_class(classname, filename, verbose=False):
 # Classes and type to preregister with the typesyetem prior to doing any code 
 # generation.  
 PREREGISTER_KEYS = ['name', 'cython_c_type', 'cython_cimport', 'cython_cy_type',
-                    'cython_cyimport',]
+                    'cython_cyimport', 'cython_c2py', 'cython_py2c']
 PREREGISTER_CLASSES = [
     ('Material', 'cpp_material.Material', ('pyne', 'cpp_material'), 
-     'material.Material', ('pyne', 'material')),
+     'material.Material', ('pyne', 'material'), 
+     ('{pytype}({var})', '{proxy_name} = {pytype}({var})'),
+     ('{proxy_name} = {pytype}({var}, not isinstance({var}, {cytype}))',
+      '{proxy_name}.mat_pointer[0]')),
     ]
 
 

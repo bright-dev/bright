@@ -506,7 +506,6 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
                 cache_name=None):
     """Given a varibale name and type, returns cython code (declaration, body, 
     and return) to convert the variable from C/C++ to Python."""
-    import pdb; pdb.set_trace()
     tkey = t
     while not isinstance(tkey, basestring):
         tkey = tkey[0]

@@ -211,7 +211,8 @@ def _gen_method(name, args, rtn, doc=None):
     argvals = ', '.join([argrtns[a[0]] for a in args])
     fcall = 'self._inst.{0}({1})'.format(name, argvals)
     if hasrtn:
-        fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtype, cached=False)
+        #fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtype, cached=False)
+        fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtn, cached=False)
         decls += indent("cdef {0} {1}".format(rtype, 'rtnval'), join=False)
         func_call = indent('rtnval = {0}'.format(fcall), join=False)
         if fcdecl is not None: 
@@ -293,6 +294,7 @@ def genpyx(desc):
     methitems = sorted(desc['methods'].items())
     for mkey, mrtn in methitems:
         mname, margs = mkey[0], mkey[1:]
+        print mname, margs
         if mname.startswith('_'):
             continue  # skip private
         for a in margs:
