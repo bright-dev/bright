@@ -34,7 +34,7 @@ def main_body():
         os.mkdir('build')
     sys.argv, cmake_args, make_args = parse_args()
     makefile = os.path.join('build', 'Makefile')
-    if not os.path.exists(makefile):
+    if not os.path.exists(makefile) and cmake_args != ['--skip']:
         cmake_cmd = ['cmake', '..'] + cmake_args
         if os.name == 'nt':
             files_on_path = set()
@@ -49,7 +49,8 @@ def main_body():
                 cmake_cmd += ['-G "MinGW Makefiles"']
             cmake_cmd = ' '.join(cmake_cmd)
         rtn = subprocess.check_call(cmake_cmd, cwd='build', shell=(os.name=='nt'))
-    rtn = subprocess.check_call(['make'] + make_args, cwd='build')
+    if make_args != ['--skip']:
+        rtn = subprocess.check_call(['make'] + make_args, cwd='build')
     cwd = os.getcwd()
     os.chdir('build')
     configure.setup()

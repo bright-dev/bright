@@ -106,7 +106,7 @@ PREREGISTER_KEYS = ['name', 'cython_c_type', 'cython_cimport', 'cython_cy_type',
                     'cython_cyimport', 'cython_c2py', 'cython_py2c']
 PREREGISTER_CLASSES = [
     ('Material', 'cpp_material.Material', ('pyne', 'cpp_material'), 
-     'material.Material', ('pyne', 'material'), 
+     'material._Material', ('pyne', 'material'), 
      ('{pytype}({var})', '{proxy_name} = {pytype}({var})'),
      ('{proxy_name} = {pytype}({var}, not isinstance({var}, {cytype}))',
       '{proxy_name}.mat_pointer[0]')),
@@ -158,7 +158,7 @@ def main():
         if not mkcython or not ns.cython:
             continue
         print("making cython bindings for " + classname)
-        # generate first, then write out this is atomic per-class
+        # generate first, then write out to ensure this is atomic per-class
         desc = env[classname]
         cpppxd = gencpppxd(desc)
         pxd = genpxd(desc)

@@ -10,6 +10,4 @@ cimport cpp_reprocess
 cimport fccomp
 
 cdef class Reprocess(fccomp.FCComp):
-#    cdef cpp_reprocess.Reprocess * _inst
-#    cdef public bint _free_inst
     pass

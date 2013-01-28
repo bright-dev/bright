@@ -95,8 +95,7 @@ _pxd_template = AUTOGEN_WARNING + \
 """{cimports}
 
 cdef class {name}({parents}):
-    cdef {name_type} * _inst
-    cdef public bint _free_inst
+{body}
 """
 
 
@@ -123,6 +122,7 @@ def genpxd(desc):
     cython_cimport_tuples(desc['name'], cimport_tups, set(['c']))
 
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
+    d['body'] = indent(['pass'], 4)
     pxd = _pxd_template.format(**d)
     return pxd
     
