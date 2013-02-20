@@ -11,6 +11,7 @@ from libcpp.string cimport string as std_string
 
 cimport numpy as np
 import numpy as np
+np.import_array()
 
 from pyne cimport nucname
 
@@ -708,6 +709,9 @@ cdef class Reactor1G(fccomp.FCComp):
         """The reactor burnup [MWd/kgIHM] as a function of fluence.  This is the linear
         combination of ``BUi_F_`` for all initial nuclides using miF as weights."""
         def __get__(self):
+            #cdef np.npy_intp shape[1]
+            #shape[0] = <np.npy_intp> (<cpp_reactor1g.Reactor1G *> self._inst).BU_F_.size()
+            #return np.PyArray_SimpleNewFromData(1, shape, np.NPY_FLOAT64, &((<cpp_reactor1g.Reactor1G *> self._inst).BU_F_)[0])
             return conv.vector_to_array_1d_dbl((<cpp_reactor1g.Reactor1G *> self._inst).BU_F_)
 
         def __set__(self, np.ndarray[np.float64_t, ndim=1] value):
