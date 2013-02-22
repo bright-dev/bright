@@ -115,7 +115,8 @@ cdef class Reprocess(fccomp.FCComp):
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
         rtnval = (<cpp_fccomp.FCComp *> self._inst).calc()
-        rtnval_proxy = None(rtnval)
+        rtnval_proxy = material.Material()
+        rtnval_proxy.mat_pointer = &rtnval
         return rtnval_proxy
     
     
@@ -149,7 +150,8 @@ cdef class Reprocess(fccomp.FCComp):
         cdef material._Material rtnval_proxy
         incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
         rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(incomp_proxy.map_ptr[0])
-        rtnval_proxy = None(rtnval)
+        rtnval_proxy = material.Material()
+        rtnval_proxy.mat_pointer = &rtnval
         return rtnval_proxy
     
     
@@ -181,9 +183,10 @@ cdef class Reprocess(fccomp.FCComp):
         cdef material._Material instream_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        instream_proxy = None(instream, not isinstance(instream, material._Material))
+        instream_proxy = material.Material(instream, not isinstance(instream, material._Material))
         rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(instream_proxy.mat_pointer[0])
-        rtnval_proxy = None(rtnval)
+        rtnval_proxy = material.Material()
+        rtnval_proxy.mat_pointer = &rtnval
         return rtnval_proxy
     
     

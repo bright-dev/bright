@@ -324,9 +324,6 @@ def genpyx(desc, env=None):
         minst_name, mcname = _method_instance_names(desc, env, mkey, mrtn)
         if mcname != desc['name']:
             cython_cimport_tuples(mcname, cimport_tups)
-        print 
-        print minst_name
-        print 
         if mrtn is None:
             # this must be a constructor
             if mname not in [desc['name'], '__init__']:
