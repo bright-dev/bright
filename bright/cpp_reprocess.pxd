@@ -6,14 +6,14 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-from bright.cpp_fccomp cimport FCComp
+from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
 
 cdef extern from "reprocess.h" namespace "bright":
 
-    cdef cppclass Reprocess(FCComp):
+    cdef cppclass Reprocess(cpp_fccomp.FCComp):
         # constructors
         Reprocess() except +
         Reprocess(cpp_map[int, double]) except +

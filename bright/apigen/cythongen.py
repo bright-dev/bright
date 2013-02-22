@@ -40,7 +40,7 @@ def gencpppxd(desc, exception_type='+'):
     """Generates a cpp_*.pxd Cython header file for exposing C/C++ data from to 
     other Cython wrappers based off of a dictionary (desc)ription.
     """
-    d = {'parents': ', '.join(desc['parents']), }
+    d = {'parents': ', '.join([cython_ctype(p) for p in desc['parents']]), }
     copy_from_desc = ['name', 'namespace', 'header_filename']
     for key in copy_from_desc:
         d[key] = desc[key]
@@ -262,16 +262,17 @@ def _gen_constructor(classname, args, doc=None, cpppxd_filename=None,
     return lines
 
 
-def _method_instance_name(desc, env, key, rtn):
+def _method_instance_names(desc, env, key, rtn):
     classnames = (desc['parents'] or []) + [desc['name']]
     for classname in classnames:
         classrtn = env.get(classname, {}).get('methods', {}).get(key, NotImplemented)
-        print  key, rtn, classrtn
         if rtn != classrtn:
             continue
-        class_ctype = cython_ctype(desc['name'])
+        #class_ctype = cython_ctype(desc['name'])
+        class_ctype = cython_ctype(classname)
         inst_name = "(<{0} *> self._inst)".format(class_ctype)
-        return inst_name
+        return inst_name, classname
+    return "(<{0} *> self._inst)".format(desc['name']), desc['name']
 
 
 def genpyx(desc, env=None):
@@ -320,7 +321,9 @@ def genpyx(desc, env=None):
             continue  # skip private
         for a in margs:
             cython_cimport_tuples(a[1], cimport_tups)
-        minst_name = _method_instance_name(desc, env, mkey, mrtn) or inst_name
+        minst_name, mcname = _method_instance_names(desc, env, mkey, mrtn)
+        if mcname != desc['name']:
+            cython_cimport_tuples(mcname, cimport_tups)
         print 
         print minst_name
         print 

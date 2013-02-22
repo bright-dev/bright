@@ -9,13 +9,13 @@ import itertools
 from pprint import pprint, pformat
 
 # CLang conditional imports
-try:
-    from clang import cindex
-except ImportError:
-    try:
-        from clang.v3_1 import cindex
-    except ImportError:
-        pass
+#try:
+#    from clang import cindex
+#except ImportError:
+#    try:
+#        from clang.v3_1 import cindex
+#    except ImportError:
+#        pass
 
 # GCC-XML conditional imports
 try:

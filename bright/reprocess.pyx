@@ -9,7 +9,7 @@
 """Python wrapper for Reprocess.
 """
 cimport fccomp
-from bright.cpp_fccomp cimport FCComp
+from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
@@ -114,7 +114,7 @@ cdef class Reprocess(fccomp.FCComp):
         """
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc()
+        rtnval = (<cpp_fccomp.FCComp *> self._inst).calc()
         rtnval_proxy = None(rtnval)
         return rtnval_proxy
     
@@ -196,7 +196,7 @@ cdef class Reprocess(fccomp.FCComp):
             self.params_after_calc["Mass"] = self.mat_prod.mass
         
         """
-        (<cpp_reprocess.Reprocess *> self._inst).calc_params()
+        (<cpp_fccomp.FCComp *> self._inst).calc_params()
     
     
     def initialize(self, sed):
