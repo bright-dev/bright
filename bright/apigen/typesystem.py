@@ -582,8 +582,8 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
         tkey = tkey[1] if (0 < len(tkey) and isrefinement(tkey[1])) else tkey[0]
     py2ct = _cython_py2c_conv[tkey]
     if py2ct is NotImplemented:
-        raise NotImplementedError('conversion from C/C++ to Python for ' + \
-                                  t + 'has not been implemented for ')
+        raise NotImplementedError('conversion from Python to C/C++ for ' + \
+                                  t + 'has not been implemented.')
     body_template, rtn_template = py2ct
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)

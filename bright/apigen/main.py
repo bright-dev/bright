@@ -2,6 +2,7 @@
 import os
 import argparse
 from pprint import pprint
+from hashlib import md5
 try:
     import cPickle as pickle
 except ImportError:
@@ -39,7 +40,7 @@ class DescriptionCache(object):
         cachehash = self.cache[key][0]
         with open(filename, 'r') as f:
             filestr = f.read()
-        currhash = hash(filestr)
+        currhash = md5(filestr).hexdigest()
         return cachehash == currhash
 
     def __getitem__(self, key):
@@ -49,7 +50,7 @@ class DescriptionCache(object):
         classname, filename = key
         with open(filename, 'r') as f:
             filestr = f.read()
-        currhash = hash(filestr)
+        currhash = md5(filestr).hexdigest()
         self.cache[key] = (currhash, value)
 
     def __delitem__(self, key):
