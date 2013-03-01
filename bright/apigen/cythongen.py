@@ -191,10 +191,10 @@ def _gen_property(name, t, doc=None, cached_names=None, inst_name="self._inst"):
     return lines
 
 
-def _gen_method(name, args, rtn, doc=None, inst_name="self._inst"):
+def _gen_method(name, name_mangled, args, rtn, doc=None, inst_name="self._inst"):
     argfill = ", ".join(['self'] + [a[0] for a in args if 2 == len(a)] + \
                         ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)])
-    lines  = ['def {0}({1}):'.format(name, argfill)]
+    lines  = ['def {0}({1}):'.format(name_mangled, argfill)]
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
     decls = []
     argbodies = []
@@ -231,12 +231,12 @@ def _gen_method(name, args, rtn, doc=None, inst_name="self._inst"):
     return lines
 
 
-def _gen_constructor(classname, args, doc=None, cpppxd_filename=None, 
-                     cached_names=None, inst_name="self._inst"):
+def _gen_constructor(name, name_mangled, classname, args, doc=None, 
+                     cpppxd_filename=None, cached_names=None, inst_name="self._inst"):
     argfill = ", ".join(['self'] + [a[0] for a in args if 2 == len(a)] + \
                         ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)] +\
                         ['*args', '**kwargs'])
-    lines  = ['def __init__({0}):'.format(argfill)]
+    lines  = ['def {0}({1}):'.format(name_mangled, argfill)]
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
     decls = []
     argbodies = []
@@ -274,6 +274,13 @@ def _method_instance_names(desc, env, key, rtn):
         return inst_name, classname
     return "(<{0} *> self._inst)".format(desc['name']), desc['name']
 
+
+def _count0(x):
+    c = {}
+    for v in x:
+        v0 = v[0]
+        c[v0] = c.get(v0, 0) + 1
+    return c
 
 def genpyx(desc, env=None):
     """Generates a *.pyx Cython wrapper implementation for exposing a C/C++ 
@@ -314,11 +321,20 @@ def genpyx(desc, env=None):
 
     mlines = []
     clines = []
+    methcounts = _count0(desc['methods'])
+    currcounts = {k: 0 for k in methcounts}
+    mangled_mnames = {}
     methitems = sorted(desc['methods'].items())
     for mkey, mrtn in methitems:
         mname, margs = mkey[0], mkey[1:]
         if mname.startswith('_'):
             continue  # skip private
+        if 1 < methcounts[mname]:
+            mname_mangled = "_{0}__{1}".format(mname, currcounts[mname]) 
+        else:
+            mname_mangled = mname
+        currcounts[mname] += 1
+        mangled_mnames[mkey] = mname
         for a in margs:
             cython_cimport_tuples(a[1], cimport_tups)
         minst_name, mcname = _method_instance_names(desc, env, mkey, mrtn)
@@ -329,7 +345,8 @@ def genpyx(desc, env=None):
             if mname not in [desc['name'], '__init__']:
                 continue  # skip destuctors
             mdoc = desc.get('docstrings', {}).get('methods', {}).get(mname, '')
-            clines += _gen_constructor(desc['name'], margs, doc=mdoc, 
+            clines += _gen_constructor(mname, mname_mangled, 
+                                       desc['name'], margs, doc=mdoc, 
                                        cpppxd_filename=desc['cpppxd_filename'],
                                        cached_names=cached_names, inst_name=minst_name)
         else:
@@ -337,7 +354,8 @@ def genpyx(desc, env=None):
             cython_cimport_tuples(mrtn, cimport_tups)
             mdoc = desc.get('docstrings', {}).get('methods', {})\
                                              .get(mname, nodocmsg.format(mname))
-            mlines += _gen_method(mname, margs, mrtn, mdoc, inst_name=minst_name)
+            mlines += _gen_method(mname, mname_mangled, margs, mrtn, mdoc, 
+                                  inst_name=minst_name)
     d['methods_block'] = indent(mlines)
     d['constructor_block'] = indent(clines)
 

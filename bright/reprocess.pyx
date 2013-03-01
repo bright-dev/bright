@@ -46,13 +46,13 @@ cdef class Reprocess(fccomp.FCComp):
         self._free_inst = True
 
 
-    def __init__(self, *args, **kwargs):
+    def _Reprocess__0(self, *args, **kwargs):
         """"""
         self._inst = new cpp_reprocess.Reprocess()
         self._sepeff = None
     
     
-    def __init__(self, sed, n="", *args, **kwargs):
+    def _Reprocess__1(self, sed, n="", *args, **kwargs):
         """"""
         cdef conv._MapIntDouble sed_proxy
         sed_proxy = conv.MapIntDouble(sed, not isinstance(sed, conv._MapIntDouble))
@@ -60,7 +60,7 @@ cdef class Reprocess(fccomp.FCComp):
         self._sepeff = None
     
     
-    def __init__(self, ssed, n="", *args, **kwargs):
+    def _Reprocess__2(self, ssed, n="", *args, **kwargs):
         """"""
         cdef conv._MapStrDouble ssed_proxy
         ssed_proxy = conv.MapStrDouble(ssed, not isinstance(ssed, conv._MapStrDouble))
@@ -87,7 +87,7 @@ cdef class Reprocess(fccomp.FCComp):
     
     
     # methods
-    def calc(self):
+    def _calc__0(self):
         """calc(input=None)
         This method performs the relatively simply task of multiplying the current 
         input stream by the SE to form a new output stream::
@@ -120,7 +120,7 @@ cdef class Reprocess(fccomp.FCComp):
         return rtnval_proxy
     
     
-    def calc(self, incomp):
+    def _calc__1(self, incomp):
         """calc(input=None)
         This method performs the relatively simply task of multiplying the current 
         input stream by the SE to form a new output stream::
@@ -155,7 +155,7 @@ cdef class Reprocess(fccomp.FCComp):
         return rtnval_proxy
     
     
-    def calc(self, instream):
+    def _calc__2(self, instream):
         """calc(input=None)
         This method performs the relatively simply task of multiplying the current 
         input stream by the SE to form a new output stream::
