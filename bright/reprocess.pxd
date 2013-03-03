@@ -8,6 +8,8 @@
 ################################################
 cimport cpp_reprocess
 cimport fccomp
+from libcpp.map cimport map as cpp_map
+from pyne cimport stlconverters as conv
 
 cdef class Reprocess(fccomp.FCComp):
-    pass
+    cdef public conv._MapIntDouble _sepeff

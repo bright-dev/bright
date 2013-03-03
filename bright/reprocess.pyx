@@ -47,11 +47,12 @@ cdef class Reprocess(fccomp.FCComp):
         self._inst = NULL
         self._free_inst = True
 
+        # cached property defaults
+        self._sepeff = None
 
     def _reprocess_reprocess_0(self, *args, **kwargs):
         """"""
         self._inst = new cpp_reprocess.Reprocess()
-        self._sepeff = None
     
     
     def _reprocess_reprocess_1(self, sed, n="", *args, **kwargs):
@@ -59,7 +60,6 @@ cdef class Reprocess(fccomp.FCComp):
         cdef conv._MapIntDouble sed_proxy
         sed_proxy = conv.MapIntDouble(sed, not isinstance(sed, conv._MapIntDouble))
         self._inst = new cpp_reprocess.Reprocess(sed_proxy.map_ptr[0], std_string(<char *> n))
-        self._sepeff = None
     
     
     def _reprocess_reprocess_2(self, ssed, n="", *args, **kwargs):
@@ -67,7 +67,6 @@ cdef class Reprocess(fccomp.FCComp):
         cdef conv._MapStrDouble ssed_proxy
         ssed_proxy = conv.MapStrDouble(ssed, not isinstance(ssed, conv._MapStrDouble))
         self._inst = new cpp_reprocess.Reprocess(ssed_proxy.map_ptr[0], std_string(<char *> n))
-        self._sepeff = None
     
     
     _reprocess_reprocess_0_argtypes = frozenset()
@@ -104,7 +103,7 @@ cdef class Reprocess(fccomp.FCComp):
             return
         except (RuntimeError, TypeError, NameError):
             pass
-        raise RuntimeError('method __init__ could not be dispatched')
+        raise RuntimeError('method __init__() could not be dispatched')
     
     
 
@@ -280,7 +279,7 @@ cdef class Reprocess(fccomp.FCComp):
             return self._reprocess_calc_2(*args, **kwargs)
         except (RuntimeError, TypeError, NameError):
             pass
-        raise RuntimeError('method calc could not be dispatched')
+        raise RuntimeError('method calc() could not be dispatched')
     
     
     def calc_params(self):

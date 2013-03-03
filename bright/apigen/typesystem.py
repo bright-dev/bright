@@ -564,7 +564,7 @@ _cython_c2py_conv = {
 
 @_memoize
 def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None, 
-                cache_name=None):
+                cache_name=None, cache_prefix='self'):
     """Given a varibale name and type, returns cython code (declaration, body, 
     and return) to convert the variable from C/C++ to Python."""
     #tkey = t
@@ -582,7 +582,8 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
     var = name if inst_name is None else "{0}.{1}".format(inst_name, name)
-    cache_name = "self._{0}".format(name) if cache_name is None else cache_name
+    cache_name = "_{0}".format(name) if cache_name is None else cache_name
+    cache_name = cache_name if cache_prefix is None else "{0}.{1}".format(cache_prefix, cache_name)
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
     iscached = False
     if 1 == len(c2pyt) or ind == 0:

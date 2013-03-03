@@ -121,8 +121,20 @@ def genpxd(desc):
     d['name_type'] = cython_ctype(desc['name'])
     cython_cimport_tuples(desc['name'], cimport_tups, set(['c']))
 
+    body = []
+    attritems = sorted(desc['attrs'].items())
+    for aname, atype in attritems:
+        if aname.startswith('_'):
+            continue  # skip private
+        _, _, cachename, iscached = cython_c2py(aname, atype, cache_prefix=None)
+        if iscached:
+            cython_cimport_tuples(atype, cimport_tups)
+            cyt = cython_cytype(atype)
+            decl = "cdef public {0} {1}".format(cyt, cachename)
+            body.append(decl)
+
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
-    d['body'] = indent(['pass'], 4)
+    d['body'] = indent(body or ['pass'])
     pxd = _pxd_template.format(**d)
     return pxd
     
@@ -142,6 +154,8 @@ cdef class {name}({parents}):
         self._inst = NULL
         self._free_inst = True
 
+        # cached property defaults
+{property_defaults}
 
 {constructor_block}
 
@@ -211,7 +225,6 @@ def _gen_method(name, name_mangled, args, rtn, doc=None, inst_name="self._inst")
     argvals = ', '.join([argrtns[a[0]] for a in args])
     fcall = '{0}.{1}({2})'.format(inst_name, name, argvals)
     if hasrtn:
-        #fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtype, cached=False)
         fcdecl, fcbody, fcrtn, fccached = cython_c2py('rtnval', rtn, cached=False)
         decls += indent("cdef {0} {1}".format(rtype, 'rtnval'), join=False)
         func_call = indent('rtnval = {0}'.format(fcall), join=False)
@@ -232,7 +245,7 @@ def _gen_method(name, name_mangled, args, rtn, doc=None, inst_name="self._inst")
 
 
 def _gen_constructor(name, name_mangled, classname, args, doc=None, 
-                     cpppxd_filename=None, cached_names=None, inst_name="self._inst"):
+                     cpppxd_filename=None, inst_name="self._inst"):
     argfill = ", ".join(['self'] + [a[0] for a in args if 2 == len(a)] + \
                         ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)] +\
                         ['*args', '**kwargs'])
@@ -256,8 +269,6 @@ def _gen_constructor(name, name_mangled, classname, args, doc=None,
     lines += decls
     lines += argbodies
     lines += func_call
-    if cached_names is not None:
-        lines += indent(["{0} = None".format(n) for n in cached_names], join=False)
     lines += ['', ""]
     return lines
 
@@ -299,7 +310,7 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
         lines += indent(indent(rline, join=False), join=False)
         lines += indent(["except (RuntimeError, TypeError, NameError):",
                          indent("pass", join=False)[0],], join=False)
-    errmsg = "raise RuntimeError('method {0} could not be dispatched')".format(name)
+    errmsg = "raise RuntimeError('method {0}() could not be dispatched')".format(name)
     lines += indent(errmsg, join=False)
     lines += ['', ""]
     return lines
@@ -364,6 +375,8 @@ def genpyx(desc, env=None):
         cython_import_tuples(atype, import_tups)
         cython_cimport_tuples(atype, cimport_tups)
     d['attrs_block'] = indent(alines)
+    pd = ["{0} = None".format(n) for n in cached_names]
+    d['property_defaults'] = indent(indent(pd, join=False))
 
     mlines = []
     clines = []
@@ -397,7 +410,7 @@ def genpyx(desc, env=None):
             clines += _gen_constructor(mname, mname_mangled, 
                                        desc['name'], margs, doc=mdoc, 
                                        cpppxd_filename=desc['cpppxd_filename'],
-                                       cached_names=cached_names, inst_name=minst_name)
+                                       inst_name=minst_name)
             if 1 < methcounts[mname] and currcounts[mname] == methcounts[mname]:
                 # write dispatcher
                 nm = {k: v for k, v in mangled_mnames.iteritems() if k[0] == mname}
