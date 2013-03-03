@@ -46,13 +46,13 @@ cdef class Reprocess(fccomp.FCComp):
         self._free_inst = True
 
 
-    def _Reprocess__0(self, *args, **kwargs):
+    def _reprocess_reprocess_0(self, *args, **kwargs):
         """"""
         self._inst = new cpp_reprocess.Reprocess()
         self._sepeff = None
     
     
-    def _Reprocess__1(self, sed, n="", *args, **kwargs):
+    def _reprocess_reprocess_1(self, sed, n="", *args, **kwargs):
         """"""
         cdef conv._MapIntDouble sed_proxy
         sed_proxy = conv.MapIntDouble(sed, not isinstance(sed, conv._MapIntDouble))
@@ -60,12 +60,34 @@ cdef class Reprocess(fccomp.FCComp):
         self._sepeff = None
     
     
-    def _Reprocess__2(self, ssed, n="", *args, **kwargs):
+    def _reprocess_reprocess_2(self, ssed, n="", *args, **kwargs):
         """"""
         cdef conv._MapStrDouble ssed_proxy
         ssed_proxy = conv.MapStrDouble(ssed, not isinstance(ssed, conv._MapStrDouble))
         self._inst = new cpp_reprocess.Reprocess(ssed_proxy.map_ptr[0], std_string(<char *> n))
         self._sepeff = None
+    
+    
+    _reprocess_reprocess_0_argtypes = {}
+    _reprocess_reprocess_1_argtypes = {0: conv.MapIntDouble, 1: str, "sed": conv.MapIntDouble, "n": str}
+    _reprocess_reprocess_2_argtypes = {0: conv.MapStrDouble, 1: str, "ssed": conv.MapStrDouble, "n": str}
+    
+    def __init__(self, *args, **kwargs):
+        """"""
+        types = dict([(i, type(a)) for i, a in enumerate(args)])
+        types.update([(k, type(v)) for k, v in kwargs.iteritems()])
+        methargtypes = self._reprocess_reprocess_0_argtypes
+        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+            self._reprocess_reprocess_0(*args, **kwargs)
+            return
+        methargtypes = self._reprocess_reprocess_1_argtypes
+        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+            self._reprocess_reprocess_1(*args, **kwargs)
+            return
+        methargtypes = self._reprocess_reprocess_2_argtypes
+        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+            self._reprocess_reprocess_2(*args, **kwargs)
+            return
     
     
 
@@ -87,7 +109,7 @@ cdef class Reprocess(fccomp.FCComp):
     
     
     # methods
-    def _calc__0(self):
+    def _reprocess_calc_0(self):
         """calc(input=None)
         This method performs the relatively simply task of multiplying the current 
         input stream by the SE to form a new output stream::
@@ -120,7 +142,7 @@ cdef class Reprocess(fccomp.FCComp):
         return rtnval_proxy
     
     
-    def _calc__1(self, incomp):
+    def _reprocess_calc_1(self, incomp):
         """calc(input=None)
         This method performs the relatively simply task of multiplying the current 
         input stream by the SE to form a new output stream::
@@ -155,7 +177,7 @@ cdef class Reprocess(fccomp.FCComp):
         return rtnval_proxy
     
     
-    def _calc__2(self, instream):
+    def _reprocess_calc_2(self, instream):
         """calc(input=None)
         This method performs the relatively simply task of multiplying the current 
         input stream by the SE to form a new output stream::
@@ -188,6 +210,48 @@ cdef class Reprocess(fccomp.FCComp):
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer = &rtnval
         return rtnval_proxy
+    
+    
+    _reprocess_calc_0_argtypes = {}
+    _reprocess_calc_1_argtypes = {0: conv.MapIntDouble, "incomp": conv.MapIntDouble}
+    _reprocess_calc_2_argtypes = {0: material.Material, "instream": material.Material}
+    
+    def calc(self, *args, **kwargs):
+        """calc(input=None)
+        This method performs the relatively simply task of multiplying the current 
+        input stream by the SE to form a new output stream::
+        
+            incomp  = self.mat_feed.mult_by_mass()
+            outcomp = {}
+            for iso in incomp.keys():
+                outcomp[iso] = incomp[iso] * sepeff[iso]
+            self.mat_prod = Material(outcomp)
+            return self.mat_prod
+        
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a 
+            isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+            converted into a Material before being set as mat_feed.
+        
+        Returns
+        -------
+        output : Material
+            mat_prod
+        
+        """
+        types = dict([(i, type(a)) for i, a in enumerate(args)])
+        types.update([(k, type(v)) for k, v in kwargs.iteritems()])
+        methargtypes = self._reprocess_calc_0_argtypes
+        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+            return self._reprocess_calc_0(*args, **kwargs)
+        methargtypes = self._reprocess_calc_1_argtypes
+        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+            return self._reprocess_calc_1(*args, **kwargs)
+        methargtypes = self._reprocess_calc_2_argtypes
+        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+            return self._reprocess_calc_2(*args, **kwargs)
     
     
     def calc_params(self):

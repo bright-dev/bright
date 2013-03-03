@@ -261,16 +261,34 @@ def _gen_constructor(name, name_mangled, classname, args, doc=None,
     lines += ['', ""]
     return lines
 
-def _gen_dispatcher(name, name_mangled, doc=None, inst_name="self._inst"):
+def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
     argfill = ", ".join(['self', '*args', '**kwargs'])
     lines  = ['def {0}({1}):'.format(name, argfill)]
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
-    lines += ["argtypes = [type(a) for a in args]",
-              "kwargtypes = dict([(k, type(v)) for k, v in kwargs.iteritems()])",]
+    types = ["types = dict([(i, type(a)) for i, a in enumerate(args)])",
+             "types.update([(k, type(v)) for k, v in kwargs.iteritems()])",]
+    lines += indent(types, join=False)
     mangitems = sorted(name_mangled.items())
+    mtypeslines = []
     for key, mangled_name in mangitems:
-    
+        cargs = key[1:]
+        arang = range(len(cargs))
+        anames = [ca[0] for ca in cargs]
+        pytypes = [cython_pytype(ca[1]) for ca in cargs]
+        mtypes = ", ".join(
+            ["{0}: {1}".format(i, pyt) for i, pyt in zip(arang, pytypes)] + \
+            ['"{0}": {1}'.format(n, pyt) for n, pyt in zip(anames, pytypes)])
+        mtypeslines.append(mangled_name + "_argtypes = {" + mtypes + "}")
+        cond = ["methargtypes = self.{0}_argtypes".format(mangled_name),
+                ("if all([v is methargtypes.get(k, False) "
+                 "for k, v in types.iteritems()]):")]
+        cond += indent("{0}self.{1}(*args, **kwargs)".format(
+                       'return ' if hasrtn else "", mangled_name), join=False)
+        if not hasrtn:
+            cond += indent('return', join=False)
+        lines += indent(cond, join=False)
     lines += ['', ""]
+    lines = mtypeslines + [''] +  lines
     return lines
 
 
@@ -347,7 +365,7 @@ def genpyx(desc, env=None):
         else:
             mname_mangled = mname
         currcounts[mname] += 1
-        mangled_mnames[mkey] = mname
+        mangled_mnames[mkey] = mname_mangled
         for a in margs:
             cython_cimport_tuples(a[1], cimport_tups)
         minst_name, mcname = _method_instance_names(desc, env, mkey, mrtn)
@@ -355,13 +373,17 @@ def genpyx(desc, env=None):
             cython_cimport_tuples(mcname, cimport_tups)
         if mrtn is None:
             # this must be a constructor
-            if mname not in [desc['name'], '__init__']:
+            if mname not in (desc['name'], '__init__'):
                 continue  # skip destuctors
             mdoc = desc.get('docstrings', {}).get('methods', {}).get(mname, '')
             clines += _gen_constructor(mname, mname_mangled, 
                                        desc['name'], margs, doc=mdoc, 
                                        cpppxd_filename=desc['cpppxd_filename'],
                                        cached_names=cached_names, inst_name=minst_name)
+            if 1 < methcounts[mname] and currcounts[mname] == methcounts[mname]:
+                # write dispatcher
+                nm = {k: v for k, v in mangled_mnames.iteritems() if k[0] == mname}
+                clines += _gen_dispatcher('__init__', nm, doc=mdoc, hasrtn=False)
         else:
             # this is a normal method
             cython_cimport_tuples(mrtn, cimport_tups)
@@ -369,10 +391,10 @@ def genpyx(desc, env=None):
                                              .get(mname, nodocmsg.format(mname))
             mlines += _gen_method(mname, mname_mangled, margs, mrtn, mdoc, 
                                   inst_name=minst_name)
-        if currcounts[mname] == methcounts[mname]:
-            # write dispatcher
-            mlines += _gen_dispatcher(mname, mangled_mnames, doc=mdoc, 
-                                      inst_name=minst_name)
+            if 1 < methcounts[mname] and currcounts[mname] == methcounts[mname]:
+                # write dispatcher
+                nm = {k: v for k, v in mangled_mnames.iteritems() if k[0] == mname}
+                mlines += _gen_dispatcher(mname, nm, doc=mdoc)
     d['methods_block'] = indent(mlines)
     d['constructor_block'] = indent(clines)
 
