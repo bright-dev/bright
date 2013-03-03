@@ -70,24 +70,21 @@ cdef class Reprocess(fccomp.FCComp):
         self._sepeff = None
     
     
-    _reprocess_reprocess_0_argtypes = {}
-    _reprocess_reprocess_1_argtypes = {0: conv.MapIntDouble, 1: str, "sed": conv.MapIntDouble, "n": str}
-    _reprocess_reprocess_2_argtypes = {0: conv.MapStrDouble, 1: str, "ssed": conv.MapStrDouble, "n": str}
+    _reprocess_reprocess_0_argtypes = frozenset(())
+    _reprocess_reprocess_1_argtypes = frozenset(((0, conv.MapIntDouble), (1, str), ("sed", conv.MapIntDouble), ("n", str)))
+    _reprocess_reprocess_2_argtypes = frozenset(((0, conv.MapStrDouble), (1, str), ("ssed", conv.MapStrDouble), ("n", str)))
     
     def __init__(self, *args, **kwargs):
         """"""
-        types = dict([(i, type(a)) for i, a in enumerate(args)])
+        types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
-        methargtypes = self._reprocess_reprocess_0_argtypes
-        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+        if types <= self._reprocess_reprocess_0_argtypes:
             self._reprocess_reprocess_0(*args, **kwargs)
             return
-        methargtypes = self._reprocess_reprocess_1_argtypes
-        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+        if types <= self._reprocess_reprocess_1_argtypes:
             self._reprocess_reprocess_1(*args, **kwargs)
             return
-        methargtypes = self._reprocess_reprocess_2_argtypes
-        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+        if types <= self._reprocess_reprocess_2_argtypes:
             self._reprocess_reprocess_2(*args, **kwargs)
             return
     
@@ -214,9 +211,9 @@ cdef class Reprocess(fccomp.FCComp):
         return rtnval_proxy
     
     
-    _reprocess_calc_0_argtypes = {}
-    _reprocess_calc_1_argtypes = {0: conv.MapIntDouble, "incomp": conv.MapIntDouble}
-    _reprocess_calc_2_argtypes = {0: material.Material, "instream": material.Material}
+    _reprocess_calc_0_argtypes = frozenset(())
+    _reprocess_calc_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
+    _reprocess_calc_2_argtypes = frozenset(((0, material.Material), ("instream", material.Material)))
     
     def calc(self, *args, **kwargs):
         """calc(input=None)
@@ -243,16 +240,13 @@ cdef class Reprocess(fccomp.FCComp):
             mat_prod
         
         """
-        types = dict([(i, type(a)) for i, a in enumerate(args)])
+        types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
-        methargtypes = self._reprocess_calc_0_argtypes
-        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+        if types <= self._reprocess_calc_0_argtypes:
             return self._reprocess_calc_0(*args, **kwargs)
-        methargtypes = self._reprocess_calc_1_argtypes
-        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+        if types <= self._reprocess_calc_1_argtypes:
             return self._reprocess_calc_1(*args, **kwargs)
-        methargtypes = self._reprocess_calc_2_argtypes
-        if all([v is methargtypes.get(k, False) for k, v in types.iteritems()]):
+        if types <= self._reprocess_calc_2_argtypes:
             return self._reprocess_calc_2(*args, **kwargs)
     
     

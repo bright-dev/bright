@@ -265,7 +265,7 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
     argfill = ", ".join(['self', '*args', '**kwargs'])
     lines  = ['def {0}({1}):'.format(name, argfill)]
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
-    types = ["types = dict([(i, type(a)) for i, a in enumerate(args)])",
+    types = ["types = set([(i, type(a)) for i, a in enumerate(args)])",
              "types.update([(k, type(v)) for k, v in kwargs.iteritems()])",]
     lines += indent(types, join=False)
     mangitems = sorted(name_mangled.items())
@@ -276,16 +276,15 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
         anames = [ca[0] for ca in cargs]
         pytypes = [cython_pytype(ca[1]) for ca in cargs]
         mtypes = ", ".join(
-            ["{0}: {1}".format(i, pyt) for i, pyt in zip(arang, pytypes)] + \
-            ['"{0}": {1}'.format(n, pyt) for n, pyt in zip(anames, pytypes)])
-        mtypeslines.append(mangled_name + "_argtypes = {" + mtypes + "}")
-        cond = ["methargtypes = self.{0}_argtypes".format(mangled_name),
-                ("if all([v is methargtypes.get(k, False) "
-                 "for k, v in types.iteritems()]):")]
-        cond += indent("{0}self.{1}(*args, **kwargs)".format(
-                       'return ' if hasrtn else "", mangled_name), join=False)
-        if not hasrtn:
-            cond += indent('return', join=False)
+            ["({0}, {1})".format(i, pyt) for i, pyt in zip(arang, pytypes)] + \
+            ['("{0}", {1})'.format(n, pyt) for n, pyt in zip(anames, pytypes)])
+        mtypeslines.append(mangled_name + "_argtypes = frozenset((" + mtypes + "))")
+        cond = ["if types <= self.{0}_argtypes:".format(mangled_name),]
+        if hasrtn:
+            rline = "return self.{0}(*args, **kwargs)".format(mangled_name)
+        else:
+            rline = ["self.{0}(*args, **kwargs)".format(mangled_name), "return"]
+        cond += indent(rline, join=False)
         lines += indent(cond, join=False)
     lines += ['', ""]
     lines = mtypeslines + [''] +  lines
