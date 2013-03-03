@@ -166,6 +166,7 @@ def test_cython_cimports():
         # seen checks
         (set([('orly',)]), set(['cimport orly',])),
         (set([('orly','yarly')]), set(['from orly cimport yarly',])),
+        (set([('orly','as', 'yarly')]), set(['cimport orly as yarly',])),
         (set([('orly','yarly','nowai')]), set(['from orly cimport yarly as nowai',])),
         (set([('orly',), ('orly','yarly')]), 
             set(['cimport orly', 'from orly cimport yarly'])),
@@ -213,6 +214,7 @@ def test_cython_imports():
         # seen checks
         (set([('orly',)]), set(['import orly',])),
         (set([('orly','yarly')]), set(['from orly import yarly',])),
+        (set([('orly','as', 'yarly')]), set(['import orly as yarly',])),
         (set([('orly','yarly','nowai')]), set(['from orly import yarly as nowai',])),
         (set([('orly',), ('orly','yarly')]), 
             set(['import orly', 'from orly import yarly'])),
