@@ -261,6 +261,18 @@ def _gen_constructor(name, name_mangled, classname, args, doc=None,
     lines += ['', ""]
     return lines
 
+def _gen_dispatcher(name, name_mangled, doc=None, inst_name="self._inst"):
+    argfill = ", ".join(['self', '*args', '**kwargs'])
+    lines  = ['def {0}({1}):'.format(name, argfill)]
+    lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
+    lines += ["argtypes = [type(a) for a in args]",
+              "kwargtypes = dict([(k, type(v)) for k, v in kwargs.iteritems()])",]
+    mangitems = sorted(name_mangled.items())
+    for key, mangled_name in mangitems:
+    
+    lines += ['', ""]
+    return lines
+
 
 def _method_instance_names(desc, env, key, rtn):
     classnames = (desc['parents'] or []) + [desc['name']]
@@ -330,7 +342,8 @@ def genpyx(desc, env=None):
         if mname.startswith('_'):
             continue  # skip private
         if 1 < methcounts[mname]:
-            mname_mangled = "_{0}__{1}".format(mname, currcounts[mname]) 
+            mname_mangled = "_{0}_{1}_{2}".format(desc['name'], mname, 
+                                                  currcounts[mname]).lower()
         else:
             mname_mangled = mname
         currcounts[mname] += 1
@@ -356,6 +369,10 @@ def genpyx(desc, env=None):
                                              .get(mname, nodocmsg.format(mname))
             mlines += _gen_method(mname, mname_mangled, margs, mrtn, mdoc, 
                                   inst_name=minst_name)
+        if currcounts[mname] == methcounts[mname]:
+            # write dispatcher
+            mlines += _gen_dispatcher(mname, mangled_mnames, doc=mdoc, 
+                                      inst_name=minst_name)
     d['methods_block'] = indent(mlines)
     d['constructor_block'] = indent(clines)
 
