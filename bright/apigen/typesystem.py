@@ -1,6 +1,6 @@
 """Implements a simple type system for API generation."""
 import functools
-from collections import Sequence, Set
+from collections import Sequence, Set, Iterable
 
 def _ishashable(x):
     try:
@@ -223,41 +223,41 @@ def cython_ctype(t):
 
 
 _cython_cimport_base_types = {
-    'char': None,
-    'str': ('libcpp.string', 'string', 'std_string'),
-    'int32': None,
-    'uint32': ('pyne', 'extra_types'),  # 'unsigned int'
-    'float32': None,
-    'float64': None,
-    'complex128': ('pyne', 'extra_types'),
-    'void': None, 
+    'char': (None,),
+    'str': (('libcpp.string', 'string', 'std_string'),),
+    'int32': (None,),
+    'uint32': (('pyne', 'extra_types'),),  # 'unsigned int'
+    'float32': (None,),
+    'float64': (None,),
+    'complex128': (('pyne', 'extra_types'),),
+    'void': (None,), 
     }
 
 _cython_cimport_template_types = {
-    'map': ('libcpp.map', 'map', 'cpp_map'),
-    'dict': None,
-    'pair': ('libcpp.utility', 'pair', 'cpp_pair'),
-    'set': ('libcpp.set', 'set', 'cpp_set'),
-    'vector': ('libcpp.vector', 'vector', 'cpp_vector'),
+    'map': (('libcpp.map', 'map', 'cpp_map'),),
+    'dict': (None,),
+    'pair': (('libcpp.utility', 'pair', 'cpp_pair'),),
+    'set': (('libcpp.set', 'set', 'cpp_set'),),
+    'vector': (('libcpp.vector', 'vector', 'cpp_vector'),),
     }
 
 _cython_cyimport_base_types = {
-    'char': None,
-    'str': None,
-    'int32': None,
-    'uint32': None,
-    'float32': None,
-    'float64': None,
-    'complex128': ('pyne', 'stlconverters', 'conv'),  # for py2c_complex()
-    'void': None, 
+    'char': (None,),
+    'str': (None,),
+    'int32': (None,),
+    'uint32': (None,),
+    'float32': (None,),
+    'float64': (None,),
+    'complex128': (('pyne', 'stlconverters', 'conv'),),  # for py2c_complex()
+    'void': (None,), 
     }
 
 _cython_cyimport_template_types = {
-    'map': ('pyne', 'stlconverters', 'conv'),
-    'dict': None,
-    'pair': ('pyne', 'stlconverters', 'conv'),
-    'set': ('pyne', 'stlconverters', 'conv'),
-    'vector': ('pyne', 'stlconverters', 'conv'),
+    'map': (('pyne', 'stlconverters', 'conv'),),
+    'dict': (None,),
+    'pair': (('pyne', 'stlconverters', 'conv'),),
+    'set': (('pyne', 'stlconverters', 'conv'),),
+    'vector': (('pyne', 'stlconverters', 'conv'),),
     }
 
 @_memoize
@@ -270,9 +270,9 @@ def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
     if isinstance(t, basestring):
         if  t in BASE_TYPES:
             if 'c' in inc:
-                seen.add(_cython_cimport_base_types[t])
+                seen.update(_cython_cimport_base_types[t])
             if 'cy' in inc:
-                seen.add(_cython_cyimport_base_types[t])
+                seen.update(_cython_cyimport_base_types[t])
             seen.discard(None)
             return seen
     # must be tuple below this line
@@ -282,9 +282,9 @@ def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
     elif 3 <= tlen:
         assert t[0] in template_types
         if 'c' in inc:
-            seen.add(_cython_cimport_template_types[t[0]])
+            seen.update(_cython_cimport_template_types[t[0]])
         if 'cy' in inc:
-            seen.add(_cython_cyimport_template_types[t[0]])
+            seen.update(_cython_cyimport_template_types[t[0]])
         for x in t[1:-1]:
             cython_cimport_tuples(x, seen, inc)
         seen.discard(None)
@@ -293,7 +293,8 @@ def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
 _cython_cimport_cases = {
     1: lambda tup: "cimport {0}".format(*tup),
     2: lambda tup: "from {0} cimport {1}".format(*tup),
-    3: lambda tup: "from {0} cimport {1} as {2}".format(*tup),
+    3: lambda tup: ("cimport {0} as {2}".format(*tup) if tup[1] == 'as' else \
+                    "from {0} cimport {1} as {2}".format(*tup)),
     }
 
 @_memoize
@@ -307,22 +308,22 @@ def cython_cimports(x, inc=frozenset(['c', 'cy'])):
 
 
 _cython_pyimport_base_types = {
-    'char': None,
-    'str': None,
-    'int32': None,
-    'uint32': None,
-    'float32': None,
-    'float64': None,
-    'complex128': None,
-    'void': None, 
+    'char': (None,),
+    'str': (None,),
+    'int32': (None,),
+    'uint32': (None,),
+    'float32': (None,),
+    'float64': (None,),
+    'complex128': (None,),
+    'void': (None,), 
     }
 
 _cython_pyimport_template_types = {
-    'map': ('pyne', 'stlconverters', 'conv'),
-    'dict': None,
-    'pair': ('pyne', 'stlconverters', 'conv'),
-    'set': ('pyne', 'stlconverters', 'conv'),
-    'vector': ('pyne', 'stlconverters', 'conv'),
+    'map': (('pyne', 'stlconverters', 'conv'),),
+    'dict': (None,),
+    'pair': (('pyne', 'stlconverters', 'conv'),),
+    'set': (('pyne', 'stlconverters', 'conv'),),
+    'vector': (('pyne', 'stlconverters', 'conv'),),
     }
 
 @_memoize
@@ -334,7 +335,7 @@ def cython_import_tuples(t, seen=None):
         seen = set()
     if isinstance(t, basestring):
         if  t in BASE_TYPES:
-            seen.add(_cython_pyimport_base_types[t])
+            seen.update(_cython_pyimport_base_types[t])
             seen.discard(None)
             return seen
     # must be tuple below this line
@@ -343,7 +344,7 @@ def cython_import_tuples(t, seen=None):
         return cython_import_tuples(t[0], seen)
     elif 3 <= tlen:
         assert t[0] in template_types
-        seen.add(_cython_pyimport_template_types[t[0]])
+        seen.update(_cython_pyimport_template_types[t[0]])
         for x in t[1:-1]:
             cython_import_tuples(x, seen)
         seen.discard(None)
@@ -352,7 +353,8 @@ def cython_import_tuples(t, seen=None):
 _cython_import_cases = {
     1: lambda tup: "import {0}".format(*tup),
     2: lambda tup: "from {0} import {1}".format(*tup),
-    3: lambda tup: "from {0} import {1} as {2}".format(*tup),
+    3: lambda tup: ("import {0} as {2}".format(*tup) if tup[1] == 'as' else \
+                    "from {0} import {1} as {2}".format(*tup)),
     }
 
 @_memoize
@@ -689,7 +691,15 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
 
 ######################  Some utility functions for the typesystem #############
 
-
+@_memoize
+def _ensure_importable(x):
+    if isinstance(x, basestring) or x is None:
+        r = ((x,),)
+    elif isinstance(x, Iterable) and (isinstance(x[0], basestring) or x[0] is None):
+        r = (x,)
+    else:
+        r = x
+    return r
 
 def register_class(name, template_args=None, cython_c_type=None, 
                    cython_cimport=None, cython_cy_type=None, cython_py_type=None,
@@ -715,14 +725,9 @@ def register_class(name, template_args=None, cython_c_type=None,
 
     # Register with Cython C/C++ types
     if (cython_c_type is not None) or (cython_cy_type is not None):
-        if isinstance(cython_cimport, basestring):
-            cython_cimport = (cython_cimport,)
-
-        if isinstance(cython_cyimport, basestring):
-            cython_cyimport = (cython_cyimport,)
-
-        if isinstance(cython_pyimport, basestring):
-            cython_pyimport = (cython_pyimport,)
+        cython_cimport = _ensure_importable(cython_cimport)
+        cython_cyimport = _ensure_importable(cython_cyimport)
+        cython_pyimport = _ensure_importable(cython_pyimport)
 
         if isinstance(cython_c2py, basestring):
             cython_c2py = (cython_c2py,)
