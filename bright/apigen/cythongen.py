@@ -270,6 +270,7 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
     lines += indent(types, join=False)
     mangitems = sorted(name_mangled.items())
     mtypeslines = []
+    lines += indent("# vtable-like dispatch for exactly matching types", join=False)
     for key, mangled_name in mangitems:
         cargs = key[1:]
         arang = range(len(cargs))
@@ -278,7 +279,8 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
         mtypes = ", ".join(
             ["({0}, {1})".format(i, pyt) for i, pyt in zip(arang, pytypes)] + \
             ['("{0}", {1})'.format(n, pyt) for n, pyt in zip(anames, pytypes)])
-        mtypeslines.append(mangled_name + "_argtypes = frozenset((" + mtypes + "))")
+        mtups = '(' + mtypes + ')' if 0 < len(mtypes) else mtypes
+        mtypeslines.append(mangled_name + "_argtypes = frozenset(" + mtups + ")")
         cond = ["if types <= self.{0}_argtypes:".format(mangled_name),]
         if hasrtn:
             rline = "return self.{0}(*args, **kwargs)".format(mangled_name)
@@ -286,8 +288,20 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
             rline = ["self.{0}(*args, **kwargs)".format(mangled_name), "return"]
         cond += indent(rline, join=False)
         lines += indent(cond, join=False)
-    lines += ['', ""]
     lines = mtypeslines + [''] +  lines
+    lines += indent("# duck-typed dispatch based on whatever works!", join=False)
+    for key, mangled_name in mangitems:
+        lines += indent('try:', join=False)
+        if hasrtn:
+            rline = "return self.{0}(*args, **kwargs)".format(mangled_name)
+        else:
+            rline = ["self.{0}(*args, **kwargs)".format(mangled_name), "return"]
+        lines += indent(indent(rline, join=False), join=False)
+        lines += indent(["except (RuntimeError, TypeError, NameError):",
+                         indent("pass", join=False)[0],], join=False)
+    errmsg = "raise RuntimeError('method {0} could not be dispatched')".format(name)
+    lines += indent(errmsg, join=False)
+    lines += ['', ""]
     return lines
 
 

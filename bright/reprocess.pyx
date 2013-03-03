@@ -70,7 +70,7 @@ cdef class Reprocess(fccomp.FCComp):
         self._sepeff = None
     
     
-    _reprocess_reprocess_0_argtypes = frozenset(())
+    _reprocess_reprocess_0_argtypes = frozenset()
     _reprocess_reprocess_1_argtypes = frozenset(((0, conv.MapIntDouble), (1, str), ("sed", conv.MapIntDouble), ("n", str)))
     _reprocess_reprocess_2_argtypes = frozenset(((0, conv.MapStrDouble), (1, str), ("ssed", conv.MapStrDouble), ("n", str)))
     
@@ -78,6 +78,7 @@ cdef class Reprocess(fccomp.FCComp):
         """"""
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
+        # vtable-like dispatch for exactly matching types
         if types <= self._reprocess_reprocess_0_argtypes:
             self._reprocess_reprocess_0(*args, **kwargs)
             return
@@ -87,6 +88,23 @@ cdef class Reprocess(fccomp.FCComp):
         if types <= self._reprocess_reprocess_2_argtypes:
             self._reprocess_reprocess_2(*args, **kwargs)
             return
+        # duck-typed dispatch based on whatever works!
+        try:
+            self._reprocess_reprocess_0(*args, **kwargs)
+            return
+        except (RuntimeError, TypeError, NameError):
+            pass
+        try:
+            self._reprocess_reprocess_1(*args, **kwargs)
+            return
+        except (RuntimeError, TypeError, NameError):
+            pass
+        try:
+            self._reprocess_reprocess_2(*args, **kwargs)
+            return
+        except (RuntimeError, TypeError, NameError):
+            pass
+        raise RuntimeError('method __init__ could not be dispatched')
     
     
 
@@ -211,7 +229,7 @@ cdef class Reprocess(fccomp.FCComp):
         return rtnval_proxy
     
     
-    _reprocess_calc_0_argtypes = frozenset(())
+    _reprocess_calc_0_argtypes = frozenset()
     _reprocess_calc_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
     _reprocess_calc_2_argtypes = frozenset(((0, material.Material), ("instream", material.Material)))
     
@@ -242,12 +260,27 @@ cdef class Reprocess(fccomp.FCComp):
         """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
+        # vtable-like dispatch for exactly matching types
         if types <= self._reprocess_calc_0_argtypes:
             return self._reprocess_calc_0(*args, **kwargs)
         if types <= self._reprocess_calc_1_argtypes:
             return self._reprocess_calc_1(*args, **kwargs)
         if types <= self._reprocess_calc_2_argtypes:
             return self._reprocess_calc_2(*args, **kwargs)
+        # duck-typed dispatch based on whatever works!
+        try:
+            return self._reprocess_calc_0(*args, **kwargs)
+        except (RuntimeError, TypeError, NameError):
+            pass
+        try:
+            return self._reprocess_calc_1(*args, **kwargs)
+        except (RuntimeError, TypeError, NameError):
+            pass
+        try:
+            return self._reprocess_calc_2(*args, **kwargs)
+        except (RuntimeError, TypeError, NameError):
+            pass
+        raise RuntimeError('method calc could not be dispatched')
     
     
     def calc_params(self):
