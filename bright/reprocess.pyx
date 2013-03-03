@@ -16,7 +16,9 @@ from pyne cimport cpp_material
 from pyne cimport material
 from pyne cimport stlconverters as conv
 
-
+from pyne import material
+from pyne import stlconverters as conv
+import fccomp
 
 cdef class Reprocess(fccomp.FCComp):
     """Reprocess Fuel Cycle Component Class.  Daughter of FCComp class.

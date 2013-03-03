@@ -6,7 +6,7 @@ from copy import deepcopy
 from bright.apigen.utils import indent, expand_default_args
 from bright.apigen.typesystem import cython_ctype, cython_cimport_tuples, \
     cython_cimports, register_class, cython_cytype, cython_pytype, cython_c2py, \
-    cython_py2c
+    cython_py2c, cython_import_tuples, cython_imports
 
 AUTOGEN_WARNING = \
 """################################################
@@ -332,8 +332,10 @@ def genpyx(desc, env=None):
     class_ctype = cython_ctype(desc['name'])
     inst_name = "(<{0} *> self._inst)".format(class_ctype)
 
+    import_tups = set()
     cimport_tups = set()
     for parent in desc['parents']:
+        cython_import_tuples(parent, import_tups)
         cython_cimport_tuples(parent, cimport_tups)
 
     alines = []
@@ -346,6 +348,7 @@ def genpyx(desc, env=None):
                                          .get(aname, nodocmsg.format(aname))
         alines += _gen_property(aname, atype, adoc, cached_names=cached_names, 
                                 inst_name=inst_name)
+        cython_import_tuples(atype, import_tups)
         cython_cimport_tuples(atype, cimport_tups)
     d['attrs_block'] = indent(alines)
 
@@ -367,9 +370,11 @@ def genpyx(desc, env=None):
         currcounts[mname] += 1
         mangled_mnames[mkey] = mname_mangled
         for a in margs:
+            cython_import_tuples(a[1], import_tups)
             cython_cimport_tuples(a[1], cimport_tups)
         minst_name, mcname = _method_instance_names(desc, env, mkey, mrtn)
         if mcname != desc['name']:
+            cython_import_tuples(mcname, import_tups)
             cython_cimport_tuples(mcname, cimport_tups)
         if mrtn is None:
             # this must be a constructor
@@ -386,6 +391,7 @@ def genpyx(desc, env=None):
                 clines += _gen_dispatcher('__init__', nm, doc=mdoc, hasrtn=False)
         else:
             # this is a normal method
+            cython_import_tuples(mrtn, import_tups)
             cython_cimport_tuples(mrtn, cimport_tups)
             mdoc = desc.get('docstrings', {}).get('methods', {})\
                                              .get(mname, nodocmsg.format(mname))
@@ -398,8 +404,8 @@ def genpyx(desc, env=None):
     d['methods_block'] = indent(mlines)
     d['constructor_block'] = indent(clines)
 
+    d['imports'] = "\n".join(sorted(cython_imports(import_tups)))
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
-    d['imports'] = ""
     pyx = _pyx_template.format(**d)
     if 'pyx_filename' not in desc:
         desc['pyx_filename'] = '{0}.pyx'.format(d['name'].lower())

@@ -305,6 +305,65 @@ def cython_cimports(x, inc=frozenset(['c', 'cy'])):
     return set([_cython_cimport_cases[len(tup)](tup) for tup in x])
 
 
+
+_cython_pyimport_base_types = {
+    'char': None,
+    'str': None,
+    'int32': None,
+    'uint32': None,
+    'float32': None,
+    'float64': None,
+    'complex128': None,
+    'void': None, 
+    }
+
+_cython_pyimport_template_types = {
+    'map': ('pyne', 'stlconverters', 'conv'),
+    'dict': None,
+    'pair': ('pyne', 'stlconverters', 'conv'),
+    'set': ('pyne', 'stlconverters', 'conv'),
+    'vector': ('pyne', 'stlconverters', 'conv'),
+    }
+
+@_memoize
+def cython_import_tuples(t, seen=None):
+    """Given a type t, and possibily previously seen import tuples, return 
+    the set of all seen import tuples."""
+    t = canon(t)
+    if seen is None:
+        seen = set()
+    if isinstance(t, basestring):
+        if  t in BASE_TYPES:
+            seen.add(_cython_pyimport_base_types[t])
+            seen.discard(None)
+            return seen
+    # must be tuple below this line
+    tlen = len(t)
+    if 2 == tlen:
+        return cython_import_tuples(t[0], seen)
+    elif 3 <= tlen:
+        assert t[0] in template_types
+        seen.add(_cython_pyimport_template_types[t[0]])
+        for x in t[1:-1]:
+            cython_import_tuples(x, seen)
+        seen.discard(None)
+        return seen
+
+_cython_import_cases = {
+    1: lambda tup: "import {0}".format(*tup),
+    2: lambda tup: "from {0} import {1}".format(*tup),
+    3: lambda tup: "from {0} import {1} as {2}".format(*tup),
+    }
+
+@_memoize
+def cython_imports(x):
+    """Retuns the import lines associtated with a type or a set of seen tuples.
+    """
+    if not isinstance(x, Set):
+        x = cython_import_tuples(x)
+    return set([_cython_import_cases[len(tup)](tup) for tup in x])
+
+
 _cython_cy_base_types = {
     'char': 'char',
     'str': 'char *',
@@ -485,7 +544,7 @@ _cython_c2py_conv = {
              )),
     'set': ('{pytype}({var})',
            ('{proxy_name} = {pytype}(False, False)\n'
-            '{proxy_name}.vector_ptr = &{var}\n'),
+            '{proxy_name}.set_ptr = &{var}\n'),
            ('if {cache_name} is None:\n'
             '    {proxy_name} = {pytype}(False, False)\n'
             '    {proxy_name}.set_ptr = &{var}\n'
@@ -493,7 +552,7 @@ _cython_c2py_conv = {
             )),
     'vector': ('{pytype}({var})',
               ('{proxy_name} = {pytype}(False, False)\n'
-               '{proxy_name}.pair_ptr = &{var}\n'),
+               '{proxy_name}.vector_ptr = &{var}\n'),
               ('if {cache_name} is None:\n'
                '    {proxy_name} = {pytype}(False, False)\n'
                '    {proxy_name}.vector_ptr = &{var}\n'
@@ -506,7 +565,8 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
                 cache_name=None):
     """Given a varibale name and type, returns cython code (declaration, body, 
     and return) to convert the variable from C/C++ to Python."""
-    tkey = t
+    #tkey = t
+    tkey = canon(t)
     while not isinstance(tkey, basestring):
         tkey = tkey[0]
     c2pyt = _cython_c2py_conv[tkey]
@@ -634,7 +694,7 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
 def register_class(name, template_args=None, cython_c_type=None, 
                    cython_cimport=None, cython_cy_type=None, cython_py_type=None,
                    cython_template_class_name=None, cython_cyimport=None, 
-                   cython_c2py=None, cython_py2c=None):
+                   cython_pyimport=None, cython_c2py=None, cython_py2c=None):
     """Classes are user specified types.  This function will add a class to 
     the type system so that it may be used normally with the rest of the 
     type system.
@@ -661,6 +721,9 @@ def register_class(name, template_args=None, cython_c_type=None,
         if isinstance(cython_cyimport, basestring):
             cython_cyimport = (cython_cyimport,)
 
+        if isinstance(cython_pyimport, basestring):
+            cython_pyimport = (cython_pyimport,)
+
         if isinstance(cython_c2py, basestring):
             cython_c2py = (cython_c2py,)
         cython_c2py = None if cython_c2py is None else tuple(cython_c2py)
@@ -674,12 +737,13 @@ def register_class(name, template_args=None, cython_c_type=None,
             _cython_py_base_types[name] = cython_py_type
             _cython_cimport_base_types[name] = cython_cimport
             _cython_cyimport_base_types[name] = cython_cyimport
+            _cython_pyimport_base_types[name] = cython_pyimport
         else:
             _cython_c_template_types[name] = cython_c_type
             _cython_cy_template_types[name] = cython_cy_type
             _cython_py_template_types[name] = cython_py_type
             _cython_cimport_template_types[name] = cython_cimport
-            _cython_cyimport_template_types[name] = cython_cyimport
+            _cython_pyimport_template_types[name] = cython_pyimport
 
         _cython_c2py_conv[name] = cython_c2py
         _cython_py2c_conv[name] = cython_py2c
@@ -701,6 +765,7 @@ def deregister_class(name):
         _cython_py_base_types.pop(name, None)
         _cython_cimport_base_types.pop(name, None)
         _cython_cyimport_base_types.pop(name, None)
+        _cython_pyimport_base_types.pop(name, None)
     else:
         template_types.pop(name, None)
         _cython_c_template_types.pop(name, None)
@@ -708,6 +773,7 @@ def deregister_class(name):
         _cython_py_template_types.pop(name, None)
         _cython_cimport_template_types.pop(name, None)
         _cython_cyimport_template_types.pop(name, None)
+        _cython_pyimport_template_types.pop(name, None)
 
     _cython_c2py_conv.pop(name, None)
     _cython_py2c_conv.pop(name, None)

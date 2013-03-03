@@ -104,10 +104,12 @@ def describe_class(classname, filename, verbose=False):
 # Classes and type to preregister with the typesyetem prior to doing any code 
 # generation.  
 PREREGISTER_KEYS = ['name', 'cython_c_type', 'cython_cimport', 'cython_cy_type',
-                    'cython_py_type', 'cython_cyimport', 'cython_c2py', 'cython_py2c']
+                    'cython_py_type', 'cython_cyimport', 'cython_pyimport', 
+                    'cython_c2py', 'cython_py2c']
 PREREGISTER_CLASSES = [
     ('Material', 'cpp_material.Material', ('pyne', 'cpp_material'), 
      'material._Material', 'material.Material', ('pyne', 'material'), 
+     ('pyne', 'material'), 
      #('{pytype}({var})', '{proxy_name} = {pytype}({var})'),
      ('{pytype}({var})', 
         '{proxy_name} = {pytype}()\n{proxy_name}.mat_pointer = &{var}'),
@@ -150,6 +152,7 @@ def main():
             cython_cimport=('bright', cpppxd_base),  # from bright.cpp_fccomp import FCComp
             cython_cy_type=pxd_base + '.' + classname,            # fccomp.FCComp   
             cython_cyimport=pxd_base,                             # fccomp
+            cython_pyimport=pxd_base,                             # fccomp
             )
     cache.dump()
 

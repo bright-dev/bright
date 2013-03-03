@@ -173,6 +173,52 @@ def test_cython_cimports():
     for t, exp in cases:
         yield check_cython_cimports, t, exp  # Check that the case works,
 
+def check_cython_import_tuples(t, exp):
+    obs = ts.cython_import_tuples(t)
+    assert_equal(obs, exp)
+
+@with_setup(add_new_refined, del_new_refined)
+def test_cython_import_tuples():
+    cases = (
+        ('str', set()),
+        (('str',), set()),
+        ('f4', set()),
+        ('nucid', set()),
+        (('nucid',), set()), 
+        (('set', 'complex'), set([('pyne', 'stlconverters', 'conv')])),
+        (('map', 'nucid', 'float'), set([('pyne', 'stlconverters', 'conv')])),
+        ('comp_map', set([('pyne', 'stlconverters', 'conv')])),
+        (('char', '*'), set()),
+        (('char', 42), set()),
+        (('map', 'nucid', ('set', 'nucname')), 
+            set([('pyne', 'stlconverters', 'conv')])),
+        (('intrange', 1, 2), set()), 
+        (('nucrange', 92000, 93000), set()),
+        (('range', 'int32', 1, 2), set()), 
+        (('range', 'nucid', 92000, 93000), set()), 
+    )
+    for t, exp in cases:
+        yield check_cython_import_tuples, t, exp  # Check that the case works
+
+
+def check_cython_imports(t, exp):
+    obs = ts.cython_imports(t)
+    assert_equal(obs, exp)
+
+def test_cython_imports():
+    cases = (
+        # type checks
+        ('str', set()),
+        ('f4', set()),
+        # seen checks
+        (set([('orly',)]), set(['import orly',])),
+        (set([('orly','yarly')]), set(['from orly import yarly',])),
+        (set([('orly','yarly','nowai')]), set(['from orly import yarly as nowai',])),
+        (set([('orly',), ('orly','yarly')]), 
+            set(['import orly', 'from orly import yarly'])),
+    )
+    for t, exp in cases:
+        yield check_cython_imports, t, exp  # Check that the case works,
 
 def check_cython_cytype(t, exp):
     obs = ts.cython_cytype(t)
@@ -229,6 +275,7 @@ def test_cython_pytype():
 
 
 def check_cython_c2py(name, t, inst_name, exp):
+    #import pprint; pprint.pprint(ts.refined_types)
     obs = ts.cython_c2py(name, t, inst_name=inst_name)
     assert_equal(obs, exp)
 
