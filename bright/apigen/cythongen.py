@@ -1,12 +1,13 @@
 """Generates a Cython wrapper for various Bright classes from either
 description dictionaries or from header files.
 """
+import math
 from copy import deepcopy
 
 from bright.apigen.utils import indent, expand_default_args
 from bright.apigen.typesystem import cython_ctype, cython_cimport_tuples, \
     cython_cimports, register_class, cython_cytype, cython_pytype, cython_c2py, \
-    cython_py2c, cython_import_tuples, cython_imports
+    cython_py2c, cython_import_tuples, cython_imports, isrefinement
 
 AUTOGEN_WARNING = \
 """################################################
@@ -73,13 +74,15 @@ def gencpppxd(desc, exception_type='+'):
         line = "{0}({1}){2}".format(mname, argfill, estr)
         if mrtn is None:
             # this must be a constructor
-            clines.append(line)
+            if line not in clines:
+                clines.append(line)
         else:
             # this is a normal method
             rtype = cython_ctype(mrtn)
             cython_cimport_tuples(mrtn, cimport_tups, inc)
             line = rtype + " " + line
-            mlines.append(line)
+            if line not in mlines:
+                mlines.append(line)
     d['methods_block'] = indent(mlines, 8)
     d['constructors_block'] = indent(clines, 8)
 
@@ -286,7 +289,8 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
     types = ["types = set([(i, type(a)) for i, a in enumerate(args)])",
              "types.update([(k, type(v)) for k, v in kwargs.iteritems()])",]
     lines += indent(types, join=False)
-    mangitems = sorted(name_mangled.items())
+    refinenum = lambda x: (sum([int(isrefinement(a[1])) for a in x[0][1:]]), x[1])
+    mangitems = sorted(name_mangled.items(), key=refinenum)
     mtypeslines = []
     lines += indent("# vtable-like dispatch for exactly matching types", join=False)
     for key, mangled_name in mangitems:
@@ -306,8 +310,10 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
             rline = ["self.{0}(*args, **kwargs)".format(mangled_name), "return"]
         cond += indent(rline, join=False)
         lines += indent(cond, join=False)
-    lines = mtypeslines + [''] +  lines
+    lines = sorted(mtypeslines) + [''] +  lines
     lines += indent("# duck-typed dispatch based on whatever works!", join=False)
+    refineopp = lambda x: (-1*sum([int(isrefinement(a[1])) for a in x[0][1:]]), x[1])
+    mangitems = sorted(name_mangled.items(), key=refineopp)
     for key, mangled_name in mangitems:
         lines += indent('try:', join=False)
         if hasrtn:
@@ -319,7 +325,7 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
                          indent("pass", join=False)[0],], join=False)
     errmsg = "raise RuntimeError('method {0}() could not be dispatched')".format(name)
     lines += indent(errmsg, join=False)
-    lines += ['', ""]
+    lines += ['']
     return lines
 
 
@@ -396,8 +402,8 @@ def genpyx(desc, env=None):
         if mname.startswith('_'):
             continue  # skip private
         if 1 < methcounts[mname]:
-            mname_mangled = "_{0}_{1}_{2}".format(desc['name'], mname, 
-                                                  currcounts[mname]).lower()
+            mname_mangled = "_{0}_{1}_{2:0{3}}".format(desc['name'], mname, 
+                    currcounts[mname], int(math.log(methcounts[mname], 10)+1)).lower()
         else:
             mname_mangled = mname
         currcounts[mname] += 1

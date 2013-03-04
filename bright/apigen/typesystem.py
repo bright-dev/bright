@@ -381,6 +381,7 @@ _cython_cy_base_types = {
     'float32': 'float',
     'float64': 'float',
     'complex128': 'object',
+    'void': 'void',
     }
 
 
@@ -402,6 +403,7 @@ _cython_template_class_names = {
     'float32': 'Float',
     'float64': 'Double',
     'complex128': 'Complex',
+    'void': 'void',
     # template types
     'map': 'Map{key_type}{value_type}',
     'dict': 'Dict',
@@ -464,6 +466,7 @@ _cython_py_base_types = {
     'float32': 'float',
     'float64': 'float',
     'complex128': 'object',
+    'void': 'object',
     }
 
 
@@ -533,6 +536,7 @@ _cython_c2py_conv = {
     'float32': ('float({var})',),
     'float64': ('float({var})',),
     'complex128': ('complex(float({var}.re), float({var}.im))',),
+    'void': ('None',),
     # template types
     'map': ('{pytype}({var})', 
            ('{proxy_name} = {pytype}(False, False)\n'
@@ -619,6 +623,7 @@ _cython_py2c_conv = {
     'float32': ('<float> {var}', False),
     'float64': ('<double> {var}', False),
     'complex128': ('conv.py2c_complex({var})', False),
+    'void': ('NULL', False),
     # template types
     'map': ('{proxy_name} = {pytype}({var}, not isinstance({var}, {cytype}))',
             '{proxy_name}.map_ptr[0]'),
@@ -806,11 +811,16 @@ def register_refinement(name, refinementof, cython_cimport=None, cython_cyimport
     """This function will add a refinement to the type system so that it may be used 
     normally with the rest of the type system.
     """
-    refined_types[name] = refinementof    
+    refined_types[name] = refinementof
 
-    _cython_cimport_template_types[name] = _ensure_importable(cython_cimport)
-    _cython_cyimport_template_types[name] = _ensure_importable(cython_cyimport)
-    _cython_pyimport_template_types[name] = _ensure_importable(cython_pyimport)
+    cyci = _ensure_importable(cython_cimport)
+    _cython_cimport_base_types[name] = _cython_cimport_template_types[name] = cyci
+
+    cycyi = _ensure_importable(cython_cyimport)
+    _cython_cyimport_base_types[name] = _cython_cyimport_template_types[name] = cycyi
+
+    cypyi = _ensure_importable(cython_pyimport)
+    _cython_pyimport_base_types[name] = _cython_pyimport_template_types[name] = cypyi
 
     if isinstance(cython_c2py, basestring):
         cython_c2py = (cython_c2py,)
@@ -831,6 +841,9 @@ def deregister_refinement(name):
     refined_types.pop(name, None)
     _cython_c2py_conv.pop(name, None)
     _cython_py2c_conv.pop(name, None)
+    _cython_cimport_base_types.pop(name, None)
+    _cython_cyimport_base_types.pop(name, None)
+    _cython_pyimport_base_types.pop(name, None)
     _cython_cimport_template_types.pop(name, None)
     _cython_cyimport_template_types.pop(name, None)
     _cython_pyimport_template_types.pop(name, None)
