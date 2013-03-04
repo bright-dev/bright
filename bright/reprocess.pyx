@@ -8,6 +8,7 @@
 ################################################
 """Python wrapper for Reprocess.
 """
+cimport bright.typeconverters
 cimport fccomp
 from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
@@ -18,6 +19,7 @@ from pyne cimport stlconverters as conv
 
 from pyne import material
 from pyne import stlconverters as conv
+import bright.typeconverters
 import fccomp
 
 cdef class Reprocess(fccomp.FCComp):
@@ -119,9 +121,8 @@ cdef class Reprocess(fccomp.FCComp):
             return self._sepeff
     
         def __set__(self, value):
-            cdef conv._MapIntDouble value_proxy
-            value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
-            (<cpp_reprocess.Reprocess *> self._inst).sepeff = value_proxy.map_ptr[0]
+            (<cpp_reprocess.Reprocess *> self._inst).sepeff = bright.typeconverters.sepeff_py2c(value)
+            self._sepeff = None
     
     
     # methods

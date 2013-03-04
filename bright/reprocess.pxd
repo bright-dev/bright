@@ -6,6 +6,7 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+cimport bright.typeconverters
 cimport cpp_reprocess
 cimport fccomp
 from libcpp.map cimport map as cpp_map

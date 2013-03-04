@@ -180,7 +180,7 @@ def _gen_property_get(name, t, cached_names=None, inst_name="self._inst"):
     return lines
 
 
-def _gen_property_set(name, t, inst_name="self._inst"):
+def _gen_property_set(name, t, inst_name="self._inst", cached_name=None):
     """This generates a Cython property setter for a variable of a given 
     name and type."""
     lines = ['def __set__(self, value):']
@@ -190,6 +190,8 @@ def _gen_property_set(name, t, inst_name="self._inst"):
     if body is not None:
         lines += indent(body, join=False)
     lines += indent("{0}.{1} = {2}".format(inst_name, name, rtn), join=False)
+    if cached_name is not None:
+        lines += indent("{0} = None".format(cached_name), join=False)
     return lines
 
 
@@ -197,10 +199,15 @@ def _gen_property(name, t, doc=None, cached_names=None, inst_name="self._inst"):
     """This generates a Cython property for a variable of a given name and type."""
     lines  = ['property {0}:'.format(name)] 
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
+    oldcnlen = 0 if cached_names is None else len(cached_names)
     lines += indent(_gen_property_get(name, t, cached_names=cached_names, 
                                       inst_name=inst_name), join=False)
     lines += ['']
-    lines += indent(_gen_property_set(name, t, inst_name=inst_name), join=False)
+    newcnlen = 0 if cached_names is None else len(cached_names)
+    if newcnlen == 1 + oldcnlen:
+        cached_name = cached_names[-1]
+    lines += indent(_gen_property_set(name, t, inst_name=inst_name, 
+                                      cached_name=cached_name), join=False)
     lines += ['', ""]
     return lines
 

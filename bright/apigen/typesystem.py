@@ -273,11 +273,16 @@ def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
                 seen.update(_cython_cimport_base_types[t])
             if 'cy' in inc:
                 seen.update(_cython_cyimport_base_types[t])
-            seen.discard(None)
+            seen -= set((None, (None,)))
             return seen
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
+        if 'c' in inc:
+            seen.update(_cython_cimport_template_types[t[1]])
+        if 'cy' in inc:
+            seen.update(_cython_cyimport_template_types[t[1]])
+        seen -= set((None, (None,)))
         return cython_cimport_tuples(t[0], seen, inc)
     elif 3 <= tlen:
         assert t[0] in template_types
@@ -287,7 +292,7 @@ def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
             seen.update(_cython_cyimport_template_types[t[0]])
         for x in t[1:-1]:
             cython_cimport_tuples(x, seen, inc)
-        seen.discard(None)
+        seen -= set((None, (None,)))
         return seen
 
 _cython_cimport_cases = {
@@ -336,18 +341,20 @@ def cython_import_tuples(t, seen=None):
     if isinstance(t, basestring):
         if  t in BASE_TYPES:
             seen.update(_cython_pyimport_base_types[t])
-            seen.discard(None)
+            seen -= set((None, (None,)))
             return seen
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
+        seen.update(_cython_pyimport_template_types[t[1]])
+        seen -= set((None, (None,)))
         return cython_import_tuples(t[0], seen)
     elif 3 <= tlen:
         assert t[0] in template_types
         seen.update(_cython_pyimport_template_types[t[0]])
         for x in t[1:-1]:
             cython_import_tuples(x, seen)
-        seen.discard(None)
+        seen -= set((None, (None,)))
         return seen
 
 _cython_import_cases = {
@@ -749,6 +756,7 @@ def register_class(name, template_args=None, cython_c_type=None,
             _cython_cy_template_types[name] = cython_cy_type
             _cython_py_template_types[name] = cython_py_type
             _cython_cimport_template_types[name] = cython_cimport
+            _cython_cyimport_template_types[name] = cython_cyimport
             _cython_pyimport_template_types[name] = cython_pyimport
 
         _cython_c2py_conv[name] = cython_c2py
@@ -791,3 +799,38 @@ def deregister_class(name):
              cython_cytype, _fill_cypyt, cython_pytype, cython_c2py, cython_py2c]
     for f in funcs:
         f.cache.clear()
+
+
+def register_refinement(name, refinementof, cython_cimport=None, cython_cyimport=None, 
+                        cython_pyimport=None, cython_c2py=None, cython_py2c=None):
+    """This function will add a refinement to the type system so that it may be used 
+    normally with the rest of the type system.
+    """
+    refined_types[name] = refinementof    
+
+    _cython_cimport_template_types[name] = _ensure_importable(cython_cimport)
+    _cython_cyimport_template_types[name] = _ensure_importable(cython_cyimport)
+    _cython_pyimport_template_types[name] = _ensure_importable(cython_pyimport)
+
+    if isinstance(cython_c2py, basestring):
+        cython_c2py = (cython_c2py,)
+    cython_c2py = None if cython_c2py is None else tuple(cython_c2py)
+    if cython_c2py is not None:
+        _cython_c2py_conv[name] = cython_c2py
+
+    if isinstance(cython_py2c, basestring):
+        cython_py2c = (cython_py2c, False)
+    if cython_py2c is not None:
+        _cython_py2c_conv[name] = cython_py2c
+
+
+def deregister_refinement(name):
+    """This function will remove previously registered refinement from the type
+    system.
+    """
+    refined_types.pop(name, None)
+    _cython_c2py_conv.pop(name, None)
+    _cython_py2c_conv.pop(name, None)
+    _cython_cimport_template_types.pop(name, None)
+    _cython_cyimport_template_types.pop(name, None)
+    _cython_pyimport_template_types.pop(name, None)

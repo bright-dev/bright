@@ -94,4 +94,13 @@ desc = {
             'calc': calc_ds,
             },
         },
+    'attrs': {
+        'sepeff': 'sepeff_t',
+        },
     }
+
+import bright.apigen.typesystem as ts
+
+ts.register_refinement('sepeff_t', ('map', 'int32', 'float64'),
+    cython_cyimport='bright.typeconverters', cython_pyimport='bright.typeconverters',
+    cython_py2c='bright.typeconverters.sepeff_py2c({var})',)

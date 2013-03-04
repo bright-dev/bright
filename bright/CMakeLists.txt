@@ -5,6 +5,12 @@ include_directories(${BRIGHT_INCLUDE_DIRS})
 get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
 message("-- C_INCLUDE_PATH for ${CMAKE_CURRENT_SOURCE_DIR}: ${inc_dirs}")
 
+# type converters
+set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/typeconverters.pyx
+                            PROPERTIES CYTHON_IS_CXX TRUE)
+cython_add_module(typeconverters typeconverters.pyx)
+target_link_libraries(typeconverters pyne_nucname)
+
 # bright config
 set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/bright_config.pyx
                             PROPERTIES CYTHON_IS_CXX TRUE)
