@@ -9,4 +9,4 @@
 cimport cpp_fluence_point
 
 cdef class FluencePoint:
-    pass
+    cdef void * _inst

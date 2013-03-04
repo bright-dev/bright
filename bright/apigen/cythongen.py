@@ -125,7 +125,7 @@ def genpxd(desc):
     d['name_type'] = cython_ctype(desc['name'])
     cython_cimport_tuples(desc['name'], cimport_tups, set(['c']))
 
-    body = []
+    body = ['cdef void * _inst'] if desc['parents'] is None else []
     attritems = sorted(desc['attrs'].items())
     for aname, atype in attritems:
         if aname.startswith('_'):

@@ -2222,7 +2222,8 @@ cdef class ReactorMG(fccomp.FCComp):
 
         """
         cdef FluencePoint fp = FluencePoint()
-        fp.fp_pointer[0] = (<cpp_reactormg.ReactorMG *> self._inst).fluence_at_BU(burnup)
+        cdef cpp_fluence_point.FluencePoint cpp_fp = (<cpp_reactormg.ReactorMG *> self._inst).fluence_at_BU(burnup)
+        fp._inst = &cpp_fp
         return fp
 
 
