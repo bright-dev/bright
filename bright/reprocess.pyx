@@ -52,24 +52,24 @@ cdef class Reprocess(fccomp.FCComp):
         # cached property defaults
         self._sepeff = None
 
-    def _reprocess_reprocess_0(self, *args, **kwargs):
+    def _reprocess_reprocess_0(self):
         """"""
         self._inst = new cpp_reprocess.Reprocess()
     
     
-    def _reprocess_reprocess_1(self, sed, n="", *args, **kwargs):
-        """"""
-        self._inst = new cpp_reprocess.Reprocess(bright.typeconverters.sepeff_py2c(sed), std_string(<char *> n))
-    
-    
-    def _reprocess_reprocess_2(self, sed, n="", *args, **kwargs):
+    def _reprocess_reprocess_1(self, sed, n=""):
         """"""
         cdef conv._MapIntDouble sed_proxy
         sed_proxy = conv.MapIntDouble(sed, not isinstance(sed, conv._MapIntDouble))
         self._inst = new cpp_reprocess.Reprocess(sed_proxy.map_ptr[0], std_string(<char *> n))
     
     
-    def _reprocess_reprocess_3(self, ssed, n="", *args, **kwargs):
+    def _reprocess_reprocess_2(self, sepeff, name=""):
+        """"""
+        self._inst = new cpp_reprocess.Reprocess(bright.typeconverters.sepeff_py2c(sepeff), std_string(<char *> name))
+    
+    
+    def _reprocess_reprocess_3(self, ssed, n=""):
         """"""
         cdef conv._MapStrDouble ssed_proxy
         ssed_proxy = conv.MapStrDouble(ssed, not isinstance(ssed, conv._MapStrDouble))
@@ -78,7 +78,7 @@ cdef class Reprocess(fccomp.FCComp):
     
     _reprocess_reprocess_0_argtypes = frozenset()
     _reprocess_reprocess_1_argtypes = frozenset(((0, conv.MapIntDouble), (1, str), ("sed", conv.MapIntDouble), ("n", str)))
-    _reprocess_reprocess_2_argtypes = frozenset(((0, conv.MapIntDouble), (1, str), ("sed", conv.MapIntDouble), ("n", str)))
+    _reprocess_reprocess_2_argtypes = frozenset(((0, conv.MapIntDouble), (1, str), ("sepeff", conv.MapIntDouble), ("name", str)))
     _reprocess_reprocess_3_argtypes = frozenset(((0, conv.MapStrDouble), (1, str), ("ssed", conv.MapStrDouble), ("n", str)))
     
     def __init__(self, *args, **kwargs):
@@ -89,18 +89,18 @@ cdef class Reprocess(fccomp.FCComp):
         if types <= self._reprocess_reprocess_0_argtypes:
             self._reprocess_reprocess_0(*args, **kwargs)
             return
-        if types <= self._reprocess_reprocess_2_argtypes:
-            self._reprocess_reprocess_2(*args, **kwargs)
+        if types <= self._reprocess_reprocess_1_argtypes:
+            self._reprocess_reprocess_1(*args, **kwargs)
             return
         if types <= self._reprocess_reprocess_3_argtypes:
             self._reprocess_reprocess_3(*args, **kwargs)
             return
-        if types <= self._reprocess_reprocess_1_argtypes:
-            self._reprocess_reprocess_1(*args, **kwargs)
+        if types <= self._reprocess_reprocess_2_argtypes:
+            self._reprocess_reprocess_2(*args, **kwargs)
             return
         # duck-typed dispatch based on whatever works!
         try:
-            self._reprocess_reprocess_1(*args, **kwargs)
+            self._reprocess_reprocess_2(*args, **kwargs)
             return
         except (RuntimeError, TypeError, NameError):
             pass
@@ -110,7 +110,7 @@ cdef class Reprocess(fccomp.FCComp):
         except (RuntimeError, TypeError, NameError):
             pass
         try:
-            self._reprocess_reprocess_2(*args, **kwargs)
+            self._reprocess_reprocess_1(*args, **kwargs)
             return
         except (RuntimeError, TypeError, NameError):
             pass
@@ -168,7 +168,7 @@ cdef class Reprocess(fccomp.FCComp):
         cdef material._Material rtnval_proxy
         rtnval = (<cpp_fccomp.FCComp *> self._inst).calc()
         rtnval_proxy = material.Material()
-        rtnval_proxy.mat_pointer = &rtnval
+        rtnval_proxy.mat_pointer[0] = rtnval
         return rtnval_proxy
     
     
@@ -203,7 +203,7 @@ cdef class Reprocess(fccomp.FCComp):
         incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
         rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(incomp_proxy.map_ptr[0])
         rtnval_proxy = material.Material()
-        rtnval_proxy.mat_pointer = &rtnval
+        rtnval_proxy.mat_pointer[0] = rtnval
         return rtnval_proxy
     
     
@@ -235,10 +235,10 @@ cdef class Reprocess(fccomp.FCComp):
         cdef material._Material instream_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        instream_proxy = material.Material(instream, not isinstance(instream, material._Material))
+        instream_proxy = material.Material(instream, free_mat=not isinstance(instream, material._Material))
         rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(instream_proxy.mat_pointer[0])
         rtnval_proxy = material.Material()
-        rtnval_proxy.mat_pointer = &rtnval
+        rtnval_proxy.mat_pointer[0] = rtnval
         return rtnval_proxy
     
     

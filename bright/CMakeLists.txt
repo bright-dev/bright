@@ -9,7 +9,7 @@ message("-- C_INCLUDE_PATH for ${CMAKE_CURRENT_SOURCE_DIR}: ${inc_dirs}")
 set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/typeconverters.pyx
                             PROPERTIES CYTHON_IS_CXX TRUE)
 cython_add_module(typeconverters typeconverters.pyx)
-target_link_libraries(typeconverters pyne_nucname)
+target_link_libraries(typeconverters pyne_nucname pyne_material)
 
 # bright config
 set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/bright_config.pyx

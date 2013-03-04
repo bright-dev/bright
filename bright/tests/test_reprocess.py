@@ -74,11 +74,9 @@ def test_Reprocess_4():
     assert_equal(r.sepeff, {922350: 0.9})
     assert_equal(r.track_params, set(["Mass"]))
 
-
 #
 # Tests that the fuel cycle component attributes work.
 #
-
 
 @with_setup(None, teardown_rep)
 def test_sepeff():
@@ -97,6 +95,7 @@ def test_track_params():
     assert_equal(r.track_params, set(["Om nom nom"]))
                         
 
+
 #
 # Tests that the fuel cycle component methods work.
 #
@@ -106,9 +105,11 @@ def test_calc_1():
     bright_conf.track_nucs = set([922350, 922380, 942390])
     r = Reprocess(sepeff={"U235": 0.9, "922380": 0.999, "94239": 0.99})
     r.mat_feed = Material({942390: 1.0})
-    r.calc()
+    mat = r.calc()
     assert_equal(r.mat_prod.mass, 0.99)
     assert_equal(r.mat_prod.comp[942390], 1.0) # Recall ms.comp is normalized
+    assert_equal(mat.mass, 0.99)
+    assert_equal(mat.comp[942390], 1.0) # Recall ms.comp is normalized
 
 
 @with_setup(None, teardown_rep)
@@ -156,7 +157,6 @@ def test_calc_params():
     r.calc_params()
     assert_equal(r.params_prior_calc["Mass"],  1.00)
     assert_equal(r.params_after_calc["Mass"], 0.99)
-        
 
 if __name__ == "__main__":
     nose.main()

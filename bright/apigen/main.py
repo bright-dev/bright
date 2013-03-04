@@ -112,8 +112,8 @@ PREREGISTER_CLASSES = [
      ('pyne', 'material'), 
      #('{pytype}({var})', '{proxy_name} = {pytype}({var})'),
      ('{pytype}({var})', 
-        '{proxy_name} = {pytype}()\n{proxy_name}.mat_pointer = &{var}'),
-     ('{proxy_name} = {pytype}({var}, not isinstance({var}, {cytype}))',
+        '{proxy_name} = {pytype}()\n{proxy_name}.mat_pointer[0] = {var}'),
+     ('{proxy_name} = {pytype}({var}, free_mat=not isinstance({var}, {cytype}))',
       '{proxy_name}.mat_pointer[0]')),
     ]
 

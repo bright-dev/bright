@@ -257,8 +257,7 @@ def _gen_method(name, name_mangled, args, rtn, doc=None, inst_name="self._inst")
 def _gen_constructor(name, name_mangled, classname, args, doc=None, 
                      cpppxd_filename=None, inst_name="self._inst"):
     argfill = ", ".join(['self'] + [a[0] for a in args if 2 == len(a)] + \
-                        ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)] +\
-                        ['*args', '**kwargs'])
+                        ["{0}={1}".format(a[0], a[2]) for a in args if 3 == len(a)])
     lines  = ['def {0}({1}):'.format(name_mangled, argfill)]
     lines += [] if doc is None else indent('\"\"\"{0}\"\"\"'.format(doc), join=False)
     decls = []

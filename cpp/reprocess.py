@@ -98,7 +98,7 @@ desc = {
         'sepeff': 'sepeff_t',
         },
     'methods': {
-        ('Reprocess', ('sed', 'sepeff_t'), ('n', 'str', '""')): None,
+        ('Reprocess', ('sepeff', 'sepeff_t'), ('name', 'str', '""')): None,
         },
     }
 
