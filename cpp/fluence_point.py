@@ -1,0 +1,15 @@
+desc = {
+    'docstrings': {
+        'module': """Python wrapper for the fluence point.""",
+        'class': ("This class holds three simple data points that represent "
+                  "a fluence point."),
+        'attrs': {
+            'f': "Index (int) of fluence immediately lower than the value of F.",
+            'F': ("Fluence value itself (float).  In units of [neutrons/kilobarn], "
+                  "abbr [n/kb]."),
+            'm': ("The slope (float) dBU/dF between points f and f+1.  Has the odd "
+                  "units of [MWd kb / kgIHM n]"),
+            },
+        },
+    }
+

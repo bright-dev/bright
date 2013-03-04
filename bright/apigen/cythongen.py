@@ -25,7 +25,7 @@ _cpppxd_template = AUTOGEN_WARNING + \
 
 cdef extern from "{header_filename}" namespace "{namespace}":
 
-    cdef cppclass {name}({parents}):
+    cdef cppclass {name}{parents}:
         # constructors
 {constructors_block}
 
@@ -41,14 +41,15 @@ def gencpppxd(desc, exception_type='+'):
     """Generates a cpp_*.pxd Cython header file for exposing C/C++ data from to 
     other Cython wrappers based off of a dictionary (desc)ription.
     """
-    d = {'parents': ', '.join([cython_ctype(p) for p in desc['parents']]), }
+    pars = ', '.join([cython_ctype(p) for p in desc['parents'] or ()])
+    d = {'parents': pars if 0 == len(pars) else '('+pars+')'}
     copy_from_desc = ['name', 'namespace', 'header_filename']
     for key in copy_from_desc:
         d[key] = desc[key]
     inc = set(['c'])
 
     cimport_tups = set()
-    for parent in desc['parents']:
+    for parent in desc['parents'] or ():
         cython_cimport_tuples(parent, cimport_tups, inc)
 
     alines = []
@@ -97,7 +98,7 @@ def gencpppxd(desc, exception_type='+'):
 _pxd_template = AUTOGEN_WARNING + \
 """{cimports}
 
-cdef class {name}({parents}):
+cdef class {name}{parents}:
 {body}
 """
 
@@ -108,14 +109,14 @@ def genpxd(desc):
     """
     if 'pxd_filename' not in desc:
         desc['pxd_filename'] = '{0}.pxd'.format(desc['name'].lower())
-
-    d = {'parents': ', '.join([cython_cytype(p) for p in desc['parents']]), }
+    pars = ', '.join([cython_cytype(p) for p in desc['parents'] or ()])
+    d = {'parents': pars if 0 == len(pars) else '('+pars+')'}
     copy_from_desc = ['name',]
     for key in copy_from_desc:
         d[key] = desc[key]
 
     cimport_tups = set()
-    for parent in desc['parents']:
+    for parent in desc['parents'] or ():
         cython_cimport_tuples(parent, cimport_tups, set(['cy']))
 
     from_cpppxd = desc['cpppxd_filename'].rsplit('.', 1)[0]
@@ -149,7 +150,7 @@ _pyx_template = AUTOGEN_WARNING + \
 
 {imports}
 
-cdef class {name}({parents}):
+cdef class {name}{parents}:
 {class_docstring}
 
     # constuctors
@@ -207,8 +208,7 @@ def _gen_property(name, t, doc=None, cached_names=None, inst_name="self._inst"):
                                       inst_name=inst_name), join=False)
     lines += ['']
     newcnlen = 0 if cached_names is None else len(cached_names)
-    if newcnlen == 1 + oldcnlen:
-        cached_name = cached_names[-1]
+    cached_name = cached_names[-1] if newcnlen == 1 + oldcnlen else None
     lines += indent(_gen_property_set(name, t, inst_name=inst_name, 
                                       cached_name=cached_name), join=False)
     lines += ['', ""]
@@ -356,7 +356,8 @@ def genpyx(desc, env=None):
     if env is None:
         env = {desc['name']: desc}
     nodocmsg = "no docstring for {0}, please file a bug report!"
-    d = {'parents': ', '.join([cython_cytype(p) for p in desc['parents']]), }
+    pars = ', '.join([cython_cytype(p) for p in desc['parents'] or ()])
+    d = {'parents': pars if 0 == len(pars) else '('+pars+')'}
     copy_from_desc = ['name', 'namespace', 'header_filename']
     for key in copy_from_desc:
         d[key] = desc[key]
@@ -370,7 +371,7 @@ def genpyx(desc, env=None):
 
     import_tups = set()
     cimport_tups = set()
-    for parent in desc['parents']:
+    for parent in desc['parents'] or ():
         cython_import_tuples(parent, import_tups)
         cython_cimport_tuples(parent, cimport_tups)
 

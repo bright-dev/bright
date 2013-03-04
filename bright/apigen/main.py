@@ -16,6 +16,7 @@ CLASSES = [
     # classname, base filename, make cython bindings, make cyclus bindings
     ('FCComp', 'fccomp', False, False),
     ('Reprocess', 'reprocess', True, True),
+    ('FluencePoint', 'fluence_point', True, True),
     ]
 
 class DescriptionCache(object):
