@@ -118,6 +118,14 @@ PREREGISTER_CLASSES = [
       '{proxy_name}.mat_pointer[0]')),
     ]
 
+def newoverwrite(s, filename):
+    """useful for not forcing re-compiles"""
+    with open(filename, 'r') as f:
+        old = f.read()
+    if s == old:
+        return 
+    with open(filename, 'w') as f:
+        f.write(s)
 
 def main():
     """Entry point for Bright API generation."""
@@ -171,12 +179,9 @@ def main():
         cpppxd = gencpppxd(desc)
         pxd = genpxd(desc)
         pyx = genpyx(desc, env)
-        with open(os.path.join('bright', desc['cpppxd_filename']), 'w') as f:
-            f.write(cpppxd)
-        with open(os.path.join('bright', desc['pxd_filename']), 'w') as f:
-            f.write(pxd)
-        with open(os.path.join('bright', desc['pyx_filename']), 'w') as f:
-            f.write(pyx)
+        newoverwrite(cpppxd, os.path.join('bright', desc['cpppxd_filename']))
+        newoverwrite(pxd, os.path.join('bright', desc['pxd_filename']))
+        newoverwrite(pyx, os.path.join('bright', desc['pyx_filename']))
 
     # next, make cyclus bindings
     for classname, fname, mkcython, mkcyclus in CLASSES:
