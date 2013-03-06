@@ -8,7 +8,7 @@
 ################################################
 """Python wrapper for the fluence point.
 """
-
+from libc.stdlib cimport free
 
 
 
@@ -23,11 +23,14 @@ cdef class FluencePoint:
         # cached property defaults
 
 
-    def FluencePoint(self):
+    def __init__(self, f_=0, F_=0.0, m_=0.0):
         """"""
-        self._inst = new cpp_fluence_point.FluencePoint()
+        self._inst = new cpp_fluence_point.FluencePoint(f_, <double> F_, <double> m_)
     
     
+    def __dealloc__(self):
+        if self._free_inst:
+            free(self._inst)
 
     # attributes
     property F:

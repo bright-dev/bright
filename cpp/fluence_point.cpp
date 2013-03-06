@@ -6,11 +6,11 @@
 /*** FulencePoint Class ***/
 /**************************/
 
-bright::FluencePoint::FluencePoint()
+bright::FluencePoint::FluencePoint(int f_, double F_, double m_)
 {
-  f = 0;
-  F = 0.0;
-  m = 0.0;
+  f = f_;
+  F = F_;
+  m = m_;
 };
 
 

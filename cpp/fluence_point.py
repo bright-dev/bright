@@ -11,5 +11,7 @@ desc = {
                   "units of [MWd kb / kgIHM n]"),
             },
         },
+    ('FluencePoint', ('f', 'int32', '0'), ('F', 'float64', '0.0'), 
+                     ('m', 'float64', '0.0')): None,
     }
 

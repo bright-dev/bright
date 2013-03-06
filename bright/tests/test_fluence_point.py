@@ -20,11 +20,17 @@ FluencePoint = bright.fluence_point.FluencePoint
 #
 # Tests the fluence point reactor helper class.
 #
-def test_constructor():
+def test_empty_constructor():
     fp = FluencePoint()
     assert_equal(fp.f, 0)
     assert_equal(fp.F, 0.0)
     assert_equal(fp.m, 0.0)
+
+def test_full_constructor():
+    fp = FluencePoint(10, 11.0, 12.0)
+    assert_equal(fp.f, 10)
+    assert_equal(fp.F, 11.0)
+    assert_equal(fp.m, 12.0)
 
 def test_f():
     fp = FluencePoint()

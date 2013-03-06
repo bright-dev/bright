@@ -10,7 +10,7 @@ namespace bright {
   {
   public:
     // Constructors
-    FluencePoint();
+    FluencePoint(int f_=0, double F_=0.0, double m_=0.0);
     ~FluencePoint();
 
     // Attributes

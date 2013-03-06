@@ -420,6 +420,9 @@ def genpyx(desc, env=None):
             # this must be a constructor
             if mname not in (desc['name'], '__init__'):
                 continue  # skip destuctors
+            if 1 == methcounts[mname]:
+                mname_mangled = '__init__'
+                mangled_mnames[mkey] = mname_mangled
             mdoc = desc.get('docstrings', {}).get('methods', {}).get(mname, '')
             clines += _gen_constructor(mname, mname_mangled, 
                                        desc['name'], margs, doc=mdoc, 
@@ -441,6 +444,12 @@ def genpyx(desc, env=None):
                 # write dispatcher
                 nm = {k: v for k, v in mangled_mnames.iteritems() if k[0] == mname}
                 mlines += _gen_dispatcher(mname, nm, doc=mdoc)
+    if desc['parents'] is None:
+        clines += ["def __dealloc__(self):"]
+        clines += indent("if self._free_inst:", join=False)
+        clines += indent(indent("free(self._inst)", join=False), join=False)
+        cimport_tups.add(('libc.stdlib', 'free'))
+
     d['methods_block'] = indent(mlines)
     d['constructor_block'] = indent(clines)
 
