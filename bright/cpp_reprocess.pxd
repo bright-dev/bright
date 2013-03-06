@@ -30,3 +30,5 @@ cdef extern from "reprocess.h" namespace "bright":
         cpp_material.Material calc(cpp_material.Material) except +
         void calc_params() except +
         void initialize(cpp_map[int, double]) except +
+
+

@@ -98,7 +98,7 @@ def test_xW_j():
     assert_equal(ep.xW_j, 0.0025)
 
 def test_uranium_enrichment_defualts():
-    ep = bright.enrichment.uranium_enrichment_defaults()
+    ep = bright.enrichment_parameters.uranium_enrichment_defaults()
     assert_equal(ep.alpha_0, 1.05)
     assert_equal(ep.Mstar_0, 236.5)
     assert_equal(ep.j, 922350)
@@ -129,9 +129,9 @@ def test_Enrichment_2():
 
 @with_setup(None, teardown_enrichment)
 def test_Enrichment_3():
-    ep = bright.enrichment.uranium_enrichment_defaults()
+    ep = bright.enrichment_parameters.uranium_enrichment_defaults()
     ep.xP_j = 0.1
-    e = Enrichment(enrich_params=ep)
+    e = Enrichment(ep=ep)
     assert_equal(e.name, '')
     assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
                                       "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
@@ -146,9 +146,9 @@ def test_Enrichment_3():
 
 @with_setup(None, teardown_enrichment)
 def test_Enrichment_4():
-    ep = bright.enrichment.uranium_enrichment_defaults()
+    ep = bright.enrichment_parameters.uranium_enrichment_defaults()
     ep.j = 922360
-    e = Enrichment(enrich_params=ep, name='e')
+    e = Enrichment(ep=ep, n='e')
     assert_equal(e.name, 'e')
     assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
                                       "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))
@@ -366,9 +366,9 @@ def test_calc_params():
 
 @with_setup(setup_enrichment1, teardown_enrichment)
 def test_sample_feed():
-    ep = bright.enrichment.uranium_enrichment_defaults()
+    ep = bright.enrichment_parameters.uranium_enrichment_defaults()
     ep.xP_j = 0.06
-    e = Enrichment(enrich_params=ep, name='e')
+    e = Enrichment(ep=ep, n='e')
     mat = Material({
             922320: 1.1 * (10.0**-9),
             922340: 0.00021,
@@ -397,9 +397,9 @@ def test_sample_feed():
 
 @with_setup(setup_enrichment1, teardown_enrichment)
 def test_NU():
-    ep = bright.enrichment.uranium_enrichment_defaults()
+    ep = bright.enrichment_parameters.uranium_enrichment_defaults()
     ep.xP_j = 0.05
-    e = Enrichment(enrich_params=ep, name='e')
+    e = Enrichment(ep=ep, n='e')
     mat = Material({
             922340: 0.000055,
             922350: 0.00720,
@@ -426,9 +426,9 @@ def test_NU():
 
 @with_setup(setup_enrichment1, teardown_enrichment)
 def test_VISION():
-    ep = bright.enrichment.uranium_enrichment_defaults()
+    ep = bright.enrichment_parameters.uranium_enrichment_defaults()
     ep.xP_j = 0.055
-    e = Enrichment(enrich_params=ep, name='e')
+    e = Enrichment(ep=ep, n='e')
     mat = Material({
             922340: 0.000183963025893197,
             922350: 0.00818576605617839,
@@ -473,7 +473,7 @@ def test_Tungsten():
     ep.xP_j = 0.5109
     ep.xW_j = 0.00014
 
-    e = Enrichment(enrich_params=ep, name='e')
+    e = Enrichment(ep=ep, n='e')
     mat = Material({
             741800: 0.0014, 
             741820: 0.26416, 

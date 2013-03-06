@@ -13,3 +13,5 @@ from pyne cimport material
 
 cdef class Enrichment(fccomp.FCComp):
     cdef public material._Material _mat_tail
+
+

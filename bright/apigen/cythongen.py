@@ -35,6 +35,8 @@ cdef extern from "{header_filename}" namespace "{namespace}":
 
         # methods
 {methods_block}
+
+{extra}
 """
 
 
@@ -89,6 +91,7 @@ def gencpppxd(desc, exception_type='+'):
     d['constructors_block'] = indent(clines, 8)
 
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
+    d['extra'] = desc.get('extra', {}).get('cpppxd', '')
     cpppxd = _cpppxd_template.format(**d)
     if 'cpppxd_filename' not in desc:
         desc['cpppxd_filename'] = 'cpp_{0}.pxd'.format(d['name'].lower())
@@ -101,6 +104,8 @@ _pxd_template = AUTOGEN_WARNING + \
 
 cdef class {name}{parents}:
 {body}
+
+{extra}
 """
 
 
@@ -142,6 +147,7 @@ def genpxd(desc):
 
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
     d['body'] = indent(body or ['pass'])
+    d['extra'] = desc.get('extra', {}).get('pxd', '')
     pxd = _pxd_template.format(**d)
     return pxd
     
@@ -170,6 +176,8 @@ cdef class {name}{parents}:
 {attrs_block}
     # methods
 {methods_block}
+
+{extra}
 '''
 
 def _gen_property_get(name, t, cached_names=None, inst_name="self._inst"):
@@ -457,6 +465,7 @@ def genpyx(desc, env=None):
 
     d['imports'] = "\n".join(sorted(cython_imports(import_tups)))
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
+    d['extra'] = desc.get('extra', {}).get('pyx', '')
     pyx = _pyx_template.format(**d)
     if 'pyx_filename' not in desc:
         desc['pyx_filename'] = '{0}.pyx'.format(d['name'].lower())

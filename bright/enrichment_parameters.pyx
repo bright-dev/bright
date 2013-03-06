@@ -134,3 +134,31 @@ cdef class EnrichmentParameters:
     
     # methods
 
+
+def uranium_enrichment_defaults():
+    """This function returns a new EnrichmentParameters instance which 
+    holds sensible initial values a urnaium enrichment cascade.
+
+    The values of this instance of EnrichmentParameters are as
+    follows::
+
+        ued = bright.enrichment.EnrichmentParameters()
+
+        ued.alpha_0 = 1.05
+        ued.Mstar_0 = 236.5
+
+        ued.j = 922350
+        ued.k = 922380
+
+        ued.xP_j = 0.05
+        ued.xW_j = 0.0025
+
+        ued.N0 = 30.0
+        ued.M0 = 10.0
+
+    """
+    cdef cpp_enrichment_parameters.EnrichmentParameters cpp_ued = cpp_enrichment_parameters.fillUraniumEnrichmentDefaults()
+    cdef EnrichmentParameters ued = EnrichmentParameters()
+    (<cpp_enrichment_parameters.EnrichmentParameters *> ued._inst)[0] = cpp_ued
+    return ued
+

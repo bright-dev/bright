@@ -59,3 +59,5 @@ cdef extern from "bright_enrichment.h" namespace "bright":
         void initialize(cpp_enrichment_parameters.EnrichmentParameters) except +
         double xP_i(int) except +
         double xW_i(int) except +
+
+

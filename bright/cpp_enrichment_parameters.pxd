@@ -26,3 +26,5 @@ cdef extern from "enrichment_parameters.h" namespace "bright":
 
         # methods
 
+
+    EnrichmentParameters fillUraniumEnrichmentDefaults() except +
