@@ -6,14 +6,20 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-"""no docstring for enrichmentparameters, please file a bug report!
+"""Python wrapper for enrichment parameters.
 """
 from libc.stdlib cimport free
+from pyne cimport cpp_nucname
+from pyne cimport nucname
 
-
+from pyne import nucname
 
 cdef class EnrichmentParameters:
-    """no docstring for EnrichmentParameters, please file a bug report!"""
+    """This class is a collection of values that mirror the attributes in 
+    Enrichment that are required for the cascade model to run. Like 
+    ReactorParameters, this class takes no arguments on initialization.  An 
+    empty ErichmentParameters instance has all values set to zero.
+    """
 
     # constuctors
     def __cinit__(self, *args, **kwargs):
@@ -34,7 +40,7 @@ cdef class EnrichmentParameters:
 
     # attributes
     property M0:
-        """no docstring for M0, please file a bug report!"""
+        """This is the number of stripping stages initially guessed by the user."""
         def __get__(self):
             return float((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).M0)
     
@@ -43,7 +49,11 @@ cdef class EnrichmentParameters:
     
     
     property Mstar_0:
-        """no docstring for Mstar_0, please file a bug report!"""
+        """The :math:`M^*_0` represents a first guess at what the `Mstar` should be.
+        The value of Mstar_0 on initialization should be in the ballpark
+        of the optimized result of the Mstar attribute.  However, :math:`M^*_0` must
+        always have a value between the weights of the j and k key components.
+        """
         def __get__(self):
             return float((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).Mstar_0)
     
@@ -52,7 +62,7 @@ cdef class EnrichmentParameters:
     
     
     property N0:
-        """no docstring for N0, please file a bug report!"""
+        """This is the number of enriching stages initially guessed by the user."""
         def __get__(self):
             return float((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).N0)
     
@@ -61,7 +71,10 @@ cdef class EnrichmentParameters:
     
     
     property alpha_0:
-        """no docstring for alpha_0, please file a bug report!"""
+        """The :math:`\alpha_0` attribute specifies the overall stage separation factor
+        for the cascade.  This should be set on initialization.  Values should be
+        greater than one.  Values less than one represent de-enrichment.
+        """
         def __get__(self):
             return float((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).alpha_0)
     
@@ -70,25 +83,35 @@ cdef class EnrichmentParameters:
     
     
     property j:
-        """no docstring for j, please file a bug report!"""
+        """This is an integer in zzaaam-form that represents the jth key component.
+        This nuclide is preferentially enriched in the product stream.
+        For standard uranium cascades j is 922350 (ie U-235).
+        """
         def __get__(self):
             return int((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).j)
     
         def __set__(self, value):
-            (<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).j = value
+            (<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).j = nucname.zzaaam(value)
     
     
     property k:
-        """no docstring for k, please file a bug report!"""
+        """This is an integer in zzaaam-form that represents the kth key component.
+        This nuclide is preferentially enriched in the waste stream.
+        For standard uranium cascades k is 922380 (ie U-238).
+        """
         def __get__(self):
             return int((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).k)
     
         def __set__(self, value):
-            (<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).k = value
+            (<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).k = nucname.zzaaam(value)
     
     
     property xP_j:
-        """no docstring for xP_j, please file a bug report!"""
+        """This is the target enrichment of the jth isotope in the
+        product stream mat_prod.  The :math:`x^P_j` value is set by 
+        the user at initialization or run-time.  For typical uranium 
+        vectors, this value is about U-235 = 0.05.
+        """
         def __get__(self):
             return float((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).xP_j)
     
@@ -97,7 +120,11 @@ cdef class EnrichmentParameters:
     
     
     property xW_j:
-        """no docstring for xW_j, please file a bug report!"""
+        """This is the target enrichment of the jth isotope in the
+        waste stream ms_tail.  The :math:`x^W_j` value is set by the 
+        user at initialization or runtime.  For typical uranium vectors,
+        this value is about U-235 = 0.0025.
+        """
         def __get__(self):
             return float((<cpp_enrichment_parameters.EnrichmentParameters *> self._inst).xW_j)
     

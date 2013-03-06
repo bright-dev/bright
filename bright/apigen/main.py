@@ -118,7 +118,6 @@ PREREGISTER_CLASSES = [
     ('Material', 'cpp_material.Material', ('pyne', 'cpp_material'), 
      'material._Material', 'material.Material', ('pyne', 'material'), 
      ('pyne', 'material'), 
-     #('{pytype}({var})', '{proxy_name} = {pytype}({var})'),
      ('{pytype}({var})', 
       ('{proxy_name} = {pytype}()\n'
        '{proxy_name}.mat_pointer[0] = {var}'),

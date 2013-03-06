@@ -239,6 +239,8 @@ _cython_cimport_template_types = {
     'pair': (('libcpp.utility', 'pair', 'cpp_pair'),),
     'set': (('libcpp.set', 'set', 'cpp_set'),),
     'vector': (('libcpp.vector', 'vector', 'cpp_vector'),),
+    'nucid': (('pyne', 'cpp_nucname'),),
+    'nucname': (('pyne', 'cpp_nucname'), ('libcpp.string', 'string', 'std_string')),
     }
 
 _cython_cyimport_base_types = {
@@ -258,6 +260,8 @@ _cython_cyimport_template_types = {
     'pair': (('pyne', 'stlconverters', 'conv'),),
     'set': (('pyne', 'stlconverters', 'conv'),),
     'vector': (('pyne', 'stlconverters', 'conv'),),
+    'nucid': (('pyne', 'nucname'),),
+    'nucname': (('pyne', 'nucname'),),
     }
 
 @_memoize
@@ -329,6 +333,8 @@ _cython_pyimport_template_types = {
     'pair': (('pyne', 'stlconverters', 'conv'),),
     'set': (('pyne', 'stlconverters', 'conv'),),
     'vector': (('pyne', 'stlconverters', 'conv'),),
+    'nucid': (('pyne', 'nucname'),),
+    'nucname': (('pyne', 'nucname'),),
     }
 
 @_memoize
@@ -410,6 +416,8 @@ _cython_template_class_names = {
     'pair': 'Pair{value_type}',
     'set': 'Set{value_type}',
     'vector': 'Vector{value_type}',    
+    'nucid': 'Nucid', 
+    'nucname': 'Nucname',
     }
 
 
@@ -571,6 +579,8 @@ _cython_c2py_conv = {
                '    {proxy_name}.vector_ptr = &{var}\n'
                '    {cache_name} = {proxy_name}\n'
                )),
+    'nucid': ('nucname.zzaaam({var})',),
+    'nucname': ('nucname.name({var})',),
     }
 
 @_memoize

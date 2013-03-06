@@ -6,7 +6,7 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-
+from pyne cimport cpp_nucname
 
 cdef extern from "enrichment_parameters.h" namespace "bright":
 
