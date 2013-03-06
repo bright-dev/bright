@@ -85,6 +85,8 @@ def gccxml_describe(filename, classname, verbose=False):
     """Use GCC-XML to describe the class."""
     f = tempfile.NamedTemporaryFile()
     cmd = ['gccxml', filename, '-fxml=' + f.name, '-I' + pyne.includes]
+    if verbose:
+        print " ".join(cmd)
     subprocess.call(cmd)
     f.seek(0)
     root = etree.parse(f)
@@ -135,6 +137,7 @@ class GccxmlClassDescriber(object):
             self.visit_class(node)
         members = node.attrib.get('members', '').strip().split()
         children = [self._root.find(".//*[@id='{0}']".format(m)) for m in members]
+        children = [c for c in children if c.attrib['access'] == 'public']
         self._level += 1
         for child in children:
             tag = child.tag.lower()
@@ -291,7 +294,27 @@ class GccxmlClassDescriber(object):
     def visit_fundamentaltype(self, node):
         self._pprint(node)
         tname = node.attrib['name']
-        t = self._fundemntal_to_base[tname]
+        t = self._fundemntal_to_base.get(tname, None)
+        return t
+
+    def visit_arraytype(self, node):
+        self._pprint(node)
+        baset = self.type(node.attrib['type'])
+        # FIXME something involving the min, max, and/or size 
+        # attribs needs to also go here.
+        t = (baset, '*')
+        return t
+
+    def visit_referencetype(self, node):
+        self._pprint(node)
+        baset = self.type(node.attrib['type'])
+        t = (baset, '&')
+        return t
+
+    def visit_pointertype(self, node):
+        self._pprint(node)
+        baset = self.type(node.attrib['type'])
+        t = (baset, '*')
         return t
 
     def type(self, id):

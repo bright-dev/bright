@@ -15,12 +15,13 @@ from bright.apigen.autodescribe import describe, merge_descriptions
 CLASSES = [
     # classname, base filename, make cython bindings, make cyclus bindings
     ('FCComp', 'fccomp', False, False),
-    ('EnrichmentParameters', 'enrichment_parameters', True, True),
-    ('Enrichment', 'bright_enrichment', True, True),
-    ('Reprocess', 'reprocess', True, True),
+#    ('EnrichmentParameters', 'enrichment_parameters', True, True),
+#    ('Enrichment', 'bright_enrichment', True, True),
+#    ('Reprocess', 'reprocess', True, True),
+    ('decay_nuc', 'storage', False, False),
     ('from_nuc_struct', 'storage', False, False),
     ('Storage', 'storage', True, True),
-    ('FluencePoint', 'fluence_point', True, True),
+#    ('FluencePoint', 'fluence_point', True, True),
     ]
 
 class DescriptionCache(object):
@@ -162,14 +163,25 @@ def genbindings(ns):
         print("registering " + classname)
         pxd_base = desc['pxd_filename'].rsplit('.', 1)[0]         # eg, fccomp
         cpppxd_base = desc['cpppxd_filename'].rsplit('.', 1)[0]   # eg, cpp_fccomp
+        class_c2py = ('{pytype}({var})', 
+                      ('{proxy_name} = {pytype}()\n'
+                       '{proxy_name}._inst[0] = {var}'),
+                      ('if {cache_name} is None:\n'
+                       '    {proxy_name} = {pytype}()\n'
+                       '    {proxy_name}._free_inst = False\n'
+                       '    {proxy_name}._inst = &{var}\n'
+                       '    {cache_name} = {proxy_name}\n')
+                     )
         class_py2c = ('{proxy_name} = <{cytype}> {var}', '(<{ctype} *> {proxy_name}._inst)[0]')
+        class_cimport = ('bright', cpppxd_base) 
         ts.register_class(classname,                              # FCComp
             cython_c_type=cpppxd_base + '.' + classname,          # cpp_fccomp.FCComp
-            #cython_cimport=('bright.' + cpppxd_base, classname),  # from bright.cpp_fccomp import FCComp
-            cython_cimport=('bright', cpppxd_base),  # from bright.cpp_fccomp import FCComp
+            cython_cimport=class_cimport,  
             cython_cy_type=pxd_base + '.' + classname,            # fccomp.FCComp   
+            cython_template_class_name=classname.replace('_', '').capitalize(),
             cython_cyimport=pxd_base,                             # fccomp
             cython_pyimport=pxd_base,                             # fccomp
+            cython_c2py=class_c2py,
             cython_py2c=class_py2c,
             )
     cache.dump()

@@ -44,7 +44,7 @@ def test_Storage_1():
 
 @with_setup(None, teardown_storage)
 def test_Storage_2():
-    s = Storage(name="s")
+    s = Storage(n="s")
     assert_equal(s.name, 's')
     assert_equal(s.track_params, set(["Mass"]))
 
@@ -97,7 +97,7 @@ def test_calc_3():
     bright_conf.track_nucs = set([922350, 922380, 942390])
     s = Storage()
     s.mat_feed = Material({942390: 1.0})
-    s.calc(decay_time=24110*365.25*24*3600)
+    s.calc(t=24110*365.25*24*3600)
     assert(s.mat_prod.mass < 1.0)
     assert_almost_equal(s.mat_prod.comp[942390], 0.5, 3) 
 

@@ -273,20 +273,23 @@ def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
     if seen is None:
         seen = set()
     if isinstance(t, basestring):
-        if  t in BASE_TYPES:
+        if t in BASE_TYPES:
             if 'c' in inc:
                 seen.update(_cython_cimport_base_types[t])
             if 'cy' in inc:
                 seen.update(_cython_cyimport_base_types[t])
             seen -= set((None, (None,)))
-            return seen
+            return seen        
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
+        tkey = t[int(isrefinement(t))]
         if 'c' in inc:
-            seen.update(_cython_cimport_template_types[t[1]])
+            seen.update(_cython_cimport_base_types.get(tkey, (None,)))
+            seen.update(_cython_cimport_template_types.get(tkey, (None,)))
         if 'cy' in inc:
-            seen.update(_cython_cyimport_template_types[t[1]])
+            seen.update(_cython_cyimport_base_types.get(tkey, (None,)))
+            seen.update(_cython_cyimport_template_types.get(tkey, (None,)))
         seen -= set((None, (None,)))
         return cython_cimport_tuples(t[0], seen, inc)
     elif 3 <= tlen:
@@ -353,7 +356,9 @@ def cython_import_tuples(t, seen=None):
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
-        seen.update(_cython_pyimport_template_types[t[1]])
+        tkey = t[int(isrefinement(t))]
+        seen.update(_cython_pyimport_base_types.get(tkey, (None,)))
+        seen.update(_cython_pyimport_template_types.get(tkey, (None,)))
         seen -= set((None, (None,)))
         return cython_import_tuples(t[0], seen)
     elif 3 <= tlen:
@@ -557,13 +562,13 @@ _cython_c2py_conv = {
             )),
     'dict': ('dict({var})',),
     'pair': ('{pytype}({var})',
-            ('{proxy_name} = {pytype}(False, False)\n'
-             '{proxy_name}.pair_ptr = &{var}\n'),
-            ('if {cache_name} is None:\n'
-             '    {proxy_name} = {pytype}(False, False)\n'
-             '    {proxy_name}.pair_ptr = &{var}\n'
-             '    {cache_name} = {proxy_name}\n'
-             )),
+             ('{proxy_name} = {pytype}(False, False)\n'
+              '{proxy_name}.pair_ptr = &{var}\n'),
+             ('if {cache_name} is None:\n'
+              '    {proxy_name} = {pytype}(False, False)\n'
+              '    {proxy_name}.pair_ptr = &{var}\n'
+              '    {cache_name} = {proxy_name}\n'
+              )),
     'set': ('{pytype}({var})',
            ('{proxy_name} = {pytype}(False, False)\n'
             '{proxy_name}.set_ptr = &{var}\n'),
