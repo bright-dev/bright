@@ -122,7 +122,7 @@ def test_Enrichment_1():
 
 @with_setup(None, teardown_enrichment)
 def test_Enrichment_2():
-    e = Enrichment(name="e")
+    e = Enrichment(n="e")
     assert_equal(e.name, 'e')
     assert_equal(e.track_params, set(["M",  "MassFeed", "MassProduct", "MassTails", 
                                       "Mstar", "N", "SWUperFeed", "SWUperProduct", "TotalPerFeed"]))

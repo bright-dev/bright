@@ -291,7 +291,7 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
     types = ["types = set([(i, type(a)) for i, a in enumerate(args)])",
              "types.update([(k, type(v)) for k, v in kwargs.iteritems()])",]
     lines += indent(types, join=False)
-    refinenum = lambda x: (sum([int(isrefinement(a[1])) for a in x[0][1:]]), x[1])
+    refinenum = lambda x: (sum([int(isrefinement(a[1])) for a in x[0][1:]]), len(x[0]), x[1])
     mangitems = sorted(name_mangled.items(), key=refinenum)
     mtypeslines = []
     lines += indent("# vtable-like dispatch for exactly matching types", join=False)
@@ -314,7 +314,7 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
         lines += indent(cond, join=False)
     lines = sorted(mtypeslines) + [''] +  lines
     lines += indent("# duck-typed dispatch based on whatever works!", join=False)
-    refineopp = lambda x: (-1*sum([int(isrefinement(a[1])) for a in x[0][1:]]), x[1])
+    refineopp = lambda x: (-1*sum([int(isrefinement(a[1])) for a in x[0][1:]]), len(x[0]), x[1])
     mangitems = sorted(name_mangled.items(), key=refineopp)
     for key, mangled_name in mangitems:
         lines += indent('try:', join=False)

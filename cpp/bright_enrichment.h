@@ -21,8 +21,7 @@ namespace bright {
   // Reprocessing class
   public:
     // Reprocessing Constructors
-    Enrichment();
-    Enrichment(std::string n);
+    Enrichment(std::string n="");
     Enrichment(EnrichmentParameters ep, std::string n="");
     ~Enrichment ();
 

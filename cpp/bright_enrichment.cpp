@@ -34,13 +34,6 @@ void bright::Enrichment::initialize(EnrichmentParameters ep)
 /*** Enrichment Constructors ***/
 /*******************************/
 
-bright::Enrichment::Enrichment () : bright::FCComp(enr_p2track, "")
-{
-  // Enrichment Fuel Cycle Component. Perfomrs Multi-Component Enrichment
-  initialize(bright::UraniumEnrichmentDefaults);
-}
-
-
 bright::Enrichment::Enrichment(std::string n) : bright::FCComp(enr_p2track, n)
 {
   // Enrichmenting Fuel Cycle Component.  Applies Separation Efficiencies.

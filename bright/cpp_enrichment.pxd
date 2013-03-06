@@ -11,6 +11,7 @@ from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
+from pyne cimport cpp_nucname
 
 cdef extern from "bright_enrichment.h" namespace "bright":
 
