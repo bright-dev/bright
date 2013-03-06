@@ -35,7 +35,7 @@ namespace bright {
     void calc_params();
     pyne::Material calc();
     pyne::Material calc(pyne::comp_map incomp);
-    pyne::Material calc(pyne::Material instream);	
+    pyne::Material calc(pyne::Material mat);	
   };
 
 // end namespace

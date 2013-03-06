@@ -20,10 +20,18 @@ target_link_libraries(bright_fccomp bright_bright ${PYNE_LINK_LIBS})
 install_lib(bright_fccomp)
 
 # enrichment
-add_library(bright_enrichment enrichment.cpp)
+add_library(bright_enrichment_parameters enrichment_parameters.cpp)
+set_target_properties(bright_enrichment_parameters PROPERTIES 
+                      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bright/lib")
+target_link_libraries(bright_enrichment_parameters bright_bright ${PYNE_LINK_LIBS})
+install_lib(bright_enrichment_parameters)
+
+# enrichment
+add_library(bright_enrichment bright_enrichment.cpp)
 set_target_properties(bright_enrichment PROPERTIES 
                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bright/lib")
-target_link_libraries(bright_enrichment bright_bright bright_fccomp ${PYNE_LINK_LIBS})
+target_link_libraries(bright_enrichment bright_bright bright_fccomp 
+                      bright_enrichment_parameters ${PYNE_LINK_LIBS})
 install_lib(bright_enrichment)
 
 # reprocess
@@ -99,4 +107,3 @@ install_lib(bright_reactormg)
 # Print include dir
 get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
 message("-- C_INCLUDE_PATH for ${CMAKE_CURRENT_SOURCE_DIR}: ${inc_dirs}")
-

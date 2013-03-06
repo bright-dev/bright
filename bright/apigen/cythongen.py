@@ -5,6 +5,7 @@ import math
 from copy import deepcopy
 
 from bright.apigen.utils import indent, expand_default_args
+from bright.apigen import typesystem as ts
 from bright.apigen.typesystem import cython_ctype, cython_cimport_tuples, \
     cython_cimports, register_class, cython_cytype, cython_pytype, cython_c2py, \
     cython_py2c, cython_import_tuples, cython_imports, isrefinement
@@ -120,8 +121,9 @@ def genpxd(desc):
         cython_cimport_tuples(parent, cimport_tups, set(['cy']))
 
     from_cpppxd = desc['cpppxd_filename'].rsplit('.', 1)[0]
-    register_class(desc['name'], cython_cimport=from_cpppxd,
-                   cython_c_type="{0}.{1}".format(from_cpppxd, desc['name']),)
+    # This is taken care of in main!
+    #register_class(desc['name'], cython_cimport=from_cpppxd,
+    #               cython_c_type="{0}.{1}".format(from_cpppxd, desc['name']),)
     d['name_type'] = cython_ctype(desc['name'])
     cython_cimport_tuples(desc['name'], cimport_tups, set(['c']))
 

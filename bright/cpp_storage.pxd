@@ -22,7 +22,7 @@ cdef extern from "storage.h" namespace "bright":
         void calc_params() except +
         cpp_material.Material calc() except +
         cpp_material.Material calc(map[int, double]) except +
-        cpp_material.Material calc(cpp_material.Material) except +
+        #cpp_material.Material calc(cpp_material.Material) except +
         cpp_material.Material calc(double) except +
         cpp_material.Material calc(map[int, double], double) except +
         cpp_material.Material calc(cpp_material.Material, double) except +

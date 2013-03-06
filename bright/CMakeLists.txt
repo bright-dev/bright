@@ -23,6 +23,12 @@ set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/fccomp.pyx
 cython_add_module(fccomp fccomp.pyx)
 target_link_libraries(fccomp bright_fccomp)
 
+# enrichment parameters
+set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/enrichment_parameters.pyx
+                            PROPERTIES CYTHON_IS_CXX TRUE)
+cython_add_module(enrichment_parameters enrichment_parameters.pyx)
+target_link_libraries(enrichment_parameters bright_enrichment_parameters)
+
 # enrichment
 set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/enrichment.pyx
                             PROPERTIES CYTHON_IS_CXX TRUE)

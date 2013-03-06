@@ -7,8 +7,8 @@
 #                    Come on, guys. I mean it! #
 ################################################
 cimport bright.typeconverters
-cimport cpp_reprocess
 cimport fccomp
+from bright cimport cpp_reprocess
 from libcpp.map cimport map as cpp_map
 from pyne cimport stlconverters as conv
 

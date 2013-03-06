@@ -114,10 +114,10 @@ pyne::Material bright::Reprocess::calc (pyne::comp_map incomp)
 };
 
 
-pyne::Material bright::Reprocess::calc (pyne::Material instream)
+pyne::Material bright::Reprocess::calc (pyne::Material mat)
 {
   // Does the Reprocessing
-  // instream = input stream of all nuclides. Standard pyne::Material object.
-  mat_feed = instream;
+  // mat = input stream of all nuclides. Standard pyne::Material object.
+  mat_feed = mat;
   return calc();
 };

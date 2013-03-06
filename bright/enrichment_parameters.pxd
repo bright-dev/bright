@@ -6,10 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-cimport fccomp
-from bright cimport cpp_enrichment
-from pyne cimport cpp_material
-from pyne cimport material
+from bright cimport cpp_enrichment_parameters
 
-cdef class Enrichment(fccomp.FCComp):
-    cdef public material._Material _mat_tail
+cdef class EnrichmentParameters:
+    cdef void * _inst
+    cdef public bint _free_inst

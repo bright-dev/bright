@@ -411,7 +411,7 @@ pyne::Material bright::FCComp::calc()
 }
 
 
-pyne::Material bright::FCComp::calc (pyne::comp_map cm)
+pyne::Material bright::FCComp::calc (pyne::comp_map incomp)
 {
   //Placehodler function for the calculation of all relevant isotopes and parameters.
   //Returns an empty pyne::Material object.

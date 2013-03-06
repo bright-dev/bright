@@ -53,8 +53,8 @@ namespace bright {
     void write_hdf5 ();
     void write ();
     virtual pyne::Material calc ();
-    virtual pyne::Material calc (pyne::comp_map);
-    virtual pyne::Material calc (pyne::Material);
+    virtual pyne::Material calc (pyne::comp_map incomp);
+    virtual pyne::Material calc (pyne::Material mat);
   };
 
 // end bright

@@ -121,7 +121,7 @@ cdef class Storage(fccomp.FCComp):
                 output.mat_pointer[0] = (<cpp_storage.Storage *> self._inst).calc(conv.dict_to_map_int_dbl(input), <double> decay_time)
             elif isinstance(input, pyne.material._Material):
                 in_mat = input
-                output.mat_pointer[0] = (<cpp_storage.Storage *> self._inst).calc(<pyne.cpp_material.Material> in_mat.mat_pointer[0], <double> decay_time)
+                output.mat_pointer[0] = (<cpp_storage.Storage *> self._inst).calc((<pyne.cpp_material.Material *> in_mat.mat_pointer)[0], <double> decay_time)
             else:
                 raise TypeError("'input' must be a Material, dict, or None.")
 

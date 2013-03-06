@@ -169,7 +169,7 @@ void bright::Storage::calc_params()
 pyne::Material bright::Storage::calc()
 {
   // Main part of the cooling code.
-  // instream is a mass stream of nuclides as the keys with the mass as a float as the value.
+  // mat is a mass stream of nuclides as the keys with the mass as a float as the value.
   // decay_time is a float value for the time in seconds.
   // bright::track_nucs throws out any values not in the list before returning vector
 

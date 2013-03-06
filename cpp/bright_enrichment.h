@@ -5,6 +5,7 @@
 #define _BRIGHT_ENRICHMENT_
 
 #include "fccomp.h"
+#include "enrichment_parameters.h"
 
 /************************************************/
 /*** Enrichment Component Class and Functions ***/
@@ -15,43 +16,14 @@ namespace bright {
   extern std::string enr_p2t [];
   extern std::set<std::string> enr_p2track;
 
-
-  class EnrichmentParameters 
-  {
-    /** Set of physical parameters used to specify an enrichment cascade. **/
-
-  public:
-    // Constructors
-    EnrichmentParameters();
-    ~EnrichmentParameters();
-
-    // Attributes
-    double alpha_0; //Initial stage separation factor
-    double Mstar_0; //Initial guess for mass separation factor
-
-    int j; //Component to enrich (U-235), zzaaam form
-    int k; //Component to de-enrich, or strip (U-238), zzaaam form
-
-    double N0; //Initial guess for the number of enriching stages
-    double M0; //Initial guess for the number of stripping stages
-
-    double xP_j; //Enrichment of the jth isotope in the product stream
-    double xW_j; //Enrichment of the jth isotope in the waste (tails) stream
-  };
-
-
-  EnrichmentParameters fillUraniumEnrichmentDefaults();
-  extern EnrichmentParameters UraniumEnrichmentDefaults;
-
-
   class Enrichment : public FCComp
   {
   // Reprocessing class
   public:
     // Reprocessing Constructors
-    Enrichment ();
-    Enrichment (std::string);
-    Enrichment (EnrichmentParameters, std::string = "");
+    Enrichment();
+    Enrichment(std::string n);
+    Enrichment(EnrichmentParameters ep, std::string n="");
     ~Enrichment ();
 
     // Public data
@@ -79,27 +51,27 @@ namespace bright {
 
 
     // Public access functions
-    void initialize(EnrichmentParameters);		// Initializes the constructors.
-    void calc_params ();
-    pyne::Material calc ();
-    pyne::Material calc (pyne::comp_map);
-    pyne::Material calc (pyne::Material);	
+    void initialize(EnrichmentParameters ep);		// Initializes the constructors.
+    void calc_params();
+    pyne::Material calc();
+    pyne::Material calc(pyne::comp_map incomp);
+    pyne::Material calc(pyne::Material mat);	
 
-    double PoverF (double, double, double);
-    double WoverF (double, double, double);
+    double PoverF(double x_F, double x_P, double x_W);
+    double WoverF(double x_F, double x_P, double x_W);
 
-    double get_alphastar_i (double);
+    double get_alphastar_i(double M_i);
 
-    double get_Ei (double);
-    double get_Si (double);
+    double get_Ei(double M_i);
+    double get_Si(double M_i);
     void FindNM();
 
-    double xP_i(int);
-    double xW_i(int);
+    double xP_i(int i);
+    double xW_i(int i);
     void SolveNM();
     void Comp2UnitySecant();
     void Comp2UnityOther();
-    double deltaU_i_OverG(int);
+    double deltaU_i_OverG(int i);
     void LoverF();
     void MstarOptimize();
   };

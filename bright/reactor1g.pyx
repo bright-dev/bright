@@ -1306,7 +1306,7 @@ cdef class Reactor1G(fccomp.FCComp):
             output.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).calc(conv.dict_to_map_int_dbl(input))
         elif isinstance(input, pyne.material._Material):
             in_mat = input
-            output.mat_pointer[0] = (<cpp_reactor1g.Reactor1G *> self._inst).calc(<pyne.cpp_material.Material> in_mat.mat_pointer[0])
+            output.mat_pointer[0] = (<cpp_fccomp.FCComp *> self._inst).calc(<pyne.cpp_material.Material> in_mat.mat_pointer[0])
 
         return output
 

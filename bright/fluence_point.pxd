@@ -6,7 +6,7 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-cimport cpp_fluence_point
+from bright cimport cpp_fluence_point
 
 cdef class FluencePoint:
     cdef void * _inst

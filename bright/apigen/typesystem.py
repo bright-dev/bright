@@ -656,16 +656,17 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
         tinst = tkey
         tkey = tkey[1] if (0 < len(tkey) and isrefinement(tkey[1])) else tkey[0]
     py2ct = _cython_py2c_conv[tkey]
-    if py2ct is NotImplemented:
+    if py2ct is NotImplemented or py2ct is None:
         raise NotImplementedError('conversion from Python to C/C++ for ' + \
                                   t + 'has not been implemented.')
     body_template, rtn_template = py2ct
+    ct = cython_ctype(t)
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
     var = name if inst_name is None else "{0}.{1}".format(inst_name, name)
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
     template_kw = dict(var=var, proxy_name=proxy_name, pytype=pyt, cytype=cyt, 
-                       last=last)
+                       ctype=ct, last=last)
     nested = False
     if isdependent(tkey):
         tsig = [ts for ts in refined_types if ts[0] == tkey][0]

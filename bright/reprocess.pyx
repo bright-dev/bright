@@ -201,13 +201,13 @@ cdef class Reprocess(fccomp.FCComp):
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
         incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
-        rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(incomp_proxy.map_ptr[0])
+        rtnval = (<cpp_fccomp.FCComp *> self._inst).calc(incomp_proxy.map_ptr[0])
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer[0] = rtnval
         return rtnval_proxy
     
     
-    def _reprocess_calc_2(self, instream):
+    def _reprocess_calc_2(self, mat):
         """calc(input=None)
         This method performs the relatively simply task of multiplying the current 
         input stream by the SE to form a new output stream::
@@ -232,11 +232,11 @@ cdef class Reprocess(fccomp.FCComp):
             mat_prod
         
         """
-        cdef material._Material instream_proxy
+        cdef material._Material mat_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        instream_proxy = material.Material(instream, free_mat=not isinstance(instream, material._Material))
-        rtnval = (<cpp_reprocess.Reprocess *> self._inst).calc(instream_proxy.mat_pointer[0])
+        mat_proxy = material.Material(mat, free_mat=not isinstance(mat, material._Material))
+        rtnval = (<cpp_fccomp.FCComp *> self._inst).calc(mat_proxy.mat_pointer[0])
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer[0] = rtnval
         return rtnval_proxy
@@ -244,7 +244,7 @@ cdef class Reprocess(fccomp.FCComp):
     
     _reprocess_calc_0_argtypes = frozenset()
     _reprocess_calc_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
-    _reprocess_calc_2_argtypes = frozenset(((0, material.Material), ("instream", material.Material)))
+    _reprocess_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):
         """calc(input=None)

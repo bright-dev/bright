@@ -11,11 +11,12 @@ import warnings
 import tables as tb
 import numpy as np
 
+import bright.enrichment_parameters
 import bright.enrichment
 from pyne.material import Material
 
 Enrichment = bright.enrichment.Enrichment
-EnrichmentParameters = bright.enrichment.EnrichmentParameters
+EnrichmentParameters = bright.enrichment_parameters.EnrichmentParameters
 bright_conf = bright.bright_conf
 
 #

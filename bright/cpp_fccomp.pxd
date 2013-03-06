@@ -36,5 +36,7 @@ cdef extern from "fccomp.h" namespace "bright":
         void write_hdf5() except +
         void write() except +
         cpp_material.Material calc() except +
+        cpp_material.Material calc(map[int, double]) except +
+        cpp_material.Material calc(cpp_material.Material) except +
 
 

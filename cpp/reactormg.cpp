@@ -2602,10 +2602,10 @@ pyne::Material bright::ReactorMG::calc (pyne::comp_map incomp)
 };
 
 
-pyne::Material bright::ReactorMG::calc (pyne::Material instream)
+pyne::Material bright::ReactorMG::calc (pyne::Material mat)
 {
   // Finds BUd and output isotopics.
-  mat_feed = instream;
+  mat_feed = mat;
 
   return calc();
 };

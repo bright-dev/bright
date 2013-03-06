@@ -6,10 +6,23 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-cimport fccomp
-from bright cimport cpp_enrichment
-from pyne cimport cpp_material
-from pyne cimport material
 
-cdef class Enrichment(fccomp.FCComp):
-    cdef public material._Material _mat_tail
+
+cdef extern from "enrichment_parameters.h" namespace "bright":
+
+    cdef cppclass EnrichmentParameters:
+        # constructors
+        EnrichmentParameters() except +
+
+        # attributes
+        double M0
+        double Mstar_0
+        double N0
+        double alpha_0
+        int j
+        int k
+        double xP_j
+        double xW_j
+
+        # methods
+

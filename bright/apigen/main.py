@@ -15,6 +15,8 @@ from bright.apigen.autodescribe import describe, merge_descriptions
 CLASSES = [
     # classname, base filename, make cython bindings, make cyclus bindings
     ('FCComp', 'fccomp', False, False),
+    ('EnrichmentParameters', 'enrichment_parameters', True, True),
+    ('Enrichment', 'bright_enrichment', True, True),
     ('Reprocess', 'reprocess', True, True),
     ('FluencePoint', 'fluence_point', True, True),
     ]
@@ -59,6 +61,10 @@ class DescriptionCache(object):
 
     def dump(self):
         """Writes the cache out to the filesystem."""
+        if not os.path.exists(self.cachefile):
+            pardir = os.path.split(self.cachefile)[0]
+            if not os.path.exists(pardir):
+                os.makedirs(pardir)
         with open(self.cachefile, 'w') as f:
             pickle.dump(self.cache, f, pickle.HIGHEST_PROTOCOL)
 
@@ -94,12 +100,13 @@ def describe_class(classname, filename, verbose=False):
 
     desc = merge_descriptions([cppdesc, pydesc])
     basefilename = os.path.split(filename)[-1]
+    dimfilename = basefilename[7:] if basefilename.startswith('bright_') else basefilename
     desc['cpp_filename'] = '{0}.cpp'.format(basefilename)
     desc['header_filename'] = '{0}.h'.format(basefilename)
     desc['metadata_filename'] = '{0}.py'.format(basefilename)
-    desc['pxd_filename'] = '{0}.pxd'.format(basefilename)
-    desc['pyx_filename'] = '{0}.pyx'.format(basefilename)
-    desc['cpppxd_filename'] = 'cpp_{0}.pxd'.format(basefilename)
+    desc['pxd_filename'] = '{0}.pxd'.format(dimfilename)
+    desc['pyx_filename'] = '{0}.pyx'.format(dimfilename)
+    desc['cpppxd_filename'] = 'cpp_{0}.pxd'.format(dimfilename)
     return desc
 
 # Classes and type to preregister with the typesyetem prior to doing any code 
@@ -113,17 +120,24 @@ PREREGISTER_CLASSES = [
      ('pyne', 'material'), 
      #('{pytype}({var})', '{proxy_name} = {pytype}({var})'),
      ('{pytype}({var})', 
-        '{proxy_name} = {pytype}()\n{proxy_name}.mat_pointer[0] = {var}'),
+      ('{proxy_name} = {pytype}()\n'
+       '{proxy_name}.mat_pointer[0] = {var}'),
+      ('if {cache_name} is None:\n'
+       '    {proxy_name} = {pytype}(free_mat=False)\n'
+       '    {proxy_name}.mat_pointer = &{var}\n'
+       '    {cache_name} = {proxy_name}\n')
+     ),
      ('{proxy_name} = {pytype}({var}, free_mat=not isinstance({var}, {cytype}))',
       '{proxy_name}.mat_pointer[0]')),
     ]
 
 def newoverwrite(s, filename):
     """useful for not forcing re-compiles"""
-    with open(filename, 'r') as f:
-        old = f.read()
-    if s == old:
-        return 
+    if os.path.isfile(filename):
+        with open(filename, 'r') as f:
+            old = f.read()
+        if s == old:
+            return 
     with open(filename, 'w') as f:
         f.write(s)
 
@@ -155,6 +169,7 @@ def main():
         print("registering " + classname)
         pxd_base = desc['pxd_filename'].rsplit('.', 1)[0]         # eg, fccomp
         cpppxd_base = desc['cpppxd_filename'].rsplit('.', 1)[0]   # eg, cpp_fccomp
+        class_py2c = ('{proxy_name} = <{cytype}> {var}', '(<{ctype} *> {proxy_name}._inst)[0]')
         ts.register_class(classname,                              # FCComp
             cython_c_type=cpppxd_base + '.' + classname,          # cpp_fccomp.FCComp
             #cython_cimport=('bright.' + cpppxd_base, classname),  # from bright.cpp_fccomp import FCComp
@@ -162,6 +177,7 @@ def main():
             cython_cy_type=pxd_base + '.' + classname,            # fccomp.FCComp   
             cython_cyimport=pxd_base,                             # fccomp
             cython_pyimport=pxd_base,                             # fccomp
+            cython_py2c=class_py2c,
             )
     cache.dump()
 
