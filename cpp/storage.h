@@ -54,29 +54,28 @@ namespace bright {
     // Protected functions
     void initialize ();                       // Initializes the constructors.
     double get_decay ();
-    double bateman (int, double, nuc_chain);  // Solves the Bateman Decay equation.
-    void addchains (nuc_chain);               // Get the decay chain for a mother isotope
-    void addchains (int);                     // Get the decay chain for a mother isotope
+    double bateman(int nuc, double mass, nuc_chain nucchain);  // Solves the Bateman Decay equation.
+    void addchains(nuc_chain nc);               // Get the decay chain for a mother isotope
+    void addchains(int nuc);                     // Get the decay chain for a mother isotope
 
-    void print_chain (nuc_chain);
+    void print_chain (nuc_chain nc);
 
   public:
     // Storage Constructors	
-    Storage ();
-    Storage(std::string);
-    ~Storage ();
+    Storage(std::string n="");
+    ~Storage();
 
     //Public data
     double decay_time;			//time to decay for
 
     //Public Functions
     void calc_params();
-    pyne::Material calc ();
-    pyne::Material calc (pyne::comp_map);
-    pyne::Material calc (pyne::Material);
-    pyne::Material calc (double);
-    pyne::Material calc (pyne::comp_map, double);
-    pyne::Material calc (pyne::Material, double);
+    pyne::Material calc();
+    pyne::Material calc(pyne::comp_map incomp);
+    pyne::Material calc(pyne::Material mat);
+    pyne::Material calc(double t);
+    pyne::Material calc(pyne::comp_map, double t);
+    pyne::Material calc(pyne::Material mat, double t);
   };
 
 // end bright

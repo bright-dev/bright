@@ -129,6 +129,8 @@ class GccxmlClassDescriber(object):
     def visit(self, node=None):
         if node is None:
             node = self._root.find("Class[@name='{0}']".format(self.classname))
+            if node is None:
+                node = self._root.find("Struct[@name='{0}']".format(self.classname))
             assert node.attrib['file'] in self.onlyin
             self.visit_class(node)
         members = node.attrib.get('members', '').strip().split()

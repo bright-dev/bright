@@ -78,14 +78,14 @@ void bright::Storage::print_chain (nuc_chain nc)
 };	
 
 
-double bright::Storage::bateman (int iso, double mass, nuc_chain nucchain)
+double bright::Storage::bateman (int nuc, double mass, nuc_chain nucchain)
 {
   // Solves the Bateman Equations for a isotope and what it decays into.
   double coef  = mass;
   double sumpart = 0.0;
   for (int n = 0; n < nucchain.size(); n++)
   {
-    if (nucchain[n] != iso)
+    if (nucchain[n] != nuc)
     {
       // Note: that decay[isochain[n]].decayconst = the decay constant, while...
       // ...decay[isochain[n]].toiso[isochain[n+1]] represents the branch ratio.
@@ -123,9 +123,9 @@ void bright::Storage::addchains(nuc_chain nc)
 };
 
 
-void bright::Storage::addchains(int i)
+void bright::Storage::addchains(int nuc)
 {
-  nuc_chain nc (1, i);
+  nuc_chain nc(1, nuc);
   nucchains.insert(nc);
   addchains(nc);
 };
@@ -135,13 +135,6 @@ void bright::Storage::addchains(int i)
 /****************************/
 /*** Storage Constructors ***/
 /****************************/
-
-bright::Storage::Storage () : bright::FCComp(stor_p2track, "")
-{
-  // Empty storage component
-  initialize();
-};
-
 
 bright::Storage::Storage(std::string n) : bright::FCComp (stor_p2track, n)
 {
@@ -207,9 +200,9 @@ pyne::Material bright::Storage::calc()
 };
 
 
-pyne::Material bright::Storage::calc(pyne::comp_map cd)
+pyne::Material bright::Storage::calc(pyne::comp_map incomp)
 {
-  mat_feed = pyne::Material (cd);
+  mat_feed = pyne::Material(incomp);
   return calc();
 }
 
@@ -227,10 +220,10 @@ pyne::Material bright::Storage::calc(double t)
 }
 
 
-pyne::Material bright::Storage::calc(pyne::comp_map cd, double t)
+pyne::Material bright::Storage::calc(pyne::comp_map incomp, double t)
 {
     decay_time = t;
-    mat_feed = pyne::Material (cd);
+    mat_feed = pyne::Material(incomp);
     return calc();
 }
 

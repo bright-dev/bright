@@ -18,6 +18,8 @@ CLASSES = [
     ('EnrichmentParameters', 'enrichment_parameters', True, True),
     ('Enrichment', 'bright_enrichment', True, True),
     ('Reprocess', 'reprocess', True, True),
+    ('from_nuc_struct', 'storage', False, False),
+    ('Storage', 'storage', True, True),
     ('FluencePoint', 'fluence_point', True, True),
     ]
 
@@ -67,6 +69,10 @@ class DescriptionCache(object):
                 os.makedirs(pardir)
         with open(self.cachefile, 'w') as f:
             pickle.dump(self.cache, f, pickle.HIGHEST_PROTOCOL)
+
+    def __str__(self):
+        from pprint import pformat
+        return pformat(self.cache)
 
 
 # singleton
@@ -140,19 +146,7 @@ def newoverwrite(s, filename):
     with open(filename, 'w') as f:
         f.write(s)
 
-def main():
-    """Entry point for Bright API generation."""
-    parser = argparse.ArgumentParser("Generates Bright API")
-    parser.add_argument('--debug', action='store_true', default=False, 
-                        help='build with debugging flags')
-    parser.add_argument('--no-cython', action='store_false', dest='cython', 
-                        default=True, help="don't make cython bindings")
-    parser.add_argument('--no-cyclus', action='store_false', dest='cyclus', 
-                        default=True, help="don't make cyclus bindings")
-    parser.add_argument('-v', '--verbose', action='store_true', dest='verbose', 
-                        default=False, help="print more output")
-    ns = parser.parse_args()
-
+def genbindings(ns):
     ns.cyclus = False  # FIXME cyclus bindings don't exist yet!
 
     # compute all descriptions first 
@@ -204,6 +198,29 @@ def main():
             continue
         print("making cyclus bindings for " + classname)
 
+def dumpdesc(ns):
+    print str(DescriptionCache())
+
+
+def main():
+    """Entry point for Bright API generation."""
+    parser = argparse.ArgumentParser("Generates Bright API")
+    parser.add_argument('--debug', action='store_true', default=False, 
+                        help='build with debugging flags')
+    parser.add_argument('--no-cython', action='store_false', dest='cython', 
+                        default=True, help="don't make cython bindings")
+    parser.add_argument('--no-cyclus', action='store_false', dest='cyclus', 
+                        default=True, help="don't make cyclus bindings")
+    parser.add_argument('--dump-desc', action='store_true', dest='dumpdesc', 
+                        default=False, help="print description cache")
+    parser.add_argument('-v', '--verbose', action='store_true', dest='verbose', 
+                        default=False, help="print more output")
+    ns = parser.parse_args()
+
+    if ns.dumpdesc:
+        dumpdesc(ns)
+    else:
+        genbindings(ns)
 
 if __name__ == '__main__':
     main()

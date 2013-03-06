@@ -133,6 +133,7 @@ def canon(t):
         elif isdependent(t):
             return _resolve_dependent_type(t)
         else:
+            import pdb; pdb.set_trace()
             _raise_type_error(t)
             # BELOW this would be for complicated string representations, 
             # such as 'char *' or 'map<nucid, double>'.  Would need to write
