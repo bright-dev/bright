@@ -283,13 +283,16 @@ def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
-        tkey = t[int(isrefinement(t))]
         if 'c' in inc:
-            seen.update(_cython_cimport_base_types.get(tkey, (None,)))
-            seen.update(_cython_cimport_template_types.get(tkey, (None,)))
+            seen.update(_cython_cimport_base_types.get(t[0], (None,)))
+            seen.update(_cython_cimport_base_types.get(t[1], (None,)))
+            seen.update(_cython_cimport_template_types.get(t[0], (None,)))
+            seen.update(_cython_cimport_template_types.get(t[1], (None,)))
         if 'cy' in inc:
-            seen.update(_cython_cyimport_base_types.get(tkey, (None,)))
-            seen.update(_cython_cyimport_template_types.get(tkey, (None,)))
+            seen.update(_cython_cyimport_base_types.get(t[0], (None,)))
+            seen.update(_cython_cyimport_base_types.get(t[1], (None,)))
+            seen.update(_cython_cyimport_template_types.get(t[0], (None,)))
+            seen.update(_cython_cyimport_template_types.get(t[1], (None,)))
         seen -= set((None, (None,)))
         return cython_cimport_tuples(t[0], seen, inc)
     elif 3 <= tlen:
@@ -356,9 +359,10 @@ def cython_import_tuples(t, seen=None):
     # must be tuple below this line
     tlen = len(t)
     if 2 == tlen:
-        tkey = t[int(isrefinement(t))]
-        seen.update(_cython_pyimport_base_types.get(tkey, (None,)))
-        seen.update(_cython_pyimport_template_types.get(tkey, (None,)))
+        seen.update(_cython_pyimport_base_types.get(t[0], (None,)))
+        seen.update(_cython_pyimport_base_types.get(t[1], (None,)))
+        seen.update(_cython_pyimport_template_types.get(t[0], (None,)))
+        seen.update(_cython_pyimport_template_types.get(t[1], (None,)))
         seen -= set((None, (None,)))
         return cython_import_tuples(t[0], seen)
     elif 3 <= tlen:

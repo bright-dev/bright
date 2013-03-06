@@ -15,13 +15,13 @@ from bright.apigen.autodescribe import describe, merge_descriptions
 CLASSES = [
     # classname, base filename, make cython bindings, make cyclus bindings
     ('FCComp', 'fccomp', False, False),
-#    ('EnrichmentParameters', 'enrichment_parameters', True, True),
-#    ('Enrichment', 'bright_enrichment', True, True),
-#    ('Reprocess', 'reprocess', True, True),
+    ('EnrichmentParameters', 'enrichment_parameters', True, True),
+    ('Enrichment', 'bright_enrichment', True, True),
+    ('Reprocess', 'reprocess', True, True),
     ('decay_nuc', 'storage', False, False),
     ('from_nuc_struct', 'storage', False, False),
     ('Storage', 'storage', True, True),
-#    ('FluencePoint', 'fluence_point', True, True),
+    ('FluencePoint', 'fluence_point', True, True),
     ]
 
 class DescriptionCache(object):
