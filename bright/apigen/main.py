@@ -22,6 +22,7 @@ CLASSES = [
     ('from_nuc_struct', 'storage', False, False),
     ('Storage', 'storage', True, True),
     ('FluencePoint', 'fluence_point', True, True),
+    ('ReactorParameters', 'reactor_parameters', True, True),
     ]
 
 class DescriptionCache(object):

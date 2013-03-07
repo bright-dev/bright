@@ -60,6 +60,14 @@ template_types = {
     'vector': ('value_type',),
     }
 
+@_memoize
+def istemplate(t):
+    """Returns whether t is a template type or not."""
+    if isinstance(t, basestring):
+        return t in template_types
+    if isinstance(t, Sequence):
+        return istemplate(t[0])
+    return False
 
 # This is a mapping from refinement type names to the parent types.
 # The parent types may either be base types, compound types, template 
@@ -133,7 +141,6 @@ def canon(t):
         elif isdependent(t):
             return _resolve_dependent_type(t)
         else:
-            import pdb; pdb.set_trace()
             _raise_type_error(t)
             # BELOW this would be for complicated string representations, 
             # such as 'char *' or 'map<nucid, double>'.  Would need to write
@@ -182,6 +189,7 @@ _cython_c_base_types = {
     'float32': 'float',
     'float64': 'double',
     'complex128': 'extra_types.complex_t',
+    'bool': 'bint',
     'void': 'void', 
     }
 
@@ -231,6 +239,7 @@ _cython_cimport_base_types = {
     'float32': (None,),
     'float64': (None,),
     'complex128': (('pyne', 'extra_types'),),
+    'bool': (None,), 
     'void': (None,), 
     }
 
@@ -252,6 +261,7 @@ _cython_cyimport_base_types = {
     'float32': (None,),
     'float64': (None,),
     'complex128': (('pyne', 'stlconverters', 'conv'),),  # for py2c_complex()
+    'bool': (None,), 
     'void': (None,), 
     }
 
@@ -260,7 +270,7 @@ _cython_cyimport_template_types = {
     'dict': (None,),
     'pair': (('pyne', 'stlconverters', 'conv'),),
     'set': (('pyne', 'stlconverters', 'conv'),),
-    'vector': (('pyne', 'stlconverters', 'conv'),),
+    'vector': (('numpy', 'as', 'np'),),
     'nucid': (('pyne', 'nucname'),),
     'nucname': (('pyne', 'nucname'),),
     }
@@ -331,6 +341,7 @@ _cython_pyimport_base_types = {
     'float32': (None,),
     'float64': (None,),
     'complex128': (None,),
+    'bool': (None,), 
     'void': (None,), 
     }
 
@@ -339,7 +350,7 @@ _cython_pyimport_template_types = {
     'dict': (None,),
     'pair': (('pyne', 'stlconverters', 'conv'),),
     'set': (('pyne', 'stlconverters', 'conv'),),
-    'vector': (('pyne', 'stlconverters', 'conv'),),
+    'vector': (('numpy', 'as', 'np'),),
     'nucid': (('pyne', 'nucname'),),
     'nucname': (('pyne', 'nucname'),),
     }
@@ -397,6 +408,7 @@ _cython_cy_base_types = {
     'float32': 'float',
     'float64': 'float',
     'complex128': 'object',
+    'bool': 'bint',
     'void': 'void',
     }
 
@@ -406,7 +418,8 @@ _cython_cy_template_types = {
     'dict': 'dict',
     'pair': 'conv._Pair{value_type}',
     'set': 'conv._Set{value_type}',
-    'vector': 'conv._Vector{value_type}',
+    #'vector': 'conv._Vector{value_type}',
+    'vector': 'np.ndarray',
     }
 
 
@@ -419,13 +432,15 @@ _cython_template_class_names = {
     'float32': 'Float',
     'float64': 'Double',
     'complex128': 'Complex',
-    'void': 'void',
+    'bool': 'Bool',
+    'void': 'Void',
     # template types
     'map': 'Map{key_type}{value_type}',
     'dict': 'Dict',
     'pair': 'Pair{value_type}',
     'set': 'Set{value_type}',
-    'vector': 'Vector{value_type}',    
+    #'vector': 'Vector{value_type}',    
+    'vector': 'np.ndarray',
     'nucid': 'Nucid', 
     'nucname': 'Nucname',
     }
@@ -484,6 +499,7 @@ _cython_py_base_types = {
     'float32': 'float',
     'float64': 'float',
     'complex128': 'object',
+    'bool': 'bool',
     'void': 'object',
     }
 
@@ -544,6 +560,39 @@ def cython_pytype(t):
         return cypyt
 
 
+_numpy_types = {
+    'char': 'np.NPY_BYTE',
+    'str': 'np.NPY_STRING',
+    'int32': 'np.NPY_INT32',
+    'uint32': 'np.NPY_UINT32',
+    'float32': 'np.NPY_FLOAT32',
+    'float64': 'np.NPY_FLOAT64',
+    'complex128': 'np.NPY_COMPLEX128',
+    'bool': 'np.NPY_BOOL',
+    'void': 'np.NPY_VOID',     
+    }
+
+@_memoize
+def cython_nptype(t):
+    """Given a type t, returns the cooresponding NumPy type."""
+    t = canon(t)
+    if isinstance(t, basestring):
+        return _numpy_types.get(t, 'np.NPY_OBJECT')
+    # must be tuple below this line
+    tlen = len(t)
+    if 2 == tlen:
+        if 0 == t[1]:
+            return cython_nptype(t[0])
+        elif isrefinement(t[1]):
+            return cython_nptype(t[0])
+        else:
+            # FIXME last is ignored for strings, but what about other types?
+            #last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
+            #return cython_pytype(t[0]) + ' {0}'.format(last)
+            return cython_nptype(t[0])
+    elif 3 <= tlen:
+        return _numpy_types.get(t, 'np.NPY_OBJECT')
+
 _cython_c2py_conv = {
     # Has tuple form of (copy, [view, [cached_view]])
     # base types
@@ -554,6 +603,7 @@ _cython_c2py_conv = {
     'float32': ('float({var})',),
     'float64': ('float({var})',),
     'complex128': ('complex(float({var}.re), float({var}.im))',),
+    'bool': ('bool({var})',),
     'void': ('None',),
     # template types
     'map': ('{pytype}({var})', 
@@ -581,14 +631,16 @@ _cython_c2py_conv = {
             '    {proxy_name}.set_ptr = &{var}\n'
             '    {cache_name} = {proxy_name}\n'
             )),
-    'vector': ('{pytype}({var})',
-              ('{proxy_name} = {pytype}(False, False)\n'
-               '{proxy_name}.vector_ptr = &{var}\n'),
-              ('if {cache_name} is None:\n'
-               '    {proxy_name} = {pytype}(False, False)\n'
-               '    {proxy_name}.vector_ptr = &{var}\n'
-               '    {cache_name} = {proxy_name}\n'
-               )),
+    'vector': (('{proxy_name}_shape[0] = <np.npy_intp> {var}.size()\n'
+                '{proxy_name} = np.PyArray_SimpleNewFromData(1, {var}_shape, {nptype}, &{var}[0])\n'
+                '{proxy_name} = np.PyArray_Copy({proxy_name})\n'),
+               ('{proxy_name}_shape[0] = <np.npy_intp> {var}.size()\n'
+                '{proxy_name} = np.PyArray_SimpleNewFromData(1, {proxy_name}_shape, {nptype}, &{var}[0])\n'),
+               ('if {cache_name} is None:\n'
+                '    {proxy_name}_shape[0] = <np.npy_intp> {var}.size()\n'
+                '    {proxy_name} = np.PyArray_SimpleNewFromData(1, {proxy_name}_shape, {nptype}, &{var}[0])\n'
+                '    {cache_name} = {proxy_name}\n'
+                )),
     'nucid': ('nucname.zzaaam({var})',),
     'nucname': ('nucname.name({var})',),
     }
@@ -598,7 +650,6 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
                 cache_name=None, cache_prefix='self'):
     """Given a varibale name and type, returns cython code (declaration, body, 
     and return) to convert the variable from C/C++ to Python."""
-    #tkey = t
     tkey = canon(t)
     while not isinstance(tkey, basestring):
         tkey = tkey[0]
@@ -612,6 +663,10 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
                                   'view={0}, cached={1}'.format(view, cached))
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
+    if istemplate(t) and 2 == len(t):
+        npt = cython_nptype(t[1])
+    else:
+        npt = cython_nptype(t)
     var = name if inst_name is None else "{0}.{1}".format(inst_name, name)
     cache_name = "_{0}".format(name) if cache_name is None else cache_name
     cache_name = cache_name if cache_prefix is None else "{0}.{1}".format(cache_prefix, cache_name)
@@ -619,17 +674,19 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
     iscached = False
     if 1 == len(c2pyt) or ind == 0:
         decl = body = None
-        rtn = c2pyt[0].format(var=var, pytype=pyt)
+        rtn = c2pyt[0].format(var=var, pytype=pyt, nptype=npt)
     elif ind == 1:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
-        body = c2pyt[1].format(var=var, pytype=pyt, proxy_name=proxy_name)
+        body = c2pyt[1].format(var=var, pytype=pyt, nptype=npt, proxy_name=proxy_name)
         rtn = proxy_name
     elif ind == 2:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
         body = c2pyt[2].format(var=var, cache_name=cache_name, pytype=pyt,
-                            proxy_name=proxy_name)
+                            proxy_name=proxy_name, nptype=npt)
         rtn = cache_name
         iscached = True
+    if body is not None and 'np.npy_intp' in body:
+        decl += "\ncdef np.npy_intp {proxy_name}_shape[1]".format(proxy_name=proxy_name)
     return decl, body, rtn, iscached
 
 
@@ -643,6 +700,7 @@ _cython_py2c_conv = {
     'float32': ('<float> {var}', False),
     'float64': ('<double> {var}', False),
     'complex128': ('conv.py2c_complex({var})', False),
+    'bool': ('<bint> {var}', False),
     'void': ('NULL', False),
     # template types
     'map': ('{proxy_name} = {pytype}({var}, not isinstance({var}, {cytype}))',
@@ -683,10 +741,14 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
     ct = cython_ctype(t)
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
+    if istemplate(t) and 2 == len(t):
+        npt = cython_nptype(t[1])
+    else:
+        npt = cython_nptype(t)
     var = name if inst_name is None else "{0}.{1}".format(inst_name, name)
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
     template_kw = dict(var=var, proxy_name=proxy_name, pytype=pyt, cytype=cyt, 
-                       ctype=ct, last=last)
+                       ctype=ct, last=last, nptype=npt)
     nested = False
     if isdependent(tkey):
         tsig = [ts for ts in refined_types if ts[0] == tkey][0]

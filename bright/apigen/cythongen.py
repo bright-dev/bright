@@ -465,6 +465,8 @@ def genpyx(desc, env=None):
 
     d['imports'] = "\n".join(sorted(cython_imports(import_tups)))
     d['cimports'] = "\n".join(sorted(cython_cimports(cimport_tups)))
+    if 'numpy' in d['cimports']:
+        d['imports'] += "\n\nnp.import_array()"
     d['extra'] = desc.get('extra', {}).get('pyx', '')
     pyx = _pyx_template.format(**d)
     if 'pyx_filename' not in desc:
