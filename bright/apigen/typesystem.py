@@ -47,6 +47,26 @@ type_aliases = {
     's': 'str',
     'string': 'str',
     # 'c' has char / complex ambiquity, not included
+    'NPY_BYTE': 'char',
+    'NPY_STRING': 'str',
+    'NPY_INT32': 'int32',
+    'NPY_UINT32': 'uint32',
+    'NPY_FLOAT32': 'float32',
+    'NPY_FLOAT64': 'float64',
+    'NPY_COMPLEX128': 'complex128',
+    'NPY_BOOL': 'bool',
+    'NPY_VOID': 'void',
+    'NPY_OBJECT': 'void',
+    'np.NPY_BYTE': 'char',
+    'np.NPY_STRING': 'str',
+    'np.NPY_INT32': 'int32',
+    'np.NPY_UINT32': 'uint32',
+    'np.NPY_FLOAT32': 'float32',
+    'np.NPY_FLOAT64': 'float64',
+    'np.NPY_COMPLEX128': 'complex128',
+    'np.NPY_BOOL': 'bool',
+    'np.NPY_VOID': 'void',
+    'np.NPY_OBJECT': 'void',
     }
 
 
@@ -710,8 +730,15 @@ _cython_py2c_conv = {
              '{proxy_name}.pair_ptr[0]'),
     'set': ('{proxy_name} = {pytype}({var}, not isinstance({var}, {cytype}))', 
             '{proxy_name}.set_ptr[0]'),
-    'vector': ('{proxy_name} = {pytype}({var}, not isinstance({var}, {cytype}))', 
-               '{proxy_name}.vector_ptr[0]'),
+    'vector': (('cdef int i\n'
+                'cdef int {var}_size = len({var})\n'
+                'if isinstance({var}, np.ndarray):\n'
+                '    {proxy_name} = {ctype}(<size_t> {var}_size, <{npctype}> (<np.ndarray> {var}).data[0])\n'
+                'else:\n'
+                '    {proxy_name} = {ctype}(<size_t> {var}_size)\n' 
+                '    for i in range({var}_size):\n'
+                '        {proxy_name}[i] = <{npctype}> {var}[i]\n'),
+               '{proxy_name}'),
     # refinement types
     'nucid': ('nucname.zzaaam({var})', False),
     'nucname': ('nucname.name({var})', False),
@@ -741,14 +768,15 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
     ct = cython_ctype(t)
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
-    if istemplate(t) and 2 == len(t):
+    if istemplate(t) and 1 == len(template_types.get(tkey, ())):
         npt = cython_nptype(t[1])
     else:
         npt = cython_nptype(t)
+    npct = cython_ctype(npt)
     var = name if inst_name is None else "{0}.{1}".format(inst_name, name)
     proxy_name = "{0}_proxy".format(name) if proxy_name is None else proxy_name
     template_kw = dict(var=var, proxy_name=proxy_name, pytype=pyt, cytype=cyt, 
-                       ctype=ct, last=last, nptype=npt)
+                       ctype=ct, last=last, nptype=npt, npctype=npct)
     nested = False
     if isdependent(tkey):
         tsig = [ts for ts in refined_types if ts[0] == tkey][0]
@@ -766,9 +794,12 @@ def cython_py2c(name, t, inst_name=None, proxy_name=None):
             template_kw['var'] = vrtn
     body_filled = body_template.format(**template_kw)
     if rtn_template:
-        decl = "cdef {0} {1}".format(cyt, proxy_name)
+        deft = ct if '{ctype}'in body_template else cyt
+        decl = "cdef {0} {1}".format(deft, proxy_name)
         body = body_filled
         rtn = rtn_template.format(**template_kw)
+        decl += '\n'+"\n".join([l for l in body.splitlines() if l.startswith('cdef')])
+        body = "\n".join([l for l in body.splitlines() if not l.startswith('cdef')])
     else:
         decl = body = None
         rtn = body_filled

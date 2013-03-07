@@ -92,9 +92,16 @@ cdef class ReactorParameters:
             return self._burn_times
     
         def __set__(self, value):
-            cdef np.ndarray value_proxy
-            value_proxy = conv.VectorDouble(value, not isinstance(value, np.ndarray))
-            (<cpp_reactor_parameters.ReactorParameters *> self._inst).burn_times = value_proxy.vector_ptr[0]
+            cdef cpp_vector[double] value_proxy
+            cdef int i
+            cdef int value_size = len(value)
+            if isinstance(value, np.ndarray):
+                value_proxy = cpp_vector[double](<size_t> value_size, <double> (<np.ndarray> value).data[0])
+            else:
+                value_proxy = cpp_vector[double](<size_t> value_size)
+                for i in range(value_size):
+                    value_proxy[i] = <double> value[i]
+            (<cpp_reactor_parameters.ReactorParameters *> self._inst).burn_times = value_proxy
             self._burn_times = None
     
     
