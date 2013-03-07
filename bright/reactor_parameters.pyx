@@ -6,7 +6,7 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-"""no docstring for reactorparameters, please file a bug report!
+"""Python wrapper for reactor parameters.
 """
 cimport numpy as np
 from libc.stdlib cimport free
@@ -21,7 +21,14 @@ import numpy as np
 np.import_array()
 
 cdef class ReactorParameters:
-    """no docstring for ReactorParameters, please file a bug report!"""
+    """This data structure is a set of physical reactor parameters. It may 
+    be used to instantiate new reactor objects **OR** to define default 
+    settings for a reactor type. The data stored in this class is copied 
+    over to a reactor instance in the initialize() method.  However, the 
+    attributes of this objects take on more natural names than their reactor 
+    attribute analogies.  This is because it is this object that Bright users 
+    will more often be interacting with. 
+    """
 
     # constuctors
     def __cinit__(self, *args, **kwargs):
@@ -45,7 +52,9 @@ cdef class ReactorParameters:
 
     # attributes
     property BUt:
-        """no docstring for BUt, please file a bug report!"""
+        """The reactor's target discharge burnup (float).  This is given 
+        in units of [MWd/kgIHM].  Often the actual discharge burnup BUd does not 
+        quite hit this value, but comes acceptably close."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).BUt)
     
@@ -54,7 +63,8 @@ cdef class ReactorParameters:
     
     
     property batches:
-        """no docstring for batches, please file a bug report!"""
+        """This is the total number of batches (int) in the fuel management scheme. 
+        This is typically indexed by b."""
         def __get__(self):
             return int((<cpp_reactor_parameters.ReactorParameters *> self._inst).batches)
     
@@ -63,7 +73,7 @@ cdef class ReactorParameters:
     
     
     property branch_ratio_cutoff:
-        """no docstring for branch_ratio_cutoff, please file a bug report!"""
+        """The cutoff value (float) below which the bateman equations are not solved."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).branch_ratio_cutoff)
     
@@ -72,7 +82,7 @@ cdef class ReactorParameters:
     
     
     property burn_regions:
-        """no docstring for burn_regions, please file a bug report!"""
+        """Number of annular burn regions (int)."""
         def __get__(self):
             return int((<cpp_reactor_parameters.ReactorParameters *> self._inst).burn_regions)
     
@@ -81,7 +91,8 @@ cdef class ReactorParameters:
     
     
     property burn_times:
-        """no docstring for burn_times, please file a bug report!"""
+        """A non-negative, monotonically increasing numpy float array (C++ vector<double>) 
+        of burnup times [days]."""
         def __get__(self):
             cdef np.ndarray burn_times_proxy
             cdef np.npy_intp burn_times_proxy_shape[1]
@@ -110,7 +121,7 @@ cdef class ReactorParameters:
     
     
     property burnup_via_constant:
-        """no docstring for burnup_via_constant, please file a bug report!"""
+        """Flag (str) for constant "flux" or "power" calculations."""
         def __get__(self):
             return str(<char *> (<cpp_reactor_parameters.ReactorParameters *> self._inst).burnup_via_constant.c_str())
     
@@ -119,7 +130,7 @@ cdef class ReactorParameters:
     
     
     property clad_radius:
-        """no docstring for clad_radius, please file a bug report!"""
+        """The radius (float) of the cladding region [cm]."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).clad_radius)
     
@@ -128,7 +139,7 @@ cdef class ReactorParameters:
     
     
     property cladding_density:
-        """no docstring for cladding_density, please file a bug report!"""
+        """The cladding region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).cladding_density)
     
@@ -137,7 +148,10 @@ cdef class ReactorParameters:
     
     
     property cladding_form:
-        """no docstring for cladding_form, please file a bug report!"""
+        """This is the chemical form of cladding as a dictionary or other mapping.  
+        This uses the same notation as fuel_form except that "IHM" is no longer 
+        a valid key.  Cladding is often made from some zircalloy.
+        """
         def __get__(self):
             cdef conv._MapStrDouble cladding_form_proxy
             if self._cladding_form is None:
@@ -154,7 +168,7 @@ cdef class ReactorParameters:
     
     
     property coolant_density:
-        """no docstring for coolant_density, please file a bug report!"""
+        """The coolant region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).coolant_density)
     
@@ -163,7 +177,19 @@ cdef class ReactorParameters:
     
     
     property coolant_form:
-        """no docstring for coolant_form, please file a bug report!"""
+        """This is the chemical form of coolant as a dictionary or other mapping.  
+        This uses the same notation as fuel_form except that "IHM" is no longer 
+        a valid key.  The term 'coolant' is used in preference over the term 
+        'moderator' because not all reactors moderate neutrons.  For example, 
+        LWRs often cool the reactor core with borated water::
+        
+            ReactorParamters.coolant_form = {}
+            ReactorParamters.coolant_form["H1"]  = 2.0
+            ReactorParamters.coolant_form["O16"] = 1.0
+            ReactorParamters.coolant_form["B10"] = 0.199 * 550 * 10.0**-6
+            ReactorParamters.coolant_form["B11"] = 0.801 * 550 * 10.0**-6
+        
+        """
         def __get__(self):
             cdef conv._MapStrDouble coolant_form_proxy
             if self._coolant_form is None:
@@ -180,7 +206,8 @@ cdef class ReactorParameters:
     
     
     property flux:
-        """no docstring for flux, please file a bug report!"""
+        """The nominal flux value (float) that the library for this reactor type was 
+        generated with.   Often used to correctly weight batch-specific fluxes."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).flux)
     
@@ -189,7 +216,7 @@ cdef class ReactorParameters:
     
     
     property fuel_density:
-        """no docstring for fuel_density, please file a bug report!"""
+        """The fuel region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).fuel_density)
     
@@ -198,7 +225,15 @@ cdef class ReactorParameters:
     
     
     property fuel_form:
-        """no docstring for fuel_form, please file a bug report!"""
+        """This is the chemical form of fuel as a dictionary or other mapping.  Keys are 
+        often strings that represent isotopes while values represent the corresponding 
+        mass weights.  The heavy metal concentration by the key "IHM".  
+        This will automatically fill in the nuclides in mat_feed for the "IHM" weight.  
+        For example, LWRs typically use a UOX fuel form::
+        
+            ReactorParameters.fuel_form = {"IHM": 1.0, "O16": 2.0}
+        
+        """
         def __get__(self):
             cdef conv._MapStrDouble fuel_form_proxy
             if self._fuel_form is None:
@@ -215,7 +250,7 @@ cdef class ReactorParameters:
     
     
     property fuel_radius:
-        """no docstring for fuel_radius, please file a bug report!"""
+        """The radius (float) of the fuel region [cm]."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).fuel_radius)
     
@@ -224,7 +259,8 @@ cdef class ReactorParameters:
     
     
     property lattice_type:
-        """no docstring for lattice_type, please file a bug report!"""
+        """Flag (str) that represents what lattice type the fuel assemblies are arranged in.  
+        Currently accepted values are "Planar", "Spherical", and "Cylindrical"."""
         def __get__(self):
             return str(<char *> (<cpp_reactor_parameters.ReactorParameters *> self._inst).lattice_type.c_str())
     
@@ -233,7 +269,9 @@ cdef class ReactorParameters:
     
     
     property open_slots:
-        """no docstring for open_slots, please file a bug report!"""
+        """The number of slots (float) in a fuel assembly that are open.  Thus this is the 
+        number of slots that do not contain a fuel pin and are instead filled in by coolant.
+        """
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).open_slots)
     
@@ -242,7 +280,8 @@ cdef class ReactorParameters:
     
     
     property pnl:
-        """no docstring for pnl, please file a bug report!"""
+        """The reactor's non-leakage probability (float).  This is often used as a 
+        calibration parameter."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).pnl)
     
@@ -251,7 +290,14 @@ cdef class ReactorParameters:
     
     
     property rescale_hydrogen:
-        """no docstring for rescale_hydrogen, please file a bug report!"""
+        """Boolean to determine whether the reactor should rescale the Hydrogen-1 destruction 
+        rate in the coolant as a function of fluence.  The scaling factor is calculated via 
+        the following equation
+        
+            .. math:: f(F) = 1.36927 - 0.01119 \cdot BU(F)
+        
+        This is typically not done for fast reactors but is a useful correction for LWRs.
+        """
         def __get__(self):
             return bool((<cpp_reactor_parameters.ReactorParameters *> self._inst).rescale_hydrogen)
     
@@ -260,7 +306,7 @@ cdef class ReactorParameters:
     
     
     property specific_power:
-        """no docstring for specific_power, please file a bug report!"""
+        """The specific power of the fuel (float) in units of [MW/kgIHM]"""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).specific_power)
     
@@ -269,7 +315,9 @@ cdef class ReactorParameters:
     
     
     property total_slots:
-        """no docstring for total_slots, please file a bug report!"""
+        """The total number of fuel pin slots (float) in a fuel assembly.  
+        For a 17x17 bundle this is 289.0.
+        """
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).total_slots)
     
@@ -278,7 +326,7 @@ cdef class ReactorParameters:
     
     
     property unit_cell_pitch:
-        """no docstring for unit_cell_pitch, please file a bug report!"""
+        """The pitch or length (float) of the unit fuel pin cell [cm]."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).unit_cell_pitch)
     
@@ -287,7 +335,8 @@ cdef class ReactorParameters:
     
     
     property use_disadvantage_factor:
-        """no docstring for use_disadvantage_factor, please file a bug report!"""
+        """Boolaean to determine whether the thermal disadvantage factor is employed or not.  
+        LWRs typically set this as True while FRs have a False value."""
         def __get__(self):
             return bool((<cpp_reactor_parameters.ReactorParameters *> self._inst).use_disadvantage_factor)
     
@@ -296,7 +345,7 @@ cdef class ReactorParameters:
     
     
     property void_radius:
-        """no docstring for void_radius, please file a bug report!"""
+        """The radius (float) of the void region [cm]."""
         def __get__(self):
             return float((<cpp_reactor_parameters.ReactorParameters *> self._inst).void_radius)
     
@@ -306,5 +355,45 @@ cdef class ReactorParameters:
     
     # methods
 
+
+def lwr_defaults():
+    """This function returns a copy of the LWR default presets. These are applicable to most cases.
+    However, if you want to use your own LWR parameters, it is recommended you use this function
+    and then only change the necessary attributes.  
+
+    Returns
+    -------
+    lwrd : ReactorParameters 
+        Light water reactor default parameters.
+
+    Warnings
+    --------
+    Note that the target burnup default value is zero.  Generally, at least this value should be overridden.
+    """
+    cdef cpp_reactor_parameters.ReactorParameters cpp_lwrd = cpp_reactor_parameters.fill_lwr_defaults()
+    cdef ReactorParameters lwrd = ReactorParameters()
+    (<cpp_reactor_parameters.ReactorParameters *> lwrd._inst)[0] = cpp_lwrd
+    return lwrd
+
+
+
+def fr_defaults():
+    """This function returns a copy of the FR default presets. These are applicable to most cases.
+    However, if you want to use your own FR parameters, it is recommended you use this function
+    and then only change the necessary attributes.  
+
+    Returns
+    -------
+    frd : ReactorParameters 
+        Fast reactor default parameters.
+
+    Warnings
+    --------
+    Note that the target burnup default value is zero.  Generally, at least this value should be overridden.
+    """
+    cdef cpp_reactor_parameters.ReactorParameters cpp_frd = cpp_reactor_parameters.fill_fr_defaults()
+    cdef ReactorParameters frd = ReactorParameters()
+    (<cpp_reactor_parameters.ReactorParameters *> frd._inst)[0] = cpp_frd
+    return frd
 
 

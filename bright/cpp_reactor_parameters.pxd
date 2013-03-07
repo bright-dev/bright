@@ -45,4 +45,5 @@ cdef extern from "reactor_parameters.h" namespace "bright":
         # methods
 
 
-
+    ReactorParameters fill_lwr_defaults() except +
+    ReactorParameters fill_fr_defaults() except +
