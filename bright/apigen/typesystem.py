@@ -732,13 +732,17 @@ _cython_py2c_conv = {
             '{proxy_name}.set_ptr[0]'),
     'vector': (('cdef int i\n'
                 'cdef int {var}_size = len({var})\n'
-                'if isinstance({var}, np.ndarray):\n'
-                '    {proxy_name} = {ctype}(<size_t> {var}_size, <{npctype}> (<np.ndarray> {var}).data[0])\n'
+                'cdef {npctype} * {var}_data\n'
+                'if isinstance({var}, np.ndarray) and (<np.ndarray> {var}).descr.type_num == {nptype}:\n'
+                '    {var}_data = <{npctype} *> np.PyArray_DATA(<np.ndarray> {var})\n'
+                '    {proxy_name} = {ctype}(<size_t> {var}_size)\n' 
+                '    for i in range({var}_size):\n'
+                '        {proxy_name}[i] = {var}_data[i]\n'
                 'else:\n'
                 '    {proxy_name} = {ctype}(<size_t> {var}_size)\n' 
                 '    for i in range({var}_size):\n'
                 '        {proxy_name}[i] = <{npctype}> {var}[i]\n'),
-               '{proxy_name}'),
+               '{proxy_name}'),     # FIXME There might be imporvements here...
     # refinement types
     'nucid': ('nucname.zzaaam({var})', False),
     'nucname': ('nucname.name({var})', False),

@@ -95,8 +95,12 @@ cdef class ReactorParameters:
             cdef cpp_vector[double] value_proxy
             cdef int i
             cdef int value_size = len(value)
-            if isinstance(value, np.ndarray):
-                value_proxy = cpp_vector[double](<size_t> value_size, <double> (<np.ndarray> value).data[0])
+            cdef double * value_data
+            if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
+                value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
+                value_proxy = cpp_vector[double](<size_t> value_size)
+                for i in range(value_size):
+                    value_proxy[i] = value_data[i]
             else:
                 value_proxy = cpp_vector[double](<size_t> value_size)
                 for i in range(value_size):

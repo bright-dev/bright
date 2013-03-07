@@ -25,6 +25,7 @@ def test_constructor():
     rp = ReactorParameters()
     assert_equal(rp.batches, 0)
     assert_almost_equal(rp.flux, 0.0)
+    assert_array_equal(rp.burn_times, np.array([], 'f8'))
     assert_equal(rp.fuel_form, {})
     assert_equal(rp.coolant_form, {})
     assert_almost_equal(rp.fuel_density, 0.0)
@@ -48,6 +49,15 @@ def test_flux():
     rp = ReactorParameters()
     rp.flux = 2*(10**14)
     assert_equal(rp.flux, 2*(10**14))
+
+def test_burn_times():
+    rp = ReactorParameters()
+    rp.burn_times = [42] * 6
+    assert_array_equal(rp.burn_times, np.array([42.0]*6, 'f8'))
+    rp.burn_times = np.arange(10.0, dtype='f4')
+    assert_array_equal(rp.burn_times, np.arange(10.0))
+    rp.burn_times = np.arange(6.0, dtype='f8')
+    assert_array_equal(rp.burn_times, np.arange(6.0))
 
 def test_fuel_form():
     rp = ReactorParameters()
