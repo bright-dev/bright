@@ -1,16 +1,9 @@
 // One Group Reactor Component Class
-
 #include "reactor1g.h"
 
 /***********************************************/
 /*** Reactor1G Component Class and Functions ***/
 /***********************************************/
-
-bright::Reactor1G::Reactor1G()
-{
-};
-
-
 bright::Reactor1G::Reactor1G(std::string n) : bright::FCComp(n)
 {
 };
@@ -506,31 +499,15 @@ void bright::Reactor1G::calc_sub_mats()
   mat_prod_u = mat_prod.sub_u();
 
   // TRU
-  try 
-  {
-    mat_feed_tru = mat_feed.sub_tru();
-  }
-  catch (...)
-  {
-    pyne::comp_map cd;
-    cd[942390] = 1.0;
-    mat_feed_tru = pyne::Material(cd, 1.0);
+  mat_feed_tru = mat_feed.sub_tru();
+  if (0 == mat_feed_tru.comp.size())
     mat_feed_tru.mass = 0.0;
-  };
   mat_prod_tru = mat_prod.sub_tru();
 
   // Lanthanides
-  try
-  {
-    mat_feed_lan = mat_feed.sub_lan();
-  }
-  catch (...)
-  {
-    pyne::comp_map cd;
-    cd[581440] = 1.0;
-    mat_feed_lan  = pyne::Material(cd, 1.0);
+  mat_feed_lan = mat_feed.sub_lan();
+  if (0 == mat_feed_lan.comp.size())
     mat_feed_lan.mass = 0.0;
-  };
   mat_prod_lan = mat_prod.sub_lan();
 
   // Actinides
@@ -550,19 +527,19 @@ double bright::Reactor1G::calc_deltaR()
 };
 
 
-double bright::Reactor1G::calc_deltaR(pyne::comp_map cd)
+double bright::Reactor1G::calc_deltaR(pyne::comp_map incomp)
 {
   // Calculates the deltaR of the reactor with the current mat_feed
-  mat_feed = pyne::Material (cd);
+  mat_feed = pyne::Material(incomp);
   return calc_deltaR();
 };
 
 
 
-double bright::Reactor1G::calc_deltaR(pyne::Material ms)
+double bright::Reactor1G::calc_deltaR(pyne::Material mat)
 {
   // Calculates the deltaR of the reactor with the current mat_feed
-  mat_feed = ms;
+  mat_feed = mat;
   return calc_deltaR();
 };
 
@@ -1024,11 +1001,10 @@ pyne::Material bright::Reactor1G::calc (pyne::comp_map incomp)
 
 
 
-pyne::Material bright::Reactor1G::calc (pyne::Material inmat)
+pyne::Material bright::Reactor1G::calc (pyne::Material mat)
 {
   // Finds BUd and output isotopics.
-  mat_feed = inmat;
-
+  mat_feed = mat;
   return calc();
 };
 

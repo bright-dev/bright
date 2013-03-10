@@ -39,13 +39,15 @@ namespace bright {
     std::map<int, double> sigma_a_therm;  // Microscopic Thermal Absorption XS 
     std::map<int, double> sigma_s_therm;  // Microscopic Thermal Scattering XS 
 
+    // temporarily protected until auto-bidning can be written.
+    std::map<int, nuc_fluence_dict> Tij_F_; //T ransformation Matrix [kg_i/kgIHM]
+
   public:
     // Reactor1G Constructors
-    Reactor1G ();
-    Reactor1G (std::string);
-    Reactor1G (std::set<std::string>, std::string = "");
-    Reactor1G (ReactorParameters, std::string = "");
-    Reactor1G (ReactorParameters, std::set<std::string>, std::string = "");
+    Reactor1G (std::string n="");
+    Reactor1G (std::set<std::string> paramtrack, std::string n="");
+    Reactor1G (ReactorParameters rp, std::string n="");
+    Reactor1G (ReactorParameters rp, std::set<std::string> paramtrack, std::string n="");
     ~Reactor1G ();
     
     // Public data
@@ -73,7 +75,6 @@ namespace bright {
     nuc_fluence_dict BUi_F_;  // Burnup [MWd/kgIHM]
     nuc_fluence_dict pi_F_;   // Production rate [n/s]
     nuc_fluence_dict di_F_;   // Destruction rate [n/s]
-    std::map<int, nuc_fluence_dict> Tij_F_; //T ransformation Matrix [kg_i/kgIHM]
 
     double A_IHM; // Atomic weight of IHM
     double MWF;   // Fuel Molecular Weight
@@ -124,8 +125,8 @@ namespace bright {
 
 
     // Public access functions
-    void initialize(ReactorParameters);
-    void loadlib(std::string libfile = "Reactor.h5");
+    void initialize(ReactorParameters rp);
+    void loadlib(std::string libfile="Reactor.h5");
     void fold_mass_weights();
 
     void calc_Mj_F_();
@@ -136,26 +137,26 @@ namespace bright {
     double calc_tru_cr();
 
     double calc_deltaR();
-    double calc_deltaR(pyne::comp_map);
-    double calc_deltaR(pyne::Material);
+    double calc_deltaR(pyne::comp_map incomp);
+    double calc_deltaR(pyne::Material mat);
 
-    FluencePoint fluence_at_BU(double);
-    double batch_average(double, std::string = "K");
-    double batch_average_k(double);
+    FluencePoint fluence_at_BU(double BU);
+    double batch_average(double BUd, std::string PDk_flag="K");
+    double batch_average_k(double BUd);
     void BUd_bisection_method();
-    void run_P_NL(double);
+    void run_P_NL(double temp_pnl);
     void calibrate_P_NL_to_BUd();
 
     pyne::Material calc();
-    pyne::Material calc(pyne::comp_map);
-    pyne::Material calc(pyne::Material);	
+    pyne::Material calc(pyne::comp_map incomp);
+    pyne::Material calc(pyne::Material mat);	
 
-    void lattice_E_planar(double, double);
-    void lattice_F_planar(double, double);
-    void lattice_E_spherical(double, double);
-    void lattice_F_spherical(double, double);
-    void lattice_E_cylindrical(double, double);
-    void lattice_F_cylindrical(double, double);
+    void lattice_E_planar(double a, double b);
+    void lattice_F_planar(double a, double b);
+    void lattice_E_spherical(double a, double b);
+    void lattice_F_spherical(double a, double b);
+    void lattice_E_cylindrical(double a, double b);
+    void lattice_F_cylindrical(double a, double b);
 
     void  calc_zeta();
     void  calc_zeta_planar();

@@ -63,7 +63,7 @@ def setup_r1g_attrs():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.fold_mass_weights()
@@ -72,7 +72,7 @@ def setup_r1g_data_attrs():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.fold_mass_weights()
@@ -82,7 +82,7 @@ def setup_r1g_discharge():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.calc()
@@ -91,7 +91,7 @@ def setup_r1g_sub():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.calc()
@@ -102,7 +102,7 @@ def setup_r1g_zeta():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.fold_mass_weights()
@@ -112,7 +112,7 @@ def setup_r1g_init():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.fold_mass_weights()
@@ -122,7 +122,7 @@ def setup_r1g_transmute():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.fold_mass_weights()
@@ -132,7 +132,7 @@ def setup_r1g_basic():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.fold_mass_weights()
@@ -142,7 +142,7 @@ def setup_r1g_burnup():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.calc()
@@ -152,7 +152,7 @@ def setup_r1g_lattice():
     global r1g
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    r1g = Reactor1G(reactor_parameters=default_rp, name='r1g')
+    r1g = Reactor1G(rp=default_rp, n='r1g')
     r1g.loadlib(libfile)
     r1g.mat_feed = Material({922350: 0.5, 922380: 0.5})
     r1g.calc()
@@ -192,26 +192,26 @@ def test_Reactor1G_1():
 
 @with_setup(None, teardown_r1g)
 def test_Reactor1G_2():
-    r1g = Reactor1G(name="r1g")
+    r1g = Reactor1G(n="r1g")
     assert_equal(r1g.name, 'r1g')
     assert_equal(r1g.track_params, set())
 
 @with_setup(None, teardown_r1g)
 def test_Reactor1G_3():
-    r1g = Reactor1G(track_params=set(["Mass"]))
+    r1g = Reactor1G(paramtrack=set(["Mass"]))
     assert_equal(r1g.name, '')
     assert_equal(r1g.track_params, set(["Mass"]))
 
 @with_setup(None, teardown_r1g)
 def test_Reactor1G_4():
-    r1g = Reactor1G(track_params=set(["Mass"]), name='r1g')
+    r1g = Reactor1G(paramtrack=set(["Mass"]), n='r1g')
     assert_equal(r1g.name, 'r1g')
     assert_equal(r1g.track_params, set(["Mass"]))
 
 @with_setup(None, teardown_r1g)
 def test_Reactor1G_5():
     rp = ReactorParameters()
-    r1g = Reactor1G(reactor_parameters=rp, name="r1g")
+    r1g = Reactor1G(rp=rp, n="r1g")
     assert_equal(r1g.name, 'r1g')
     assert_equal(r1g.track_params, set())
     assert_equal(r1g.B, 0)
@@ -233,7 +233,7 @@ def test_Reactor1G_5():
 @with_setup(None, teardown_r1g)
 def test_Reactor1G_6():
     rp = ReactorParameters()
-    r1g = Reactor1G(reactor_parameters=rp, track_params=set(["Mass"]), name="r1g")
+    r1g = Reactor1G(rp=rp, paramtrack=set(["Mass"]), n="r1g")
     assert_equal(r1g.name, 'r1g')
     assert_equal(r1g.track_params, set(["Mass"]))
     assert_equal(r1g.B, 0)
@@ -358,7 +358,7 @@ def test_VF():
     rp.unit_cell_pitch = 1.0
     rp.open_slots = 0
     rp.total_slots = 1
-    r1g = Reactor1G(reactor_parameters=rp, name='r1g')
+    r1g = Reactor1G(rp=rp, n='r1g')
     assert_almost_equal(r1g.VF, 3.14159265*0.25) 
 
 @with_setup(None, teardown_r1g)
@@ -368,8 +368,9 @@ def test_VC():
     rp.unit_cell_pitch = 1.0
     rp.open_slots = 0
     rp.total_slots = 1
-    r1g = Reactor1G(reactor_parameters=rp, name='r1g')
+    r1g = Reactor1G(rp=rp, n='r1g')
     assert_almost_equal(r1g.VC, 1.0 - 3.14159265*0.25) 
+
 
 
 
@@ -425,20 +426,21 @@ def test_di_F_():
     for i in di_F_.keys():
         assert_equal(len(r1g.F), len(di_F_[i]))
 
-@with_setup(None, teardown_r1g_clear)
-def test_Tij_F_():
-    Tij_F_ = r1g.Tij_F_
-    jsos   = bright_conf.track_nucs
-    for i in Tij_F_.keys():
-        for j in jsos:
-            assert_equal(len(r1g.F), len(Tij_F_[i][j]))
-
-    old_T = r1g.Tij_F_
-    r1g.Tij_F_ = {1: {2: np.arange(0.0, 10.0)}}
-    assert_equal(r1g.Tij_F_.keys(), [1])
-    assert_equal(r1g.Tij_F_[1].keys(), [2])
-    assert_array_equal(r1g.Tij_F_[1][2], np.arange(0.0, 10.0))
-    r1g.Tij_F_ = old_T
+# FIXME once we have bound map[int, map[int, vector[double]]]
+#@with_setup(None, teardown_r1g_clear)
+#def test_Tij_F_():
+#    Tij_F_ = r1g.Tij_F_
+#    jsos   = bright_conf.track_nucs
+#    for i in Tij_F_.keys():
+#        for j in jsos:
+#            assert_equal(len(r1g.F), len(Tij_F_[i][j]))
+#
+#    old_T = r1g.Tij_F_
+#    r1g.Tij_F_ = {1: {2: np.arange(0.0, 10.0)}}
+#    assert_equal(r1g.Tij_F_.keys(), [1])
+#    assert_equal(r1g.Tij_F_[1].keys(), [2])
+#    assert_array_equal(r1g.Tij_F_[1][2], np.arange(0.0, 10.0))
+#    r1g.Tij_F_ = old_T
 
 
 #
@@ -560,16 +562,17 @@ def test_k_F_():
     for f in range(len(r1g.F)):
         assert_almost_equal(k_F_[f] / (P_F_[f]/D_F_[f]), 1.0, 4)
 
-@with_setup(None, teardown_r1g)
-def test_Mj_F_():
-    Mj_F_  = r1g.Mj_F_
-    Tij_F_ = r1g.Tij_F_
-    for j in Mj_F_.keys():
-        for f in range(len(r1g.F)):
-            tmp_Mj = 0.0
-            for i in r1g.miF.keys():
-                tmp_Mj = tmp_Mj + (r1g.miF[i] * Tij_F_[i][j][f])
-            assert_almost_equal(Mj_F_[j][f] / tmp_Mj, 1.0, 4)
+# FIXME once we bind Tij_F_
+#@with_setup(None, teardown_r1g)
+#def test_Mj_F_():
+#    Mj_F_  = r1g.Mj_F_
+#    Tij_F_ = r1g.Tij_F_
+#    for j in Mj_F_.keys():
+#        for f in range(len(r1g.F)):
+#            tmp_Mj = 0.0
+#            for i in r1g.miF.keys():
+#                tmp_Mj = tmp_Mj + (r1g.miF[i] * Tij_F_[i][j][f])
+#            assert_almost_equal(Mj_F_[j][f] / tmp_Mj, 1.0, 4)
 
 @with_setup(None, teardown_r1g_clear)
 def test_zeta_F_():
@@ -742,23 +745,24 @@ def test_fold_mass_weights():
 # Tests that the fuel cycle component transmutation matrix methods work.
 #
 
-@with_setup(setup_r1g_transmute, teardown_r1g)
-def test_calc_Mj_F_():
-    r1g.calc_Mj_F_()
-    # Test below is the same as test_Mj_F_()
-    Mj_F_  = r1g.Mj_F_
-    Tij_F_ = r1g.Tij_F_
-    for j in Mj_F_.keys():
-        for f in range(len(r1g.F)):
-            tmp_Mj = 0.0
-            for i in r1g.mat_feed.comp.keys():
-                tmp_Mj = tmp_Mj + (r1g.miF[i] * Tij_F_[i][j][f])
-            if tmp_Mj == 0.0:
-                assert_almost_equal(Mj_F_[j][f], 0.0, 4)
-            else:
-                assert_almost_equal(Mj_F_[j][f] / tmp_Mj, 1.0, 4)
+# FIXME once Tij_F_ has bindings
+#@with_setup(setup_r1g_transmute, teardown_r1g)
+#def test_calc_Mj_F_():
+#    r1g.calc_Mj_F_()
+#    # Test below is the same as test_Mj_F_()
+#    Mj_F_  = r1g.Mj_F_
+#    Tij_F_ = r1g.Tij_F_
+#    for j in Mj_F_.keys():
+#        for f in range(len(r1g.F)):
+#            tmp_Mj = 0.0
+#            for i in r1g.mat_feed.comp.keys():
+#                tmp_Mj = tmp_Mj + (r1g.miF[i] * Tij_F_[i][j][f])
+#            if tmp_Mj == 0.0:
+#                assert_almost_equal(Mj_F_[j][f], 0.0, 4)
+#            else:
+#                assert_almost_equal(Mj_F_[j][f] / tmp_Mj, 1.0, 4)
 
-@with_setup(None, teardown_r1g_clear)
+@with_setup(setup_r1g_transmute, teardown_r1g_clear)
 def test_calc_Mj_Fd_():
     r1g.BUd_bisection_method()
     r1g.calc_Mj_F_()
@@ -819,7 +823,6 @@ def test_deltaR3():
     tmp_deltaR = r1g.batch_average(r1g.target_BU, "p") - r1g.batch_average(r1g.target_BU, "d")
     assert_almost_equal(r1g.deltaR / tmp_deltaR, 1.0)
 
-
 #
 # Tests that the Reactor1G burnup methods work.
 #
@@ -835,6 +838,7 @@ def test_fluence_at_BU():
     assert(80.0 <= r1g.BU_F_[fp.f+1])
     tmp_m = (r1g.BU_F_[fp.f+1] - r1g.BU_F_[fp.f]) / (r1g.F[fp.f+1] - r1g.F[fp.f])
     assert_equal(fp.m / tmp_m, 1.0)
+
 
 @with_setup(None, teardown_r1g)
 def test_batch_average():
@@ -886,7 +890,7 @@ def test_run_P_NL():
 def test_calibrate_P_NL_to_BUd():
     r1g.calibrate_P_NL_to_BUd()
     assert_not_equal(r1g.P_NL, 0.98)
-    assert_almost_equal(r1g.BUd / r1g.target_BU, 1.0, 2)
+    assert_almost_equal(r1g.BUd / r1g.target_BU, 1.0, 1)
     
 
 #
@@ -896,7 +900,7 @@ def test_calibrate_P_NL_to_BUd():
 
 @with_setup(setup_r1g_lattice, teardown_r1g)
 def test_lattice_E_planar():
-    prev = r1g.lattice_E_F_
+    prev = np.array(r1g.lattice_E_F_)
     r1g.lattice_flag = "Planar"
     r1g.r = 0.5
     r1g.l = 1.0
@@ -907,7 +911,7 @@ def test_lattice_E_planar():
 
 @with_setup(resetup_r1g_lattice, teardown_r1g)
 def test_lattice_F_planar():
-    prev = r1g.lattice_F_F_
+    prev = np.array(r1g.lattice_F_F_)
     r1g.lattice_flag = "Planar"
     r1g.r = 0.5
     r1g.l = 1.0
@@ -918,7 +922,7 @@ def test_lattice_F_planar():
 
 @with_setup(resetup_r1g_lattice, teardown_r1g)
 def test_lattice_E_spherical():
-    prev = r1g.lattice_E_F_
+    prev = np.array(r1g.lattice_E_F_)
     r1g.lattice_flag = "Spherical"
     r1g.r = 0.5
     r1g.l = 1.0
@@ -929,7 +933,7 @@ def test_lattice_E_spherical():
 
 @with_setup(resetup_r1g_lattice, teardown_r1g)
 def test_lattice_F_spherical():
-    prev = r1g.lattice_F_F_
+    prev = np.array(r1g.lattice_F_F_)
     r1g.lattice_flag = "Spherical"
     r1g.r = 0.5
     r1g.l = 1.0
@@ -940,7 +944,7 @@ def test_lattice_F_spherical():
 
 @with_setup(resetup_r1g_lattice, teardown_r1g)
 def test_lattice_E_cylindrical():
-    prev = r1g.lattice_E_F_
+    prev = np.array(r1g.lattice_E_F_)
     r1g.lattice_flag = "Cylindrical"
     r1g.r = 0.5
     r1g.l = 1.0
@@ -952,7 +956,7 @@ def test_lattice_E_cylindrical():
 
 @with_setup(resetup_r1g_lattice, teardown_r1g_clear)
 def test_lattice_F_cylindrical():
-    prev = r1g.lattice_F_F_
+    prev = np.array(r1g.lattice_F_F_)
     r1g.lattice_flag = "Cylindrical"
     r1g.r = 0.5
     r1g.l = 1.0
@@ -960,7 +964,6 @@ def test_lattice_F_cylindrical():
     curr = r1g.lattice_F_F_
     for f in range(len(r1g.F)):
         assert_not_equal(prev[f], curr[f])
-
 
 # Since the above are not exposed directly, 
 # They implicitly test the following Reactor1G functions:

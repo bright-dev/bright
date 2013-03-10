@@ -60,7 +60,7 @@ cdef class Enrichment(fccomp.FCComp):
         self._inst = new cpp_enrichment.Enrichment(std_string(<char *> n))
     
     
-    _enrichment_enrichment_0_argtypes = frozenset(((0, None), (1, str), ("ep", None), ("n", str)))
+    _enrichment_enrichment_0_argtypes = frozenset(((0, enrichment_parameters.EnrichmentParameters), (1, str), ("ep", enrichment_parameters.EnrichmentParameters), ("n", str)))
     _enrichment_enrichment_1_argtypes = frozenset(((0, str), ("n", str)))
     
     def __init__(self, *args, **kwargs):

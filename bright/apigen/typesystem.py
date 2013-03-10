@@ -459,8 +459,8 @@ _cython_template_class_names = {
     'dict': 'Dict',
     'pair': 'Pair{value_type}',
     'set': 'Set{value_type}',
-    #'vector': 'Vector{value_type}',    
-    'vector': 'np.ndarray',
+    'vector': 'Vector{value_type}',    
+    #'vector': 'Ndarray{value_type}',
     'nucid': 'Nucid', 
     'nucname': 'Nucname',
     }
@@ -681,6 +681,7 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
         raise NotImplementedError('conversion from C/C++ to Python for ' + \
                                   t + 'has not been implemented for when ' + \
                                   'view={0}, cached={1}'.format(view, cached))
+    ct = cython_ctype(t)
     cyt = cython_cytype(t)
     pyt = cython_pytype(t)
     if istemplate(t) and 2 == len(t):
@@ -694,15 +695,16 @@ def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None
     iscached = False
     if 1 == len(c2pyt) or ind == 0:
         decl = body = None
-        rtn = c2pyt[0].format(var=var, pytype=pyt, nptype=npt)
+        rtn = c2pyt[0].format(var=var, ctype=ct, cytype=cyt, pytype=pyt, nptype=npt)
     elif ind == 1:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
-        body = c2pyt[1].format(var=var, pytype=pyt, nptype=npt, proxy_name=proxy_name)
+        body = c2pyt[1].format(var=var, ctype=ct, cytype=cyt, pytype=pyt, nptype=npt, 
+                               proxy_name=proxy_name)
         rtn = proxy_name
     elif ind == 2:
         decl = "cdef {0} {1}".format(cyt, proxy_name)
-        body = c2pyt[2].format(var=var, cache_name=cache_name, pytype=pyt,
-                            proxy_name=proxy_name, nptype=npt)
+        body = c2pyt[2].format(var=var, cache_name=cache_name, ctype=ct, cytype=cyt, 
+                               pytype=pyt, proxy_name=proxy_name, nptype=npt)
         rtn = cache_name
         iscached = True
     if body is not None and 'np.npy_intp' in body:

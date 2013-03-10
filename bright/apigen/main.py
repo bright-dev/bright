@@ -23,6 +23,7 @@ CLASSES = [
     ('Storage', 'storage', True, True),
     ('FluencePoint', 'fluence_point', True, True),
     ('ReactorParameters', 'reactor_parameters', True, True),
+    ('Reactor1G', 'reactor1g', True, True),
     ]
 
 class DescriptionCache(object):
@@ -166,7 +167,7 @@ def genbindings(ns):
         cpppxd_base = desc['cpppxd_filename'].rsplit('.', 1)[0]   # eg, cpp_fccomp
         class_c2py = ('{pytype}({var})', 
                       ('{proxy_name} = {pytype}()\n'
-                       '{proxy_name}._inst[0] = {var}'),
+                       '(<{ctype} *> {proxy_name}._inst)[0] = {var}'),
                       ('if {cache_name} is None:\n'
                        '    {proxy_name} = {pytype}()\n'
                        '    {proxy_name}._free_inst = False\n'
@@ -179,6 +180,7 @@ def genbindings(ns):
             cython_c_type=cpppxd_base + '.' + classname,          # cpp_fccomp.FCComp
             cython_cimport=class_cimport,  
             cython_cy_type=pxd_base + '.' + classname,            # fccomp.FCComp   
+            cython_py_type=pxd_base + '.' + classname,            # fccomp.FCComp   
             cython_template_class_name=classname.replace('_', '').capitalize(),
             cython_cyimport=pxd_base,                             # fccomp
             cython_pyimport=pxd_base,                             # fccomp
