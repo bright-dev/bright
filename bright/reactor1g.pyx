@@ -6,7 +6,7 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
-"""no docstring for reactor1g, please file a bug report!
+"""Python wrapper for reactor1g.
 """
 cimport fccomp
 cimport fluence_point
@@ -33,7 +33,27 @@ import reactor_parameters
 np.import_array()
 
 cdef class Reactor1G(fccomp.FCComp):
-    """no docstring for Reactor1G, please file a bug report!"""
+    """One-Group Reactor Fuel Cycle Component Class.  Daughter of FCComp class.
+    
+    Parameters
+    ----------
+    rp : ReactorParameters, optional 
+        A special data structure that contains information on how to setup and 
+        run the reactor.
+    paramtrack : set of str, optional 
+        A set of strings that represents what parameter data the reactor should 
+        store and set.  Different reactor types may have different characteristic 
+        parameters of interest.
+    n : str, optional 
+        The name of the reactor fuel cycle component instance.
+    
+    Notes
+    -----
+    Some data members and functions have names that end in '_F_'.  This indicates 
+    that these are a function of fluence, the time integral of the flux.  The '_Fd_' 
+    suffix implies that the data is evaluated at the discharge fluence.
+    
+    """
 
     # constuctors
     def __cinit__(self, *args, **kwargs):
@@ -154,7 +174,7 @@ cdef class Reactor1G(fccomp.FCComp):
 
     # attributes
     property A_IHM:
-        """no docstring for A_IHM, please file a bug report!"""
+        """The atomic weight of the initial heavy metal (float)."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).A_IHM)
     
@@ -163,7 +183,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property B:
-        """no docstring for B, please file a bug report!"""
+        """This integer is the total number of batches in the fuel management scheme.  
+        B is typically indexed by b."""
         def __get__(self):
             return int((<cpp_reactor1g.Reactor1G *> self._inst).B)
     
@@ -172,7 +193,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property BU_F_:
-        """no docstring for BU_F_, please file a bug report!"""
+        """The reactor burnup [MWd/kgIHM] as a function of fluence.  This is the linear
+        combination of ``BUi_F_`` for all initial nuclides using miF as weights."""
         def __get__(self):
             cdef np.ndarray BU_F__proxy
             cdef np.npy_intp BU_F__proxy_shape[1]
@@ -201,7 +223,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property BUd:
-        """no docstring for BUd, please file a bug report!"""
+        """The discharge burnup [MWd/kgIHM] (float).  Unless something went very wrong,
+        this should be rather close in value to target_BU."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).BUd)
     
@@ -210,7 +233,11 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property BUi_F_:
-        """no docstring for BUi_F_, please file a bug report!"""
+        """The burnup of each initial isotope in the core as a function of fluence.  
+        This is a dictionary whose keys are initial nuclides and whose values are 
+        vectors of floats.  This data has units of [MWd/kgIHM] and is read in from 
+        libfile.
+        """
         def __get__(self):
             cdef conv._MapIntVectorDouble BUi_F__proxy
             if self._BUi_F_ is None:
@@ -227,7 +254,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property D_F_:
-        """no docstring for D_F_, please file a bug report!"""
+        """The full-core neutron destruction rate [n/s] a function of fluence.  This is the
+        sum of ``dF_F_`` and ``dC_F_``."""
         def __get__(self):
             cdef np.ndarray D_F__proxy
             cdef np.npy_intp D_F__proxy_shape[1]
@@ -256,7 +284,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property F:
-        """no docstring for F, please file a bug report!"""
+        """The fluence points that the reactor library is based on.  This is a vector of 
+        floats that have units [n/kb].  This is read in from libfile.
+        """
         def __get__(self):
             cdef np.ndarray F_proxy
             cdef np.npy_intp F_proxy_shape[1]
@@ -285,7 +315,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property Fd:
-        """no docstring for Fd, please file a bug report!"""
+        """The discharge fluence [n/kb] (float).  May be used to calculate the amount 
+        of time that the fuel was irradiated."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).Fd)
     
@@ -294,7 +325,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property MWC:
-        """no docstring for MWC, please file a bug report!"""
+        """The molecular weight of the coolant (float)."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).MWC)
     
@@ -303,7 +334,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property MWF:
-        """no docstring for MWF, please file a bug report!"""
+        """The molecular weight of the fuel (float)."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).MWF)
     
@@ -312,7 +343,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property Mj_F_:
-        """no docstring for Mj_F_, please file a bug report!"""
+        """The transmutation matrix of the fuel (specifically, mat_feed) into the jth nuclide 
+        as a function of fluence.  Used with the discharge fluence Fd to calculate mat_prod.  
+        This object is therefore a dictionary from zzaaam-integers to vectors of floats."""
         def __get__(self):
             cdef conv._MapIntVectorDouble Mj_F__proxy
             if self._Mj_F_ is None:
@@ -329,7 +362,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property NiC:
-        """no docstring for NiC, please file a bug report!"""
+        """Number density of the coolant as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble NiC_proxy
             if self._NiC is None:
@@ -346,7 +380,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property NiF:
-        """no docstring for NiF, please file a bug report!"""
+        """Number density of the fuel as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble NiF_proxy
             if self._NiF is None:
@@ -363,7 +398,11 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property P_F_:
-        """no docstring for P_F_, please file a bug report!"""
+        """The full-core neutron production rate [n/s] as a function of fluence.  
+        This is the linear combination of ``pi_F_`` for all initial nuclides using miF 
+        as weights. (Note: the coolant does not have a production rate). The linear 
+        combination is subsequently multiplied by the non-leakage probability, P_NL, 
+        before being assigned to ``P_F_``."""
         def __get__(self):
             cdef np.ndarray P_F__proxy
             cdef np.npy_intp P_F__proxy_shape[1]
@@ -392,7 +431,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property P_NL:
-        """no docstring for P_NL, please file a bug report!"""
+        """The reactor's non-leakage probability (float).  This is often used as a 
+        calibration parameter.
+        """
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).P_NL)
     
@@ -401,7 +442,10 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property S_O:
-        """no docstring for S_O, please file a bug report!"""
+        """The number of slots (float) in a fuel assembly that are open.  Thus this 
+        is the number of slots that do not contain a fuel pin and are instead filled 
+        in by coolant.
+        """
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).S_O)
     
@@ -410,7 +454,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property S_T:
-        """no docstring for S_T, please file a bug report!"""
+        """The total number of fuel pin slots (float) in a fuel assembly.  For a 17x17 
+        bundle this is 289.0.
+        """
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).S_T)
     
@@ -419,7 +465,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property SigmaCa_F_:
-        """no docstring for SigmaCa_F_, please file a bug report!"""
+        """The coolant macroscopic absorption cross section [1/cm]."""
         def __get__(self):
             cdef np.ndarray SigmaCa_F__proxy
             cdef np.npy_intp SigmaCa_F__proxy_shape[1]
@@ -448,7 +494,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property SigmaCtr_F_:
-        """no docstring for SigmaCtr_F_, please file a bug report!"""
+        """The coolant macroscopic transport cross section [1/cm]."""
         def __get__(self):
             cdef np.ndarray SigmaCtr_F__proxy
             cdef np.npy_intp SigmaCtr_F__proxy_shape[1]
@@ -477,7 +523,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property SigmaFa_F_:
-        """no docstring for SigmaFa_F_, please file a bug report!"""
+        """The fuel macroscopic absorption cross section [1/cm]."""
         def __get__(self):
             cdef np.ndarray SigmaFa_F__proxy
             cdef np.npy_intp SigmaFa_F__proxy_shape[1]
@@ -506,7 +552,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property SigmaFtr_F_:
-        """no docstring for SigmaFtr_F_, please file a bug report!"""
+        """The fuel macroscopic transport cross section [1/cm]."""
         def __get__(self):
             cdef np.ndarray SigmaFtr_F__proxy
             cdef np.npy_intp SigmaFtr_F__proxy_shape[1]
@@ -535,7 +581,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property VC:
-        """no docstring for VC, please file a bug report!"""
+        """The relative coolant region volume."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).VC)
     
@@ -544,7 +590,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property VF:
-        """no docstring for VF, please file a bug report!"""
+        """The relative fuel region volume."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).VF)
     
@@ -553,7 +599,20 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property coolant_chemical_form:
-        """no docstring for coolant_chemical_form, please file a bug report!"""
+        """This is the chemical form of coolant as a dictionary or other mapping.  
+        This uses the same notation as fuel_form except that "IHM" is no longer 
+        a valid key.  The term 'coolant' is used in preference over the term 
+        'moderator' because not all reactors moderate neutrons.  For example, 
+        LWRs often cool the reactor core with borated water::
+        
+            ReactorParamters.coolant_form = {}
+        
+            ReactorParamters.coolant_form["H1"]  = 2.0
+            ReactorParamters.coolant_form["O16"] = 1.0
+            ReactorParamters.coolant_form["B10"] = 0.199 * 550 * 10.0**-6
+            ReactorParamters.coolant_form["B11"] = 0.801 * 550 * 10.0**-6
+        
+        """
         def __get__(self):
             cdef conv._MapStrDouble coolant_chemical_form_proxy
             if self._coolant_chemical_form is None:
@@ -570,7 +629,10 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property dC_F_:
-        """no docstring for dC_F_, please file a bug report!"""
+        """The neutron destruction rate [n/s] of the coolant as a function of fluence.  
+        This is the linear combination of ``di_F_`` for all initial nuclides using miC 
+        as weights.  If the disadvantage factor is used, then ``zeta_F_`` is multiplied 
+        by the linear combination before being assigned to ``dC_F_``."""
         def __get__(self):
             cdef np.ndarray dC_F__proxy
             cdef np.npy_intp dC_F__proxy_shape[1]
@@ -599,7 +661,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property dF_F_:
-        """no docstring for dF_F_, please file a bug report!"""
+        """The neutron destruction rate [n/s] of the fuel as a function of fluence.  
+        This is the linear combination of ``di_F_`` for all initial nuclides using miF 
+        as weights."""
         def __get__(self):
             cdef np.ndarray dF_F__proxy
             cdef np.npy_intp dF_F__proxy_shape[1]
@@ -628,7 +692,12 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property deltaR:
-        """no docstring for deltaR, please file a bug report!"""
+        """The :math:`\delta R` value of the core with the current mat_feed.  This is equal 
+        to the production rate minus the destruction rate at the target burnup::
+        
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
+        
+        This is computed via the calc_deltaR() method."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).deltaR)
     
@@ -637,7 +706,10 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property di_F_:
-        """no docstring for di_F_, please file a bug report!"""
+        """The neutron destruction rate of each initial isotope in the core as a function 
+        of fluence. This is a dictionary whose keys are initial nuclides and whose values 
+        are vectors of floats.  This data has units of [n/s] and is read in from libfile.
+        """
         def __get__(self):
             cdef conv._MapIntVectorDouble di_F__proxy
             if self._di_F_ is None:
@@ -654,7 +726,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property fd:
-        """no docstring for fd, please file a bug report!"""
+        """The lower index of the discharge fluence (int)."""
         def __get__(self):
             return int((<cpp_reactor1g.Reactor1G *> self._inst).fd)
     
@@ -663,7 +735,15 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property fuel_chemical_form:
-        """no docstring for fuel_chemical_form, please file a bug report!"""
+        """This is the chemical form of fuel as a dictionary or other mapping.  Keys are 
+        often strings that represent isotopes while values represent the corresponding 
+        mass weights.  The heavy metal concentration by the key "IHM".  
+        This will automatically fill in the nuclides in mat_feed for the "IHM" weight.  
+        For example, LWRs typically use a UOX fuel form::
+        
+            Reactor1G.fuel_chemical_form = {"IHM": 1.0, "O16": 2.0}
+        
+        """
         def __get__(self):
             cdef conv._MapStrDouble fuel_chemical_form_proxy
             if self._fuel_chemical_form is None:
@@ -680,7 +760,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property k:
-        """no docstring for k, please file a bug report!"""
+        """This is the multiplication factor of the reactor at discharge.  This should 
+        be very close in value to 1.0."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).k)
     
@@ -689,7 +770,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property k_F_:
-        """no docstring for k_F_, please file a bug report!"""
+        """The multiplication factor of the core.  Calculated from ``P_F_`` divided by 
+        ``D_F_``.  This attribute is unitless and not often used."""
         def __get__(self):
             cdef np.ndarray k_F__proxy
             cdef np.npy_intp k_F__proxy_shape[1]
@@ -718,7 +800,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property kappaC_F_:
-        """no docstring for kappaC_F_, please file a bug report!"""
+        """One over the thermal diffusion length of the coolant [1/cm]."""
         def __get__(self):
             cdef np.ndarray kappaC_F__proxy
             cdef np.npy_intp kappaC_F__proxy_shape[1]
@@ -747,7 +829,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property kappaF_F_:
-        """no docstring for kappaF_F_, please file a bug report!"""
+        """One over the thermal diffusion length of the fuel [1/cm]."""
         def __get__(self):
             cdef np.ndarray kappaF_F__proxy
             cdef np.npy_intp kappaF_F__proxy_shape[1]
@@ -776,7 +858,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property l:
-        """no docstring for l, please file a bug report!"""
+        """The pitch or length (float) of the unit fuel pin cell [cm]."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).l)
     
@@ -785,7 +867,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property lattice_E_F_:
-        """no docstring for lattice_E_F_, please file a bug report!"""
+        """The lattice function E(F)."""
         def __get__(self):
             cdef np.ndarray lattice_E_F__proxy
             cdef np.npy_intp lattice_E_F__proxy_shape[1]
@@ -814,7 +896,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property lattice_F_F_:
-        """no docstring for lattice_F_F_, please file a bug report!"""
+        """The lattice function F(F)."""
         def __get__(self):
             cdef np.ndarray lattice_F_F__proxy
             cdef np.npy_intp lattice_F_F__proxy_shape[1]
@@ -843,7 +925,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property lattice_flag:
-        """no docstring for lattice_flag, please file a bug report!"""
+        """Flag (str) that represents what lattice type the fuel assemblies are arranged in.  
+        Currently accepted values are "Planar", "Spherical", and "Cylindrical"."""
         def __get__(self):
             return str(<char *> (<cpp_reactor1g.Reactor1G *> self._inst).lattice_flag.c_str())
     
@@ -852,7 +935,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property libfile:
-        """no docstring for libfile, please file a bug report!"""
+        """The path (str) to the reactor data library; usually something like "LWR.h5" 
+        or "FR.h5".
+        """
         def __get__(self):
             return str(<char *> (<cpp_reactor1g.Reactor1G *> self._inst).libfile.c_str())
     
@@ -861,7 +946,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_feed_act:
-        """no docstring for mat_feed_act, please file a bug report!"""
+        """The input actininide material, mat_feed.sub_act()."""
         def __get__(self):
             cdef material._Material mat_feed_act_proxy
             if self._mat_feed_act is None:
@@ -878,7 +963,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_feed_lan:
-        """no docstring for mat_feed_lan, please file a bug report!"""
+        """The input lanthanide material, mat_feed.sub_lan()."""
         def __get__(self):
             cdef material._Material mat_feed_lan_proxy
             if self._mat_feed_lan is None:
@@ -895,7 +980,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_feed_tru:
-        """no docstring for mat_feed_tru, please file a bug report!"""
+        """The input transuranic material, mat_feed.sub_tru()."""
         def __get__(self):
             cdef material._Material mat_feed_tru_proxy
             if self._mat_feed_tru is None:
@@ -912,7 +997,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_feed_u:
-        """no docstring for mat_feed_u, please file a bug report!"""
+        """The input uranium material, mat_feed.sub_u()."""
         def __get__(self):
             cdef material._Material mat_feed_u_proxy
             if self._mat_feed_u is None:
@@ -929,7 +1014,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_prod_act:
-        """no docstring for mat_prod_act, please file a bug report!"""
+        """The output actininide material, mat_prod.sub_act()."""
         def __get__(self):
             cdef material._Material mat_prod_act_proxy
             if self._mat_prod_act is None:
@@ -946,7 +1031,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_prod_lan:
-        """no docstring for mat_prod_lan, please file a bug report!"""
+        """The output lanthanide material, mat_prod.sub_lan()."""
         def __get__(self):
             cdef material._Material mat_prod_lan_proxy
             if self._mat_prod_lan is None:
@@ -963,7 +1048,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_prod_tru:
-        """no docstring for mat_prod_tru, please file a bug report!"""
+        """The output transuranic material, mat_prod.sub_tru()."""
         def __get__(self):
             cdef material._Material mat_prod_tru_proxy
             if self._mat_prod_tru is None:
@@ -980,7 +1065,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property mat_prod_u:
-        """no docstring for mat_prod_u, please file a bug report!"""
+        """The output urnaium material, mat_prod.sub_u()."""
         def __get__(self):
             cdef material._Material mat_prod_u_proxy
             if self._mat_prod_u is None:
@@ -997,7 +1082,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property miC:
-        """no docstring for miC, please file a bug report!"""
+        """Mass weight of the coolant as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble miC_proxy
             if self._miC is None:
@@ -1014,7 +1100,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property miF:
-        """no docstring for miF, please file a bug report!"""
+        """Mass weight of the fuel as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble miF_proxy
             if self._miF is None:
@@ -1031,7 +1118,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property niC:
-        """no docstring for niC, please file a bug report!"""
+        """Atomic number weight of the coolant as a function of initial nuclide.  
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble niC_proxy
             if self._niC is None:
@@ -1048,7 +1136,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property niF:
-        """no docstring for niF, please file a bug report!"""
+        """Atomic number weight of the fuel as a function of initial nuclide. 
+        Map with zzaaam-integer keys and float values."""
         def __get__(self):
             cdef conv._MapIntDouble niF_proxy
             if self._niF is None:
@@ -1065,7 +1154,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property phi:
-        """no docstring for phi, please file a bug report!"""
+        """The nominal flux value (float) that the library for this reactor type was 
+        generated with.  Used to correctly weight batch-specific fluxes.
+        """
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).phi)
     
@@ -1074,7 +1165,10 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property pi_F_:
-        """no docstring for pi_F_, please file a bug report!"""
+        """The neutron production rate of each initial isotope in the core as a function 
+        of fluence.  This is a dictionary whose keys are initial nuclides and whose values 
+        are vectors of floats.  This data has units of [neutrons/seconds] (abbr [n/s]) is 
+        read in from libfile."""
         def __get__(self):
             cdef conv._MapIntVectorDouble pi_F__proxy
             if self._pi_F_ is None:
@@ -1091,7 +1185,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property r:
-        """no docstring for r, please file a bug report!"""
+        """The radius (float) of the fuel region [cm]."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).r)
     
@@ -1100,7 +1194,14 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property rescale_hydrogen_xs:
-        """no docstring for rescale_hydrogen_xs, please file a bug report!"""
+        """Boolean to determine whether the reactor should rescale the Hydrogen-1 
+        destruction rate in the coolant as a function of fluence.  The scaling factor is 
+        calculated via the following equation:
+        
+            .. math:: f(F) = 1.36927 - 0.01119 \cdot BU(F)
+        
+        This is typically not done for fast reactors but is a useful correction for LWRs.
+        """
         def __get__(self):
             return bool((<cpp_reactor1g.Reactor1G *> self._inst).rescale_hydrogen_xs)
     
@@ -1109,7 +1210,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property rhoC:
-        """no docstring for rhoC, please file a bug report!"""
+        """The coolant region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).rhoC)
     
@@ -1118,7 +1219,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property rhoF:
-        """no docstring for rhoF, please file a bug report!"""
+        """The fuel region density.  A float in units of [g/cm^3]."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).rhoF)
     
@@ -1127,7 +1228,9 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property target_BU:
-        """no docstring for target_BU, please file a bug report!"""
+        """The reactor's target discharge burnup (float).  This is given 
+        in units of [MWd/kgIHM].  Often the actual discharge burnup BUd does not 
+        quite hit this value, but comes acceptably close."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).target_BU)
     
@@ -1136,7 +1239,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property tru_cr:
-        """no docstring for tru_cr, please file a bug report!"""
+        """The transuranic conversion ratio of the reactor (float).  
+        This is set via the calc_tru_cr() method."""
         def __get__(self):
             return float((<cpp_reactor1g.Reactor1G *> self._inst).tru_cr)
     
@@ -1145,7 +1249,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property use_zeta:
-        """no docstring for use_zeta, please file a bug report!"""
+        """Boolaean to determine whether the thermal disadvantage factor is employed or not.  
+        LWRs typically set this as True while FRs have a False value."""
         def __get__(self):
             return bool((<cpp_reactor1g.Reactor1G *> self._inst).use_zeta)
     
@@ -1154,7 +1259,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     property zeta_F_:
-        """no docstring for zeta_F_, please file a bug report!"""
+        """The thermal disadvantage factor as a function of fluence.  This attribute is 
+        unitless and is set when calc_zeta is called."""
         def __get__(self):
             cdef np.ndarray zeta_F__proxy
             cdef np.npy_intp zeta_F__proxy_shape[1]
@@ -1184,12 +1290,37 @@ cdef class Reactor1G(fccomp.FCComp):
     
     # methods
     def BUd_bisection_method(self):
-        """no docstring for BUd_bisection_method, please file a bug report!"""
+        """Calculates the maximum discharge burnup via the Bisection Method for a 
+        given mat_feed in this reactor.  This iterates over values of BUd to find 
+        a batch averaged multiplication factor that is closest to 1.0.
+        
+        Other root finding methods for determining maximum discharge burnup are 
+        certainly possible.
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).BUd_bisection_method()
     
     
     def batch_average(self, BUd, PDk_flag="K"):
-        """no docstring for batch_average, please file a bug report!"""
+        """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
+        This function is typically iterated over until a BUd is found such that 
+        k(F) = 1.0 + err.
+        
+        Parameters
+        ----------
+        BUd : float
+            The discharge burnup [MWd/kgIHM] to obtain a batch-averaged value for.
+        PDk_flag : str , optional
+            Flag that determines whether the neutron production rate "P" [n/s],  
+            the neutron destruction rate "D" [n/s], or the multiplication factor 
+            "K" is reported in the output.
+        
+        Returns
+        -------
+        PDk : float 
+            The batch averaged neutron production rate, neutron destruction rate, 
+            or the multiplication factor as determined by the input flag.
+        
+        """
         cdef double rtnval
         rtnval = (<cpp_reactor1g.Reactor1G *> self._inst).batch_average(<double> BUd, std_string(<char *> PDk_flag))
         return float(rtnval)
@@ -1267,24 +1398,63 @@ cdef class Reactor1G(fccomp.FCComp):
         raise RuntimeError('method calc() could not be dispatched')
     
     def calc_Mj_F_(self):
-        """no docstring for calc_Mj_F_, please file a bug report!"""
+        """This function calculates and sets the ``Mj_F_`` attribute from mat_feed and the 
+        raw reactor data ``Tij_F_``.
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_Mj_F_()
     
     
     def calc_Mj_Fd_(self):
-        """no docstring for calc_Mj_Fd_, please file a bug report!"""
+        """This function evaluates ``Mj_F_`` calculated from calc_Mj_F_() at the 
+        discharge fluence Fd. The resultant isotopic dictionary is then converted 
+        into the mat_prod mass stream for this pass through the reactor.  Thus if 
+        ever you need to calculate mat_prod without going through calc(), use this 
+        function.
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_Mj_Fd_()
     
     
     def _reactor1g_calc_deltar_0(self):
-        """no docstring for calc_deltaR, please file a bug report!"""
+        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        production rate minus the destruction rate at the target burnup::
+        
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
+        
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a 
+            isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+            converted into a Material before being set as mat_feed.
+        
+        Returns
+        -------
+        deltaR : float 
+            deltaR value
+        """
         cdef double rtnval
         rtnval = (<cpp_reactor1g.Reactor1G *> self._inst).calc_deltaR()
         return float(rtnval)
     
     
     def _reactor1g_calc_deltar_1(self, incomp):
-        """no docstring for calc_deltaR, please file a bug report!"""
+        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        production rate minus the destruction rate at the target burnup::
+        
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
+        
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a 
+            isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+            converted into a Material before being set as mat_feed.
+        
+        Returns
+        -------
+        deltaR : float 
+            deltaR value
+        """
         cdef conv._MapIntDouble incomp_proxy
         cdef double rtnval
         incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
@@ -1293,7 +1463,23 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def _reactor1g_calc_deltar_2(self, mat):
-        """no docstring for calc_deltaR, please file a bug report!"""
+        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        production rate minus the destruction rate at the target burnup::
+        
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
+        
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a 
+            isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+            converted into a Material before being set as mat_feed.
+        
+        Returns
+        -------
+        deltaR : float 
+            deltaR value
+        """
         cdef material._Material mat_proxy
         cdef double rtnval
         mat_proxy = material.Material(mat, free_mat=not isinstance(mat, material._Material))
@@ -1306,7 +1492,23 @@ cdef class Reactor1G(fccomp.FCComp):
     _reactor1g_calc_deltar_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc_deltaR(self, *args, **kwargs):
-        """no docstring for calc_deltaR, please file a bug report!"""
+        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        production rate minus the destruction rate at the target burnup::
+        
+            deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
+        
+        Parameters
+        ----------
+        input : dict or Material or None, optional 
+            If input is present, it set as the component's mat_feed.  If input is a 
+            isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+            converted into a Material before being set as mat_feed.
+        
+        Returns
+        -------
+        deltaR : float 
+            deltaR value
+        """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -1332,49 +1534,132 @@ cdef class Reactor1G(fccomp.FCComp):
         raise RuntimeError('method calc_deltaR() could not be dispatched')
     
     def calc_mat_prod(self):
-        """no docstring for calc_mat_prod, please file a bug report!"""
+        """This is a convenience function that wraps the transmutation matrix methods.  
+        It is equivalent to::
+        
+            #Wrapper to calculate discharge isotopics.
+            calc_Mj_F_()
+            calc_Mj_Fd_()
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_mat_prod()
     
     
     def calc_sub_mats(self):
-        """no docstring for calc_sub_mats, please file a bug report!"""
+        """This sets possibly relevant reactor input and output sub-materials.  
+        Specifically, it computes the attributes:
+        
+            * mat_feed_u
+            * mat_feed_tru
+            * mat_feed_lan
+            * mat_feed_act
+            * mat_prod_u
+            * mat_prod_tru
+            * mat_prod_lan
+            * mat_prod_act
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_sub_mats()
     
     
     def calc_tru_cr(self):
-        """no docstring for calc_tru_cr, please file a bug report!"""
+        """This calculates and sets the transuranic conversion ratio tru_cr through 
+        the equation:
+        
+        .. math:: 
+        
+            \mbox{tru\_cr} = 1.0 - \frac{\mbox{mat\_feed\_tru.mass} - \mbox{mat\_prod\_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
+        
+        Returns
+        -------
+        tru_cr : float) 
+            The value of the transuranic conversion ratio just calculated.
+        
+        """
         cdef double rtnval
         rtnval = (<cpp_reactor1g.Reactor1G *> self._inst).calc_tru_cr()
         return float(rtnval)
     
     
     def calc_zeta(self):
-        """no docstring for calc_zeta, please file a bug report!"""
+        """This calculates the thermal disadvantage factor for the geometry 
+        specified by lattice_flag.  The results are set to ``zeta_F_``.  
+        This is ostensibly done via the methodology detailed in Lamarsh's 
+        `Nuclear Reactor Theory <http://www.amazon.com/Introduction-Nuclear-Reactor-Theory-Lamarsh/dp/0894480405>`_.
+        
+        Unfortunately, this formulation for the disadvantage factor is **only** valid 
+        in the case where a << b! Often times, modern (thermal) reactors do not satisfy 
+        this requirement.  We instead have a 'thin moderator' situation.
+        
+        To fix this problem properly requires going to a multi-region diffusion/transport 
+        calculation.  Doing so is beyond the scope of Bright at this time and certainly 
+        beyond the aspirations of a one-group methodology.  A strategy that is more 
+        in-line with current practice is to use the results of a more sophisticated method, 
+        interpolate over them, and use them here.
+        
+        Thus in the case where 0.1 < VF/VC, where the fuel is greater than 10% of 
+        the coolant, the above strategy is what is implemented. A baseline disadvantage 
+        factor is determined from data presented in "*Thermal disadvantage factor 
+        calculation by the multi-region collision probability method*" by B. Ozgener, 
+        and H. A. Ozgener, Institute of Nuclear Energy, Istanbul Technical University 
+        80626 Maslak, Istanbul, Turkey, Received 28 January 2003; accepted 20 May 2003. 
+        Available online 6 March 2004.  This baseline value happens to be a function of VF/VC.
+        
+        The Lamarsh method is then used as a scaling factor on the baseline function to
+        account for variations in fuel composition and fluence.
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta()
     
     
     def calc_zeta_cylindrical(self):
-        """no docstring for calc_zeta_cylindrical, please file a bug report!"""
+        """This calculates the thermal disadvantage factor for a clyindrical geometry. 
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_cylindrical()
     
     
     def calc_zeta_planar(self):
-        """no docstring for calc_zeta_planar, please file a bug report!"""
+        """This calculates the thermal disadvantage factor for a planar geometry.  
+        The results are set to ``zeta_F_``.
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_planar()
     
     
     def calc_zeta_spherical(self):
-        """no docstring for calc_zeta_spherical, please file a bug report!"""
+        """This calculates the thermal disadvantage factor for a spherical geometry.
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_spherical()
     
     
     def calibrate_P_NL_to_BUd(self):
-        """no docstring for calibrate_P_NL_to_BUd, please file a bug report!"""
+        """Often times the non-leakage probability of a reactor is not known, though 
+        the input isotopics and the target discharge burnup are.  This function handles 
+        that situation by calibrating the non-leakage probability of this reactor P_NL 
+        to hit its target burnup target_BU. Such a calibration proceeds by bisection 
+        method as well.  This function is extremely useful for benchmarking calculations.
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).calibrate_P_NL_to_BUd()
     
     
     def fluence_at_BU(self, BU):
-        """no docstring for fluence_at_BU, please file a bug report!"""
+        """This function takes a burnup value  and returns a special fluence point object.  
+        The fluence point is an amalgamation of data where the at which the burnup occurs.
+        This object instance FP contains three pieces of information::
+            
+            FP.f    #Index immediately lower than where BU achieved (int)
+            FP.F    #Fluence value itself (float)
+            FP.m    #Slope dBU/dF between points f and f+1 (double)
+        
+        Parameters
+        ----------
+        burnup : float 
+            Burnup [MWd/kgIHM] at which to calculate the corresponding fluence.
+        
+        Returns
+        -------
+        fp : FluencePoint 
+            A class containing fluence information.
+        
+        """
         cdef cpp_fluence_point.FluencePoint rtnval
         cdef fluence_point.FluencePoint rtnval_proxy
         rtnval = (<cpp_reactor1g.Reactor1G *> self._inst).fluence_at_BU(<double> BU)
@@ -1384,54 +1669,155 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def fold_mass_weights(self):
-        """no docstring for fold_mass_weights, please file a bug report!"""
+        """This method performs the all-important task of doing the isotopically-weighted 
+        linear combination of raw data.  In a very real sense this is what makes this 
+        reactor *this specific reactor*.  The weights are taken as the values of mat_feed.  
+        The raw data must have previously been read in from loadlib().  
+        
+        Warnings
+        --------
+        Anytime any reactor parameter whatsoever (mat_feed, P_NL, *etc*) is altered in 
+        any way, the fold_mass_weights() function must be called to reset all of the 
+        resultant data. If you are unsure, please call this function anyway to be safe.  
+        There is no harm in calling this method multiple times.
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).fold_mass_weights()
     
     
     def initialize(self, rp):
-        """no docstring for initialize, please file a bug report!"""
+        """The initialize() method for reactors copies all of the reactor specific 
+        parameters to this instance. Additionally, it calculates and sets the volumes 
+        VF and VC.
+        
+        Parameters
+        ----------
+        reactor_parameters : ReactorParameters 
+            A special data structure that contains information on how to setup and 
+            run the reactor.
+        
+        """
         cdef reactor_parameters.ReactorParameters rp_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
         (<cpp_reactor1g.Reactor1G *> self._inst).initialize((<cpp_reactor_parameters.ReactorParameters *> rp_proxy._inst)[0])
     
     
     def lattice_E_cylindrical(self, a, b):
-        """no docstring for lattice_E_cylindrical, please file a bug report!"""
+        """Calculates the lattice function E(F) for cylindrical geometry.  
+        
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_E_cylindrical(<double> a, <double> b)
     
     
     def lattice_E_planar(self, a, b):
-        """no docstring for lattice_E_planar, please file a bug report!"""
+        """Calculates the lattice function E(F) for planar geometry.  
+        
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_E_planar(<double> a, <double> b)
     
     
     def lattice_E_spherical(self, a, b):
-        """no docstring for lattice_E_spherical, please file a bug report!"""
+        """Calculates the lattice function E(F) for spherical geometry.  
+        
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_E_spherical(<double> a, <double> b)
     
     
     def lattice_F_cylindrical(self, a, b):
-        """no docstring for lattice_F_cylindrical, please file a bug report!"""
+        """Calculates the lattice function F(F) for cylindrical geometry.  
+        
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_cylindrical(<double> a, <double> b)
     
     
     def lattice_F_planar(self, a, b):
-        """no docstring for lattice_F_planar, please file a bug report!"""
+        """Calculates the lattice function F(F) for planar geometry.
+        
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_planar(<double> a, <double> b)
     
     
     def lattice_F_spherical(self, a, b):
-        """no docstring for lattice_F_spherical, please file a bug report!"""
+        """Calculates the lattice function F(F) for spherical geometry.  
+        
+        Parameters
+        ----------
+        a : float 
+            Fuel region radius equivalent [cm].
+        b : float 
+            Unit fuel cell pitch length equivalent [cm].
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_spherical(<double> a, <double> b)
     
     
     def loadlib(self, libfile="Reactor.h5"):
-        """no docstring for loadlib, please file a bug report!"""
+        """This method finds the HDF5 library for this reactor and extracts the necessary 
+        information from it. This method is typically called by the constructor of the 
+        child reactor type object.  It must be called before attempting to do any real 
+        computation.
+        
+        Parameters
+        ----------
+        libfile : str 
+            Path to the reactor library.
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).loadlib(std_string(<char *> libfile))
     
     
     def run_P_NL(self, temp_pnl):
-        """no docstring for run_P_NL, please file a bug report!"""
+        """Performs a reactor run for a specific non-leakage probability value.
+        This requires that mat_feed be (meaningfully) set and is for use with 
+        calibrate_P_NL_to_BUd().
+        
+        This function amounts to the following code::
+        
+            self.P_NL = pnl
+            self.fold_mass_weights()
+            self.BUd_bisection_method()
+        
+        Parameters
+        ----------
+        pnl : float 
+            The new non-leakage probability for the reactor.
+        
+        """
         (<cpp_reactor1g.Reactor1G *> self._inst).run_P_NL(<double> temp_pnl)
     
     
