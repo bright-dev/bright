@@ -7,20 +7,20 @@ bright::FastReactor1G::FastReactor1G() : bright::Reactor1G(fr_defaults, fr_p2tra
 };
 
 
-bright::FastReactor1G::FastReactor1G(std::string h5lib, std::string n) : bright::Reactor1G(fr_defaults, fr_p2track, n)
+bright::FastReactor1G::FastReactor1G(std::string lib, std::string n) : bright::Reactor1G(fr_defaults, fr_p2track, n)
 {
-  libfile = h5lib;
-  loadlib(h5lib);
+  libfile = lib;
+  loadlib(lib);
 };
 
 bright::FastReactor1G::FastReactor1G(ReactorParameters rp, std::string n) : bright::Reactor1G(rp, fr_p2track, n)
 {
 };
 
-bright::FastReactor1G::FastReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : bright::Reactor1G(rp, fr_p2track, n)
+bright::FastReactor1G::FastReactor1G(std::string lib, ReactorParameters rp, std::string n) : bright::Reactor1G(rp, fr_p2track, n)
 {
-  libfile = h5lib;
-  loadlib(h5lib);
+  libfile = lib;
+  loadlib(lib);
 };
 
 bright::FastReactor1G::~FastReactor1G() 

@@ -76,7 +76,7 @@ def test_FastReactor1G_1():
 @with_setup(None, teardown_fr1g)
 def test_FastReactor1G_2():
     lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-    fr = FastReactor1G(libfile=lf)
+    fr = FastReactor1G(lib=lf)
     assert_equal(fr.libfile, lf)
     assert_equal(fr.name, '')
     assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
@@ -99,7 +99,7 @@ def test_FastReactor1G_2():
 @with_setup(None, teardown_fr1g)
 def test_FastReactor1G_3():
     lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
-    fr = FastReactor1G(libfile=lf, name="fr")
+    fr = FastReactor1G(lib=lf, n="fr")
     assert_equal(fr.libfile, lf)
     assert_equal(fr.name, 'fr')
     assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
@@ -123,7 +123,7 @@ def test_FastReactor1G_3():
 def test_FastReactor1G_4():
     rp = fr_defaults()
     rp.BUt = 140.0
-    fr = FastReactor1G(reactor_parameters=rp)
+    fr = FastReactor1G(rp=rp)
     assert_equal(fr.name, '')
     assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
     assert_equal(fr.B, 3)
@@ -146,7 +146,7 @@ def test_FastReactor1G_4():
 def test_FastReactor1G_5():
     rp = fr_defaults()
     rp.BUt = 140.0
-    fr = FastReactor1G(reactor_parameters=rp, name='fr')
+    fr = FastReactor1G(rp=rp, n='fr')
     assert_equal(fr.name, 'fr')
     assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
     assert_equal(fr.B, 3)
@@ -170,7 +170,7 @@ def test_FastReactor1G_6():
     lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
     rp = fr_defaults()
     rp.BUt = 140.0
-    fr = FastReactor1G(libfile=lf, reactor_parameters=rp)
+    fr = FastReactor1G(lib=lf, rp=rp)
     assert_equal(fr.libfile, lf)
     assert_equal(fr.name, '')
     assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
@@ -195,7 +195,7 @@ def test_FastReactor1G_7():
     lf = os.getenv("BRIGHT_DATA") + "/FR.h5"
     rp = fr_defaults()
     rp.BUt = 140.0
-    fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
+    fr = FastReactor1G(lib=lf, rp=rp, n='fr')
     assert_equal(fr.libfile, lf)
     assert_equal(fr.name, 'fr')
     assert_equal(fr.track_params, set(["ACT", "BUd", "FP", "LAN", "P_NL", "TRU", "TRUCR", "U"]))
@@ -236,7 +236,7 @@ def test_calc_params():
     load_track_nucs_hdf5(lf)
     rp = fr_defaults()
     rp.BUt = 140.0
-    fr = FastReactor1G(libfile=lf, reactor_parameters=rp, name='fr')
+    fr = FastReactor1G(lib=lf, rp=rp, n='fr')
     fr.calc(Material({922350: 0.30, 922380: 0.70}))
     fr.calc_params()
     assert_equal(fr.params_prior_calc["BUd"],  0.0)
