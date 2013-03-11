@@ -1786,7 +1786,7 @@ cdef class Reactor1G(fccomp.FCComp):
         (<cpp_reactor1g.Reactor1G *> self._inst).lattice_F_spherical(<double> a, <double> b)
     
     
-    def loadlib(self, libfile="Reactor.h5"):
+    def loadlib(self, lib="Reactor.h5"):
         """This method finds the HDF5 library for this reactor and extracts the necessary 
         information from it. This method is typically called by the constructor of the 
         child reactor type object.  It must be called before attempting to do any real 
@@ -1794,11 +1794,11 @@ cdef class Reactor1G(fccomp.FCComp):
         
         Parameters
         ----------
-        libfile : str 
+        lib : str 
             Path to the reactor library.
         
         """
-        (<cpp_reactor1g.Reactor1G *> self._inst).loadlib(std_string(<char *> libfile))
+        (<cpp_reactor1g.Reactor1G *> self._inst).loadlib(std_string(<char *> lib))
     
     
     def run_P_NL(self, temp_pnl):

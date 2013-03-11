@@ -64,7 +64,7 @@ void bright::Reactor1G::initialize(ReactorParameters rp)
 
 
 
-void bright::Reactor1G::loadlib(std::string libfile)
+void bright::Reactor1G::loadlib(std::string lib)
 {
   // Loads Apporiate Libraries for Reactor and makes them into Burnup Parameters [F, pi(F), di(F), BUi(F), Tij(F)].
 
@@ -72,7 +72,7 @@ void bright::Reactor1G::loadlib(std::string libfile)
   hid_t  rlib;
   herr_t rstat;
 
-  rlib = H5Fopen (libfile.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);		//Recator Library
+  rlib = H5Fopen (lib.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);		//Recator Library
 
   // Initializes Burnup Parameters...
   hsize_t dimFromIso[1];

@@ -8,10 +8,10 @@ bright::LightWaterReactor1G::LightWaterReactor1G() : bright::Reactor1G(lwr_defau
 };
 
 
-bright::LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, std::string n) : bright::Reactor1G(lwr_defaults, lwr_p2track, n)
+bright::LightWaterReactor1G::LightWaterReactor1G(std::string lib, std::string n) : bright::Reactor1G(lwr_defaults, lwr_p2track, n)
 {
-  libfile = h5lib;
-  loadlib(h5lib);
+  libfile = lib;
+  loadlib(lib);
 };
 
 
@@ -20,10 +20,10 @@ bright::LightWaterReactor1G::LightWaterReactor1G(ReactorParameters rp, std::stri
 };
 
 
-bright::LightWaterReactor1G::LightWaterReactor1G(std::string h5lib, ReactorParameters rp, std::string n) : bright::Reactor1G(rp, lwr_p2track, n)
+bright::LightWaterReactor1G::LightWaterReactor1G(std::string lib, ReactorParameters rp, std::string n) : bright::Reactor1G(rp, lwr_p2track, n)
 {
-  libfile = h5lib;
-  loadlib(h5lib);
+  libfile = lib;
+  loadlib(lib);
 };
 
 

@@ -348,7 +348,7 @@ computation.
 
 Parameters
 ----------
-libfile : str 
+lib : str 
     Path to the reactor library.
 
 """

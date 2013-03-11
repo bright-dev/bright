@@ -126,7 +126,7 @@ namespace bright {
 
     // Public access functions
     void initialize(ReactorParameters rp);
-    void loadlib(std::string libfile="Reactor.h5");
+    void loadlib(std::string lib="Reactor.h5");
     void fold_mass_weights();
 
     void calc_Mj_F_();

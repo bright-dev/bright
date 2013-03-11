@@ -339,8 +339,18 @@ def _gen_dispatcher(name, name_mangled, doc=None, hasrtn=True):
     return lines
 
 
+def _class_heirarchy(cls, ch, env):
+    if env[cls]['parents'] is None:
+        return 
+    if 0 == len(ch) or ch[0] != cls:
+        ch.insert(0, cls)
+    for p in env[cls]['parents'][::-1]:
+        ch.insert(0, p)
+        _class_heirarchy(p, ch, env)
+
 def _method_instance_names(desc, env, key, rtn):
-    classnames = (desc['parents'] or []) + [desc['name']]
+    classnames = []
+    _class_heirarchy(desc['name'], classnames, env)
     for classname in classnames:
         classrtn = env.get(classname, {}).get('methods', {}).get(key, NotImplemented)
         if rtn != classrtn:

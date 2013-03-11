@@ -24,9 +24,9 @@ namespace bright{
   public:
     // LightWaterReactor1G Constructors
     LightWaterReactor1G();
-    LightWaterReactor1G(std::string, std::string = "");
-    LightWaterReactor1G(ReactorParameters, std::string = "");
-    LightWaterReactor1G(std::string, ReactorParameters, std::string = "");
+    LightWaterReactor1G(std::string lib, std::string n="");
+    LightWaterReactor1G(ReactorParameters rp, std::string n="");
+    LightWaterReactor1G(std::string lib, ReactorParameters rp, std::string n="");
     ~LightWaterReactor1G();
 
     // Public access functions

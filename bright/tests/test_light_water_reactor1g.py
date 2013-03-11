@@ -88,7 +88,7 @@ def test_LightWaterReactor1G_1():
 @with_setup(None, teardown_lwr1g)
 def test_LightWaterReactor1G_2():
     lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-    lwr = LightWaterReactor1G(libfile=lf)
+    lwr = LightWaterReactor1G(lib=lf)
     assert_equal(lwr.libfile, lf)
     assert_equal(lwr.name, '')
     assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
@@ -115,7 +115,7 @@ def test_LightWaterReactor1G_2():
 @with_setup(None, teardown_lwr1g)
 def test_LightWaterReactor1G_3():
     lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
-    lwr = LightWaterReactor1G(libfile=lf, name="lwr")
+    lwr = LightWaterReactor1G(lib=lf, n="lwr")
     assert_equal(lwr.libfile, lf)
     assert_equal(lwr.name, 'lwr')
     assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
@@ -143,7 +143,7 @@ def test_LightWaterReactor1G_3():
 def test_LightWaterReactor1G_4():
     rp = lwr_defaults()
     rp.BUt = 50.0
-    lwr = LightWaterReactor1G(reactor_parameters=rp)
+    lwr = LightWaterReactor1G(rp=rp)
     assert_equal(lwr.name, '')
     assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
     assert_equal(lwr.B, 3)
@@ -170,7 +170,7 @@ def test_LightWaterReactor1G_4():
 def test_LightWaterReactor1G_5():
     rp = lwr_defaults()
     rp.BUt = 50.0
-    lwr = LightWaterReactor1G(reactor_parameters=rp, name='lwr')
+    lwr = LightWaterReactor1G(rp=rp, n='lwr')
     assert_equal(lwr.name, 'lwr')
     assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
     assert_equal(lwr.B, 3)
@@ -198,7 +198,7 @@ def test_LightWaterReactor1G_6():
     lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
     rp = lwr_defaults()
     rp.BUt = 50.0
-    lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp)
+    lwr = LightWaterReactor1G(lib=lf, rp=rp)
     assert_equal(lwr.libfile, lf)
     assert_equal(lwr.name, '')
     assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
@@ -227,7 +227,7 @@ def test_LightWaterReactor1G_7():
     lf = os.getenv("BRIGHT_DATA") + "/LWR.h5"
     rp = lwr_defaults()
     rp.BUt = 50.0
-    lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
+    lwr = LightWaterReactor1G(lib=lf, rp=rp, n='lwr')
     assert_equal(lwr.libfile, lf)
     assert_equal(lwr.name, 'lwr')
     assert_equal(lwr.track_params, set(["ACT", "BUd", "FP", "LAN", "TRU", "U"]))
@@ -273,7 +273,7 @@ def test_calc_params():
     load_track_nucs_hdf5(lf)
     rp = lwr_defaults()
     rp.BUt = 50.0
-    lwr = LightWaterReactor1G(libfile=lf, reactor_parameters=rp, name='lwr')
+    lwr = LightWaterReactor1G(lib=lf, rp=rp, n='lwr')
     lwr.calc(Material({922350: 0.05, 922380:0.95}))
     lwr.calc_params()
     assert_equal(lwr.params_prior_calc["BUd"],  0.0)
