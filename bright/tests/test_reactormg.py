@@ -124,26 +124,26 @@ def test_ReactorMG_1():
 
 @with_setup(None, teardown_rmg)
 def test_ReactorMG_2():
-    rmg = ReactorMG(name="rmg")
+    rmg = ReactorMG(n="rmg")
     assert_equal(rmg.name, 'rmg')
     assert_equal(rmg.track_params, set())
 
 @with_setup(None, teardown_rmg)
 def test_ReactorMG_3():
-    rmg = ReactorMG(track_params=set(["Mass"]))
+    rmg = ReactorMG(paramtrack=set(["Mass"]))
     assert_equal(rmg.name, '')
     assert_equal(rmg.track_params, set(["Mass"]))
 
 @with_setup(None, teardown_rmg)
 def test_ReactorMG_4():
-    rmg = ReactorMG(track_params=set(["Mass"]), name='rmg')
+    rmg = ReactorMG(paramtrack=set(["Mass"]), n='rmg')
     assert_equal(rmg.name, 'rmg')
     assert_equal(rmg.track_params, set(["Mass"]))
 
 @with_setup(None, teardown_rmg)
 def test_ReactorMG_5():
     rp = ReactorParameters()
-    rmg = ReactorMG(reactor_parameters=rp, name="rmg")
+    rmg = ReactorMG(rp=rp, n="rmg")
     assert_equal(rmg.name, 'rmg')
     assert_equal(rmg.track_params, set())
     assert_equal(rmg.B, 0)
@@ -166,7 +166,7 @@ def test_ReactorMG_5():
 @with_setup(None, teardown_rmg)
 def test_ReactorMG_6():
     rp = ReactorParameters()
-    rmg = ReactorMG(reactor_parameters=rp, track_params=set(["Mass"]), name="rmg")
+    rmg = ReactorMG(rp=rp, paramtrack=set(["Mass"]), n="rmg")
     assert_equal(rmg.name, 'rmg')
     assert_equal(rmg.track_params, set(["Mass"]))
     assert_equal(rmg.B, 0)
@@ -293,7 +293,7 @@ def test_V_fuel():
     rp.unit_cell_pitch = 1.0
     rp.open_slots = 0
     rp.total_slots = 1
-    rmg = ReactorMG(reactor_parameters=rp, name='rmg')
+    rmg = ReactorMG(rp=rp, n='rmg')
     assert_almost_equal(rmg.V_fuel, 3.14159265*0.25) 
 
 @with_setup(None, teardown_rmg)
@@ -305,7 +305,7 @@ def test_V_cool():
     rp.unit_cell_pitch = 1.0
     rp.open_slots = 0
     rp.total_slots = 1
-    rmg = ReactorMG(reactor_parameters=rp, name='rmg')
+    rmg = ReactorMG(rp=rp, n='rmg')
     assert_almost_equal(rmg.V_cool, 1.0 - 3.14159265*0.25) 
 
 
@@ -313,12 +313,12 @@ def test_V_cool():
 # Tests that the ReactorMG basic data attributes work.
 #
 
-
 @with_setup(setup_rmg_attr, teardown_rmg)
 def test_libfile():
     rmg.libfile = "It's Ruth!"
     assert_equal(rmg.libfile, "It's Ruth!")
 
+"""\
 
 @with_setup(None, teardown_rmg)
 def test_npertubations():
@@ -441,7 +441,6 @@ def test_sigma_s_pgh():
 
 
 
-"""\
 
 
 class TestReactorMGMutliGroupMethods(TestCase):
@@ -451,7 +450,7 @@ class TestReactorMGMutliGroupMethods(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + 'lwr_mg.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.05, 922380: 0.95})
 #    rmg.mat_feed = MassStream({922350: 0.03, 922380: 0.97})
@@ -668,7 +667,7 @@ class TestReactorMGCalculatedWeightAttributes(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.fold_mass_weights()
@@ -723,7 +722,7 @@ class TestReactorMGCalculatedDataAttributes(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.fold_mass_weights()
@@ -812,7 +811,7 @@ class TestReactorMGDischargeAttributes(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
@@ -844,7 +843,7 @@ class TestReactorMGSubStreamAndtru_crAttributes(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
@@ -896,7 +895,7 @@ class TestReactorMGThermalDisadvantageFactorAttributes(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.fold_mass_weights()
@@ -950,7 +949,7 @@ class TestReactorMGInitializationMethods(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.fold_mass_weights()
@@ -999,7 +998,7 @@ class TestReactorMGTransmutationMatrixMethods(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.fold_mass_weights()
@@ -1040,7 +1039,7 @@ class TestReactorMGBasicCalculationMethods(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.fold_mass_weights()
@@ -1099,7 +1098,7 @@ class TestReactorMGBurnupMethods(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
@@ -1152,7 +1151,7 @@ class TestReactorMGBurnupMethods2(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
@@ -1177,7 +1176,7 @@ class TestReactorMGBurnupMethods3(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
@@ -1203,7 +1202,7 @@ class TestReactorMGBurnupMethods4(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
@@ -1227,7 +1226,7 @@ class TestReactorMGLatticeMethods(TestCase):
 def setup_class():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     bright.load_track_nucs_hdf5(libfile)
-    rmg = ReactorMG(reactor_parameters=default_rp, name='rmg')
+    rmg = ReactorMG(rp=default_rp, n='rmg')
     rmg.loadlib(libfile)
     rmg.mat_feed = MassStream({922350: 0.5, 922380: 0.5})
     rmg.calc()
