@@ -51,16 +51,16 @@ def setup_ff():
     libfile = os.getenv("BRIGHT_DATA") + '/LWR.h5'
     load_track_nucs_hdf5(libfile)
 
-    r1g = Reactor1G(reactor_parameters=default_rp)
+    r1g = Reactor1G(rp=default_rp)
     r1g.loadlib(libfile)
 
-    u235 = Material({922350: 1.0}, 1.0, "U-235")
-    u238 = Material({922380: 1.0}, 1.0, "U-238")
+    u235 = Material({922350: 1.0}, 1.0, name="U-235")
+    u238 = Material({922380: 1.0}, 1.0, name="U-238")
     mats = {"U235": u235, "U238": u238}
 
     mws = {"U235": -1.0, "U238": -1.0}
 
-    ff = FuelFabrication(materials=mats, mass_weights_in=mws, reactor=r1g)
+    ff = FuelFabrication(mats=mats, mws_in=mws, r=r1g)
 
 
 def teardown_ff():
@@ -96,19 +96,19 @@ def test_FuelFabrication_1():
 
 @with_setup(None, teardown_ff)
 def test_FuelFabrication_2():
-    ff = FuelFabrication(name="ff")
+    ff = FuelFabrication(n="ff")
     assert_equal(ff.name, 'ff')
     assert_equal(ff.track_params, set())
 
 @with_setup(None, teardown_ff)
 def test_FuelFabrication_3():
-    ff = FuelFabrication(track_params=set(["Mass"]))
+    ff = FuelFabrication(paramtrack=set(["Mass"]))
     assert_equal(ff.name, '')
     assert_equal(ff.track_params, set(["Mass"]))
 
 @with_setup(None, teardown_ff)
 def test_FuelFabrication_4():
-    ff = FuelFabrication(track_params=set(["Mass"]), name='ff')
+    ff = FuelFabrication(paramtrack=set(["Mass"]), n='ff')
     assert_equal(ff.name, 'ff')
     assert_equal(ff.track_params, set(["Mass"]))
 
@@ -116,18 +116,18 @@ def test_FuelFabrication_4():
 def test_FuelFabrication_5():
     # Reactor to use
     rp = ReactorParameters()
-    r1g = Reactor1G(reactor_parameters=rp, name="r1g")
+    r1g = Reactor1G(rp=rp, n="r1g")
 
     # Mass streams to use
-    u235 = Material({922350: 1.0}, 1.0, "U-235")
-    u238 = Material({922380: 1.0}, 1.0, "U-238")
+    u235 = Material({922350: 1.0}, 1.0, name="U-235")
+    u238 = Material({922380: 1.0}, 1.0, name="U-238")
     mats = {"U235": u235, "U238": u238}
 
     # Mass weights to use
     mws = {"U235": -1.0, "U238": -1.0}
 
     # Fuel Fabrication Facility
-    ff = FuelFabrication(materials=mats, mass_weights_in=mws, reactor=r1g)
+    ff = FuelFabrication(mats=mats, mws_in=mws, r=r1g)
 
     keys = ["U235", "U238"]
     print ff.materials
@@ -150,18 +150,18 @@ def test_FuelFabrication_5():
 def test_FuelFabrication_6():
     # Reactor to use
     rp = ReactorParameters()
-    r1g = Reactor1G(reactor_parameters=rp, name="r1g")
+    r1g = Reactor1G(rp=rp, n="r1g")
 
     # Mass streams to use
-    u235 = Material({922350: 1.0}, 1.0, "U-235")
-    u238 = Material({922380: 1.0}, 1.0, "U-238")
+    u235 = Material({922350: 1.0}, 1.0, name="U-235")
+    u238 = Material({922380: 1.0}, 1.0, name="U-238")
     mats = {"U235": u235, "U238": u238}
 
     # Mass weights to use
     mws = {"U235": -1.0, "U238": -1.0}
 
     # Fuel Fabrication Facility
-    ff = FuelFabrication(materials=mats, mass_weights_in=mws, reactor=r1g, track_params=set(["Mass"]))
+    ff = FuelFabrication(mats=mats, mws_in=mws, r=r1g, paramtrack=set(["Mass"]))
 
     keys = ["U235", "U238"]
     assert_equal(set(ff.materials.keys()), set(keys))
@@ -183,18 +183,18 @@ def test_FuelFabrication_6():
 def test_FuelFabrication_7():
     # Reactor to use
     rp = ReactorParameters()
-    r1g = Reactor1G(reactor_parameters=rp, name="r1g")
+    r1g = Reactor1G(rp=rp, n="r1g")
 
     # Mass streams to use
-    u235 = Material({922350: 1.0}, 1.0, "U-235")
-    u238 = Material({922380: 1.0}, 1.0, "U-238")
+    u235 = Material({922350: 1.0}, 1.0, name="U-235")
+    u238 = Material({922380: 1.0}, 1.0, name="U-238")
     mats = {"U235": u235, "U238": u238}
 
     # Mass weights to use
     mws = {"U235": -1.0, "U238": -1.0}
 
     # Fuel Fabrication Facility
-    ff = FuelFabrication(materials=mats, mass_weights_in=mws, reactor=r1g, track_params=set(["Mass"]), name="ff")
+    ff = FuelFabrication(mats=mats, mws_in=mws, r=r1g, paramtrack=set(["Mass"]), n="ff")
 
     keys = ["U235", "U238"]
     assert_equal(set(ff.materials.keys()), set(keys))
@@ -235,9 +235,9 @@ def test_materials():
         assert_equal(ff.materials[iso].mass, 1.0)
         assert_equal(ff.materials[iso].comp[nucname.zzaaam(iso)], 1.0)
 
-    u235 = Material({922350: 1.0}, 1.0, "U-235")
-    u238 = Material({922380: 1.0}, 1.0, "U-238")
-    o16  = Material({80160:  1.0}, 1.0, "O-16")
+    u235 = Material({922350: 1.0}, 1.0, name="U-235")
+    u238 = Material({922380: 1.0}, 1.0, name="U-238")
+    o16  = Material({80160:  1.0}, 1.0, name="O-16")
     mats = {"U235": u235, "U238": u238, "O16": o16}
     ff.materials = mats
 
@@ -279,7 +279,6 @@ def test_calc_mass_ratios():
     core_input = ff.calc_core_input()
 
     assert_equal(core_input.mass, 1.0)
-    assert_equal(core_input.name, "CoreInput")
 
     assert_almost_equal(core_input.comp[922350], ff.mass_weights_out["U235"])
     assert_almost_equal(core_input.comp[922380], ff.mass_weights_out["U238"])
@@ -289,7 +288,6 @@ def test_calc1():
     core_input = ff.calc()
 
     assert_equal(core_input.mass, 1.0)
-    assert_equal(core_input.name, "CoreInput")
 
     assert_almost_equal(core_input.comp[922350], ff.mass_weights_out["U235"])
     assert_almost_equal(core_input.comp[922380], ff.mass_weights_out["U238"])
@@ -303,7 +301,6 @@ def test_calc2():
     assert_equal(ff.reactor.name, "r1g name")
 
     assert_equal(core_input.mass, 1.0)
-    assert_equal(core_input.name, "CoreInput")
 
     assert_almost_equal(core_input.comp[922350], ff.mass_weights_out["U235"])
     assert_almost_equal(core_input.comp[922380], ff.mass_weights_out["U238"])

@@ -26,6 +26,7 @@ CLASSES = [
     ('Reactor1G', 'reactor1g', True, True),
     ('LightWaterReactor1G', 'light_water_reactor1g', True, True),
     ('FastReactor1G', 'fast_reactor1g', True, True),
+    ('FuelFabrication', 'fuel_fabrication', True, True),
     ]
 
 class DescriptionCache(object):
@@ -123,11 +124,11 @@ def describe_class(classname, filename, verbose=False):
 # Classes and type to preregister with the typesyetem prior to doing any code 
 # generation.  
 PREREGISTER_KEYS = ['name', 'cython_c_type', 'cython_cimport', 'cython_cy_type',
-                    'cython_py_type', 'cython_cyimport', 'cython_pyimport', 
-                    'cython_c2py', 'cython_py2c']
+                    'cython_py_type', 'cython_template_class_name', 
+                    'cython_cyimport', 'cython_pyimport', 'cython_c2py', 'cython_py2c']
 PREREGISTER_CLASSES = [
     ('Material', 'cpp_material.Material', ('pyne', 'cpp_material'), 
-     'material._Material', 'material.Material', ('pyne', 'material'), 
+     'material._Material', 'material.Material', 'Material', ('pyne', 'material'), 
      ('pyne', 'material'), 
      ('{pytype}({var})', 
       ('{proxy_name} = {pytype}()\n'
@@ -194,6 +195,16 @@ def genbindings(ns):
     # now preregister types with the type system
     for prc in PREREGISTER_CLASSES:
         ts.register_class(**dict(zip(PREREGISTER_KEYS, prc)))
+
+    # Now register specialization
+    ts.register_specialization(('map', 'str', ('Material', '*'), 0), 
+        cython_c_type='material._MapStrMaterial', 
+        cython_cy_type='material._MapStrMaterial', 
+        cython_py_type='material.MapStrMaterial',
+        cython_cimport=(('pyne', 'material'),),
+        cython_cyimport=(('pyne', 'material'),),
+        cython_pyimport=(('pyne', 'material'),),
+        )
 
     # next, make cython bindings
     for classname, fname, mkcython, mkcyclus in CLASSES:

@@ -499,6 +499,8 @@ def cython_cytype(t):
             last = '[{0}]'.format(t[-1]) if isinstance(t[-1], int) else t[-1]
             return cython_cytype(t[0]) + ' {0}'.format(last)
     elif 3 <= tlen:
+        if t in _cython_cy_template_types:
+            return _cython_cy_template_types[t]
         assert t[0] in template_types
         assert len(t) == len(template_types[t[0]]) + 2
         template_name = _cython_cy_template_types[t[0]]
@@ -567,6 +569,8 @@ def cython_pytype(t):
             #return cython_pytype(t[0]) + ' {0}'.format(last)
             return cython_pytype(t[0])
     elif 3 <= tlen:
+        if t in _cython_py_template_types:
+            return _cython_py_template_types[t]
         assert t[0] in template_types
         assert len(t) == len(template_types[t[0]]) + 2
         template_name = _cython_py_template_types[t[0]]
@@ -967,3 +971,34 @@ def deregister_refinement(name):
     _cython_cimport_template_types.pop(name, None)
     _cython_cyimport_template_types.pop(name, None)
     _cython_pyimport_template_types.pop(name, None)
+
+
+def register_specialization(t, cython_c_type=None, cython_cy_type=None, 
+                            cython_py_type=None, cython_cimport=None, 
+                            cython_cyimport=None, cython_pyimport=None):
+    """This function will add a template specialization so that it may be used 
+    normally with the rest of the type system.
+    """
+    t = canon(t)
+    if cython_c_type is not None:
+        _cython_c_template_types[t] = cython_c_type
+    if cython_cy_type is not None:
+        _cython_cy_template_types[t] = cython_cy_type
+    if cython_py_type is not None:
+        _cython_py_template_types[t] = cython_py_type
+    if cython_cimport is not None:
+        _cython_cimport_template_types[t] = cython_cimport
+    if cython_cyimport is not None:
+        _cython_cyimport_template_types[t] = cython_cyimport
+    if cython_pyimport is not None:
+        _cython_pyimport_template_types[t] = cython_pyimport
+
+def deregister_specialization(t):
+    """This function will remove previously registered template specialization."""
+    t = canon(t)
+    _cython_c_template_types.pop(t, None)
+    _cython_cy_template_types.pop(t, None)
+    _cython_py_template_types.pop(t, None)
+    _cython_cimport_template_types.pop(t, None)
+    _cython_cyimport_template_types.pop(t, None)
+    _cython_pyimport_template_types.pop(t, None)

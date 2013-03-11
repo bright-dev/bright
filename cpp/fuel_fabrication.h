@@ -28,11 +28,10 @@ namespace bright {
    */
   public:
     // Reactor1G Constructors
-    FuelFabrication ();
-    FuelFabrication (std::string);
-    FuelFabrication (std::set<std::string>, std::string = "");
-    FuelFabrication (material_dict, mass_weight_dict, Reactor1G, std::string = "");
-    FuelFabrication (material_dict, mass_weight_dict, Reactor1G, std::set<std::string>, std::string = "");
+    FuelFabrication (std::string n="");
+    FuelFabrication (std::set<std::string> paramtrack, std::string n="");
+    FuelFabrication (material_dict mats, mass_weight_dict mws_in, Reactor1G r, std::string n="");
+    FuelFabrication (material_dict mats, mass_weight_dict mws_in, Reactor1G r, std::set<std::string> paramtrack, std::string n="");
     ~FuelFabrication ();
     
     //Public data
@@ -44,7 +43,7 @@ namespace bright {
     Reactor1G reactor;
 
     //Public access functions
-    void initialize(material_dict, mass_weight_dict, Reactor1G);
+    void initialize(material_dict mats, mass_weight_dict mws_in, Reactor1G r);
     void calc_params ();
 
     void calc_deltaRs();
@@ -52,7 +51,7 @@ namespace bright {
     void calc_mass_ratios();
 
     pyne::Material calc();
-    pyne::Material calc(material_dict, mass_weight_dict, Reactor1G);
+    pyne::Material calc(material_dict mats, mass_weight_dict mws_in, Reactor1G r);
   };
 
 

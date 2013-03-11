@@ -22,10 +22,6 @@ std::set<std::string> bright::make_fuel_fab_params_set(material_dict * mats, std
 /*** FuelFabrication Component Class and Functions ***/
 /*****************************************************/
 
-bright::FuelFabrication::FuelFabrication()
-{
-};
-
 bright::FuelFabrication::FuelFabrication(std::string n) : bright::FCComp(n)
 {
 };
