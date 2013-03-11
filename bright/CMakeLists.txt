@@ -84,8 +84,8 @@ cython_add_module(fuel_fabrication fuel_fabrication.pyx)
 target_link_libraries(fuel_fabrication bright_fuel_fabrication)
 
 # reactormg
-#set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/reactormg.pyx
-#                            PROPERTIES CYTHON_IS_CXX TRUE)
-#cython_add_module(reactormg reactormg.pyx)
-#target_link_libraries(reactormg bright_reactormg)
+set_source_files_properties(${PROJECT_SOURCE_DIR}/bright/reactormg.pyx
+                            PROPERTIES CYTHON_IS_CXX TRUE)
+cython_add_module(reactormg reactormg.pyx)
+target_link_libraries(reactormg bright_reactormg)
 

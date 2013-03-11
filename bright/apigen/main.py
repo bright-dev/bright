@@ -27,6 +27,7 @@ CLASSES = [
     ('LightWaterReactor1G', 'light_water_reactor1g', True, True),
     ('FastReactor1G', 'fast_reactor1g', True, True),
     ('FuelFabrication', 'fuel_fabrication', True, True),
+    ('ReactorMG', 'reactormg', True, True),
     ]
 
 class DescriptionCache(object):

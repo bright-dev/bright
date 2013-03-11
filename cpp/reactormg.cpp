@@ -1,5 +1,4 @@
 // Multi-Group Reactor Component Class
-
 #include "reactormg.h"
 
 
@@ -7,11 +6,6 @@
   /***********************************************/
   /*** ReactorMG Component Class and Functions ***/
   /***********************************************/
-
-bright::ReactorMG::ReactorMG()
-{
-};
-
 
 bright::ReactorMG::ReactorMG(std::string n) : FCComp(n)
 {
@@ -94,19 +88,19 @@ void bright::ReactorMG::initialize(ReactorParameters rp)
 
 
 
-void bright::ReactorMG::loadlib(std::string libfile)
+void bright::ReactorMG::loadlib(std::string lib)
 {
   // Loads Apporiate Libraries for ReactorMG
 
   // Check that the file is there
-  if (!pyne::file_exists(libfile))
-    throw pyne::FileNotFound(libfile);
+  if (!pyne::file_exists(lib))
+    throw pyne::FileNotFound(lib);
 
   //Check to see if the file is in HDF5 format.
-  bool isH5 = H5::H5File::isHdf5(libfile);
+  bool isH5 = H5::H5File::isHdf5(lib);
   if (!isH5)
   {
-    std::cout << "!!!Warning!!! " << libfile << " is not a valid HDF5 file!\n";
+    std::cout << "!!!Warning!!! " << lib << " is not a valid HDF5 file!\n";
     return;
   };
 
@@ -114,7 +108,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
   H5::Exception::dontPrint();
 
   // Open file
-  H5::H5File rmglib(libfile, H5F_ACC_RDONLY);
+  H5::H5File rmglib(lib, H5F_ACC_RDONLY);
   hid_t rmglibid = rmglib.getId();
 
   // Load isos
@@ -130,7 +124,7 @@ void bright::ReactorMG::loadlib(std::string libfile)
     transmute_zz = "/transmute_nucs_zz";
   }
   else
-    throw h5wrap::PathNotFound(libfile, "/load_nucs_zz or /load_nucs_zz");
+    throw h5wrap::PathNotFound(lib, "/load_nucs_zz or /load_nucs_zz");
 
   I = h5wrap::h5_array_to_cpp_set<int>(rmglibid, load_zz,      H5T_NATIVE_INT);
   J = h5wrap::h5_array_to_cpp_set<int>(rmglibid, transmute_zz, H5T_NATIVE_INT);

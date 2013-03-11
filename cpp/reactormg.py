@@ -578,9 +578,9 @@ desc['docstrings']['attrs']['A_inv_F_tgh'] = \
 """Inverse of absorprion matrix mult by the fission matrix, as a function 
 of time."""
 
-desc['docstrings']['attrs']['T_int_tij'] = \
+desc['docstrings']['attrs']['T_int_tij'] = ""
 
-desc['docstrings']['attrs']['M_tij'] = \
+desc['docstrings']['attrs']['M_tij'] = ""
 
 desc['docstrings']['attrs']['nearest_neighbors'] = \
 """Attribute that denotes the indices of the perturbation table which are 
