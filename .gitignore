@@ -12,8 +12,7 @@ bright/*.cpp
 cpp/test/particle.def
 cpp/test/test_h5wrap.cpp
 
-data/lwr_mg.h5
-data/nuc_data.h5
+data/*.h5
 
 # Regression test ignore
 bright/tests/*_res.m

@@ -9,7 +9,7 @@ import nose
 from nose.tools import assert_equal, assert_not_equal, assert_raises, raises, \
 assert_almost_equal, assert_true, assert_false, set_trace, with_setup
 
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+from numpy.testing import dec, assert_array_equal, assert_array_almost_equal
 
 import os
 import warnings
@@ -93,7 +93,7 @@ rmg = None
 
 def setup_rmg_attr():
     global rmg
-    libfile = os.getenv("BRIGHT_DATA") + '/lwr_mg.h5'
+    libfile = os.getenv("BRIGHT_DATA") + '/lwr_base.h5'
     load_track_nucs_hdf5(libfile)
     rmg = ReactorMG()
     rmg.loadlib(libfile)
@@ -318,7 +318,6 @@ def test_libfile():
     rmg.libfile = "It's Ruth!"
     assert_equal(rmg.libfile, "It's Ruth!")
 
-"""\
 
 @with_setup(None, teardown_rmg)
 def test_npertubations():
@@ -365,6 +364,7 @@ def test_E_g():
     assert((rmg.E_g[1:] < rmg.E_g[:-1]).all())
 
 
+@dec.skipif(True)
 @with_setup(None, teardown_rmg)
 def test_phi_g():
     phi_g = rmg.phi_g
@@ -372,6 +372,7 @@ def test_phi_g():
     assert_equal(len(phi_g[0]), rmg.G)
 
 
+@dec.skipif(True)
 @with_setup(None, teardown_rmg)
 def test_phi():
     assert_equal(len(rmg.phi), rmg.nperturbations)
@@ -403,6 +404,7 @@ def test_Ti0():
         assert_equal(len(Ti0[iso]), nperturbations)
 
 
+@dec.skipif(True)
 @with_setup(None, teardown_rmg)
 def test_sigma_f_pg():
     J = rmg.J
@@ -413,6 +415,7 @@ def test_sigma_f_pg():
         assert_equal(sigma_f_pg[iso].shape, (nperturbations, G))
 
 
+@dec.skipif(True)
 @with_setup(None, teardown_rmg)
 def test_nubar_sigma_f_pg():
     J = rmg.J
@@ -424,6 +427,7 @@ def test_nubar_sigma_f_pg():
 
 
 
+@dec.skipif(True)
 @with_setup(None, teardown_rmg)
 def test_sigma_s_pgh():
     J = rmg.J
@@ -438,11 +442,7 @@ def test_sigma_s_pgh():
 #
 # Cannot implement the following tests without a woring native burnup method.
 #
-
-
-
-
-
+"""\
 class TestReactorMGMutliGroupMethods(TestCase):
 "Tests that the ReactorMG basic data attributes work."
 
@@ -652,16 +652,15 @@ def test_calc_criticality():
     print rmg.V_cool
 
     raise TypeError 
-    
 """
 
 ################################ Unset below
 
 
-"""\
 
+"""\
 class TestReactorMGCalculatedWeightAttributes(TestCase):
-"Tests that the ReactorMG calculated weight attributes work."
+    "Tests that the ReactorMG calculated weight attributes work."
 
 @classmethod
 def setup_class():
