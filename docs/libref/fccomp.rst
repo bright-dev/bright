@@ -15,20 +15,4 @@ All functionality may be found in the ``fccomp`` module::
 .. currentmodule:: bright.fccomp
 
 .. autoclass:: FCComp(paramlist=None, name="")
-
-    .. autoattribute:: name
-    .. autoattribute:: natural_name
-    .. autoattribute:: mat_feed
-    .. autoattribute:: mat_prod
-    .. autoattribute:: params_prior_calc
-    .. autoattribute:: params_after_calc
-    .. autoattribute:: pass_num
-    .. autoattribute:: track_params
-
-    .. automethod:: calc(input=None)
-    .. automethod:: calc_params()
-    .. automethod:: write()
-    .. automethod:: write_text()
-    .. automethod:: write_hdf5()
-    .. automethod:: write_mat_pass()
-    .. automethod:: write_params_pass()
+    :members:

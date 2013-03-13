@@ -13,18 +13,11 @@ a mat_tail attribute that corresponds to material not recovered in mat_prod.
 
 .. currentmodule:: bright.reprocess
     
-.. autoclass:: Reprocess(sepeff=None, name="")
+.. autoclass:: Reprocess(sepeff=None, n="")
+    :members:
 
-    .. autoattribute:: sepeff
     .. attribute:: track_params
 
         For Reprocess, the only parameter that is tracked is the aggregate mass.  
         Thus this attribute is automatically set to ``["Mass"]``.
-
-    .. automethod:: initialize(sepeff)
-    .. automethod:: calc(input)
-    .. automethod:: calc_params()
-
-
-
 

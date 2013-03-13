@@ -14,9 +14,4 @@ All functionality may be found in the ``fluence_point`` module::
 .. currentmodule:: bright.fluence_point
     
 .. autoclass:: FluencePoint()
-
-    .. autoattribute:: f    
-    .. autoattribute:: F    
-    .. autoattribute:: m    
-
-
+    :members:

@@ -36,14 +36,16 @@ The following modules and sub-packages comprise bright:
 
 **Components**
 
-All fuel cycle objects inherit from a common FCComp class.  This takes care of all of the bookkeeping, 
-input, and output for all component instances.  Below is a diagram of the how all of the comonents inheret 
-from the top-level FCComp object.  Generally, a bright user will only need to call the bottom-level classes
-directly.
+All fuel cycle objects inherit from a common FCComp class.  This takes care of 
+all of the bookkeeping, input, and output for all component instances.  Below is 
+a diagram of the how all of the comonents inheret from the top-level FCComp object. 
+Generally, a bright user will only need to call the bottom-level classes directly.
 
-.. inheritance-diagram:: bright.bright_config bright.fccomp bright.enrichment bright.fuel_fabrication
-    bright.fluence_point bright.reactor_parameters bright.reactor1g bright.light_water_reactor1g
-    bright.fast_reactor1g bright.reactormg bright.origen_reactormg bright.reprocess bright.storage
+.. inheritance-diagram:: bright.bright_config bright.fccomp bright.enrichment 
+    bright.fuel_fabrication bright.fluence_point bright.reactor_parameters 
+    bright.reactor1g bright.light_water_reactor1g bright.fast_reactor1g 
+    bright.reactormg bright.origen_reactormg bright.reprocess bright.storage
+    bright.enrichment_parameters
     :parts: 1
 
     

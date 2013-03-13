@@ -27,22 +27,11 @@ All functionality may be found in the ``fuel_fabrication`` module::
 
 .. currentmodule:: bright.fuel_fabrication
     
-.. autoclass:: FuelFabrication(mass_streams=None, mass_weights_in=None, reactor=None, track_params=None, name="")
+.. autoclass:: FuelFabrication(mats=None, mws_in=None, r=None, paramtrack=None, n="")
+    :members:
 
-    .. autoattribute:: materials
-    .. autoattribute:: mass_weights_in
-    .. autoattribute:: mass_weights_out
-    .. autoattribute:: deltaRs
-    .. autoattribute:: reactor
     .. attribute:: track_params
 
         For FuelFabrication, the parameters that are automatically tracked are 
         the keys of :attr:`mass_streams` preceded by ``Weight_`` and ``deltaR_``.  For 
         instance, ``["Weight_U235", "deltaR_U235", "Weight_U238", "deltaR_U238"]``.
-
-    .. automethod:: initialize(materials, mass_weights_in, reactor)
-    .. automethod:: calc(materials=None, mass_weights_in=None, reactor=None)
-    .. automethod:: calc_params()
-    .. automethod:: calc_deltaRs()
-    .. automethod:: calc_core_input()
-    .. automethod:: calc_mass_ratios()

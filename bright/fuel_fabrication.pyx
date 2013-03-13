@@ -395,7 +395,9 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     def calc_params(self):
         """calc_params(self)
-        Here the parameters for FuelFabrication are set.  For example::
+        Here the parameters for FuelFabrication are set.  For example:
+        
+        .. code-block:: python
         
             self.params_prior_calc["Weight_U235"] = self.mass_weights_in["U235"]
             self.params_after_calc["Weight_U235"] = self.mass_weights_out["U235"]

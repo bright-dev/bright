@@ -17,16 +17,14 @@ All functionality may be found in the ``fast_reactor1g`` module::
 FastReactor1G Class
 ===================
 
-.. autoclass:: FastReactor1G(libfile=None, reactor_parameters=None, name="")
+.. autoclass:: FastReactor1G(lib, rp=None, n="")
+    :members:
 
     .. attribute:: track_params
 
         Fast reactors have a type specific set of data that they follow from 
         pass-to-pass.  Thus this attribute has be modified to contain following parameters: 
         ``["BUd", "TRUCR", "P_NL", "U", "TRU", "ACT", "LAN", "FP"]``.
-
-    .. automethod:: calc_params()
-
 
 ======================
 Fast Reactor Benchmark

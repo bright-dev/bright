@@ -383,12 +383,15 @@ function.
 
 desc['docstrings']['methods']['calc_mat_prod'] = \
 """This is a convenience function that wraps the transmutation matrix methods.  
-It is equivalent to::
+It is equivalent to:
+
+.. code-block:: python
 
     #Wrapper to calculate discharge isotopics.
     calc_Mj_F_()
     calc_Mj_Fd_()
 
+This is mostly used internally.
 """
 
 desc['docstrings']['methods']['calc_sub_mats'] = \

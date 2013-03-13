@@ -19,14 +19,9 @@ All functionality may be found in the ``storage`` module::
 .. currentmodule:: bright.storage
     
 .. autoclass:: Storage(name="")
+    :members:
 
-    .. autoattribute:: decay_time
     .. attribute:: track_params
 
         For :class:`Storage`, the only parameter that is tracked is the aggregate mass.  
         Thus this attribute is automatically set to ``["Mass"]``.
-
-    .. automethod:: calc(input=None, time=None)
-    .. automethod:: calc_params()
-
-

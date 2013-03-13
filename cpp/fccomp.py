@@ -64,7 +64,7 @@ track_params is a component-specific attribute, while track_nucs is a bright-lev
 variable."""
 
 desc['docstrings']['methods']['write_mat_pass'] = \
-"""This method is responsible for adding the current material data for this pass to 
+r"""This method is responsible for adding the current material data for this pass to 
 the output text and hdf5 files for this component.  Further calculations for this 
 pass should not be performed after write_mat_pass() has been called.
 

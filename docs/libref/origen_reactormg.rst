@@ -15,8 +15,5 @@ All functionality may be found in the ``origen_reactormg`` module::
 
 .. currentmodule:: bright.origen_reactormg
     
-.. autoclass:: OrigenReactorMG(tape9=None, reactor_parameters=None, track_params=None, name="")
-
-    .. automethod:: burnup_core()
-    .. automethod:: assemble_transmutation_matrices()
-    .. automethod:: calc_transmutation()
+.. autoclass:: OrigenReactorMG
+    :members:

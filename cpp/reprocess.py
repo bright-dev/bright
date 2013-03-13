@@ -7,13 +7,13 @@ sepeff : dict or map or None, optional
     A dictionary containing the separation efficiencies (float) to initialize
     the instance with.  The keys of this dictionary may be strings or ints::
 
-    # ssed = string dictionary of separation efficiencies.  
-    # Of form {zz: 0.99}, eg 
-    ssed = {92: 0.999, "94": 0.99} 
-    # of form {LL: 0.99}, eg 
-    ssed = {"U": 0.999, "PU": 0.99} 
-    # or of form {mixed: 0.99}, eg 
-    ssed = {"U235": 0.9, 922350: 0.999, "94239": 0.99}
+        # ssed = string dictionary of separation efficiencies.  
+        # Of form {zz: 0.99}, eg 
+        ssed = {92: 0.999, "94": 0.99} 
+        # of form {LL: 0.99}, eg 
+        ssed = {"U": 0.999, "PU": 0.99} 
+        # or of form {mixed: 0.99}, eg 
+        ssed = {"U235": 0.9, 922350: 0.999, "94239": 0.99}
 
 name : str, optional
     The name of the reprocessing fuel cycle component instance.

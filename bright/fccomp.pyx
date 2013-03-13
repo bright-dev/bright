@@ -428,9 +428,9 @@ cdef class FCComp:
         
         .. math::
         
-            \mbox{inpcol[nuc]} = \mbox{mat\_feed.comp[nuc]}
+            \\mbox{inpcol[nuc]} = \\mbox{mat\_feed.comp[nuc]}
         
-            \mbox{outcol[nuc]} = \mbox{mat\_prod.comp[nuc]} \times \frac{\mbox{mat\_prod.mass}}{\mbox{mat\_feed.mass}}
+            \\mbox{outcol[nuc]} = \\mbox{mat\_prod.comp[nuc]} \\times \\frac{\\mbox{mat\_prod.mass}}{\\mbox{mat\_feed.mass}}
         
         Because of the units of these two columns, total mass flow data may often only be 
         recovered via the "Mass" parameter in the parameter file.  Here is a sample 
