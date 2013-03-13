@@ -1,4 +1,67 @@
-"""Implements a simple, dynamic type system for API generation."""
+"""Implements a simple, dynamic type system for API generation.
+
+:author: Anthony Scopatz <scopatz@gmail.com>
+
+Introduction
+============
+
+This module provides a suite of tools for denoting, describing, and converting
+between various data types and the types coming from various systems.  This is
+achived by providing canonical abstractions of various kinds of types:
+
+* Base types (int, str, float, non-templated classes)
+* Refined types (even or odd ints, strings containing the letter 'a')
+* Dependent types (templates such arrays, maps, sets, vectors)
+
+All types are known by their name (a string identifier) and may be aliased with 
+other names.  However, thes string id of a type is not suffient to fully describe
+most types.  The system here implements a canonical form for all kinds of types.
+This canonical form is itself hashable, being comprised only of strings, ints, 
+and tuples.
+
+Canonical Forms
+---------------
+First, let us examine the base types and the forms that they may take.  Base types
+are fiducial.  The type system itself may not make any changes (refinements, 
+template filling) to types of this kind.  They are basically a collection of bits.
+(The job of ascribing meaning to these bits falls on someone else.)  Thus base types 
+may be refered to simply by their string identifier.  For example::
+
+    'str'
+    'int32'
+    'float64'
+    'MyClass'
+
+
+Aliases to these -- or any -- type names are given in the type_aliases dictionary::
+
+    type_aliases = {
+        'i': 'int32',
+        'i4': 'int32',
+        'int': 'int32',
+        'complex': 'complex128',
+        'b': 'bool',
+        }
+
+Furthermore, length-2 tuples are used to denote a type and the name or flag of its
+predicate.  A predicate is a function or transformation that may be applied to 
+verify, validate, cast, coerce, or extend a variable of the given type.  A common 
+usage is to declare a pointer or reference of the underlying type.  This is done with 
+the string flags '*' and '&'::
+
+    ('char', '*')
+    ('float64', '&')
+
+.. note:: 
+
+    length-1 tuples are converted to length-2 tuples with a 0 predicate, 
+    i.e. ``('char',)`` will become ``('char', 0)``.
+    
+
+Type System Functions
+=====================
+
+"""
 import functools
 from collections import Sequence, Set, Iterable
 
@@ -27,6 +90,7 @@ def _memoize(obj):
 
 BASE_TYPES = set(['char', 'str', 'int32', 'int64', 'uint32', 'uint64', 'float32', 
                   'float64', 'complex128', 'void', 'bool'])
+"""Base types in the type system."""
 
 type_aliases = {
     'i': 'int32',
@@ -68,7 +132,7 @@ type_aliases = {
     'np.NPY_VOID': 'void',
     'np.NPY_OBJECT': 'void',
     }
-
+"""Aliases that may be used to subsitute one type name for another."""
 
 # template types are types whose instantiations are based on meta-types
 # this dict maps their names to meta-type names in order.

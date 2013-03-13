@@ -14,12 +14,19 @@ of package-level functions and attributes that must be set for Bright to run suc
 These are explained here.  Meanwhile, because of their potential for complexity, each fuel cycle 
 component is given its own page.  
 
-The following modules and sub-packages comprise bright:
+
+~~~~~~~~~~~
+Components
+~~~~~~~~~~~
+
+All fuel cycle objects inherit from a common FCComp class.  This takes care of 
+all of the bookkeeping, input, and output for all component instances.  Below is 
+a diagram of the how all of the comonents inheret from the top-level FCComp object. 
+Generally, a bright user will only need to call the bottom-level classes directly.
 
 .. toctree::
     :maxdepth: 1
 
-    bright_config
     fccomp
     enrichment_parameters
     enrichment
@@ -34,12 +41,6 @@ The following modules and sub-packages comprise bright:
     reprocess
     storage
 
-**Components**
-
-All fuel cycle objects inherit from a common FCComp class.  This takes care of 
-all of the bookkeeping, input, and output for all component instances.  Below is 
-a diagram of the how all of the comonents inheret from the top-level FCComp object. 
-Generally, a bright user will only need to call the bottom-level classes directly.
 
 .. inheritance-diagram:: bright.bright_config bright.fccomp bright.enrichment 
     bright.fuel_fabrication bright.fluence_point bright.reactor_parameters 
@@ -48,4 +49,15 @@ Generally, a bright user will only need to call the bottom-level classes directl
     bright.enrichment_parameters
     :parts: 1
 
-    
+~~~~~~~~~~~
+Other APIs
+~~~~~~~~~~~
+
+The following parts of Bright aid in the construction of the fuel cycle or 
+help provide an API for generating code.
+
+.. toctree::
+    :maxdepth: 2
+
+    bright_config
+    apigen/index

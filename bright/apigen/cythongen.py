@@ -110,7 +110,7 @@ cdef class {name}{parents}:
 
 
 def genpxd(desc):
-    """Generates a *.pxd Cython header file for exposing C/C++ data from to 
+    """Generates a ``*pxd`` Cython header file for exposing C/C++ data from to 
     other Cython wrappers based off of a dictionary (desc)ription.
     """
     if 'pxd_filename' not in desc:
@@ -378,7 +378,7 @@ def _doc_add_sig(doc, name, args, ismethod=True):
     return newdoc
 
 def genpyx(desc, env=None):
-    """Generates a *.pyx Cython wrapper implementation for exposing a C/C++ 
+    """Generates a ``*.pyx`` Cython wrapper implementation for exposing a C/C++ 
     class based off of a dictionary (desc)ription.  The (env)ironment is a 
     dictionary of all class names known to their descriptions.
     """
