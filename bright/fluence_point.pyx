@@ -24,7 +24,8 @@ cdef class FluencePoint:
 
 
     def __init__(self, f_=0, F_=0.0, m_=0.0):
-        """"""
+        """FluencePoint(self, f_=0, F_=0.0, m_=0.0)
+        """
         self._inst = new cpp_fluence_point.FluencePoint(f_, <double> F_, <double> m_)
     
     

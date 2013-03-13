@@ -30,7 +30,8 @@ cdef class EnrichmentParameters:
 
 
     def __init__(self):
-        """"""
+        """EnrichmentParameters(self)
+        """
         self._inst = new cpp_enrichment_parameters.EnrichmentParameters()
     
     
@@ -71,7 +72,7 @@ cdef class EnrichmentParameters:
     
     
     property alpha_0:
-        """The :math:`\alpha_0` attribute specifies the overall stage separation factor
+        """The :math:`\\alpha_0` attribute specifies the overall stage separation factor
         for the cascade.  This should be set on initialization.  Values should be
         greater than one.  Values less than one represent de-enrichment.
         """

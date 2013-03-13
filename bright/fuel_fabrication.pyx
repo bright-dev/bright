@@ -75,7 +75,8 @@ cdef class FuelFabrication(fccomp.FCComp):
         self._reactor = None
 
     def _fuelfabrication_fuelfabrication_0(self, mats, mws_in, r, n=""):
-        """"""
+        """FuelFabrication(self, mats, mws_in, r, n="")
+        """
         cdef material._MapStrMaterial mats_proxy
         cdef conv._MapStrDouble mws_in_proxy
         cdef reactor1g.Reactor1G r_proxy
@@ -86,7 +87,8 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     
     def _fuelfabrication_fuelfabrication_1(self, mats, mws_in, r, paramtrack, n=""):
-        """"""
+        """FuelFabrication(self, mats, mws_in, r, paramtrack, n="")
+        """
         cdef material._MapStrMaterial mats_proxy
         cdef conv._MapStrDouble mws_in_proxy
         cdef reactor1g.Reactor1G r_proxy
@@ -99,12 +101,14 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     
     def _fuelfabrication_fuelfabrication_2(self, n=""):
-        """"""
+        """FuelFabrication(self, n="")
+        """
         self._inst = new cpp_fuel_fabrication.FuelFabrication(std_string(<char *> n))
     
     
     def _fuelfabrication_fuelfabrication_3(self, paramtrack, n=""):
-        """"""
+        """FuelFabrication(self, paramtrack, n="")
+        """
         cdef conv._SetStr paramtrack_proxy
         paramtrack_proxy = conv.SetStr(paramtrack, not isinstance(paramtrack, conv._SetStr))
         self._inst = new cpp_fuel_fabrication.FuelFabrication(paramtrack_proxy.set_ptr[0], std_string(<char *> n))
@@ -116,7 +120,8 @@ cdef class FuelFabrication(fccomp.FCComp):
     _fuelfabrication_fuelfabrication_3_argtypes = frozenset(((0, conv.SetStr), (1, str), ("paramtrack", conv.SetStr), ("n", str)))
     
     def __init__(self, *args, **kwargs):
-        """"""
+        """FuelFabrication(self, paramtrack, n="")
+        """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -247,7 +252,8 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     # methods
     def _fuelfabrication_calc_0(self):
-        """This method performs an optimization calculation on all input materials to 
+        """calc(self)
+        This method performs an optimization calculation on all input materials to 
         determine the mass ratios that generate the correct fuel form for the reactor.
         It then compiles the fuel and returns the resultant material. 
         
@@ -276,7 +282,8 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     
     def _fuelfabrication_calc_1(self, mats, mws_in, r):
-        """This method performs an optimization calculation on all input materials to 
+        """calc(self, mats, mws_in, r)
+        This method performs an optimization calculation on all input materials to 
         determine the mass ratios that generate the correct fuel form for the reactor.
         It then compiles the fuel and returns the resultant material. 
         
@@ -314,7 +321,8 @@ cdef class FuelFabrication(fccomp.FCComp):
     _fuelfabrication_calc_1_argtypes = frozenset(((0, material.MapStrMaterial), (1, conv.MapStrDouble), (2, reactor1g.Reactor1G), ("mats", material.MapStrMaterial), ("mws_in", conv.MapStrDouble), ("r", reactor1g.Reactor1G)))
     
     def calc(self, *args, **kwargs):
-        """This method performs an optimization calculation on all input materials to 
+        """calc(self, mats, mws_in, r)
+        This method performs an optimization calculation on all input materials to 
         determine the mass ratios that generate the correct fuel form for the reactor.
         It then compiles the fuel and returns the resultant material. 
         
@@ -353,7 +361,8 @@ cdef class FuelFabrication(fccomp.FCComp):
         raise RuntimeError('method calc() could not be dispatched')
     
     def calc_core_input(self):
-        """Computes the core input material that becomes mat_prod based on materials and 
+        """calc_core_input(self)
+        Computes the core input material that becomes mat_prod based on materials and 
         mass_weights_out.
         
         Returns
@@ -370,12 +379,14 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     
     def calc_deltaRs(self):
-        """Computes deltaRs for each mass stream."""
+        """calc_deltaRs(self)
+        Computes deltaRs for each mass stream."""
         (<cpp_fuel_fabrication.FuelFabrication *> self._inst).calc_deltaRs()
     
     
     def calc_mass_ratios(self):
-        """Calculates mass_weights_out by varying the values of the two parameter which had 
+        """calc_mass_ratios(self)
+        Calculates mass_weights_out by varying the values of the two parameter which had 
         negative values in mass_weights_in.  Therefore, this is the portion of the code that 
         performs the optimization calculation.
         """
@@ -383,7 +394,8 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     
     def calc_params(self):
-        """Here the parameters for FuelFabrication are set.  For example::
+        """calc_params(self)
+        Here the parameters for FuelFabrication are set.  For example::
         
             self.params_prior_calc["Weight_U235"] = self.mass_weights_in["U235"]
             self.params_after_calc["Weight_U235"] = self.mass_weights_out["U235"]
@@ -402,7 +414,8 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     
     def initialize(self, mats, mws_in, r):
-        """The initialize() method takes the appropriate materials, input mass weights,
+        """initialize(self, mats, mws_in, r)
+        The initialize() method takes the appropriate materials, input mass weights,
         and a reactor and resets the current FuelFabrication instance.
         
         Parameters

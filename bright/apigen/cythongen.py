@@ -369,6 +369,14 @@ def _count0(x):
         c[v0] = c.get(v0, 0) + 1
     return c
 
+def _doc_add_sig(doc, name, args, ismethod=True):
+    if doc.startswith(name):
+        return doc
+    sig = ['self'] if ismethod else []
+    sig += [a[0] if len(a) < 3 else "{0}={2}".format(*a) for a in args]
+    newdoc = "{0}({1})\n{2}".format(name, ", ".join(sig), doc)
+    return newdoc
+
 def genpyx(desc, env=None):
     """Generates a *.pyx Cython wrapper implementation for exposing a C/C++ 
     class based off of a dictionary (desc)ription.  The (env)ironment is a 
@@ -444,6 +452,7 @@ def genpyx(desc, env=None):
                 mname_mangled = '__init__'
                 mangled_mnames[mkey] = mname_mangled
             mdoc = desc.get('docstrings', {}).get('methods', {}).get(mname, '')
+            mdoc = _doc_add_sig(mdoc, mname, margs)
             clines += _gen_constructor(mname, mname_mangled, 
                                        desc['name'], margs, doc=mdoc, 
                                        cpppxd_filename=desc['cpppxd_filename'],
@@ -458,6 +467,7 @@ def genpyx(desc, env=None):
             cython_cimport_tuples(mrtn, cimport_tups)
             mdoc = desc.get('docstrings', {}).get('methods', {})\
                                              .get(mname, nodocmsg.format(mname))
+            mdoc = _doc_add_sig(mdoc, mname, margs)
             mlines += _gen_method(mname, mname_mangled, margs, mrtn, mdoc, 
                                   inst_name=minst_name)
             if 1 < methcounts[mname] and currcounts[mname] == methcounts[mname]:

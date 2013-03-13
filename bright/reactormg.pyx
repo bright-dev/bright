@@ -101,26 +101,30 @@ cdef class ReactorMG(fccomp.FCComp):
         self._trans_consts = None
 
     def _reactormg_reactormg_0(self, n=""):
-        """"""
+        """ReactorMG(self, n="")
+        """
         self._inst = new cpp_reactormg.ReactorMG(std_string(<char *> n))
     
     
     def _reactormg_reactormg_1(self, paramtrack, n=""):
-        """"""
+        """ReactorMG(self, paramtrack, n="")
+        """
         cdef conv._SetStr paramtrack_proxy
         paramtrack_proxy = conv.SetStr(paramtrack, not isinstance(paramtrack, conv._SetStr))
         self._inst = new cpp_reactormg.ReactorMG(paramtrack_proxy.set_ptr[0], std_string(<char *> n))
     
     
     def _reactormg_reactormg_2(self, rp, n=""):
-        """"""
+        """ReactorMG(self, rp, n="")
+        """
         cdef reactor_parameters.ReactorParameters rp_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
         self._inst = new cpp_reactormg.ReactorMG((<cpp_reactor_parameters.ReactorParameters *> rp_proxy._inst)[0], std_string(<char *> n))
     
     
     def _reactormg_reactormg_3(self, rp, paramtrack, n=""):
-        """"""
+        """ReactorMG(self, rp, paramtrack, n="")
+        """
         cdef reactor_parameters.ReactorParameters rp_proxy
         cdef conv._SetStr paramtrack_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
@@ -134,7 +138,8 @@ cdef class ReactorMG(fccomp.FCComp):
     _reactormg_reactormg_3_argtypes = frozenset(((0, reactor_parameters.ReactorParameters), (1, conv.SetStr), (2, str), ("rp", reactor_parameters.ReactorParameters), ("paramtrack", conv.SetStr), ("n", str)))
     
     def __init__(self, *args, **kwargs):
-        """"""
+        """ReactorMG(self, rp, paramtrack, n="")
+        """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -1502,7 +1507,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     # methods
     def BUd_bisection_method(self):
-        """Calculates the maximum discharge burnup via the Bisection Method for a 
+        """BUd_bisection_method(self)
+        Calculates the maximum discharge burnup via the Bisection Method for a 
         given mat_feed in this reactor.  This iterates over values of BUd to find 
         a batch averaged multiplication factor that is closest to 1.0.
         
@@ -1513,7 +1519,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def add_transmutation_chains(self, tc):
-        """no docstring for add_transmutation_chains, please file a bug report!"""
+        """add_transmutation_chains(self, tc)
+        no docstring for add_transmutation_chains, please file a bug report!"""
         cdef cpp_vector[int] tc_proxy
         cdef int i
         cdef int tc_size = len(tc)
@@ -1531,19 +1538,22 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def assemble_multigroup_matrices(self):
-        """Folds mass weight in with cross-sections for current time step.
+        """assemble_multigroup_matrices(self)
+        Folds mass weight in with cross-sections for current time step.
         """
         (<cpp_reactormg.ReactorMG *> self._inst).assemble_multigroup_matrices()
     
     
     def assemble_transmutation_matrices(self):
-        """Calculates the transmutation matrices for the current time step
+        """assemble_transmutation_matrices(self)
+        Calculates the transmutation matrices for the current time step
         """
         (<cpp_reactormg.ReactorMG *> self._inst).assemble_transmutation_matrices()
     
     
     def batch_average_k(self, BUd):
-        """Finds the batch average k(F) when at discharge burnup BUd.  This function 
+        """batch_average_k(self, BUd)
+        Finds the batch average k(F) when at discharge burnup BUd.  This function 
         is typically iterated over until a BUd is found such that k(F) = 1.0 + err.
         
         Parameters
@@ -1563,21 +1573,24 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def bateman(self, i, j, t):
-        """no docstring for bateman, please file a bug report!"""
+        """bateman(self, i, j, t)
+        no docstring for bateman, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_reactormg.ReactorMG *> self._inst).bateman(i, j, <double> t)
         return float(rtnval)
     
     
     def bateman_chain(self, i, j, c, t):
-        """no docstring for bateman_chain, please file a bug report!"""
+        """bateman_chain(self, i, j, c, t)
+        no docstring for bateman_chain, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_reactormg.ReactorMG *> self._inst).bateman_chain(i, j, c, <double> t)
         return float(rtnval)
     
     
     def burnup_core(self):
-        """This method generates a time-dependent parameters from an reactor's initial conditions.
+        """burnup_core(self)
+        This method generates a time-dependent parameters from an reactor's initial conditions.
         This includes all burnup and criticality calculations.  These time-dependent data
         are then used to determine discharge compositions and other parameters.
         """
@@ -1585,7 +1598,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def _reactormg_calc_0(self):
-        """Since many other methods provide the computational heavy-lifting of 
+        """calc(self)
+        Since many other methods provide the computational heavy-lifting of 
         reactor calculations, the calc() method is relatively simple::
         
             self.mat_feed = input
@@ -1619,7 +1633,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def _reactormg_calc_1(self, incomp):
-        """Since many other methods provide the computational heavy-lifting of 
+        """calc(self, incomp)
+        Since many other methods provide the computational heavy-lifting of 
         reactor calculations, the calc() method is relatively simple::
         
             self.mat_feed = input
@@ -1655,7 +1670,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def _reactormg_calc_2(self, mat):
-        """Since many other methods provide the computational heavy-lifting of 
+        """calc(self, mat)
+        Since many other methods provide the computational heavy-lifting of 
         reactor calculations, the calc() method is relatively simple::
         
             self.mat_feed = input
@@ -1695,7 +1711,8 @@ cdef class ReactorMG(fccomp.FCComp):
     _reactormg_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):
-        """Since many other methods provide the computational heavy-lifting of 
+        """calc(self, mat)
+        Since many other methods provide the computational heavy-lifting of 
         reactor calculations, the calc() method is relatively simple::
         
             self.mat_feed = input
@@ -1745,7 +1762,8 @@ cdef class ReactorMG(fccomp.FCComp):
         raise RuntimeError('method calc() could not be dispatched')
     
     def calc_T_itd(self):
-        """This function evaluates transmutation matrix at the discharge time td.
+        """calc_T_itd(self)
+        This function evaluates transmutation matrix at the discharge time td.
         The resultant isotopic dictionary is then converted into the mat_prod mass stream
         for this pass through the reactor.  Thus if ever you need to calculate mat_prod
         without going through calc(), use this function.
@@ -1754,26 +1772,30 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def calc_criticality(self):
-        """Performs the criticality calculation to find k for this time step.
+        """calc_criticality(self)
+        Performs the criticality calculation to find k for this time step.
         """
         (<cpp_reactormg.ReactorMG *> self._inst).calc_criticality()
     
     
     def calc_mass_weights(self):
-        """Calculates the mass weights for this time step.  Needed for 
+        """calc_mass_weights(self)
+        Calculates the mass weights for this time step.  Needed for 
         fold_mass_weights() method.
         """
         (<cpp_reactormg.ReactorMG *> self._inst).calc_mass_weights()
     
     
     def calc_mat_prod(self):
-        """This is a convenience function that wraps the transmutation matrix methods.  
+        """calc_mat_prod(self)
+        This is a convenience function that wraps the transmutation matrix methods.  
         """
         (<cpp_reactormg.ReactorMG *> self._inst).calc_mat_prod()
     
     
     def calc_nearest_neighbors(self):
-        """Calculates a sorted array that indexes the nearest neighbors of the 
+        """calc_nearest_neighbors(self)
+        Calculates a sorted array that indexes the nearest neighbors of the 
         perturbations based off of the current state of the reactor.  The results may
         be found in the neareest_neighbors attribute.
         """
@@ -1781,7 +1803,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def calc_sub_mats(self):
-        """This sets possibly relevant reactor input and output substreams.  
+        """calc_sub_mats(self)
+        This sets possibly relevant reactor input and output substreams.  
         Specifically, it calculates the attributes:
         
             * mat_feed_u
@@ -1798,12 +1821,14 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def calc_transmutation(self):
-        """no docstring for calc_transmutation, please file a bug report!"""
+        """calc_transmutation(self)
+        no docstring for calc_transmutation, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).calc_transmutation()
     
     
     def calc_tru_cr(self):
-        """This calculates and sets the transuranic conversion ratio tru_cr through: 
+        """calc_tru_cr(self)
+        This calculates and sets the transuranic conversion ratio tru_cr through: 
         
         .. math:: \mbox{tru\_cr} = \frac{\mbox{mat\_feed\_tru.mass} - \mbox{mat\_prod\_tru.mass}}{\frac{\mbox{BUd}}{935.0}}
         
@@ -1819,12 +1844,14 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def calc_zeta(self):
-        """no docstring for calc_zeta, please file a bug report!"""
+        """calc_zeta(self)
+        no docstring for calc_zeta, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).calc_zeta()
     
     
     def calibrate_P_NL_to_BUd(self):
-        """Often times the non-leakage probability of a reactor is not known, 
+        """calibrate_P_NL_to_BUd(self)
+        Often times the non-leakage probability of a reactor is not known, 
         though the input isotopics and the target discharge burnup are.  This 
         function handles that situation by calibrating the non-leakage probability 
         of this reactor P_NL to hit its target burnup target_BU. Such a calibration 
@@ -1835,7 +1862,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def fluence_at_BU(self, BU):
-        """This function takes a burnup value  and returns a special fluence point object.  
+        """fluence_at_BU(self, BU)
+        This function takes a burnup value  and returns a special fluence point object.  
         The fluence point is an amalgamation of data where the at which the burnup occurs.
         This object instance FP contains three pieces of information::
             
@@ -1863,7 +1891,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def fold_mass_weights(self):
-        """This method performs the all-important task of doing the isotopically-weighted 
+        """fold_mass_weights(self)
+        This method performs the all-important task of doing the isotopically-weighted 
         linear combination of raw data. In a very real sense this is what makes this 
         reactor *this specific reactor*.  The weights are taken as the values of mat_feed.  
         The raw data must have previously been read in from loadlib().  
@@ -1879,7 +1908,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def init_core(self):
-        """This method generates a time-dependent parameters from an reactor's initial conditions.
+        """init_core(self)
+        This method generates a time-dependent parameters from an reactor's initial conditions.
         This includes all burnup and criticality calculations.  These time-dependent data
         are then used to determine discharge compositions and other parameters.
         """
@@ -1887,7 +1917,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def initialize(self, rp):
-        """The initialize() method for reactors copies all of the reactor specific 
+        """initialize(self, rp)
+        The initialize() method for reactors copies all of the reactor specific 
         parameters to this instance. Additionally, it calculates and sets the volumes 
         VF and VC.
         
@@ -1904,7 +1935,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def interpolate_cross_sections(self):
-        """This method iterpolates the isotopic, time-dependent cross-sections based 
+        """interpolate_cross_sections(self)
+        This method iterpolates the isotopic, time-dependent cross-sections based 
         on the current state of the burn_time, bt_s, and nearest_neighbors attributes.  
         It is prudent to call the calc_nearest_neighbors() method before this one.
         """
@@ -1912,37 +1944,44 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def lattice_E_cylindrical(self, a, b):
-        """no docstring for lattice_E_cylindrical, please file a bug report!"""
+        """lattice_E_cylindrical(self, a, b)
+        no docstring for lattice_E_cylindrical, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).lattice_E_cylindrical(<double> a, <double> b)
     
     
     def lattice_E_planar(self, a, b):
-        """no docstring for lattice_E_planar, please file a bug report!"""
+        """lattice_E_planar(self, a, b)
+        no docstring for lattice_E_planar, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).lattice_E_planar(<double> a, <double> b)
     
     
     def lattice_E_spherical(self, a, b):
-        """no docstring for lattice_E_spherical, please file a bug report!"""
+        """lattice_E_spherical(self, a, b)
+        no docstring for lattice_E_spherical, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).lattice_E_spherical(<double> a, <double> b)
     
     
     def lattice_F_cylindrical(self, a, b):
-        """no docstring for lattice_F_cylindrical, please file a bug report!"""
+        """lattice_F_cylindrical(self, a, b)
+        no docstring for lattice_F_cylindrical, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).lattice_F_cylindrical(<double> a, <double> b)
     
     
     def lattice_F_planar(self, a, b):
-        """no docstring for lattice_F_planar, please file a bug report!"""
+        """lattice_F_planar(self, a, b)
+        no docstring for lattice_F_planar, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).lattice_F_planar(<double> a, <double> b)
     
     
     def lattice_F_spherical(self, a, b):
-        """no docstring for lattice_F_spherical, please file a bug report!"""
+        """lattice_F_spherical(self, a, b)
+        no docstring for lattice_F_spherical, please file a bug report!"""
         (<cpp_reactormg.ReactorMG *> self._inst).lattice_F_spherical(<double> a, <double> b)
     
     
     def loadlib(self, lib="Reactor.h5"):
-        """This method finds the HDF5 library for this reactor and extracts the 
+        """loadlib(self, lib="Reactor.h5")
+        This method finds the HDF5 library for this reactor and extracts the 
         necessary information from it.  This method is typically called by the 
         constructor of the child reactor type object.  It must be called before 
         attempting to do any real computation.
@@ -1957,7 +1996,8 @@ cdef class ReactorMG(fccomp.FCComp):
     
     
     def run_P_NL(self, temp_pnl):
-        """Performs a reactor run for a specific non-leakage probability value.
+        """run_P_NL(self, temp_pnl)
+        Performs a reactor run for a specific non-leakage probability value.
         This requires that mat_feed be (meaningfully) set and is for use with 
         calibrate_P_NL_to_BUd().
         

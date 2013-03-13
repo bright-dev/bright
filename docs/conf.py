@@ -50,6 +50,7 @@ copyright = u'2008 - 2011, Anthony Scopatz'
 # The short X.Y version.
 sys.path.insert(0, '../')
 from configure import INFO
+del sys.path[0]
 
 version = INFO['version']
 # The full version, including alpha/beta/rc tags.

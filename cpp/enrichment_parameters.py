@@ -22,7 +22,7 @@ desc = {
     }
 
 desc['docstrings']['attrs']['alpha_0'] = \
-"""The :math:`\\alpha_0` attribute specifies the overall stage separation factor
+r"""The :math:`\\alpha_0` attribute specifies the overall stage separation factor
 for the cascade.  This should be set on initialization.  Values should be
 greater than one.  Values less than one represent de-enrichment.
 """ 

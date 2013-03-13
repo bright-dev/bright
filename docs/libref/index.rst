@@ -21,6 +21,7 @@ The following modules and sub-packages comprise bright:
 
     bright_config
     fccomp
+    enrichment_parameters
     enrichment
     fuel_fabrication
     fluence_point

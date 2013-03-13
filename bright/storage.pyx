@@ -39,7 +39,8 @@ cdef class Storage(fccomp.FCComp):
 
 
     def __init__(self, n=""):
-        """"""
+        """Storage(self, n="")
+        """
         self._inst = new cpp_storage.Storage(std_string(<char *> n))
     
     
@@ -60,7 +61,8 @@ cdef class Storage(fccomp.FCComp):
     
     # methods
     def _storage_calc_0(self):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -89,7 +91,8 @@ cdef class Storage(fccomp.FCComp):
     
     
     def _storage_calc_1(self, incomp):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self, incomp)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -120,7 +123,8 @@ cdef class Storage(fccomp.FCComp):
     
     
     def _storage_calc_2(self, incomp, t):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self, incomp, t)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -151,7 +155,8 @@ cdef class Storage(fccomp.FCComp):
     
     
     def _storage_calc_3(self, mat):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self, mat)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -182,7 +187,8 @@ cdef class Storage(fccomp.FCComp):
     
     
     def _storage_calc_4(self, mat, t):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self, mat, t)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -213,7 +219,8 @@ cdef class Storage(fccomp.FCComp):
     
     
     def _storage_calc_5(self, t=0.0):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self, t=0.0)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -242,7 +249,8 @@ cdef class Storage(fccomp.FCComp):
     
     
     def _storage_calc_6(self, t):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self, t)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -279,7 +287,8 @@ cdef class Storage(fccomp.FCComp):
     _storage_calc_6_argtypes = frozenset(((0, float), ("t", float)))
     
     def calc(self, *args, **kwargs):
-        """As usual, calc sets up the Storage component's input stream and calculates 
+        """calc(self, t)
+        As usual, calc sets up the Storage component's input stream and calculates 
         the corresponding output Material.  Here, this amounts to calling bateman() 
         for every nuclide in mat_feed, for each chain that ends with a nuclide in track_nucs.
         
@@ -348,7 +357,8 @@ cdef class Storage(fccomp.FCComp):
         raise RuntimeError('method calc() could not be dispatched')
     
     def calc_params(self):
-        """Here the parameters for Storage are set.  For storage, this amounts to just
+        """calc_params(self)
+        Here the parameters for Storage are set.  For storage, this amounts to just
         a "Mass" parameter::
         
             self.params_prior_calc["Mass"]  = self.mat_feed.mass

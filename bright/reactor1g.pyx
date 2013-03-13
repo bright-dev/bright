@@ -99,26 +99,30 @@ cdef class Reactor1G(fccomp.FCComp):
         self._zeta_F_ = None
 
     def _reactor1g_reactor1g_0(self, n=""):
-        """"""
+        """Reactor1G(self, n="")
+        """
         self._inst = new cpp_reactor1g.Reactor1G(std_string(<char *> n))
     
     
     def _reactor1g_reactor1g_1(self, paramtrack, n=""):
-        """"""
+        """Reactor1G(self, paramtrack, n="")
+        """
         cdef conv._SetStr paramtrack_proxy
         paramtrack_proxy = conv.SetStr(paramtrack, not isinstance(paramtrack, conv._SetStr))
         self._inst = new cpp_reactor1g.Reactor1G(paramtrack_proxy.set_ptr[0], std_string(<char *> n))
     
     
     def _reactor1g_reactor1g_2(self, rp, n=""):
-        """"""
+        """Reactor1G(self, rp, n="")
+        """
         cdef reactor_parameters.ReactorParameters rp_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
         self._inst = new cpp_reactor1g.Reactor1G((<cpp_reactor_parameters.ReactorParameters *> rp_proxy._inst)[0], std_string(<char *> n))
     
     
     def _reactor1g_reactor1g_3(self, rp, paramtrack, n=""):
-        """"""
+        """Reactor1G(self, rp, paramtrack, n="")
+        """
         cdef reactor_parameters.ReactorParameters rp_proxy
         cdef conv._SetStr paramtrack_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
@@ -132,7 +136,8 @@ cdef class Reactor1G(fccomp.FCComp):
     _reactor1g_reactor1g_3_argtypes = frozenset(((0, reactor_parameters.ReactorParameters), (1, conv.SetStr), (2, str), ("rp", reactor_parameters.ReactorParameters), ("paramtrack", conv.SetStr), ("n", str)))
     
     def __init__(self, *args, **kwargs):
-        """"""
+        """Reactor1G(self, rp, paramtrack, n="")
+        """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -1290,7 +1295,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     # methods
     def BUd_bisection_method(self):
-        """Calculates the maximum discharge burnup via the Bisection Method for a 
+        """BUd_bisection_method(self)
+        Calculates the maximum discharge burnup via the Bisection Method for a 
         given mat_feed in this reactor.  This iterates over values of BUd to find 
         a batch averaged multiplication factor that is closest to 1.0.
         
@@ -1301,7 +1307,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def batch_average(self, BUd, PDk_flag="K"):
-        """Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
+        """batch_average(self, BUd, PDk_flag="K")
+        Finds the batch-averaged P(F), D(F), or k(F) when at discharge burnup BUd.
         This function is typically iterated over until a BUd is found such that 
         k(F) = 1.0 + err.
         
@@ -1327,14 +1334,16 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def batch_average_k(self, BUd):
-        """no docstring for batch_average_k, please file a bug report!"""
+        """batch_average_k(self, BUd)
+        no docstring for batch_average_k, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_reactor1g.Reactor1G *> self._inst).batch_average_k(<double> BUd)
         return float(rtnval)
     
     
     def _reactor1g_calc_0(self):
-        """no docstring for calc, please file a bug report!"""
+        """calc(self)
+        no docstring for calc, please file a bug report!"""
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
         rtnval = (<cpp_fccomp.FCComp *> self._inst).calc()
@@ -1344,7 +1353,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def _reactor1g_calc_1(self, incomp):
-        """no docstring for calc, please file a bug report!"""
+        """calc(self, incomp)
+        no docstring for calc, please file a bug report!"""
         cdef conv._MapIntDouble incomp_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
@@ -1356,7 +1366,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def _reactor1g_calc_2(self, mat):
-        """no docstring for calc, please file a bug report!"""
+        """calc(self, mat)
+        no docstring for calc, please file a bug report!"""
         cdef material._Material mat_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
@@ -1372,7 +1383,8 @@ cdef class Reactor1G(fccomp.FCComp):
     _reactor1g_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):
-        """no docstring for calc, please file a bug report!"""
+        """calc(self, mat)
+        no docstring for calc, please file a bug report!"""
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -1398,14 +1410,16 @@ cdef class Reactor1G(fccomp.FCComp):
         raise RuntimeError('method calc() could not be dispatched')
     
     def calc_Mj_F_(self):
-        """This function calculates and sets the ``Mj_F_`` attribute from mat_feed and the 
+        """calc_Mj_F_(self)
+        This function calculates and sets the ``Mj_F_`` attribute from mat_feed and the 
         raw reactor data ``Tij_F_``.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_Mj_F_()
     
     
     def calc_Mj_Fd_(self):
-        """This function evaluates ``Mj_F_`` calculated from calc_Mj_F_() at the 
+        """calc_Mj_Fd_(self)
+        This function evaluates ``Mj_F_`` calculated from calc_Mj_F_() at the 
         discharge fluence Fd. The resultant isotopic dictionary is then converted 
         into the mat_prod mass stream for this pass through the reactor.  Thus if 
         ever you need to calculate mat_prod without going through calc(), use this 
@@ -1415,7 +1429,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def _reactor1g_calc_deltar_0(self):
-        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        """calc_deltaR(self)
+        Calculates and sets the deltaR value of the reactor.  This is equal to the 
         production rate minus the destruction rate at the target burnup::
         
             deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
@@ -1438,7 +1453,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def _reactor1g_calc_deltar_1(self, incomp):
-        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        """calc_deltaR(self, incomp)
+        Calculates and sets the deltaR value of the reactor.  This is equal to the 
         production rate minus the destruction rate at the target burnup::
         
             deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
@@ -1463,7 +1479,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def _reactor1g_calc_deltar_2(self, mat):
-        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        """calc_deltaR(self, mat)
+        Calculates and sets the deltaR value of the reactor.  This is equal to the 
         production rate minus the destruction rate at the target burnup::
         
             deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
@@ -1492,7 +1509,8 @@ cdef class Reactor1G(fccomp.FCComp):
     _reactor1g_calc_deltar_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc_deltaR(self, *args, **kwargs):
-        """Calculates and sets the deltaR value of the reactor.  This is equal to the 
+        """calc_deltaR(self, mat)
+        Calculates and sets the deltaR value of the reactor.  This is equal to the 
         production rate minus the destruction rate at the target burnup::
         
             deltaR = batch_average(target_BU, "P") - batch_average(target_BU, "D")
@@ -1534,7 +1552,8 @@ cdef class Reactor1G(fccomp.FCComp):
         raise RuntimeError('method calc_deltaR() could not be dispatched')
     
     def calc_mat_prod(self):
-        """This is a convenience function that wraps the transmutation matrix methods.  
+        """calc_mat_prod(self)
+        This is a convenience function that wraps the transmutation matrix methods.  
         It is equivalent to::
         
             #Wrapper to calculate discharge isotopics.
@@ -1546,7 +1565,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def calc_sub_mats(self):
-        """This sets possibly relevant reactor input and output sub-materials.  
+        """calc_sub_mats(self)
+        This sets possibly relevant reactor input and output sub-materials.  
         Specifically, it computes the attributes:
         
             * mat_feed_u
@@ -1563,7 +1583,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def calc_tru_cr(self):
-        """This calculates and sets the transuranic conversion ratio tru_cr through 
+        """calc_tru_cr(self)
+        This calculates and sets the transuranic conversion ratio tru_cr through 
         the equation:
         
         .. math:: 
@@ -1582,7 +1603,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def calc_zeta(self):
-        """This calculates the thermal disadvantage factor for the geometry 
+        """calc_zeta(self)
+        This calculates the thermal disadvantage factor for the geometry 
         specified by lattice_flag.  The results are set to ``zeta_F_``.  
         This is ostensibly done via the methodology detailed in Lamarsh's 
         `Nuclear Reactor Theory <http://www.amazon.com/Introduction-Nuclear-Reactor-Theory-Lamarsh/dp/0894480405>`_.
@@ -1612,26 +1634,30 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def calc_zeta_cylindrical(self):
-        """This calculates the thermal disadvantage factor for a clyindrical geometry. 
+        """calc_zeta_cylindrical(self)
+        This calculates the thermal disadvantage factor for a clyindrical geometry. 
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_cylindrical()
     
     
     def calc_zeta_planar(self):
-        """This calculates the thermal disadvantage factor for a planar geometry.  
+        """calc_zeta_planar(self)
+        This calculates the thermal disadvantage factor for a planar geometry.  
         The results are set to ``zeta_F_``.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_planar()
     
     
     def calc_zeta_spherical(self):
-        """This calculates the thermal disadvantage factor for a spherical geometry.
+        """calc_zeta_spherical(self)
+        This calculates the thermal disadvantage factor for a spherical geometry.
         """
         (<cpp_reactor1g.Reactor1G *> self._inst).calc_zeta_spherical()
     
     
     def calibrate_P_NL_to_BUd(self):
-        """Often times the non-leakage probability of a reactor is not known, though 
+        """calibrate_P_NL_to_BUd(self)
+        Often times the non-leakage probability of a reactor is not known, though 
         the input isotopics and the target discharge burnup are.  This function handles 
         that situation by calibrating the non-leakage probability of this reactor P_NL 
         to hit its target burnup target_BU. Such a calibration proceeds by bisection 
@@ -1641,7 +1667,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def fluence_at_BU(self, BU):
-        """This function takes a burnup value  and returns a special fluence point object.  
+        """fluence_at_BU(self, BU)
+        This function takes a burnup value  and returns a special fluence point object.  
         The fluence point is an amalgamation of data where the at which the burnup occurs.
         This object instance FP contains three pieces of information::
             
@@ -1669,7 +1696,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def fold_mass_weights(self):
-        """This method performs the all-important task of doing the isotopically-weighted 
+        """fold_mass_weights(self)
+        This method performs the all-important task of doing the isotopically-weighted 
         linear combination of raw data.  In a very real sense this is what makes this 
         reactor *this specific reactor*.  The weights are taken as the values of mat_feed.  
         The raw data must have previously been read in from loadlib().  
@@ -1686,7 +1714,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def initialize(self, rp):
-        """The initialize() method for reactors copies all of the reactor specific 
+        """initialize(self, rp)
+        The initialize() method for reactors copies all of the reactor specific 
         parameters to this instance. Additionally, it calculates and sets the volumes 
         VF and VC.
         
@@ -1703,7 +1732,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def lattice_E_cylindrical(self, a, b):
-        """Calculates the lattice function E(F) for cylindrical geometry.  
+        """lattice_E_cylindrical(self, a, b)
+        Calculates the lattice function E(F) for cylindrical geometry.  
         
         Parameters
         ----------
@@ -1717,7 +1747,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def lattice_E_planar(self, a, b):
-        """Calculates the lattice function E(F) for planar geometry.  
+        """lattice_E_planar(self, a, b)
+        Calculates the lattice function E(F) for planar geometry.  
         
         Parameters
         ----------
@@ -1731,7 +1762,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def lattice_E_spherical(self, a, b):
-        """Calculates the lattice function E(F) for spherical geometry.  
+        """lattice_E_spherical(self, a, b)
+        Calculates the lattice function E(F) for spherical geometry.  
         
         Parameters
         ----------
@@ -1745,7 +1777,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def lattice_F_cylindrical(self, a, b):
-        """Calculates the lattice function F(F) for cylindrical geometry.  
+        """lattice_F_cylindrical(self, a, b)
+        Calculates the lattice function F(F) for cylindrical geometry.  
         
         Parameters
         ----------
@@ -1759,7 +1792,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def lattice_F_planar(self, a, b):
-        """Calculates the lattice function F(F) for planar geometry.
+        """lattice_F_planar(self, a, b)
+        Calculates the lattice function F(F) for planar geometry.
         
         Parameters
         ----------
@@ -1773,7 +1807,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def lattice_F_spherical(self, a, b):
-        """Calculates the lattice function F(F) for spherical geometry.  
+        """lattice_F_spherical(self, a, b)
+        Calculates the lattice function F(F) for spherical geometry.  
         
         Parameters
         ----------
@@ -1787,7 +1822,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def loadlib(self, lib="Reactor.h5"):
-        """This method finds the HDF5 library for this reactor and extracts the necessary 
+        """loadlib(self, lib="Reactor.h5")
+        This method finds the HDF5 library for this reactor and extracts the necessary 
         information from it. This method is typically called by the constructor of the 
         child reactor type object.  It must be called before attempting to do any real 
         computation.
@@ -1802,7 +1838,8 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     def run_P_NL(self, temp_pnl):
-        """Performs a reactor run for a specific non-leakage probability value.
+        """run_P_NL(self, temp_pnl)
+        Performs a reactor run for a specific non-leakage probability value.
         This requires that mat_feed be (meaningfully) set and is for use with 
         calibrate_P_NL_to_BUd().
         

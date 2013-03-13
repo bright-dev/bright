@@ -44,12 +44,14 @@ cdef class FCComp:
         self._track_params = None
 
     def _fccomp_fccomp_0(self, n=""):
-        """"""
+        """FCComp(self, n="")
+        """
         self._inst = new cpp_fccomp.FCComp(std_string(<char *> n))
     
     
     def _fccomp_fccomp_1(self, ptrack, n=""):
-        """"""
+        """FCComp(self, ptrack, n="")
+        """
         cdef conv._SetStr ptrack_proxy
         ptrack_proxy = conv.SetStr(ptrack, not isinstance(ptrack, conv._SetStr))
         self._inst = new cpp_fccomp.FCComp(ptrack_proxy.set_ptr[0], std_string(<char *> n))
@@ -59,7 +61,8 @@ cdef class FCComp:
     _fccomp_fccomp_1_argtypes = frozenset(((0, conv.SetStr), (1, str), ("ptrack", conv.SetStr), ("n", str)))
     
     def __init__(self, *args, **kwargs):
-        """"""
+        """FCComp(self, ptrack, n="")
+        """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -218,7 +221,8 @@ cdef class FCComp:
     
     # methods
     def _fccomp_calc_0(self):
-        """This method is used to determine a component's output material from its input 
+        """calc(self)
+        This method is used to determine a component's output material from its input 
         material.  Therefore, this is typically where the bulk of a fuel cycle component's 
         algorithm lies.  As each component type has a distinct methodology, the calc() 
         method needs to be overridden child classes.
@@ -248,7 +252,8 @@ cdef class FCComp:
     
     
     def _fccomp_calc_1(self, incomp):
-        """This method is used to determine a component's output material from its input 
+        """calc(self, incomp)
+        This method is used to determine a component's output material from its input 
         material.  Therefore, this is typically where the bulk of a fuel cycle component's 
         algorithm lies.  As each component type has a distinct methodology, the calc() 
         method needs to be overridden child classes.
@@ -280,7 +285,8 @@ cdef class FCComp:
     
     
     def _fccomp_calc_2(self, mat):
-        """This method is used to determine a component's output material from its input 
+        """calc(self, mat)
+        This method is used to determine a component's output material from its input 
         material.  Therefore, this is typically where the bulk of a fuel cycle component's 
         algorithm lies.  As each component type has a distinct methodology, the calc() 
         method needs to be overridden child classes.
@@ -316,7 +322,8 @@ cdef class FCComp:
     _fccomp_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):
-        """This method is used to determine a component's output material from its input 
+        """calc(self, mat)
+        This method is used to determine a component's output material from its input 
         material.  Therefore, this is typically where the bulk of a fuel cycle component's 
         algorithm lies.  As each component type has a distinct methodology, the calc() 
         method needs to be overridden child classes.
@@ -362,7 +369,8 @@ cdef class FCComp:
         raise RuntimeError('method calc() could not be dispatched')
     
     def calc_params(self):
-        """By calling this method, all parameter values are calculated and set for the fuel 
+        """calc_params(self)
+        By calling this method, all parameter values are calculated and set for the fuel 
         cycle component.  This should be done following a calc() calculation but before data 
         is written out.  If a component has important parameters associated with it, this 
         function must be overridden and called.
@@ -381,7 +389,8 @@ cdef class FCComp:
     
     
     def write(self):
-        """This is a convenience function that first increments up pass_num.
+        """write(self)
+        This is a convenience function that first increments up pass_num.
         Then, it checks to see if there are any parameters for this component.
         If there are, it sets the current values using calc_params().
         
@@ -396,7 +405,8 @@ cdef class FCComp:
     
     
     def write_hdf5(self):
-        """This method writes out the isotopic pass data to an HDF5 file. 
+        """write_hdf5(self)
+        This method writes out the isotopic pass data to an HDF5 file. 
         Then, if available, it also writes parameter data as well.  
         Using write() instead is recommended.
         """
@@ -404,7 +414,8 @@ cdef class FCComp:
     
     
     def write_mat_pass(self):
-        """This method is responsible for adding the current material data for this pass to 
+        """write_mat_pass(self)
+        This method is responsible for adding the current material data for this pass to 
         the output text and hdf5 files for this component.  Further calculations for this 
         pass should not be performed after write_mat_pass() has been called.
         
@@ -454,7 +465,8 @@ cdef class FCComp:
     
     
     def write_params_pass(self):
-        """What write_mat_pass() does for a component's input and output isotopics, 
+        """write_params_pass(self)
+        What write_mat_pass() does for a component's input and output isotopics, 
         this method does for the components parameters.  To ensure that meaningful 
         data is available, calc_params() should be called elsewhere in the program  
         prior to this method.  Note that to get the pass numbering correct, 
@@ -470,7 +482,8 @@ cdef class FCComp:
     
     
     def write_text(self):
-        """This method calls write_mat_pass() and then, if available, calls 
+        """write_text(self)
+        This method calls write_mat_pass() and then, if available, calls 
         write_params_pass().  This is convience function for producing 
         text-based output.  However, using write() is recommended.
         """

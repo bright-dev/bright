@@ -42,7 +42,8 @@ cdef class ReactorParameters:
         self._fuel_form = None
 
     def __init__(self):
-        """"""
+        """ReactorParameters(self)
+        """
         self._inst = new cpp_reactor_parameters.ReactorParameters()
     
     

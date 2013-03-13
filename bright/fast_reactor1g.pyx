@@ -46,24 +46,28 @@ cdef class FastReactor1G(reactor1g.Reactor1G):
 
 
     def _fastreactor1g_fastreactor1g_0(self):
-        """"""
+        """FastReactor1G(self)
+        """
         self._inst = new cpp_fast_reactor1g.FastReactor1G()
     
     
     def _fastreactor1g_fastreactor1g_1(self, lib, n=""):
-        """"""
+        """FastReactor1G(self, lib, n="")
+        """
         self._inst = new cpp_fast_reactor1g.FastReactor1G(std_string(<char *> lib), std_string(<char *> n))
     
     
     def _fastreactor1g_fastreactor1g_2(self, lib, rp, n=""):
-        """"""
+        """FastReactor1G(self, lib, rp, n="")
+        """
         cdef reactor_parameters.ReactorParameters rp_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
         self._inst = new cpp_fast_reactor1g.FastReactor1G(std_string(<char *> lib), (<cpp_reactor_parameters.ReactorParameters *> rp_proxy._inst)[0], std_string(<char *> n))
     
     
     def _fastreactor1g_fastreactor1g_3(self, rp, n=""):
-        """"""
+        """FastReactor1G(self, rp, n="")
+        """
         cdef reactor_parameters.ReactorParameters rp_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
         self._inst = new cpp_fast_reactor1g.FastReactor1G((<cpp_reactor_parameters.ReactorParameters *> rp_proxy._inst)[0], std_string(<char *> n))
@@ -75,7 +79,8 @@ cdef class FastReactor1G(reactor1g.Reactor1G):
     _fastreactor1g_fastreactor1g_3_argtypes = frozenset(((0, reactor_parameters.ReactorParameters), (1, str), ("rp", reactor_parameters.ReactorParameters), ("n", str)))
     
     def __init__(self, *args, **kwargs):
-        """"""
+        """FastReactor1G(self, rp, n="")
+        """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -119,7 +124,8 @@ cdef class FastReactor1G(reactor1g.Reactor1G):
 
     # methods
     def calc_params(self):
-        """Along with its own parameter set to track, the FR model implements its own 
+        """calc_params(self)
+        Along with its own parameter set to track, the FR model implements its own 
         function to set these parameters.  This function is equivalent to the following::
         
             self.params_prior_calc["BUd"]  = 0.0

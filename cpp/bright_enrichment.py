@@ -29,7 +29,7 @@ desc = {
 
 
 desc['docstrings']['attrs']['alpha_0'] = \
-"""The :math:`\\alpha_0` attribute specifies the overall stage separation factor
+r"""The :math:`\\alpha_0` attribute specifies the overall stage separation factor
 for the cascade.  This should be set on initialization.  Values should be
 greater than one.  Values less than one represent de-enrichment.
 """ 
@@ -73,7 +73,7 @@ this value is about U-235 = 0.0025.
 """
 
 desc['docstrings']['attrs']['Mstar'] = \
-"""The :math:`M^*` attribute represents the mass for which the adjusted
+r"""The :math:`M^*` attribute represents the mass for which the adjusted
 stage separation factor, :math:`\\alpha^*_i`, is equal to one.  It is this
 value that is varied to achieve an optimized enrichment cascade.
 """
@@ -169,7 +169,7 @@ output : Material
 """
 
 desc['docstrings']['methods']['PoverF'] = \
-"""Solves for the product over feed enrichment ratio.
+r"""Solves for the product over feed enrichment ratio.
 
 .. math::
 
@@ -192,7 +192,7 @@ pfratio : float
 """
 
 desc['docstrings']['methods']['WoverF'] = \
-"""Solves for the waste over feed enrichment ratio.
+r"""Solves for the waste over feed enrichment ratio.
 
 .. math::
 

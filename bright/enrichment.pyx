@@ -49,14 +49,16 @@ cdef class Enrichment(fccomp.FCComp):
         self._mat_tail = None
 
     def _enrichment_enrichment_0(self, ep, n=""):
-        """"""
+        """Enrichment(self, ep, n="")
+        """
         cdef enrichment_parameters.EnrichmentParameters ep_proxy
         ep_proxy = <enrichment_parameters.EnrichmentParameters> ep
         self._inst = new cpp_enrichment.Enrichment((<cpp_enrichment_parameters.EnrichmentParameters *> ep_proxy._inst)[0], std_string(<char *> n))
     
     
     def _enrichment_enrichment_1(self, n=""):
-        """"""
+        """Enrichment(self, n="")
+        """
         self._inst = new cpp_enrichment.Enrichment(std_string(<char *> n))
     
     
@@ -64,7 +66,8 @@ cdef class Enrichment(fccomp.FCComp):
     _enrichment_enrichment_1_argtypes = frozenset(((0, str), ("n", str)))
     
     def __init__(self, *args, **kwargs):
-        """"""
+        """Enrichment(self, n="")
+        """
         types = set([(i, type(a)) for i, a in enumerate(args)])
         types.update([(k, type(v)) for k, v in kwargs.iteritems()])
         # vtable-like dispatch for exactly matching types
@@ -109,7 +112,7 @@ cdef class Enrichment(fccomp.FCComp):
     
     property Mstar:
         """The :math:`M^*` attribute represents the mass for which the adjusted
-        stage separation factor, :math:`\alpha^*_i`, is equal to one.  It is this
+        stage separation factor, :math:`\\alpha^*_i`, is equal to one.  It is this
         value that is varied to achieve an optimized enrichment cascade.
         """
         def __get__(self):
@@ -189,7 +192,7 @@ cdef class Enrichment(fccomp.FCComp):
     
     
     property alpha_0:
-        """The :math:`\alpha_0` attribute specifies the overall stage separation factor
+        """The :math:`\\alpha_0` attribute specifies the overall stage separation factor
         for the cascade.  This should be set on initialization.  Values should be
         greater than one.  Values less than one represent de-enrichment.
         """
@@ -273,36 +276,42 @@ cdef class Enrichment(fccomp.FCComp):
     
     # methods
     def Comp2UnityOther(self):
-        """no docstring for Comp2UnityOther, please file a bug report!"""
+        """Comp2UnityOther(self)
+        no docstring for Comp2UnityOther, please file a bug report!"""
         (<cpp_enrichment.Enrichment *> self._inst).Comp2UnityOther()
     
     
     def Comp2UnitySecant(self):
-        """no docstring for Comp2UnitySecant, please file a bug report!"""
+        """Comp2UnitySecant(self)
+        no docstring for Comp2UnitySecant, please file a bug report!"""
         (<cpp_enrichment.Enrichment *> self._inst).Comp2UnitySecant()
     
     
     def FindNM(self):
-        """no docstring for FindNM, please file a bug report!"""
+        """FindNM(self)
+        no docstring for FindNM, please file a bug report!"""
         (<cpp_enrichment.Enrichment *> self._inst).FindNM()
     
     
     def LoverF(self):
-        """no docstring for LoverF, please file a bug report!"""
+        """LoverF(self)
+        no docstring for LoverF, please file a bug report!"""
         (<cpp_enrichment.Enrichment *> self._inst).LoverF()
     
     
     def MstarOptimize(self):
-        """no docstring for MstarOptimize, please file a bug report!"""
+        """MstarOptimize(self)
+        no docstring for MstarOptimize, please file a bug report!"""
         (<cpp_enrichment.Enrichment *> self._inst).MstarOptimize()
     
     
     def PoverF(self, x_F, x_P, x_W):
-        """Solves for the product over feed enrichment ratio.
+        """PoverF(self, x_F, x_P, x_W)
+        Solves for the product over feed enrichment ratio.
         
         .. math::
         
-            \frac{p}{f} = \frac{(x_F - x_W)}{(x_P - x_W)}
+            \\frac{p}{f} = \\frac{(x_F - x_W)}{(x_P - x_W)}
         
         Parameters
         ----------
@@ -325,16 +334,18 @@ cdef class Enrichment(fccomp.FCComp):
     
     
     def SolveNM(self):
-        """no docstring for SolveNM, please file a bug report!"""
+        """SolveNM(self)
+        no docstring for SolveNM, please file a bug report!"""
         (<cpp_enrichment.Enrichment *> self._inst).SolveNM()
     
     
     def WoverF(self, x_F, x_P, x_W):
-        """Solves for the waste over feed enrichment ratio.
+        """WoverF(self, x_F, x_P, x_W)
+        Solves for the waste over feed enrichment ratio.
         
         .. math::
         
-            \frac{p}{f} = \frac{(x_F - x_P)}{(x_W - x_P)}
+            \\frac{p}{f} = \\frac{(x_F - x_P)}{(x_W - x_P)}
         
         Parameters
         ----------
@@ -357,7 +368,8 @@ cdef class Enrichment(fccomp.FCComp):
     
     
     def _enrichment_calc_0(self):
-        """This method performs an optimization calculation on M* and solves for 
+        """calc(self)
+        This method performs an optimization calculation on M* and solves for 
         appropriate values for all Enrichment attributes.  This includes the 
         product and waste streams flowing out of the the cascade as well.
         
@@ -383,7 +395,8 @@ cdef class Enrichment(fccomp.FCComp):
     
     
     def _enrichment_calc_1(self, incomp):
-        """This method performs an optimization calculation on M* and solves for 
+        """calc(self, incomp)
+        This method performs an optimization calculation on M* and solves for 
         appropriate values for all Enrichment attributes.  This includes the 
         product and waste streams flowing out of the the cascade as well.
         
@@ -411,7 +424,8 @@ cdef class Enrichment(fccomp.FCComp):
     
     
     def _enrichment_calc_2(self, mat):
-        """This method performs an optimization calculation on M* and solves for 
+        """calc(self, mat)
+        This method performs an optimization calculation on M* and solves for 
         appropriate values for all Enrichment attributes.  This includes the 
         product and waste streams flowing out of the the cascade as well.
         
@@ -443,7 +457,8 @@ cdef class Enrichment(fccomp.FCComp):
     _enrichment_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):
-        """This method performs an optimization calculation on M* and solves for 
+        """calc(self, mat)
+        This method performs an optimization calculation on M* and solves for 
         appropriate values for all Enrichment attributes.  This includes the 
         product and waste streams flowing out of the the cascade as well.
         
@@ -485,7 +500,8 @@ cdef class Enrichment(fccomp.FCComp):
         raise RuntimeError('method calc() could not be dispatched')
     
     def calc_params(self):
-        """This sets the Enrichment parameters to the following 
+        """calc_params(self)
+        This sets the Enrichment parameters to the following 
         values::
         
             self.params_prior_calc["MassFeed"] = self.mat_feed.mass
@@ -520,35 +536,40 @@ cdef class Enrichment(fccomp.FCComp):
     
     
     def deltaU_i_OverG(self, i):
-        """no docstring for deltaU_i_OverG, please file a bug report!"""
+        """deltaU_i_OverG(self, i)
+        no docstring for deltaU_i_OverG, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_enrichment.Enrichment *> self._inst).deltaU_i_OverG(i)
         return float(rtnval)
     
     
     def get_Ei(self, M_i):
-        """no docstring for get_Ei, please file a bug report!"""
+        """get_Ei(self, M_i)
+        no docstring for get_Ei, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_enrichment.Enrichment *> self._inst).get_Ei(<double> M_i)
         return float(rtnval)
     
     
     def get_Si(self, M_i):
-        """no docstring for get_Si, please file a bug report!"""
+        """get_Si(self, M_i)
+        no docstring for get_Si, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_enrichment.Enrichment *> self._inst).get_Si(<double> M_i)
         return float(rtnval)
     
     
     def get_alphastar_i(self, M_i):
-        """no docstring for get_alphastar_i, please file a bug report!"""
+        """get_alphastar_i(self, M_i)
+        no docstring for get_alphastar_i, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_enrichment.Enrichment *> self._inst).get_alphastar_i(<double> M_i)
         return float(rtnval)
     
     
     def initialize(self, ep):
-        """The initialize method takes an enrichment parameter object and sets
+        """initialize(self, ep)
+        The initialize method takes an enrichment parameter object and sets
         the corresponding Enrichment attributes to the same value.
         
         Parameters
@@ -563,14 +584,16 @@ cdef class Enrichment(fccomp.FCComp):
     
     
     def xP_i(self, i):
-        """no docstring for xP_i, please file a bug report!"""
+        """xP_i(self, i)
+        no docstring for xP_i, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_enrichment.Enrichment *> self._inst).xP_i(i)
         return float(rtnval)
     
     
     def xW_i(self, i):
-        """no docstring for xW_i, please file a bug report!"""
+        """xW_i(self, i)
+        no docstring for xW_i, please file a bug report!"""
         cdef double rtnval
         rtnval = (<cpp_enrichment.Enrichment *> self._inst).xW_i(i)
         return float(rtnval)
