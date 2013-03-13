@@ -1,4 +1,4 @@
-"""Implements a simple type system for API generation."""
+"""Implements a simple, dynamic type system for API generation."""
 import functools
 from collections import Sequence, Set, Iterable
 
