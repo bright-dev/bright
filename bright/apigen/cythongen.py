@@ -359,7 +359,7 @@ def _method_instance_names(desc, env, key, rtn):
         class_ctype = cython_ctype(classname)
         inst_name = "(<{0} *> self._inst)".format(class_ctype)
         return inst_name, classname
-    return "(<{0} *> self._inst)".format(desc['name']), desc['name']
+    return "(<{0} *> self._inst)".format(cython_ctype(desc['name'])), desc['name']
 
 
 def _count0(x):

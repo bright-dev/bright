@@ -14,7 +14,7 @@ from bright.apigen.autodescribe import describe, merge_descriptions
 
 CLASSES = [
     # classname, base filename, make cython bindings, make cyclus bindings
-    ('FCComp', 'fccomp', False, False),
+    ('FCComp', 'fccomp', True, False),
     ('EnrichmentParameters', 'enrichment_parameters', True, True),
     ('Enrichment', 'bright_enrichment', True, True),
     ('Reprocess', 'reprocess', True, True),

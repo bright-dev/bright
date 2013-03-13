@@ -22,17 +22,18 @@ namespace bright {
     // Protected access data
 
     // Protected function data
-    void initialize(std::set<std::string>, std::string = ""); // initializes empty variables
+    void initialize(std::set<std::string> paramtrack, std::string n=""); // initializes empty variables
     void initialize_text();	                                  // initializes Text output files
     void initialize_hdf5();	                                  // initializes HDF5 output files
 
-    void appendHDF5array(H5::H5File *, std::string, double *, const int *, hsize_t [], hsize_t [], hsize_t []);
+    void appendHDF5array(H5::H5File * dbFile, std::string set_name, \
+      double * append_value, const int * rank, hsize_t dims [], hsize_t offset[], \
+      hsize_t extend_size[]);
 
   public:
     // FCComp Constructors
-    FCComp ();
-    FCComp (std::string);
-    FCComp (std::set<std::string>, std::string = "");
+    FCComp (std::string n="");
+    FCComp (std::set<std::string> paramtrack, std::string n="");
     ~FCComp ();
 
     // Public access data
@@ -46,15 +47,15 @@ namespace bright {
     std::set<std::string> track_params; // Set of Parameters to track for this component
 
     // Public access functions
-    virtual void calc_params ();
-    void write_mat_pass ();
-    void write_params_pass ();
-    void write_text ();
-    void write_hdf5 ();
-    void write ();
-    virtual pyne::Material calc ();
-    virtual pyne::Material calc (pyne::comp_map incomp);
-    virtual pyne::Material calc (pyne::Material mat);
+    virtual void calc_params();
+    void write_mat_pass();
+    void write_params_pass();
+    void write_text();
+    void write_hdf5();
+    void write();
+    virtual pyne::Material calc();
+    virtual pyne::Material calc(pyne::comp_map incomp);
+    virtual pyne::Material calc(pyne::Material mat);
   };
 
 // end bright

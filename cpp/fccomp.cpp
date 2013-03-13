@@ -10,10 +10,10 @@
 /*** Protected Functions ***/
 /***************************/
 
-void bright::FCComp::initialize (std::set<std::string> ptrack, std::string n)
+void bright::FCComp::initialize (std::set<std::string> paramtrack, std::string n)
 {
   // Protected Variables
-  track_params = ptrack;
+  track_params = paramtrack;
 
   // Public Variables
   name = n;
@@ -191,14 +191,6 @@ void bright::FCComp::initialize_hdf5 ()
 /*** FCComp Constructors ***/
 /***************************/
     
-bright::FCComp::FCComp ()
-{
-  // Parent class for all fuel cycle components.
-  std::set<std::string> emptystrset;
-  initialize(emptystrset);
-};
-
-
 bright::FCComp::FCComp (std::string n)
 {
   // Parent class for all fuel cycle components.
@@ -325,8 +317,9 @@ void bright::FCComp::write_text()
 };
 
 
-void bright::FCComp::appendHDF5array(H5::H5File *dbFile, std::string set_name, double *append_value, const int *rank, \
-hsize_t dims[], hsize_t offset[], hsize_t extend_size[])
+void bright::FCComp::appendHDF5array(H5::H5File *dbFile, std::string set_name, \
+  double *append_value, const int *rank, hsize_t dims[], hsize_t offset[], \
+  hsize_t extend_size[])
 {
   H5::DataSet array_set = (*dbFile).openDataSet(set_name);
   array_set.extend(extend_size);

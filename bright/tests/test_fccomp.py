@@ -65,33 +65,29 @@ def test_mat_feed_empty():
     fcc = FCComp()
     assert_equal(fcc.mat_feed.comp, {})
     assert_equal(fcc.mat_feed.mass, -1.0)
-    assert_equal(fcc.mat_feed.name, '')
 
 
 @with_setup(None, teardown_fccomp)
 def test_mat_feed_filled():
     fcc = FCComp()
-    mat = Material({922350: 1.0}, -1, "mat")
+    mat = Material({922350: 1.0}, -1)
     fcc.mat_feed = mat
     assert_equal(fcc.mat_feed.comp, {922350: 1.0})
     assert_equal(fcc.mat_feed.mass, 1.0)
-    assert_equal(fcc.mat_feed.name, 'mat')
 
 @with_setup(None, teardown_fccomp)
 def test_mat_prod_empty():
     fcc = FCComp()
     assert_equal(fcc.mat_prod.comp, {})
     assert_equal(fcc.mat_prod.mass, -1.0)
-    assert_equal(fcc.mat_prod.name, '')
 
 @with_setup(None, teardown_fccomp)
 def test_mat_prod_filled():
     fcc = FCComp()
-    mat = Material({922350: 1.0}, -1, "mat")
+    mat = Material({922350: 1.0}, -1)
     fcc.mat_prod = mat
     assert_equal(fcc.mat_prod.comp, {922350: 1.0})
     assert_equal(fcc.mat_prod.mass, 1.0)
-    assert_equal(fcc.mat_prod.name, 'mat')
 
 @with_setup(None, teardown_fccomp)
 def test_params_prior_calc_empty():
