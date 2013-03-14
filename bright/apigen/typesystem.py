@@ -32,7 +32,6 @@ may be refered to simply by their string identifier.  For example::
     'float64'
     'MyClass'
 
-
 Aliases to these -- or any -- type names are given in the type_aliases dictionary::
 
     type_aliases = {
@@ -86,6 +85,35 @@ It is these refinement types that give the second index in the tuple its 'predic
 name.  Additionally, the predicate is used to look up the converter and validation
 functions in when doing code generation or type verification.
 
+The last kind of type are known as **dependent types** or **template types**, 
+similar in concept to C++ template classes.  These are meta-types whose 
+institation requires one or more parameters to be filled in by further values or
+types. Dependent types may nest with themselves or other dependent types.  Fully 
+qualifying a template type requires the resolution of all dependencies.
+
+Classic examples of dependent types inclue the C++ template classes.  These take
+other types as their dependencies.  Other cases may require only values as 
+their dependencies.  For example, suppose we want to restrict integers to various
+ranges.  Rather than creating a refinement type for every combination of integer
+bounds, we can use a single 'intrange' type that defines high and low dependencies.
+
+The ``template_types`` mapping takes the dependent type names (e.g. 'intrange')
+to a tuple of their dependency names ('low', 'high').   As we have seen, dependent
+types may either be base types (when based off of template classes), refined types,
+or both.  Their canonical form thus follows the rules above with some additional 
+syntax.  The first element of the tuple is still the type name and the last 
+element is still the predicate (default 0).  However the type tuples now have a
+length equal to 2 plus the number of dependencies.  These dependencies are 
+placed bewteen the name and the predicate: ``('<name>', <dep0>, ..., <predicate>)``.
+These dependncies, of course, may be other type names or tuples!  Let's see
+some examples.
+
+In the simplest case, take analogies to C++ template classes::
+
+    ('set', 'complex128', 0)
+    ('map', 'int32', 'float64', 0)
+    ('map', ('int32', 'posint'), 'float64', 0)
+    ('map', ('int32', 'posint'), ('set', 'complex128', 0), 0)
 
 Type System API
 ===============
