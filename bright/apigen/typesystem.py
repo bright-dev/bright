@@ -162,6 +162,56 @@ canonical form::
 
 Shorthand Forms
 ---------------
+The canonical forms for types contain all the information needed to fully describe
+different kinds of types.  However, as human-facing code, they can be exceedingly 
+verbose.  Therefore there are number of shorthand techniques that may be used to 
+also denote the various types.  Converting from these shorthands to the fully
+expanded version may be done via the the ``canon(t)`` function.  This function
+takes a single type and returns the canonical form of that type.  The following
+are opperations that ``canon()``  performs:
+
+* Base type are returned as their name::
+
+    canon('str') == 'str'
+
+* Aliases are resolved::
+
+    canon('f4') == 'float32'
+
+* Expands length-1 tuples to scalar predicates::
+
+    t = ('int32',)
+    canon(t) == ('int32', 0)
+
+* Determines the super-type of refinements::
+
+    canon('posint') == ('int32', 'posint')
+
+* Applies templates::
+
+    t = ('set', 'float')
+    canon(t) == ('set', 'float64', 0)
+
+* Applies dependencies:: 
+
+    t = ('intrange', 1, 2)
+    canon(t) = ('int32', ('intrange', ('low', 'int32', 1), ('high', 'int32', 2)))
+
+    t = ('range', 'int32', 1, 2)
+    canon(t) = ('int32', ('range', 'int32', ('low', 'int32', 1), ('high', 'int32', 2)))
+
+* Performs all of the above recursively::
+
+    t = (('map', 'posint', ('set', ('intrange', 1, 2))),)
+    canon(t) == (('map', 
+                 ('int32', 'posint'),  
+                 ('set', ('int32', 
+                    ('intrange', ('low', 'int32', 1), ('high', 'int32', 2))), 0)), 0)
+
+These shorthands are thus far more useful and intuitive than canonical form described
+above.  It is therefore recomended that users and developers write code that uses
+the shorter versions, Note that ``canon()`` is guarenteed to return strings, tuples, 
+and integers only -- making the output of this function hasbable.
 
 Type System API
 ===============
