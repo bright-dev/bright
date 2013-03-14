@@ -97,8 +97,17 @@ their dependencies.  For example, suppose we want to restrict integers to variou
 ranges.  Rather than creating a refinement type for every combination of integer
 bounds, we can use a single 'intrange' type that defines high and low dependencies.
 
-The ``template_types`` mapping takes the dependent type names (e.g. 'intrange')
-to a tuple of their dependency names ('low', 'high').   As we have seen, dependent
+The ``template_types`` mapping takes the dependent type names (e.g. 'map')
+to a tuple of their dependency names ('key', 'value').   The ``refined_types`` 
+mapping also accepts keys that are tuples of the following form::
+
+    ('<type name>', '<dep0-name>', ('dep1-name', 'dep1-type'), ...)
+
+Note that template names may be reused as types of other template parameters::
+
+    ('name', 'dep0-name', ('dep1-name', 'dep0-name'))
+
+As we have seen, dependent
 types may either be base types (when based off of template classes), refined types,
 or both.  Their canonical form thus follows the rules above with some additional 
 syntax.  The first element of the tuple is still the type name and the last 
@@ -114,6 +123,45 @@ In the simplest case, take analogies to C++ template classes::
     ('map', 'int32', 'float64', 0)
     ('map', ('int32', 'posint'), 'float64', 0)
     ('map', ('int32', 'posint'), ('set', 'complex128', 0), 0)
+
+Now consider the intrange type from above.  This has the following definition and
+canonical form::
+
+    refined_types = {('intrange', ('low', 'int32'), ('high', 'int32')): 'int32'}
+
+    # range from 1 -> 2
+    ('int32', ('intrange', ('low', 'int32', 1), ('high', 'int32', 2)))
+
+    # range from -42 -> 42
+    ('int32', ('intrange', ('low', 'int32', -42), ('high', 'int32', 42)))
+
+Note that the low and high dependcies here are length three tuples of the form
+``('<dep-name>', <dep-type>, <dep-value>)``.  How the dependency values end up 
+being used is solely at the discresion of the implementation.  These values may
+be anything, though they are most useful when they are easily convertable into 
+strings in the target language.
+
+.. warning:: 
+
+    Do not confuse length-3 dependency tuples with length-3 type tuples!  
+    The last element here is a value, not a predicate.
+
+Next, consider a 'range' type which behaves similarly to 'intrange' except that
+it also accepts the type as dependency.  This has the following definition and
+canonical form::
+
+    refined_types = {('range', 'vtype', ('low', 'vtype'), ('high', 'vtype')): 'vtype'}
+
+    # integer range from 1 -> 2
+    ('int32', ('range', 'int32', ('low', 'int32', 1), ('high', 'int32', 2)))    
+
+    # positive integer range from 42 -> 65
+    (('int32', 'posint'), ('range', ('int32', 'posint'),
+                                    ('low', ('int32', 'posint'), 42),
+                                    ('high', ('int32', 'posint'), 65)))
+
+Shorthand Forms
+---------------
 
 Type System API
 ===============
