@@ -52,14 +52,43 @@ the string flags '*' and '&'::
     ('char', '*')
     ('float64', '&')
 
+If the predicate is a positive integer, then this is interpreted as a 
+homogenous array of the underlying type with the given length.  If this length 
+is zero, then the tuple is often interpreted as a scalar of this type, equivalent 
+to the type itself.  The length-0 scalar intepretation depends on context.  Here 
+are some examples of array types::
+
+    ('char', 42)  # length-42 character array
+    ('bool', 1)   # length-1 boolean array
+    ('f8', 0)     # scalar 64-bit float
+
 .. note:: 
 
     length-1 tuples are converted to length-2 tuples with a 0 predicate, 
     i.e. ``('char',)`` will become ``('char', 0)``.
     
+The next kind of type are **refinement types** or **refined types**.  A refined type
+is a sub-type of another type but restricts in some way what consitutes a valid 
+element.  For example, if we first take all intergers, the set of all positive 
+integers is a refinement of the original.  Similarly, starting with all possible
+strings the set of all strings starting with 'A' is a refinement.
 
-Type System Functions
-=====================
+In the system here, refined types are given their own unique names (e.g. 'posint' 
+and 'astr').  The type system has a mapping (``refined_types``) from all refinement
+type names to the names of their super-type.  The user may refer to refinement types
+simply by thier string name.  However the canonical form refinement types is to use
+the refinement as the predicate of the super-type in a length-2 tuple, as above::
+
+    ('int32', 'posint')  # refinement of integers to positive ints
+    ('str', 'astr')      # refinement of strings to str starting with 'A'
+
+It is these refinement types that give the second index in the tuple its 'predicate'
+name.  Additionally, the predicate is used to look up the converter and validation
+functions in when doing code generation or type verification.
+
+
+Type System API
+===============
 
 """
 import functools
