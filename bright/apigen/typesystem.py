@@ -7,14 +7,14 @@ Introduction
 
 This module provides a suite of tools for denoting, describing, and converting
 between various data types and the types coming from various systems.  This is
-achived by providing canonical abstractions of various kinds of types:
+achieved by providing canonical abstractions of various kinds of types:
 
 * Base types (int, str, float, non-templated classes)
 * Refined types (even or odd ints, strings containing the letter 'a')
 * Dependent types (templates such arrays, maps, sets, vectors)
 
 All types are known by their name (a string identifier) and may be aliased with 
-other names.  However, thes string id of a type is not suffient to fully describe
+other names.  However, the string id of a type is not sufficient to fully describe
 most types.  The system here implements a canonical form for all kinds of types.
 This canonical form is itself hashable, being comprised only of strings, ints, 
 and tuples.
@@ -25,7 +25,7 @@ First, let us examine the base types and the forms that they may take.  Base typ
 are fiducial.  The type system itself may not make any changes (refinements, 
 template filling) to types of this kind.  They are basically a collection of bits.
 (The job of ascribing meaning to these bits falls on someone else.)  Thus base types 
-may be refered to simply by their string identifier.  For example::
+may be referred to simply by their string identifier.  For example::
 
     'str'
     'int32'
@@ -52,9 +52,9 @@ the string flags '*' and '&'::
     ('float64', '&')
 
 If the predicate is a positive integer, then this is interpreted as a 
-homogenous array of the underlying type with the given length.  If this length 
+homogeneous array of the underlying type with the given length.  If this length 
 is zero, then the tuple is often interpreted as a scalar of this type, equivalent 
-to the type itself.  The length-0 scalar intepretation depends on context.  Here 
+to the type itself.  The length-0 scalar interpretation depends on context.  Here 
 are some examples of array types::
 
     ('char', 42)  # length-42 character array
@@ -67,15 +67,15 @@ are some examples of array types::
     i.e. ``('char',)`` will become ``('char', 0)``.
     
 The next kind of type are **refinement types** or **refined types**.  A refined type
-is a sub-type of another type but restricts in some way what consitutes a valid 
-element.  For example, if we first take all intergers, the set of all positive 
+is a sub-type of another type but restricts in some way what constitutes a valid 
+element.  For example, if we first take all integers, the set of all positive 
 integers is a refinement of the original.  Similarly, starting with all possible
 strings the set of all strings starting with 'A' is a refinement.
 
 In the system here, refined types are given their own unique names (e.g. 'posint' 
 and 'astr').  The type system has a mapping (``refined_types``) from all refinement
 type names to the names of their super-type.  The user may refer to refinement types
-simply by thier string name.  However the canonical form refinement types is to use
+simply by their string name.  However the canonical form refinement types is to use
 the refinement as the predicate of the super-type in a length-2 tuple, as above::
 
     ('int32', 'posint')  # refinement of integers to positive ints
@@ -87,11 +87,11 @@ functions in when doing code generation or type verification.
 
 The last kind of type are known as **dependent types** or **template types**, 
 similar in concept to C++ template classes.  These are meta-types whose 
-institation requires one or more parameters to be filled in by further values or
+instantiation requires one or more parameters to be filled in by further values or
 types. Dependent types may nest with themselves or other dependent types.  Fully 
 qualifying a template type requires the resolution of all dependencies.
 
-Classic examples of dependent types inclue the C++ template classes.  These take
+Classic examples of dependent types include the C++ template classes.  These take
 other types as their dependencies.  Other cases may require only values as 
 their dependencies.  For example, suppose we want to restrict integers to various
 ranges.  Rather than creating a refinement type for every combination of integer
@@ -113,8 +113,8 @@ or both.  Their canonical form thus follows the rules above with some additional
 syntax.  The first element of the tuple is still the type name and the last 
 element is still the predicate (default 0).  However the type tuples now have a
 length equal to 2 plus the number of dependencies.  These dependencies are 
-placed bewteen the name and the predicate: ``('<name>', <dep0>, ..., <predicate>)``.
-These dependncies, of course, may be other type names or tuples!  Let's see
+placed between the name and the predicate: ``('<name>', <dep0>, ..., <predicate>)``.
+These dependencies, of course, may be other type names or tuples!  Let's see
 some examples.
 
 In the simplest case, take analogies to C++ template classes::
@@ -135,10 +135,10 @@ canonical form::
     # range from -42 -> 42
     ('int32', ('intrange', ('low', 'int32', -42), ('high', 'int32', 42)))
 
-Note that the low and high dependcies here are length three tuples of the form
+Note that the low and high dependencies here are length three tuples of the form
 ``('<dep-name>', <dep-type>, <dep-value>)``.  How the dependency values end up 
-being used is solely at the discresion of the implementation.  These values may
-be anything, though they are most useful when they are easily convertable into 
+being used is solely at the discretion of the implementation.  These values may
+be anything, though they are most useful when they are easily convertible into 
 strings in the target language.
 
 .. warning:: 
@@ -168,7 +168,7 @@ verbose.  Therefore there are number of shorthand techniques that may be used to
 also denote the various types.  Converting from these shorthands to the fully
 expanded version may be done via the the ``canon(t)`` function.  This function
 takes a single type and returns the canonical form of that type.  The following
-are opperations that ``canon()``  performs:
+are operations that ``canon()``  performs:
 
 * Base type are returned as their name::
 
@@ -209,9 +209,9 @@ are opperations that ``canon()``  performs:
                     ('intrange', ('low', 'int32', 1), ('high', 'int32', 2))), 0)), 0)
 
 These shorthands are thus far more useful and intuitive than canonical form described
-above.  It is therefore recomended that users and developers write code that uses
-the shorter versions, Note that ``canon()`` is guarenteed to return strings, tuples, 
-and integers only -- making the output of this function hasbable.
+above.  It is therefore recommended that users and developers write code that uses
+the shorter versions, Note that ``canon()`` is guaranteed to return strings, tuples, 
+and integers only -- making the output of this function hashable.
 
 Type System API
 ===============
@@ -289,8 +289,6 @@ type_aliases = {
     }
 """Aliases that may be used to subsitute one type name for another."""
 
-# template types are types whose instantiations are based on meta-types
-# this dict maps their names to meta-type names in order.
 template_types = {
     'map': ('key_type', 'value_type'),
     'dict': ('key_type', 'value_type'),
@@ -298,6 +296,8 @@ template_types = {
     'set': ('value_type',),
     'vector': ('value_type',),
     }
+"""Template types are types whose instantiations are based on meta-types.
+this dict maps their names to meta-type names in order."""
 
 @_memoize
 def istemplate(t):
@@ -308,13 +308,13 @@ def istemplate(t):
         return istemplate(t[0])
     return False
 
-# This is a mapping from refinement type names to the parent types.
-# The parent types may either be base types, compound types, template 
-# types, or other refined types!
 refined_types = {
     'nucid': 'int32',
     'nucname': 'str',
     }
+"""This is a mapping from refinement type names to the parent types.
+The parent types may either be base types, compound types, template 
+types, or other refined types!"""
 
 @_memoize
 def isdependent(t):
@@ -369,7 +369,7 @@ def _resolve_dependent_type(tname, tinst=None):
 
 @_memoize
 def canon(t):
-    """Turns the type into a canonical form."""
+    """Turns the type into its canonical form. See module docs for more information."""
     if isinstance(t, basestring):
         if t in BASE_TYPES:
             return t
@@ -516,8 +516,18 @@ _cython_cyimport_template_types = {
 
 @_memoize
 def cython_cimport_tuples(t, seen=None, inc=frozenset(['c', 'cy'])):
-    """Given a type t, and possibily previously seen cimport tuples, return 
-    the set of all seen cimport tuples."""
+    """Given a type t, and possibily previously seen cimport tuples (set), 
+    return the set of all seen cimport tuples.  These tuple have four possible 
+    interpretations based on the length and values:
+
+    * ``(module-name,)`` becomes ``cimport {module-name}``
+    * ``(module-name, var-or-mod)`` becomes 
+      ``from {module-name} cimport {var-or-mod}``
+    * ``(module-name, var-or-mod, alias)`` becomes 
+      ``from {module-name} cimport {var-or-mod} as {alias}``
+    * ``(module-name, 'as', alias)`` becomes ``cimport {module-name} as {alias}``
+
+    """
     t = canon(t)
     if seen is None:
         seen = set()
@@ -596,8 +606,18 @@ _cython_pyimport_template_types = {
 
 @_memoize
 def cython_import_tuples(t, seen=None):
-    """Given a type t, and possibily previously seen import tuples, return 
-    the set of all seen import tuples."""
+    """Given a type t, and possibily previously seen import tuples (set), 
+    return the set of all seen import tuples.  These tuple have four possible 
+    interpretations based on the length and values:
+
+    * ``(module-name,)`` becomes ``import {module-name}``
+    * ``(module-name, var-or-mod)`` becomes 
+      ``from {module-name} import {var-or-mod}``
+    * ``(module-name, var-or-mod, alias)`` becomes 
+      ``from {module-name} import {var-or-mod} as {alias}``
+    * ``(module-name, 'as', alias)`` becomes ``import {module-name} as {alias}``
+
+    """
     t = canon(t)
     if seen is None:
         seen = set()
@@ -892,7 +912,7 @@ _cython_c2py_conv = {
 def cython_c2py(name, t, view=True, cached=True, inst_name=None, proxy_name=None, 
                 cache_name=None, cache_prefix='self'):
     """Given a varibale name and type, returns cython code (declaration, body, 
-    and return) to convert the variable from C/C++ to Python."""
+    and return statements) to convert the variable from C/C++ to Python."""
     tkey = canon(t)
     while not isinstance(tkey, basestring):
         tkey = tkey[0]
@@ -976,7 +996,7 @@ _cython_py2c_conv = {
 @_memoize
 def cython_py2c(name, t, inst_name=None, proxy_name=None):
     """Given a varibale name and type, returns cython code (declaration, body, 
-    and return) to convert the variable from Python to C/C++."""
+    and return statement) to convert the variable from Python to C/C++."""
     t = canon(t)
     if isinstance(t, basestring) or 0 == t[-1] or isrefinement(t[-1]):
         last = ''
@@ -1113,8 +1133,7 @@ def register_class(name, template_args=None, cython_c_type=None,
 
 
 def deregister_class(name):
-    """This function will remove previously registered classes from the type
-    system.
+    """This function will remove a previously registered class from the type system.
     """
     isbase = name in BASE_TYPES
     if not isbase and name not in template_types:
@@ -1178,7 +1197,7 @@ def register_refinement(name, refinementof, cython_cimport=None, cython_cyimport
 
 
 def deregister_refinement(name):
-    """This function will remove previously registered refinement from the type
+    """This function will remove a previously registered refinement from the type
     system.
     """
     refined_types.pop(name, None)
