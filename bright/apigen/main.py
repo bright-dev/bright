@@ -1,4 +1,39 @@
-"""Top-level automatic API generators for Bright."""
+"""Top-level automatic API generators for Bright.  
+
+:author: Anthony Scopatz <scopatz@gmail.com>
+
+API Generation
+==============
+This module is where all of the Bright-specific API generation routines reside.
+Until now the type system, automatic description, and cython code generation have
+all be independent of what classes they are wrapping.  The functions and classes
+here are specifically set up to be executed on the Bright code base.  Thus, 
+attempting to wrap other codes with the tools developed here would only need to fork
+this module. 
+
+The main module is normally run from the base bright directory as follows:
+
+.. code-block:: bash
+
+    ~ $ cd bright
+    ~/bright $ python bright/apigen/main.py
+
+The function here has the following command line interface::
+
+    usage: Generates Bright API [-h] [--debug] [--no-cython] [--no-cyclus]
+                                [--dump-desc] [-v]
+
+    optional arguments:
+      -h, --help     show this help message and exit
+      --debug        build with debugging flags
+      --no-cython    don't make cython bindings
+      --no-cyclus    don't make cyclus bindings
+      --dump-desc    print description cache
+      -v, --verbose  print more output
+
+Main API
+========
+"""
 import os
 import argparse
 from pprint import pprint
@@ -36,6 +71,12 @@ class DescriptionCache(object):
     (hashes-of-the-file, description-dictionary) tuples."""
 
     def __init__(self, cachefile=os.path.join('build', 'desc.cache')):
+        """Parameters
+        -------------
+        cachefile : str, optional
+            Path to description cachefile.
+
+        """
         self.cachefile = cachefile
         if os.path.isfile(cachefile):
             with open(cachefile, 'r') as f:
@@ -88,7 +129,24 @@ cache = DescriptionCache()
 
 def describe_class(classname, filename, verbose=False):
     """Returns a description dictionary for a class (called classname) 
-    living in a file (called filename)."""
+    living in a file (called filename).  
+
+    Parameters
+    ----------
+    classname : str
+        Class to describe.
+    filename : str
+        File where the class is implemented.  Will remove leading ``'bright_'`` from
+        filename for the puprose of generating other files.
+    verbose : bool, optional
+        Flag for printing extra information during description process.
+
+    Returns
+    -------
+    desc : dict
+        Description dictionary of the class.
+
+    """
     # C++ description
     cppfilename = filename + '.cpp'
     if cache.isvalid(classname, cppfilename):
@@ -144,7 +202,18 @@ PREREGISTER_CLASSES = [
     ]
 
 def newoverwrite(s, filename):
-    """useful for not forcing re-compiles"""
+    """Useful for not forcing re-compiles and thus playing nicely with the 
+    build system.  This is acomplished by not writing the file if the existsing
+    contents are exactly the same as what would be written out.
+
+    Parameters
+    ----------
+    s : str
+        string contents of file to possible
+    filename : str
+        Path to file.
+
+    """
     if os.path.isfile(filename):
         with open(filename, 'r') as f:
             old = f.read()
@@ -154,6 +223,8 @@ def newoverwrite(s, filename):
         f.write(s)
 
 def genbindings(ns):
+    """Generates bidnings using the command line setting specified in ns.
+    """
     ns.cyclus = False  # FIXME cyclus bindings don't exist yet!
 
     # compute all descriptions first 
@@ -228,6 +299,8 @@ def genbindings(ns):
         print("making cyclus bindings for " + classname)
 
 def dumpdesc(ns):
+    """Prints the current contents of the description cache using ns.
+    """
     print str(DescriptionCache())
 
 
