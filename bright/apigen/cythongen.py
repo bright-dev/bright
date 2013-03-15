@@ -1,5 +1,15 @@
-"""Generates a Cython wrapper for various Bright classes from either
-description dictionaries or from header files.
+"""Generates a Cython wrappers for C++ classes from description dictionaries.
+This module relies heavily on the type system to convert between C/C++, Cython, and
+Python types in a seamless way.  While this module does not explicitly rely on the
+auto-describer, it sure helps!  The functions in this module are conceptually 
+easy to understand -- given class descriptions they generate strings of Cython 
+code -- their implementations do a lot of heavy lifting.
+
+:author: Anthony Scopatz <scopatz@gmail.com>
+
+
+Cython Generation API
+=====================
 """
 import math
 from copy import deepcopy
@@ -42,7 +52,21 @@ cdef extern from "{header_filename}" namespace "{namespace}":
 
 def gencpppxd(desc, exception_type='+'):
     """Generates a cpp_*.pxd Cython header file for exposing C/C++ data from to 
-    other Cython wrappers based off of a dictionary (desc)ription.
+    other Cython wrappers based off of a dictionary description.
+
+    Parameters
+    ----------
+    desc : dict
+        Class description dictonary.
+    exception_type : str, optional
+        Cython exception annotation.  Set to None when exceptions should not 
+        be included.
+
+    Returns
+    -------
+    cpppxd : str
+        Cython cpp_*.pxd header file as in-memory string.
+
     """
     pars = ', '.join([cython_ctype(p) for p in desc['parents'] or ()])
     d = {'parents': pars if 0 == len(pars) else '('+pars+')'}
@@ -110,8 +134,19 @@ cdef class {name}{parents}:
 
 
 def genpxd(desc):
-    """Generates a ``*pxd`` Cython header file for exposing C/C++ data from to 
-    other Cython wrappers based off of a dictionary (desc)ription.
+    """Generates a ``*pxd`` Cython header file for exposing C/C++ data to 
+    other Cython wrappers based off of a dictionary description.
+
+    Parameters
+    ----------
+    desc : dict
+        Class description dictonary.
+
+    Returns
+    -------
+    pxd : str
+        Cython ``*.pxd`` header file as in-memory string.
+
     """
     if 'pxd_filename' not in desc:
         desc['pxd_filename'] = '{0}.pxd'.format(desc['name'].lower())
@@ -379,8 +414,23 @@ def _doc_add_sig(doc, name, args, ismethod=True):
 
 def genpyx(desc, env=None):
     """Generates a ``*.pyx`` Cython wrapper implementation for exposing a C/C++ 
-    class based off of a dictionary (desc)ription.  The (env)ironment is a 
+    class based off of a dictionary description.  The environment is a 
     dictionary of all class names known to their descriptions.
+
+    Parameters
+    ----------
+    desc : dict
+        Class description dictonary.
+    env : env, optional
+        Environment dictionary which maps all class names that are required to 
+        their own descriptions.  This is required for resolved class heirarchy
+        dependencies.
+
+    Returns
+    -------
+    pyx : str
+        Cython ``*.pyx`` implementation file as in-memory string.
+
     """
     if env is None:
         env = {desc['name']: desc}
