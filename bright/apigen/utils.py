@@ -11,8 +11,8 @@ def indent(s, n=4, join=True):
 
 
 def expand_default_args(methods):
-    """This function takes a collection of method tuples and expands all of the default
-    arguments, returning a set of all methods possible."""
+    """This function takes a collection of method tuples and expands all of 
+    the default arguments, returning a set of all methods possible."""
     methitems = set()
     for mkey, mrtn in methods:
         mname, margs = mkey[0], mkey[1:]
