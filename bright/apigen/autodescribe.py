@@ -1,4 +1,110 @@
-"""This module creates Bright facility descriptions from C++ source code.
+"""This module creates descriptions of C++ classes from source code, by using 
+external parsers (GCC-XML, Clang AST) and the type system.
+
+:author: Anthony Scopatz <scopatz@gmail.com>
+
+Descriptions
+============
+A key component of API wrapper generation is having a a top-level, abstract 
+representation of the software that is being wrapped.  In C++ there are three
+basic constructs which may be wrapped: variables, functions, and classes.  
+Here we resetrict ourselves to wrapping classes (though ironically these are
+the most complex of the three).  
+
+The abstract representation of a C++ class is known as a **description** (abbr. 
+*desc*).  This description is simply a Python dictionary with a specific structure.
+This structure makes heavy use of the type system to declare the types of all needed
+parameters.
+
+Top-Level Keys
+--------------
+The following are valid top-level keys in a description dictionary: 
+name, parents, namespace, attrs, methods, docstrings, and extra.
+
+:name: str, the class name
+:parents: list of strings, the immediate parents of the claas (not grandparents)
+:namespace: str or None, the namespace or module the class lives in.
+:attrs: dict or dict-like, the names of the attributes (member variables) of the
+    class mapped to their types, given in the format of the type system.
+:methods: dict or dict-like, similar to the attrs except that the keys are now
+    function signatures and the values are the method return types.  The signatures
+    themselves are tuples. The first element of these tuples is the method name.
+    The remaining elements (if any) are the function arguments.  Arguments are 
+    themselves length-2 or -3 tuples whose first elements are the argument names, 
+    the second element is the argument type, and the third element (if present) is
+    the default value.  If the return type is None (as opposed to 'void'), then 
+    this method is assumed to be a constructor or destructor.
+:docstrings: dict, optional, this dictornary is meant for storing documentation 
+    strings.  All values are thus either strings or dictionaries of strings.  
+    Valid keys include: module, class, attrs, and methods.  The attrs and methods
+    keys are dictionaries which may include keys that mirror the top-level keys of
+    the same name.
+:extra: dict, optional, this stores arebitrary metadata that may be used with 
+    different backends. It is not added by any auto-describe routine but may be
+    inserted later if needed.  One example use case is that the Cython generation
+    looks for the pyx, pxd, and cpppxd keys for strings of supplemental Cython 
+    code to insert directly into the wrapper.
+
+Toaster Example
+---------------
+Suppose we have a C++ class called Toaster that takes bread and makes delicious 
+toast.  A valid description dictionary for this class would be as follows::
+
+    desc = {
+        'name': 'Toaster',
+        'parents': ['FCComp'],
+        'namespace': 'bright',
+        'attrs': {
+            'n_slices': 'int32',
+            'rate': 'float64',
+            'toastiness': 'str',
+            },
+        'methods': {
+            ('Toaster',): None,
+            ('Toaster', ('name', 'str', '""')): None,
+            ('Toaster', ('paramtrack', ('set', 'str')), ('name', 'str', '""')): None,
+            ('~Toaster',): None, 
+            ('tostring',): 'str', 
+            ('calc',): 'Material',
+            ('calc', ('incomp', ('map', 'int32', 'float64'))): 'Material',
+            ('calc', ('mat', 'Material')): 'Material',
+            ('write', ('filename', 'str', '"toaster.txt"')): 'void',
+            ('write', ('filename', ('char' '*'), '"toaster.txt"')): 'void',
+            },
+        'docstrings': {
+            'module': "This is where Toaster lives.",
+            'class': "I am a toaster!",
+            'attrs': {
+                'n_slices': 'the number of slices',
+                'rate': 'the toast rate',
+                'toastiness': 'the toastiness level',
+                },
+            'methods': {
+                'Toaster': "Make me a toaster!",
+                '~Toaster': "Noooooo",
+                'tostring': "string representation of the toaster",
+                'calc': "actualy makes the toast.",
+                'write': "persists the toaster state."
+                },
+            },
+        'extra': {
+            'pyx': 'toaster = Toaster()  # make toaster singleton'
+            },
+        }
+
+Automatic Description Generation
+--------------------------------
+The purpose of this module is to create description dictionaries like those
+above by automatically parsing C++ classes.  In theory this parsing step may 
+be handled by visiting any syntax tree of C++ code.  Two options were pursued here:
+GCC-XML and the Python bindings to the Clang AST.  Unfortunately, the Clang AST
+bindings lack exposure for template argument types.  These are needed to use any
+standard library containers.  Thus while the Clang method was pursued to a mostly
+working state, the GCC-XML version is the only fully functional automatic describer
+for the moment.
+
+Automatic Descriptions API
+==========================
 """
 import os
 import re
@@ -48,7 +154,7 @@ RE_FLOAT = re.compile('^[+-]?\.?\d+\.?\d*?(e[+-]?\d+)?$')
 
 
 def describe(filename, classname=None, parser='gccxml', verbose=False):
-    """Automatically describes a class in a file.
+    """Automatically describes a class in a file.  This is the main entry point.
 
     Parameters
     ----------
@@ -57,10 +163,12 @@ def describe(filename, classname=None, parser='gccxml', verbose=False):
     classname : str or None, optional
         The classname, a 'None' value will attempt to infer this from the 
         filename.
-    parser : str
+    parser : str, optional
         The parser / AST to use to use for the C++ file.  Currently only
         'clang' and 'gccxml' are supported, though others may be 
         implemented in the future.
+    verbose : bool, optional
+        Flag to diplay extra information while describing the class.
 
     Returns
     -------
@@ -82,7 +190,24 @@ def describe(filename, classname=None, parser='gccxml', verbose=False):
 
 
 def gccxml_describe(filename, classname, verbose=False):
-    """Use GCC-XML to describe the class."""
+    """Use GCC-XML to describe the class.
+
+    Parameters
+    ----------
+    filename : str
+        The path to the file.
+    classname : str or None, optional
+        The classname, a 'None' value will attempt to infer this from the 
+        filename.
+    verbose : bool, optional
+        Flag to diplay extra information while describing the class.
+
+    Returns
+    -------
+    desc : dict
+        A dictionary describing the class which may be used to generate
+        API bindings.
+    """
     f = tempfile.NamedTemporaryFile()
     cmd = ['gccxml', filename, '-fxml=' + f.name, '-I' + pyne.includes]
     if verbose:
@@ -739,7 +864,7 @@ def clang_canonize(t):
 
 
 def merge_descriptions(descriptions):
-    """Given a sequence of descriptions, in order of increasing precednece, 
+    """Given a sequence of descriptions, in order of increasing precedence, 
     merge them into a single description dictionary."""
     attrsmeths = frozenset(['attrs', 'methods'])
     desc = {}
