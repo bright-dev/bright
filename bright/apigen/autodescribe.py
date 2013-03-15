@@ -8,7 +8,7 @@ Descriptions
 A key component of API wrapper generation is having a a top-level, abstract 
 representation of the software that is being wrapped.  In C++ there are three
 basic constructs which may be wrapped: variables, functions, and classes.  
-Here we resetrict ourselves to wrapping classes (though ironically these are
+Here we restrict ourselves to wrapping classes (though ironically these are
 the most complex of the three).  
 
 The abstract representation of a C++ class is known as a **description** (abbr. 
@@ -22,7 +22,7 @@ The following are valid top-level keys in a description dictionary:
 name, parents, namespace, attrs, methods, docstrings, and extra.
 
 :name: str, the class name
-:parents: list of strings, the immediate parents of the claas (not grandparents)
+:parents: list of strings, the immediate parents of the class (not grandparents)
 :namespace: str or None, the namespace or module the class lives in.
 :attrs: dict or dict-like, the names of the attributes (member variables) of the
     class mapped to their types, given in the format of the type system.
@@ -34,12 +34,12 @@ name, parents, namespace, attrs, methods, docstrings, and extra.
     the second element is the argument type, and the third element (if present) is
     the default value.  If the return type is None (as opposed to 'void'), then 
     this method is assumed to be a constructor or destructor.
-:docstrings: dict, optional, this dictornary is meant for storing documentation 
+:docstrings: dict, optional, this dictionary is meant for storing documentation 
     strings.  All values are thus either strings or dictionaries of strings.  
     Valid keys include: module, class, attrs, and methods.  The attrs and methods
     keys are dictionaries which may include keys that mirror the top-level keys of
     the same name.
-:extra: dict, optional, this stores arebitrary metadata that may be used with 
+:extra: dict, optional, this stores arbitrary metadata that may be used with 
     different backends. It is not added by any auto-describe routine but may be
     inserted later if needed.  One example use case is that the Cython generation
     looks for the pyx, pxd, and cpppxd keys for strings of supplemental Cython 
@@ -83,7 +83,7 @@ toast.  A valid description dictionary for this class would be as follows::
                 'Toaster': "Make me a toaster!",
                 '~Toaster': "Noooooo",
                 'tostring': "string representation of the toaster",
-                'calc': "actualy makes the toast.",
+                'calc': "actually makes the toast.",
                 'write': "persists the toaster state."
                 },
             },
@@ -224,10 +224,24 @@ def gccxml_describe(filename, classname, verbose=False):
 
 
 class GccxmlClassDescriber(object):
+    """Class used to generate descriptions via GCC-XML output."""
 
     _integer_types = frozenset(['int32', 'int64', 'uint32', 'uint64'])
 
     def __init__(self, classname, root=None, onlyin=None, verbose=False):
+        """Parameters
+        -------------
+        classname : str
+            The classname, this may not have a None value.
+        root : element tree node, optional
+            The root element node of the class or struct to describe.  
+        onlyin :  str, optional
+            Filename the class or struct described must live in.  Prevents 
+            finding classes of the same name coming from other libraries.
+        verbose : bool, optional
+            Flag to display extra information while visiting the class.
+
+        """
         self.desc = {'name': classname, 'attrs': {}, 'methods': {}}
         self.classname = classname
         self.verbose = verbose
@@ -254,6 +268,16 @@ class GccxmlClassDescriber(object):
                                        node.attrib.get('name', None)))
 
     def visit(self, node=None):
+        """Visits the class node and all sub-nodes, generating the description
+        dictionary as it goes.
+
+        Parameters
+        ----------
+        node : element tree node, optional
+            The element tree node to start from.  If this is None, then the 
+            top-level class node is found and visited.
+
+        """
         if node is None:
             node = self._root.find("Class[@name='{0}']".format(self.classname))
             if node is None:
@@ -312,6 +336,7 @@ class GccxmlClassDescriber(object):
         return tuple(inst)
 
     def visit_class(self, node):
+        """visits a class or struct."""
         self._pprint(node)
         name = node.attrib['name']
         self._currclass.append(name)
@@ -330,6 +355,7 @@ class GccxmlClassDescriber(object):
     visit_struct = visit_class
 
     def visit_base(self, node):
+        """visits a base class."""
         self._pprint(node)
         self.visit(node)  # Walk farther down the tree
 
@@ -358,18 +384,22 @@ class GccxmlClassDescriber(object):
         self._currfuncsig = None
 
     def visit_constructor(self, node):
+        """visits a class constructor."""
         self._pprint(node)
         self._visit_func(node)
 
     def visit_destructor(self, node):
+        """visits a class destructor."""
         self._pprint(node)
         self._visit_func(node)
 
     def visit_method(self, node):
+        """visits a member function."""
         self._pprint(node)
         self._visit_func(node)
 
     def visit_argument(self, node):
+        """visits a constructor, destructor, or method argument."""
         self._pprint(node)
         name = node.attrib.get('name', None)
         if name is None:
@@ -387,6 +417,7 @@ class GccxmlClassDescriber(object):
         self._currfuncsig.append(arg)
 
     def visit_field(self, node):
+        """visits a member variable."""
         self._pprint(node)
         context = self._root.find(".//*[@id='{0}']".format(node.attrib['context']))
         if context.attrib['name'] == self.classname:
@@ -396,6 +427,7 @@ class GccxmlClassDescriber(object):
             self.desc['attrs'][name] = t
 
     def visit_typedef(self, node):
+        """visits a type definition anywhere."""
         self._pprint(node)
         name = node.attrib.get('name', None)
         if name == 'string':
@@ -417,12 +449,15 @@ class GccxmlClassDescriber(object):
         }
 
     def visit_fundamentaltype(self, node):
+        """visits a base C++ type, mapping it to the approriate type in the 
+        type system."""
         self._pprint(node)
         tname = node.attrib['name']
         t = self._fundemntal_to_base.get(tname, None)
         return t
 
     def visit_arraytype(self, node):
+        """visits an array type and maps it to a '*' refinement type."""
         self._pprint(node)
         baset = self.type(node.attrib['type'])
         # FIXME something involving the min, max, and/or size 
@@ -431,12 +466,14 @@ class GccxmlClassDescriber(object):
         return t
 
     def visit_referencetype(self, node):
+        """visits a refernece and maps it to a '&' refinement type."""
         self._pprint(node)
         baset = self.type(node.attrib['type'])
         t = (baset, '&')
         return t
 
     def visit_pointertype(self, node):
+        """visits a pointer and maps it to a '*' refinement type."""
         self._pprint(node)
         baset = self.type(node.attrib['type'])
         t = (baset, '*')
@@ -456,6 +493,7 @@ class GccxmlClassDescriber(object):
         return t
 
     def visit_namespace(self, node):
+        """visits the namespace that a node is defined in."""
         self._pprint(node)
         name = node.attrib['name']
         return name
