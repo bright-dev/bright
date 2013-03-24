@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import sys, os
+import cloud_sptheme as csp
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -94,7 +95,7 @@ exclude_trees = []
 #pygments_style = 'fruity'
 #pygments_style = 'manni'
 pygments_style = 'tango'
-
+#pygments_style = 'pastie'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -105,7 +106,8 @@ pygments_style = 'tango'
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
 #html_theme = 'default'
-html_theme = 'altered_nature'
+#html_theme = 'altered_nature'
+html_theme = 'cloud'
 #html_theme = 'sphinxdoc'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -114,7 +116,7 @@ html_theme = 'altered_nature'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ["_theme"]
+html_theme_path = ["_theme", csp.get_theme_dir()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
