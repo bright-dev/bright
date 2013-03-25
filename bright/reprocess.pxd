@@ -8,11 +8,11 @@
 ################################################
 cimport bright.typeconverters
 cimport fccomp
+cimport pyne.stlcontainers
 from bright cimport cpp_reprocess
 from libcpp.map cimport map as cpp_map
-from pyne cimport stlconverters as conv
 
 cdef class Reprocess(fccomp.FCComp):
-    cdef public conv._MapIntDouble _sepeff
+    cdef public pyne.stlcontainers._MapIntDouble _sepeff
 
 

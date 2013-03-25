@@ -8,16 +8,16 @@
 ################################################
 """Python wrapper for fccomp.
 """
+cimport pyne.stlcontainers
 from libc.stdlib cimport free
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
 from pyne cimport material
-from pyne cimport stlconverters as conv
 
 from pyne import material
-from pyne import stlconverters as conv
+import pyne.stlcontainers
 
 cdef class FCComp:
     """Abstract Base Fuel Cycle Component Class.
@@ -52,13 +52,13 @@ cdef class FCComp:
     def _fccomp_fccomp_1(self, ptrack, n=""):
         """FCComp(self, ptrack, n="")
         """
-        cdef conv._SetStr ptrack_proxy
-        ptrack_proxy = conv.SetStr(ptrack, not isinstance(ptrack, conv._SetStr))
+        cdef pyne.stlcontainers._SetStr ptrack_proxy
+        ptrack_proxy = pyne.stlcontainers.SetStr(ptrack, not isinstance(ptrack, pyne.stlcontainers._SetStr))
         self._inst = new cpp_fccomp.FCComp(ptrack_proxy.set_ptr[0], std_string(<char *> n))
     
     
     _fccomp_fccomp_0_argtypes = frozenset(((0, str), ("n", str)))
-    _fccomp_fccomp_1_argtypes = frozenset(((0, conv.SetStr), (1, str), ("ptrack", conv.SetStr), ("n", str)))
+    _fccomp_fccomp_1_argtypes = frozenset(((0, pyne.stlcontainers.SetStr), (1, str), ("ptrack", pyne.stlcontainers.SetStr), ("n", str)))
     
     def __init__(self, *args, **kwargs):
         """FCComp(self, ptrack, n="")
@@ -153,16 +153,16 @@ cdef class FCComp:
         represents the discharge burnup that the input fuel achieved.  This attribute does 
         not have a meaningful value until the calc_params() method is called."""
         def __get__(self):
-            cdef conv._MapStrDouble params_after_calc_proxy
+            cdef pyne.stlcontainers._MapStrDouble params_after_calc_proxy
             if self._params_after_calc is None:
-                params_after_calc_proxy = conv.MapStrDouble(False, False)
+                params_after_calc_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 params_after_calc_proxy.map_ptr = &(<cpp_fccomp.FCComp *> self._inst).params_after_calc
                 self._params_after_calc = params_after_calc_proxy
             return self._params_after_calc
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_fccomp.FCComp *> self._inst).params_after_calc = value_proxy.map_ptr[0]
             self._params_after_calc = None
     
@@ -174,16 +174,16 @@ cdef class FCComp:
         input using a "Mass" key.  This attribute does not have a meaningful value until the 
         calc_params() method is called."""
         def __get__(self):
-            cdef conv._MapStrDouble params_prior_calc_proxy
+            cdef pyne.stlcontainers._MapStrDouble params_prior_calc_proxy
             if self._params_prior_calc is None:
-                params_prior_calc_proxy = conv.MapStrDouble(False, False)
+                params_prior_calc_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 params_prior_calc_proxy.map_ptr = &(<cpp_fccomp.FCComp *> self._inst).params_prior_calc
                 self._params_prior_calc = params_prior_calc_proxy
             return self._params_prior_calc
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_fccomp.FCComp *> self._inst).params_prior_calc = value_proxy.map_ptr[0]
             self._params_prior_calc = None
     
@@ -205,16 +205,16 @@ cdef class FCComp:
         track_params is a component-specific attribute, while track_nucs is a bright-level
         variable."""
         def __get__(self):
-            cdef conv._SetStr track_params_proxy
+            cdef pyne.stlcontainers._SetStr track_params_proxy
             if self._track_params is None:
-                track_params_proxy = conv.SetStr(False, False)
+                track_params_proxy = pyne.stlcontainers.SetStr(False, False)
                 track_params_proxy.set_ptr = &(<cpp_fccomp.FCComp *> self._inst).track_params
                 self._track_params = track_params_proxy
             return self._track_params
     
         def __set__(self, value):
-            cdef conv._SetStr value_proxy
-            value_proxy = conv.SetStr(value, not isinstance(value, conv._SetStr))
+            cdef pyne.stlcontainers._SetStr value_proxy
+            value_proxy = pyne.stlcontainers.SetStr(value, not isinstance(value, pyne.stlcontainers._SetStr))
             (<cpp_fccomp.FCComp *> self._inst).track_params = value_proxy.set_ptr[0]
             self._track_params = None
     
@@ -274,10 +274,10 @@ cdef class FCComp:
             mat_prod
         
         """
-        cdef conv._MapIntDouble incomp_proxy
+        cdef pyne.stlcontainers._MapIntDouble incomp_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
+        incomp_proxy = pyne.stlcontainers.MapIntDouble(incomp, not isinstance(incomp, pyne.stlcontainers._MapIntDouble))
         rtnval = (<cpp_fccomp.FCComp *> self._inst).calc(incomp_proxy.map_ptr[0])
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer[0] = rtnval
@@ -318,7 +318,7 @@ cdef class FCComp:
     
     
     _fccomp_calc_0_argtypes = frozenset()
-    _fccomp_calc_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
+    _fccomp_calc_1_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), ("incomp", pyne.stlcontainers.MapIntDouble)))
     _fccomp_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):

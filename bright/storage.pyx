@@ -9,16 +9,16 @@
 """Python wrapper for Storage.
 """
 cimport fccomp
+cimport pyne.stlcontainers
 from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
 from pyne cimport material
-from pyne cimport stlconverters as conv
 
 from pyne import material
-from pyne import stlconverters as conv
 import fccomp
+import pyne.stlcontainers
 
 cdef class Storage(fccomp.FCComp):
     """Storage Fuel Cycle Component Class.  Daughter of FCComp class.
@@ -112,10 +112,10 @@ cdef class Storage(fccomp.FCComp):
             mat_prod
         
         """
-        cdef conv._MapIntDouble incomp_proxy
+        cdef pyne.stlcontainers._MapIntDouble incomp_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
+        incomp_proxy = pyne.stlcontainers.MapIntDouble(incomp, not isinstance(incomp, pyne.stlcontainers._MapIntDouble))
         rtnval = (<cpp_fccomp.FCComp *> self._inst).calc(incomp_proxy.map_ptr[0])
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer[0] = rtnval
@@ -144,10 +144,10 @@ cdef class Storage(fccomp.FCComp):
             mat_prod
         
         """
-        cdef conv._MapIntDouble incomp_proxy
+        cdef pyne.stlcontainers._MapIntDouble incomp_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
+        incomp_proxy = pyne.stlcontainers.MapIntDouble(incomp, not isinstance(incomp, pyne.stlcontainers._MapIntDouble))
         rtnval = (<cpp_storage.Storage *> self._inst).calc(incomp_proxy.map_ptr[0], <double> t)
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer[0] = rtnval
@@ -279,8 +279,8 @@ cdef class Storage(fccomp.FCComp):
     
     
     _storage_calc_0_argtypes = frozenset()
-    _storage_calc_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
-    _storage_calc_2_argtypes = frozenset(((0, conv.MapIntDouble), (1, float), ("incomp", conv.MapIntDouble), ("t", float)))
+    _storage_calc_1_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), ("incomp", pyne.stlcontainers.MapIntDouble)))
+    _storage_calc_2_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), (1, float), ("incomp", pyne.stlcontainers.MapIntDouble), ("t", float)))
     _storage_calc_3_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     _storage_calc_4_argtypes = frozenset(((0, material.Material), (1, float), ("mat", material.Material), ("t", float)))
     _storage_calc_5_argtypes = frozenset(((0, float), ("t", float)))

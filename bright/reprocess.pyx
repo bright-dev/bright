@@ -10,17 +10,17 @@
 """
 cimport bright.typeconverters
 cimport fccomp
+cimport pyne.stlcontainers
 from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
 from pyne cimport material
-from pyne cimport stlconverters as conv
 
 from pyne import material
-from pyne import stlconverters as conv
 import bright.typeconverters
 import fccomp
+import pyne.stlcontainers
 
 cdef class Reprocess(fccomp.FCComp):
     """Reprocess Fuel Cycle Component Class.  Daughter of FCComp class.
@@ -61,8 +61,8 @@ cdef class Reprocess(fccomp.FCComp):
     def _reprocess_reprocess_1(self, sed, n=""):
         """Reprocess(self, sed, n="")
         """
-        cdef conv._MapIntDouble sed_proxy
-        sed_proxy = conv.MapIntDouble(sed, not isinstance(sed, conv._MapIntDouble))
+        cdef pyne.stlcontainers._MapIntDouble sed_proxy
+        sed_proxy = pyne.stlcontainers.MapIntDouble(sed, not isinstance(sed, pyne.stlcontainers._MapIntDouble))
         self._inst = new cpp_reprocess.Reprocess(sed_proxy.map_ptr[0], std_string(<char *> n))
     
     
@@ -75,15 +75,15 @@ cdef class Reprocess(fccomp.FCComp):
     def _reprocess_reprocess_3(self, ssed, n=""):
         """Reprocess(self, ssed, n="")
         """
-        cdef conv._MapStrDouble ssed_proxy
-        ssed_proxy = conv.MapStrDouble(ssed, not isinstance(ssed, conv._MapStrDouble))
+        cdef pyne.stlcontainers._MapStrDouble ssed_proxy
+        ssed_proxy = pyne.stlcontainers.MapStrDouble(ssed, not isinstance(ssed, pyne.stlcontainers._MapStrDouble))
         self._inst = new cpp_reprocess.Reprocess(ssed_proxy.map_ptr[0], std_string(<char *> n))
     
     
     _reprocess_reprocess_0_argtypes = frozenset()
-    _reprocess_reprocess_1_argtypes = frozenset(((0, conv.MapIntDouble), (1, str), ("sed", conv.MapIntDouble), ("n", str)))
-    _reprocess_reprocess_2_argtypes = frozenset(((0, conv.MapIntDouble), (1, str), ("sepeff", conv.MapIntDouble), ("name", str)))
-    _reprocess_reprocess_3_argtypes = frozenset(((0, conv.MapStrDouble), (1, str), ("ssed", conv.MapStrDouble), ("n", str)))
+    _reprocess_reprocess_1_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), (1, str), ("sed", pyne.stlcontainers.MapIntDouble), ("n", str)))
+    _reprocess_reprocess_2_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), (1, str), ("sepeff", pyne.stlcontainers.MapIntDouble), ("name", str)))
+    _reprocess_reprocess_3_argtypes = frozenset(((0, pyne.stlcontainers.MapStrDouble), (1, str), ("ssed", pyne.stlcontainers.MapStrDouble), ("n", str)))
     
     def __init__(self, *args, **kwargs):
         """Reprocess(self, ssed, n="")
@@ -131,9 +131,9 @@ cdef class Reprocess(fccomp.FCComp):
     property sepeff:
         """no docstring for sepeff, please file a bug report!"""
         def __get__(self):
-            cdef conv._MapIntDouble sepeff_proxy
+            cdef pyne.stlcontainers._MapIntDouble sepeff_proxy
             if self._sepeff is None:
-                sepeff_proxy = conv.MapIntDouble(False, False)
+                sepeff_proxy = pyne.stlcontainers.MapIntDouble(False, False)
                 sepeff_proxy.map_ptr = &(<cpp_reprocess.Reprocess *> self._inst).sepeff
                 self._sepeff = sepeff_proxy
             return self._sepeff
@@ -202,10 +202,10 @@ cdef class Reprocess(fccomp.FCComp):
             mat_prod
         
         """
-        cdef conv._MapIntDouble incomp_proxy
+        cdef pyne.stlcontainers._MapIntDouble incomp_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
+        incomp_proxy = pyne.stlcontainers.MapIntDouble(incomp, not isinstance(incomp, pyne.stlcontainers._MapIntDouble))
         rtnval = (<cpp_fccomp.FCComp *> self._inst).calc(incomp_proxy.map_ptr[0])
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer[0] = rtnval
@@ -248,7 +248,7 @@ cdef class Reprocess(fccomp.FCComp):
     
     
     _reprocess_calc_0_argtypes = frozenset()
-    _reprocess_calc_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
+    _reprocess_calc_1_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), ("incomp", pyne.stlcontainers.MapIntDouble)))
     _reprocess_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):
@@ -326,8 +326,8 @@ cdef class Reprocess(fccomp.FCComp):
             Integer valued dictionary of SE to be converted to sepeff.
                 
         """
-        cdef conv._MapIntDouble sed_proxy
-        sed_proxy = conv.MapIntDouble(sed, not isinstance(sed, conv._MapIntDouble))
+        cdef pyne.stlcontainers._MapIntDouble sed_proxy
+        sed_proxy = pyne.stlcontainers.MapIntDouble(sed, not isinstance(sed, pyne.stlcontainers._MapIntDouble))
         (<cpp_reprocess.Reprocess *> self._inst).initialize(sed_proxy.map_ptr[0])
     
     

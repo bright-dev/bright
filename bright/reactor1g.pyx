@@ -11,6 +11,7 @@
 cimport fccomp
 cimport fluence_point
 cimport numpy as np
+cimport pyne.stlcontainers
 cimport reactor_parameters
 from bright cimport cpp_fccomp
 from bright cimport cpp_fluence_point
@@ -21,13 +22,12 @@ from libcpp.string cimport string as std_string
 from libcpp.vector cimport vector as cpp_vector
 from pyne cimport cpp_material
 from pyne cimport material
-from pyne cimport stlconverters as conv
 
 from pyne import material
-from pyne import stlconverters as conv
 import fccomp
 import fluence_point
 import numpy as np
+import pyne.stlcontainers
 import reactor_parameters
 
 np.import_array()
@@ -107,8 +107,8 @@ cdef class Reactor1G(fccomp.FCComp):
     def _reactor1g_reactor1g_1(self, paramtrack, n=""):
         """Reactor1G(self, paramtrack, n="")
         """
-        cdef conv._SetStr paramtrack_proxy
-        paramtrack_proxy = conv.SetStr(paramtrack, not isinstance(paramtrack, conv._SetStr))
+        cdef pyne.stlcontainers._SetStr paramtrack_proxy
+        paramtrack_proxy = pyne.stlcontainers.SetStr(paramtrack, not isinstance(paramtrack, pyne.stlcontainers._SetStr))
         self._inst = new cpp_reactor1g.Reactor1G(paramtrack_proxy.set_ptr[0], std_string(<char *> n))
     
     
@@ -124,16 +124,16 @@ cdef class Reactor1G(fccomp.FCComp):
         """Reactor1G(self, rp, paramtrack, n="")
         """
         cdef reactor_parameters.ReactorParameters rp_proxy
-        cdef conv._SetStr paramtrack_proxy
+        cdef pyne.stlcontainers._SetStr paramtrack_proxy
         rp_proxy = <reactor_parameters.ReactorParameters> rp
-        paramtrack_proxy = conv.SetStr(paramtrack, not isinstance(paramtrack, conv._SetStr))
+        paramtrack_proxy = pyne.stlcontainers.SetStr(paramtrack, not isinstance(paramtrack, pyne.stlcontainers._SetStr))
         self._inst = new cpp_reactor1g.Reactor1G((<cpp_reactor_parameters.ReactorParameters *> rp_proxy._inst)[0], paramtrack_proxy.set_ptr[0], std_string(<char *> n))
     
     
     _reactor1g_reactor1g_0_argtypes = frozenset(((0, str), ("n", str)))
-    _reactor1g_reactor1g_1_argtypes = frozenset(((0, conv.SetStr), (1, str), ("paramtrack", conv.SetStr), ("n", str)))
+    _reactor1g_reactor1g_1_argtypes = frozenset(((0, pyne.stlcontainers.SetStr), (1, str), ("paramtrack", pyne.stlcontainers.SetStr), ("n", str)))
     _reactor1g_reactor1g_2_argtypes = frozenset(((0, reactor_parameters.ReactorParameters), (1, str), ("rp", reactor_parameters.ReactorParameters), ("n", str)))
-    _reactor1g_reactor1g_3_argtypes = frozenset(((0, reactor_parameters.ReactorParameters), (1, conv.SetStr), (2, str), ("rp", reactor_parameters.ReactorParameters), ("paramtrack", conv.SetStr), ("n", str)))
+    _reactor1g_reactor1g_3_argtypes = frozenset(((0, reactor_parameters.ReactorParameters), (1, pyne.stlcontainers.SetStr), (2, str), ("rp", reactor_parameters.ReactorParameters), ("paramtrack", pyne.stlcontainers.SetStr), ("n", str)))
     
     def __init__(self, *args, **kwargs):
         """Reactor1G(self, rp, paramtrack, n="")
@@ -212,8 +212,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -244,16 +245,16 @@ cdef class Reactor1G(fccomp.FCComp):
         libfile.
         """
         def __get__(self):
-            cdef conv._MapIntVectorDouble BUi_F__proxy
+            cdef pyne.stlcontainers._MapIntVectorDouble BUi_F__proxy
             if self._BUi_F_ is None:
-                BUi_F__proxy = conv.MapIntVectorDouble(False, False)
+                BUi_F__proxy = pyne.stlcontainers.MapIntVectorDouble(False, False)
                 BUi_F__proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).BUi_F_
                 self._BUi_F_ = BUi_F__proxy
             return self._BUi_F_
     
         def __set__(self, value):
-            cdef conv._MapIntVectorDouble value_proxy
-            value_proxy = conv.MapIntVectorDouble(value, not isinstance(value, conv._MapIntVectorDouble))
+            cdef pyne.stlcontainers._MapIntVectorDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntVectorDouble(value, not isinstance(value, pyne.stlcontainers._MapIntVectorDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).BUi_F_ = value_proxy.map_ptr[0]
             self._BUi_F_ = None
     
@@ -273,8 +274,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -304,8 +306,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -352,16 +355,16 @@ cdef class Reactor1G(fccomp.FCComp):
         as a function of fluence.  Used with the discharge fluence Fd to calculate mat_prod.  
         This object is therefore a dictionary from zzaaam-integers to vectors of floats."""
         def __get__(self):
-            cdef conv._MapIntVectorDouble Mj_F__proxy
+            cdef pyne.stlcontainers._MapIntVectorDouble Mj_F__proxy
             if self._Mj_F_ is None:
-                Mj_F__proxy = conv.MapIntVectorDouble(False, False)
+                Mj_F__proxy = pyne.stlcontainers.MapIntVectorDouble(False, False)
                 Mj_F__proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).Mj_F_
                 self._Mj_F_ = Mj_F__proxy
             return self._Mj_F_
     
         def __set__(self, value):
-            cdef conv._MapIntVectorDouble value_proxy
-            value_proxy = conv.MapIntVectorDouble(value, not isinstance(value, conv._MapIntVectorDouble))
+            cdef pyne.stlcontainers._MapIntVectorDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntVectorDouble(value, not isinstance(value, pyne.stlcontainers._MapIntVectorDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).Mj_F_ = value_proxy.map_ptr[0]
             self._Mj_F_ = None
     
@@ -370,16 +373,16 @@ cdef class Reactor1G(fccomp.FCComp):
         """Number density of the coolant as a function of initial nuclide.  
         Map with zzaaam-integer keys and float values."""
         def __get__(self):
-            cdef conv._MapIntDouble NiC_proxy
+            cdef pyne.stlcontainers._MapIntDouble NiC_proxy
             if self._NiC is None:
-                NiC_proxy = conv.MapIntDouble(False, False)
+                NiC_proxy = pyne.stlcontainers.MapIntDouble(False, False)
                 NiC_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).NiC
                 self._NiC = NiC_proxy
             return self._NiC
     
         def __set__(self, value):
-            cdef conv._MapIntDouble value_proxy
-            value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
+            cdef pyne.stlcontainers._MapIntDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntDouble(value, not isinstance(value, pyne.stlcontainers._MapIntDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).NiC = value_proxy.map_ptr[0]
             self._NiC = None
     
@@ -388,16 +391,16 @@ cdef class Reactor1G(fccomp.FCComp):
         """Number density of the fuel as a function of initial nuclide.  
         Map with zzaaam-integer keys and float values."""
         def __get__(self):
-            cdef conv._MapIntDouble NiF_proxy
+            cdef pyne.stlcontainers._MapIntDouble NiF_proxy
             if self._NiF is None:
-                NiF_proxy = conv.MapIntDouble(False, False)
+                NiF_proxy = pyne.stlcontainers.MapIntDouble(False, False)
                 NiF_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).NiF
                 self._NiF = NiF_proxy
             return self._NiF
     
         def __set__(self, value):
-            cdef conv._MapIntDouble value_proxy
-            value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
+            cdef pyne.stlcontainers._MapIntDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntDouble(value, not isinstance(value, pyne.stlcontainers._MapIntDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).NiF = value_proxy.map_ptr[0]
             self._NiF = None
     
@@ -420,8 +423,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -483,8 +487,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -512,8 +517,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -541,8 +547,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -570,8 +577,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -619,16 +627,16 @@ cdef class Reactor1G(fccomp.FCComp):
         
         """
         def __get__(self):
-            cdef conv._MapStrDouble coolant_chemical_form_proxy
+            cdef pyne.stlcontainers._MapStrDouble coolant_chemical_form_proxy
             if self._coolant_chemical_form is None:
-                coolant_chemical_form_proxy = conv.MapStrDouble(False, False)
+                coolant_chemical_form_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 coolant_chemical_form_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form
                 self._coolant_chemical_form = coolant_chemical_form_proxy
             return self._coolant_chemical_form
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).coolant_chemical_form = value_proxy.map_ptr[0]
             self._coolant_chemical_form = None
     
@@ -650,8 +658,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -681,8 +690,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -716,16 +726,16 @@ cdef class Reactor1G(fccomp.FCComp):
         are vectors of floats.  This data has units of [n/s] and is read in from libfile.
         """
         def __get__(self):
-            cdef conv._MapIntVectorDouble di_F__proxy
+            cdef pyne.stlcontainers._MapIntVectorDouble di_F__proxy
             if self._di_F_ is None:
-                di_F__proxy = conv.MapIntVectorDouble(False, False)
+                di_F__proxy = pyne.stlcontainers.MapIntVectorDouble(False, False)
                 di_F__proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).di_F_
                 self._di_F_ = di_F__proxy
             return self._di_F_
     
         def __set__(self, value):
-            cdef conv._MapIntVectorDouble value_proxy
-            value_proxy = conv.MapIntVectorDouble(value, not isinstance(value, conv._MapIntVectorDouble))
+            cdef pyne.stlcontainers._MapIntVectorDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntVectorDouble(value, not isinstance(value, pyne.stlcontainers._MapIntVectorDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).di_F_ = value_proxy.map_ptr[0]
             self._di_F_ = None
     
@@ -750,16 +760,16 @@ cdef class Reactor1G(fccomp.FCComp):
         
         """
         def __get__(self):
-            cdef conv._MapStrDouble fuel_chemical_form_proxy
+            cdef pyne.stlcontainers._MapStrDouble fuel_chemical_form_proxy
             if self._fuel_chemical_form is None:
-                fuel_chemical_form_proxy = conv.MapStrDouble(False, False)
+                fuel_chemical_form_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 fuel_chemical_form_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form
                 self._fuel_chemical_form = fuel_chemical_form_proxy
             return self._fuel_chemical_form
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).fuel_chemical_form = value_proxy.map_ptr[0]
             self._fuel_chemical_form = None
     
@@ -789,8 +799,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -818,8 +829,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -847,8 +859,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -885,8 +898,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -914,8 +928,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -1090,16 +1105,16 @@ cdef class Reactor1G(fccomp.FCComp):
         """Mass weight of the coolant as a function of initial nuclide.  
         Map with zzaaam-integer keys and float values."""
         def __get__(self):
-            cdef conv._MapIntDouble miC_proxy
+            cdef pyne.stlcontainers._MapIntDouble miC_proxy
             if self._miC is None:
-                miC_proxy = conv.MapIntDouble(False, False)
+                miC_proxy = pyne.stlcontainers.MapIntDouble(False, False)
                 miC_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).miC
                 self._miC = miC_proxy
             return self._miC
     
         def __set__(self, value):
-            cdef conv._MapIntDouble value_proxy
-            value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
+            cdef pyne.stlcontainers._MapIntDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntDouble(value, not isinstance(value, pyne.stlcontainers._MapIntDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).miC = value_proxy.map_ptr[0]
             self._miC = None
     
@@ -1108,16 +1123,16 @@ cdef class Reactor1G(fccomp.FCComp):
         """Mass weight of the fuel as a function of initial nuclide.  
         Map with zzaaam-integer keys and float values."""
         def __get__(self):
-            cdef conv._MapIntDouble miF_proxy
+            cdef pyne.stlcontainers._MapIntDouble miF_proxy
             if self._miF is None:
-                miF_proxy = conv.MapIntDouble(False, False)
+                miF_proxy = pyne.stlcontainers.MapIntDouble(False, False)
                 miF_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).miF
                 self._miF = miF_proxy
             return self._miF
     
         def __set__(self, value):
-            cdef conv._MapIntDouble value_proxy
-            value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
+            cdef pyne.stlcontainers._MapIntDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntDouble(value, not isinstance(value, pyne.stlcontainers._MapIntDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).miF = value_proxy.map_ptr[0]
             self._miF = None
     
@@ -1126,16 +1141,16 @@ cdef class Reactor1G(fccomp.FCComp):
         """Atomic number weight of the coolant as a function of initial nuclide.  
         Map with zzaaam-integer keys and float values."""
         def __get__(self):
-            cdef conv._MapIntDouble niC_proxy
+            cdef pyne.stlcontainers._MapIntDouble niC_proxy
             if self._niC is None:
-                niC_proxy = conv.MapIntDouble(False, False)
+                niC_proxy = pyne.stlcontainers.MapIntDouble(False, False)
                 niC_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).niC
                 self._niC = niC_proxy
             return self._niC
     
         def __set__(self, value):
-            cdef conv._MapIntDouble value_proxy
-            value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
+            cdef pyne.stlcontainers._MapIntDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntDouble(value, not isinstance(value, pyne.stlcontainers._MapIntDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).niC = value_proxy.map_ptr[0]
             self._niC = None
     
@@ -1144,16 +1159,16 @@ cdef class Reactor1G(fccomp.FCComp):
         """Atomic number weight of the fuel as a function of initial nuclide. 
         Map with zzaaam-integer keys and float values."""
         def __get__(self):
-            cdef conv._MapIntDouble niF_proxy
+            cdef pyne.stlcontainers._MapIntDouble niF_proxy
             if self._niF is None:
-                niF_proxy = conv.MapIntDouble(False, False)
+                niF_proxy = pyne.stlcontainers.MapIntDouble(False, False)
                 niF_proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).niF
                 self._niF = niF_proxy
             return self._niF
     
         def __set__(self, value):
-            cdef conv._MapIntDouble value_proxy
-            value_proxy = conv.MapIntDouble(value, not isinstance(value, conv._MapIntDouble))
+            cdef pyne.stlcontainers._MapIntDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntDouble(value, not isinstance(value, pyne.stlcontainers._MapIntDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).niF = value_proxy.map_ptr[0]
             self._niF = None
     
@@ -1175,16 +1190,16 @@ cdef class Reactor1G(fccomp.FCComp):
         are vectors of floats.  This data has units of [neutrons/seconds] (abbr [n/s]) is 
         read in from libfile."""
         def __get__(self):
-            cdef conv._MapIntVectorDouble pi_F__proxy
+            cdef pyne.stlcontainers._MapIntVectorDouble pi_F__proxy
             if self._pi_F_ is None:
-                pi_F__proxy = conv.MapIntVectorDouble(False, False)
+                pi_F__proxy = pyne.stlcontainers.MapIntVectorDouble(False, False)
                 pi_F__proxy.map_ptr = &(<cpp_reactor1g.Reactor1G *> self._inst).pi_F_
                 self._pi_F_ = pi_F__proxy
             return self._pi_F_
     
         def __set__(self, value):
-            cdef conv._MapIntVectorDouble value_proxy
-            value_proxy = conv.MapIntVectorDouble(value, not isinstance(value, conv._MapIntVectorDouble))
+            cdef pyne.stlcontainers._MapIntVectorDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapIntVectorDouble(value, not isinstance(value, pyne.stlcontainers._MapIntVectorDouble))
             (<cpp_reactor1g.Reactor1G *> self._inst).pi_F_ = value_proxy.map_ptr[0]
             self._pi_F_ = None
     
@@ -1278,8 +1293,9 @@ cdef class Reactor1G(fccomp.FCComp):
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -1355,10 +1371,10 @@ cdef class Reactor1G(fccomp.FCComp):
     def _reactor1g_calc_1(self, incomp):
         """calc(self, incomp)
         no docstring for calc, please file a bug report!"""
-        cdef conv._MapIntDouble incomp_proxy
+        cdef pyne.stlcontainers._MapIntDouble incomp_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
-        incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
+        incomp_proxy = pyne.stlcontainers.MapIntDouble(incomp, not isinstance(incomp, pyne.stlcontainers._MapIntDouble))
         rtnval = (<cpp_fccomp.FCComp *> self._inst).calc(incomp_proxy.map_ptr[0])
         rtnval_proxy = material.Material()
         rtnval_proxy.mat_pointer[0] = rtnval
@@ -1379,7 +1395,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     _reactor1g_calc_0_argtypes = frozenset()
-    _reactor1g_calc_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
+    _reactor1g_calc_1_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), ("incomp", pyne.stlcontainers.MapIntDouble)))
     _reactor1g_calc_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc(self, *args, **kwargs):
@@ -1471,9 +1487,9 @@ cdef class Reactor1G(fccomp.FCComp):
         deltaR : float 
             deltaR value
         """
-        cdef conv._MapIntDouble incomp_proxy
+        cdef pyne.stlcontainers._MapIntDouble incomp_proxy
         cdef double rtnval
-        incomp_proxy = conv.MapIntDouble(incomp, not isinstance(incomp, conv._MapIntDouble))
+        incomp_proxy = pyne.stlcontainers.MapIntDouble(incomp, not isinstance(incomp, pyne.stlcontainers._MapIntDouble))
         rtnval = (<cpp_reactor1g.Reactor1G *> self._inst).calc_deltaR(incomp_proxy.map_ptr[0])
         return float(rtnval)
     
@@ -1505,7 +1521,7 @@ cdef class Reactor1G(fccomp.FCComp):
     
     
     _reactor1g_calc_deltar_0_argtypes = frozenset()
-    _reactor1g_calc_deltar_1_argtypes = frozenset(((0, conv.MapIntDouble), ("incomp", conv.MapIntDouble)))
+    _reactor1g_calc_deltar_1_argtypes = frozenset(((0, pyne.stlcontainers.MapIntDouble), ("incomp", pyne.stlcontainers.MapIntDouble)))
     _reactor1g_calc_deltar_2_argtypes = frozenset(((0, material.Material), ("mat", material.Material)))
     
     def calc_deltaR(self, *args, **kwargs):

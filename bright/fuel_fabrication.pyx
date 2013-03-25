@@ -9,6 +9,7 @@
 """Python wrapper for fuel fabrication.
 """
 cimport fccomp
+cimport pyne.stlcontainers
 cimport reactor1g
 from bright cimport cpp_fccomp
 from bright cimport cpp_reactor1g
@@ -17,11 +18,10 @@ from libcpp.set cimport set as cpp_set
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
 from pyne cimport material
-from pyne cimport stlconverters as conv
 
 from pyne import material
-from pyne import stlconverters as conv
 import fccomp
+import pyne.stlcontainers
 import reactor1g
 
 cdef class FuelFabrication(fccomp.FCComp):
@@ -78,10 +78,10 @@ cdef class FuelFabrication(fccomp.FCComp):
         """FuelFabrication(self, mats, mws_in, r, n="")
         """
         cdef material._MapStrMaterial mats_proxy
-        cdef conv._MapStrDouble mws_in_proxy
+        cdef pyne.stlcontainers._MapStrDouble mws_in_proxy
         cdef reactor1g.Reactor1G r_proxy
         mats_proxy = material.MapStrMaterial(mats, not isinstance(mats, material._MapStrMaterial))
-        mws_in_proxy = conv.MapStrDouble(mws_in, not isinstance(mws_in, conv._MapStrDouble))
+        mws_in_proxy = pyne.stlcontainers.MapStrDouble(mws_in, not isinstance(mws_in, pyne.stlcontainers._MapStrDouble))
         r_proxy = <reactor1g.Reactor1G> r
         self._inst = new cpp_fuel_fabrication.FuelFabrication(mats_proxy.map_ptr[0], mws_in_proxy.map_ptr[0], (<cpp_reactor1g.Reactor1G *> r_proxy._inst)[0], std_string(<char *> n))
     
@@ -90,13 +90,13 @@ cdef class FuelFabrication(fccomp.FCComp):
         """FuelFabrication(self, mats, mws_in, r, paramtrack, n="")
         """
         cdef material._MapStrMaterial mats_proxy
-        cdef conv._MapStrDouble mws_in_proxy
+        cdef pyne.stlcontainers._MapStrDouble mws_in_proxy
         cdef reactor1g.Reactor1G r_proxy
-        cdef conv._SetStr paramtrack_proxy
+        cdef pyne.stlcontainers._SetStr paramtrack_proxy
         mats_proxy = material.MapStrMaterial(mats, not isinstance(mats, material._MapStrMaterial))
-        mws_in_proxy = conv.MapStrDouble(mws_in, not isinstance(mws_in, conv._MapStrDouble))
+        mws_in_proxy = pyne.stlcontainers.MapStrDouble(mws_in, not isinstance(mws_in, pyne.stlcontainers._MapStrDouble))
         r_proxy = <reactor1g.Reactor1G> r
-        paramtrack_proxy = conv.SetStr(paramtrack, not isinstance(paramtrack, conv._SetStr))
+        paramtrack_proxy = pyne.stlcontainers.SetStr(paramtrack, not isinstance(paramtrack, pyne.stlcontainers._SetStr))
         self._inst = new cpp_fuel_fabrication.FuelFabrication(mats_proxy.map_ptr[0], mws_in_proxy.map_ptr[0], (<cpp_reactor1g.Reactor1G *> r_proxy._inst)[0], paramtrack_proxy.set_ptr[0], std_string(<char *> n))
     
     
@@ -109,15 +109,15 @@ cdef class FuelFabrication(fccomp.FCComp):
     def _fuelfabrication_fuelfabrication_3(self, paramtrack, n=""):
         """FuelFabrication(self, paramtrack, n="")
         """
-        cdef conv._SetStr paramtrack_proxy
-        paramtrack_proxy = conv.SetStr(paramtrack, not isinstance(paramtrack, conv._SetStr))
+        cdef pyne.stlcontainers._SetStr paramtrack_proxy
+        paramtrack_proxy = pyne.stlcontainers.SetStr(paramtrack, not isinstance(paramtrack, pyne.stlcontainers._SetStr))
         self._inst = new cpp_fuel_fabrication.FuelFabrication(paramtrack_proxy.set_ptr[0], std_string(<char *> n))
     
     
-    _fuelfabrication_fuelfabrication_0_argtypes = frozenset(((0, material.MapStrMaterial), (1, conv.MapStrDouble), (2, reactor1g.Reactor1G), (3, str), ("mats", material.MapStrMaterial), ("mws_in", conv.MapStrDouble), ("r", reactor1g.Reactor1G), ("n", str)))
-    _fuelfabrication_fuelfabrication_1_argtypes = frozenset(((0, material.MapStrMaterial), (1, conv.MapStrDouble), (2, reactor1g.Reactor1G), (3, conv.SetStr), (4, str), ("mats", material.MapStrMaterial), ("mws_in", conv.MapStrDouble), ("r", reactor1g.Reactor1G), ("paramtrack", conv.SetStr), ("n", str)))
+    _fuelfabrication_fuelfabrication_0_argtypes = frozenset(((0, material.MapStrMaterial), (1, pyne.stlcontainers.MapStrDouble), (2, reactor1g.Reactor1G), (3, str), ("mats", material.MapStrMaterial), ("mws_in", pyne.stlcontainers.MapStrDouble), ("r", reactor1g.Reactor1G), ("n", str)))
+    _fuelfabrication_fuelfabrication_1_argtypes = frozenset(((0, material.MapStrMaterial), (1, pyne.stlcontainers.MapStrDouble), (2, reactor1g.Reactor1G), (3, pyne.stlcontainers.SetStr), (4, str), ("mats", material.MapStrMaterial), ("mws_in", pyne.stlcontainers.MapStrDouble), ("r", reactor1g.Reactor1G), ("paramtrack", pyne.stlcontainers.SetStr), ("n", str)))
     _fuelfabrication_fuelfabrication_2_argtypes = frozenset(((0, str), ("n", str)))
-    _fuelfabrication_fuelfabrication_3_argtypes = frozenset(((0, conv.SetStr), (1, str), ("paramtrack", conv.SetStr), ("n", str)))
+    _fuelfabrication_fuelfabrication_3_argtypes = frozenset(((0, pyne.stlcontainers.SetStr), (1, str), ("paramtrack", pyne.stlcontainers.SetStr), ("n", str)))
     
     def __init__(self, *args, **kwargs):
         """FuelFabrication(self, paramtrack, n="")
@@ -165,16 +165,16 @@ cdef class FuelFabrication(fccomp.FCComp):
     property deltaRs:
         """A mapping representing the deltaR values of each of the materials."""
         def __get__(self):
-            cdef conv._MapStrDouble deltaRs_proxy
+            cdef pyne.stlcontainers._MapStrDouble deltaRs_proxy
             if self._deltaRs is None:
-                deltaRs_proxy = conv.MapStrDouble(False, False)
+                deltaRs_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 deltaRs_proxy.map_ptr = &(<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs
                 self._deltaRs = deltaRs_proxy
             return self._deltaRs
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_fuel_fabrication.FuelFabrication *> self._inst).deltaRs = value_proxy.map_ptr[0]
             self._deltaRs = None
     
@@ -183,16 +183,16 @@ cdef class FuelFabrication(fccomp.FCComp):
         """A mapping representing the initial specification of the mass weights.  
         Exactly two of these should have negative values."""
         def __get__(self):
-            cdef conv._MapStrDouble mass_weights_in_proxy
+            cdef pyne.stlcontainers._MapStrDouble mass_weights_in_proxy
             if self._mass_weights_in is None:
-                mass_weights_in_proxy = conv.MapStrDouble(False, False)
+                mass_weights_in_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 mass_weights_in_proxy.map_ptr = &(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in
                 self._mass_weights_in = mass_weights_in_proxy
             return self._mass_weights_in
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_in = value_proxy.map_ptr[0]
             self._mass_weights_in = None
     
@@ -201,16 +201,16 @@ cdef class FuelFabrication(fccomp.FCComp):
         """A mapping representing the mass weights that are calculated to generate 
         a valid fuel from the materials  provided."""
         def __get__(self):
-            cdef conv._MapStrDouble mass_weights_out_proxy
+            cdef pyne.stlcontainers._MapStrDouble mass_weights_out_proxy
             if self._mass_weights_out is None:
-                mass_weights_out_proxy = conv.MapStrDouble(False, False)
+                mass_weights_out_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 mass_weights_out_proxy.map_ptr = &(<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out
                 self._mass_weights_out = mass_weights_out_proxy
             return self._mass_weights_out
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_fuel_fabrication.FuelFabrication *> self._inst).mass_weights_out = value_proxy.map_ptr[0]
             self._mass_weights_out = None
     
@@ -304,12 +304,12 @@ cdef class FuelFabrication(fccomp.FCComp):
         
         """
         cdef material._MapStrMaterial mats_proxy
-        cdef conv._MapStrDouble mws_in_proxy
+        cdef pyne.stlcontainers._MapStrDouble mws_in_proxy
         cdef reactor1g.Reactor1G r_proxy
         cdef cpp_material.Material rtnval
         cdef material._Material rtnval_proxy
         mats_proxy = material.MapStrMaterial(mats, not isinstance(mats, material._MapStrMaterial))
-        mws_in_proxy = conv.MapStrDouble(mws_in, not isinstance(mws_in, conv._MapStrDouble))
+        mws_in_proxy = pyne.stlcontainers.MapStrDouble(mws_in, not isinstance(mws_in, pyne.stlcontainers._MapStrDouble))
         r_proxy = <reactor1g.Reactor1G> r
         rtnval = (<cpp_fuel_fabrication.FuelFabrication *> self._inst).calc(mats_proxy.map_ptr[0], mws_in_proxy.map_ptr[0], (<cpp_reactor1g.Reactor1G *> r_proxy._inst)[0])
         rtnval_proxy = material.Material()
@@ -318,7 +318,7 @@ cdef class FuelFabrication(fccomp.FCComp):
     
     
     _fuelfabrication_calc_0_argtypes = frozenset()
-    _fuelfabrication_calc_1_argtypes = frozenset(((0, material.MapStrMaterial), (1, conv.MapStrDouble), (2, reactor1g.Reactor1G), ("mats", material.MapStrMaterial), ("mws_in", conv.MapStrDouble), ("r", reactor1g.Reactor1G)))
+    _fuelfabrication_calc_1_argtypes = frozenset(((0, material.MapStrMaterial), (1, pyne.stlcontainers.MapStrDouble), (2, reactor1g.Reactor1G), ("mats", material.MapStrMaterial), ("mws_in", pyne.stlcontainers.MapStrDouble), ("r", reactor1g.Reactor1G)))
     
     def calc(self, *args, **kwargs):
         """calc(self, mats, mws_in, r)
@@ -432,10 +432,10 @@ cdef class FuelFabrication(fccomp.FCComp):
         
         """
         cdef material._MapStrMaterial mats_proxy
-        cdef conv._MapStrDouble mws_in_proxy
+        cdef pyne.stlcontainers._MapStrDouble mws_in_proxy
         cdef reactor1g.Reactor1G r_proxy
         mats_proxy = material.MapStrMaterial(mats, not isinstance(mats, material._MapStrMaterial))
-        mws_in_proxy = conv.MapStrDouble(mws_in, not isinstance(mws_in, conv._MapStrDouble))
+        mws_in_proxy = pyne.stlcontainers.MapStrDouble(mws_in, not isinstance(mws_in, pyne.stlcontainers._MapStrDouble))
         r_proxy = <reactor1g.Reactor1G> r
         (<cpp_fuel_fabrication.FuelFabrication *> self._inst).initialize(mats_proxy.map_ptr[0], mws_in_proxy.map_ptr[0], (<cpp_reactor1g.Reactor1G *> r_proxy._inst)[0])
     

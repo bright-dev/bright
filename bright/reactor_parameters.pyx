@@ -9,14 +9,14 @@
 """Python wrapper for reactor parameters.
 """
 cimport numpy as np
+cimport pyne.stlcontainers
 from libc.stdlib cimport free
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from libcpp.vector cimport vector as cpp_vector
-from pyne cimport stlconverters as conv
 
-from pyne import stlconverters as conv
 import numpy as np
+import pyne.stlcontainers
 
 np.import_array()
 
@@ -106,8 +106,9 @@ cdef class ReactorParameters:
         def __set__(self, value):
             cdef cpp_vector[double] value_proxy
             cdef int i
-            cdef int value_size = len(value)
+            cdef int value_size
             cdef double * value_data
+            value_size = len(value)
             if isinstance(value, np.ndarray) and (<np.ndarray> value).descr.type_num == np.NPY_FLOAT64:
                 value_data = <double *> np.PyArray_DATA(<np.ndarray> value)
                 value_proxy = cpp_vector[double](<size_t> value_size)
@@ -154,16 +155,16 @@ cdef class ReactorParameters:
         a valid key.  Cladding is often made from some zircalloy.
         """
         def __get__(self):
-            cdef conv._MapStrDouble cladding_form_proxy
+            cdef pyne.stlcontainers._MapStrDouble cladding_form_proxy
             if self._cladding_form is None:
-                cladding_form_proxy = conv.MapStrDouble(False, False)
+                cladding_form_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 cladding_form_proxy.map_ptr = &(<cpp_reactor_parameters.ReactorParameters *> self._inst).cladding_form
                 self._cladding_form = cladding_form_proxy
             return self._cladding_form
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_reactor_parameters.ReactorParameters *> self._inst).cladding_form = value_proxy.map_ptr[0]
             self._cladding_form = None
     
@@ -192,16 +193,16 @@ cdef class ReactorParameters:
         
         """
         def __get__(self):
-            cdef conv._MapStrDouble coolant_form_proxy
+            cdef pyne.stlcontainers._MapStrDouble coolant_form_proxy
             if self._coolant_form is None:
-                coolant_form_proxy = conv.MapStrDouble(False, False)
+                coolant_form_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 coolant_form_proxy.map_ptr = &(<cpp_reactor_parameters.ReactorParameters *> self._inst).coolant_form
                 self._coolant_form = coolant_form_proxy
             return self._coolant_form
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_reactor_parameters.ReactorParameters *> self._inst).coolant_form = value_proxy.map_ptr[0]
             self._coolant_form = None
     
@@ -236,16 +237,16 @@ cdef class ReactorParameters:
         
         """
         def __get__(self):
-            cdef conv._MapStrDouble fuel_form_proxy
+            cdef pyne.stlcontainers._MapStrDouble fuel_form_proxy
             if self._fuel_form is None:
-                fuel_form_proxy = conv.MapStrDouble(False, False)
+                fuel_form_proxy = pyne.stlcontainers.MapStrDouble(False, False)
                 fuel_form_proxy.map_ptr = &(<cpp_reactor_parameters.ReactorParameters *> self._inst).fuel_form
                 self._fuel_form = fuel_form_proxy
             return self._fuel_form
     
         def __set__(self, value):
-            cdef conv._MapStrDouble value_proxy
-            value_proxy = conv.MapStrDouble(value, not isinstance(value, conv._MapStrDouble))
+            cdef pyne.stlcontainers._MapStrDouble value_proxy
+            value_proxy = pyne.stlcontainers.MapStrDouble(value, not isinstance(value, pyne.stlcontainers._MapStrDouble))
             (<cpp_reactor_parameters.ReactorParameters *> self._inst).fuel_form = value_proxy.map_ptr[0]
             self._fuel_form = None
     

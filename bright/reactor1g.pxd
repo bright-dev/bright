@@ -8,32 +8,32 @@
 ################################################
 cimport fccomp
 cimport numpy as np
+cimport pyne.stlcontainers
 from bright cimport cpp_reactor1g
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from libcpp.vector cimport vector as cpp_vector
 from pyne cimport cpp_material
 from pyne cimport material
-from pyne cimport stlconverters as conv
 
 cdef class Reactor1G(fccomp.FCComp):
     cdef public np.ndarray _BU_F_
-    cdef public conv._MapIntVectorDouble _BUi_F_
+    cdef public pyne.stlcontainers._MapIntVectorDouble _BUi_F_
     cdef public np.ndarray _D_F_
     cdef public np.ndarray _F
-    cdef public conv._MapIntVectorDouble _Mj_F_
-    cdef public conv._MapIntDouble _NiC
-    cdef public conv._MapIntDouble _NiF
+    cdef public pyne.stlcontainers._MapIntVectorDouble _Mj_F_
+    cdef public pyne.stlcontainers._MapIntDouble _NiC
+    cdef public pyne.stlcontainers._MapIntDouble _NiF
     cdef public np.ndarray _P_F_
     cdef public np.ndarray _SigmaCa_F_
     cdef public np.ndarray _SigmaCtr_F_
     cdef public np.ndarray _SigmaFa_F_
     cdef public np.ndarray _SigmaFtr_F_
-    cdef public conv._MapStrDouble _coolant_chemical_form
+    cdef public pyne.stlcontainers._MapStrDouble _coolant_chemical_form
     cdef public np.ndarray _dC_F_
     cdef public np.ndarray _dF_F_
-    cdef public conv._MapIntVectorDouble _di_F_
-    cdef public conv._MapStrDouble _fuel_chemical_form
+    cdef public pyne.stlcontainers._MapIntVectorDouble _di_F_
+    cdef public pyne.stlcontainers._MapStrDouble _fuel_chemical_form
     cdef public np.ndarray _k_F_
     cdef public np.ndarray _kappaC_F_
     cdef public np.ndarray _kappaF_F_
@@ -47,11 +47,11 @@ cdef class Reactor1G(fccomp.FCComp):
     cdef public material._Material _mat_prod_lan
     cdef public material._Material _mat_prod_tru
     cdef public material._Material _mat_prod_u
-    cdef public conv._MapIntDouble _miC
-    cdef public conv._MapIntDouble _miF
-    cdef public conv._MapIntDouble _niC
-    cdef public conv._MapIntDouble _niF
-    cdef public conv._MapIntVectorDouble _pi_F_
+    cdef public pyne.stlcontainers._MapIntDouble _miC
+    cdef public pyne.stlcontainers._MapIntDouble _miF
+    cdef public pyne.stlcontainers._MapIntDouble _niC
+    cdef public pyne.stlcontainers._MapIntDouble _niF
+    cdef public pyne.stlcontainers._MapIntVectorDouble _pi_F_
     cdef public np.ndarray _zeta_F_
 
 

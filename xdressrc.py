@@ -1,10 +1,4 @@
-import os
 import xdress.typesystem as ts
-
-# prepare temporary filename
-if not os.path.isdir('build'):
-    os.mkdir('build')
-tempfile = os.path.join('build', 'xdress_temp')
 
 package = 'bright'
 sourcedir = 'cpp'
@@ -22,8 +16,8 @@ classes = [
     ('EnrichmentParameters', 'enrichment_parameters'),
     ('Enrichment', 'bright_enrichment', 'enrichment'),
     ('Reprocess', 'reprocess'),
-    ('decay_nuc', 'storage', tempfile),
-    ('from_nuc_struct', 'storage', tempfile),
+    ('decay_nuc', 'storage', None),
+    ('from_nuc_struct', 'storage', None),
     ('Storage', 'storage'),
     ('FluencePoint', 'fluence_point'),
     ('ReactorParameters', 'reactor_parameters'),

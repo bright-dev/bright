@@ -8,6 +8,7 @@
 ################################################
 cimport fccomp
 cimport numpy as np
+cimport pyne.stlcontainers
 from bright cimport cpp_reactormg
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
@@ -15,36 +16,35 @@ from libcpp.string cimport string as std_string
 from libcpp.vector cimport vector as cpp_vector
 from pyne cimport cpp_material
 from pyne cimport material
-from pyne cimport stlconverters as conv
 
 cdef class ReactorMG(fccomp.FCComp):
     cdef public np.ndarray _A_HM_t
     cdef public np.ndarray _BU0
     cdef public np.ndarray _BU_t
     cdef public np.ndarray _E_g
-    cdef public conv._SetInt _I
-    cdef public conv._SetInt _J
-    cdef public conv._SetInt _K
-    cdef public conv._MapIntInt _K_ind
+    cdef public pyne.stlcontainers._SetInt _I
+    cdef public pyne.stlcontainers._SetInt _J
+    cdef public pyne.stlcontainers._SetInt _K
+    cdef public pyne.stlcontainers._MapIntInt _K_ind
     cdef public np.ndarray _K_ord
     cdef public np.ndarray _MW_clad_t
     cdef public np.ndarray _MW_cool_t
     cdef public np.ndarray _MW_fuel_t
-    cdef public conv._MapIntVectorDouble _N_clad_it
-    cdef public conv._MapIntVectorDouble _N_cool_it
-    cdef public conv._MapIntVectorDouble _N_fuel_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _N_clad_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _N_cool_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _N_fuel_it
     cdef public np.ndarray _Phi
     cdef public np.ndarray _Phi_t
-    cdef public conv._MapIntVectorDouble _T_it
-    cdef public conv._MapIntVectorDouble _Ti0
+    cdef public pyne.stlcontainers._MapIntVectorDouble _T_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _Ti0
     cdef public np.ndarray _burn_times
-    cdef public conv._MapStrDouble _chemical_form_clad
-    cdef public conv._MapStrDouble _chemical_form_cool
-    cdef public conv._MapStrDouble _chemical_form_fuel
+    cdef public pyne.stlcontainers._MapStrDouble _chemical_form_clad
+    cdef public pyne.stlcontainers._MapStrDouble _chemical_form_cool
+    cdef public pyne.stlcontainers._MapStrDouble _chemical_form_fuel
     cdef public np.ndarray _k_t
-    cdef public conv._MapIntVectorDouble _m_clad_it
-    cdef public conv._MapIntVectorDouble _m_cool_it
-    cdef public conv._MapIntVectorDouble _m_fuel_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _m_clad_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _m_cool_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _m_fuel_it
     cdef public material._Material _mat_feed_act
     cdef public material._Material _mat_feed_lan
     cdef public material._Material _mat_feed_tru
@@ -53,11 +53,11 @@ cdef class ReactorMG(fccomp.FCComp):
     cdef public material._Material _mat_prod_lan
     cdef public material._Material _mat_prod_tru
     cdef public material._Material _mat_prod_u
-    cdef public conv._MapIntVectorDouble _n_clad_it
-    cdef public conv._MapIntVectorDouble _n_cool_it
-    cdef public conv._MapIntVectorDouble _n_fuel_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _n_clad_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _n_cool_it
+    cdef public pyne.stlcontainers._MapIntVectorDouble _n_fuel_it
     cdef public np.ndarray _nearest_neighbors
-    cdef public conv._MapStrVectorDouble _perturbed_fields
+    cdef public pyne.stlcontainers._MapStrVectorDouble _perturbed_fields
     cdef public np.ndarray _phi
     cdef public np.ndarray _phi_t
     cdef public np.ndarray _time0
