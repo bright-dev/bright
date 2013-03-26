@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 from libcpp.map cimport map as cpp_map
 from libcpp.set cimport set as cpp_set
 from libcpp.string cimport string as std_string
@@ -40,5 +42,7 @@ cdef extern from "fccomp.h" namespace "bright":
         void write_mat_pass() except +
         void write_params_pass() except +
         void write_text() except +
+
+
 
 

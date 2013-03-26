@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 cimport pyne.stlcontainers
 from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
@@ -22,5 +24,7 @@ cdef class FCComp:
     cdef public pyne.stlcontainers._MapStrDouble _params_after_calc
     cdef public pyne.stlcontainers._MapStrDouble _params_prior_calc
     cdef public pyne.stlcontainers._SetStr _track_params
+
+
 
 

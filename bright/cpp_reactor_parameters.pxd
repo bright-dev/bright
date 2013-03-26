@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from libcpp.vector cimport vector as cpp_vector
@@ -47,3 +49,5 @@ cdef extern from "reactor_parameters.h" namespace "bright":
 
     ReactorParameters fill_lwr_defaults() except +
     ReactorParameters fill_fr_defaults() except +
+
+

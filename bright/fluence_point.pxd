@@ -6,10 +6,14 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 from bright cimport cpp_fluence_point
 
 cdef class FluencePoint:
     cdef void * _inst
     cdef public bint _free_inst
+
+
 
 

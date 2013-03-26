@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 cimport fccomp
 cimport numpy as np
 cimport pyne.stlcontainers
@@ -53,5 +55,7 @@ cdef class Reactor1G(fccomp.FCComp):
     cdef public pyne.stlcontainers._MapIntDouble _niF
     cdef public pyne.stlcontainers._MapIntVectorDouble _pi_F_
     cdef public np.ndarray _zeta_F_
+
+
 
 

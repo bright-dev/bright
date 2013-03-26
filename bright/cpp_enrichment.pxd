@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 from bright cimport cpp_enrichment_parameters
 from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
@@ -59,5 +61,7 @@ cdef extern from "bright_enrichment.h" namespace "bright":
         void initialize(cpp_enrichment_parameters.EnrichmentParameters) except +
         double xP_i(int) except +
         double xW_i(int) except +
+
+
 
 

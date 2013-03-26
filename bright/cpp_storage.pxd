@@ -6,10 +6,30 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 from bright cimport cpp_fccomp
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
+
+cdef extern from "storage.h" namespace "bright":
+
+    cdef cppclass decay_nuc:
+        # constructors
+        decay_nuc() except +
+
+        # attributes
+        double branchratio
+        double decayconst
+        int fromiso
+        double halflife
+        int toiso
+
+        # methods
+
+
+
 
 cdef extern from "storage.h" namespace "bright":
 
@@ -29,5 +49,7 @@ cdef extern from "storage.h" namespace "bright":
         cpp_material.Material calc(cpp_material.Material, double) except +
         cpp_material.Material calc(double) except +
         void calc_params() except +
+
+
 
 

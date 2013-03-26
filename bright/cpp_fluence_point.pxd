@@ -8,6 +8,8 @@
 ################################################
 
 
+
+
 cdef extern from "fluence_point.h" namespace "bright":
 
     cdef cppclass FluencePoint:
@@ -23,6 +25,8 @@ cdef extern from "fluence_point.h" namespace "bright":
         double m
 
         # methods
+
+
 
 
 

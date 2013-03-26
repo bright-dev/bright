@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 from bright cimport cpp_fccomp
 from bright cimport cpp_reactor1g
 from libcpp.map cimport map as cpp_map
@@ -41,5 +43,7 @@ cdef extern from "fuel_fabrication.h" namespace "bright":
         void calc_mass_ratios() except +
         void calc_params() except +
         void initialize(cpp_map[std_string, cpp_material.Material *], cpp_map[std_string, double], cpp_reactor1g.Reactor1G) except +
+
+
 
 

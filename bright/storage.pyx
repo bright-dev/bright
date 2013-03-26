@@ -11,6 +11,7 @@
 cimport fccomp
 cimport pyne.stlcontainers
 from bright cimport cpp_fccomp
+from libc.stdlib cimport free
 from libcpp.map cimport map as cpp_map
 from libcpp.string cimport string as std_string
 from pyne cimport cpp_material
@@ -19,6 +20,78 @@ from pyne cimport material
 from pyne import material
 import fccomp
 import pyne.stlcontainers
+
+cdef class decay_nuc:
+    """no docstring for decay_nuc, please file a bug report!"""
+
+    # constuctors
+    def __cinit__(self, *args, **kwargs):
+        self._inst = NULL
+        self._free_inst = True
+
+        # cached property defaults
+
+
+    def __init__(self):
+        """decay_nuc(self)
+        """
+        self._inst = new cpp_storage.decay_nuc()
+    
+    
+    def __dealloc__(self):
+        if self._free_inst:
+            free(self._inst)
+
+    # attributes
+    property branchratio:
+        """no docstring for branchratio, please file a bug report!"""
+        def __get__(self):
+            return float((<cpp_storage.decay_nuc *> self._inst).branchratio)
+    
+        def __set__(self, value):
+            (<cpp_storage.decay_nuc *> self._inst).branchratio = <double> value
+    
+    
+    property decayconst:
+        """no docstring for decayconst, please file a bug report!"""
+        def __get__(self):
+            return float((<cpp_storage.decay_nuc *> self._inst).decayconst)
+    
+        def __set__(self, value):
+            (<cpp_storage.decay_nuc *> self._inst).decayconst = <double> value
+    
+    
+    property fromiso:
+        """no docstring for fromiso, please file a bug report!"""
+        def __get__(self):
+            return int((<cpp_storage.decay_nuc *> self._inst).fromiso)
+    
+        def __set__(self, value):
+            (<cpp_storage.decay_nuc *> self._inst).fromiso = value
+    
+    
+    property halflife:
+        """no docstring for halflife, please file a bug report!"""
+        def __get__(self):
+            return float((<cpp_storage.decay_nuc *> self._inst).halflife)
+    
+        def __set__(self, value):
+            (<cpp_storage.decay_nuc *> self._inst).halflife = <double> value
+    
+    
+    property toiso:
+        """no docstring for toiso, please file a bug report!"""
+        def __get__(self):
+            return int((<cpp_storage.decay_nuc *> self._inst).toiso)
+    
+        def __set__(self, value):
+            (<cpp_storage.decay_nuc *> self._inst).toiso = value
+    
+    
+    # methods
+
+
+
 
 cdef class Storage(fccomp.FCComp):
     """Storage Fuel Cycle Component Class.  Daughter of FCComp class.
@@ -368,5 +441,8 @@ cdef class Storage(fccomp.FCComp):
         (<cpp_fccomp.FCComp *> self._inst).calc_params()
     
     
+
+
+
 
 

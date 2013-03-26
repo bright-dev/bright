@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 cimport fccomp
 cimport pyne.stlcontainers
 cimport reactor1g
@@ -22,5 +24,7 @@ cdef class FuelFabrication(fccomp.FCComp):
     cdef public pyne.stlcontainers._MapStrDouble _mass_weights_out
     cdef public material._MapStrMaterial _materials
     cdef public reactor1g.Reactor1G _reactor
+
+
 
 

@@ -6,10 +6,20 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 cimport fccomp
 from bright cimport cpp_storage
 
+cdef class decay_nuc:
+    cdef void * _inst
+    cdef public bint _free_inst
+
+
+
 cdef class Storage(fccomp.FCComp):
     pass
+
+
 
 

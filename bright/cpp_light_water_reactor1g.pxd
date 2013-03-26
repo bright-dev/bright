@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 from bright cimport cpp_reactor1g
 from bright cimport cpp_reactor_parameters
 from libcpp.string cimport string as std_string
@@ -27,5 +29,7 @@ cdef extern from "light_water_reactor1g.h" namespace "bright":
 
         # methods
         void calc_params() except +
+
+
 
 

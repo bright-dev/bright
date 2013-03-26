@@ -19,7 +19,7 @@ classes = [
     ('EnrichmentParameters', 'enrichment_parameters'),
     ('Enrichment', 'bright_enrichment', 'enrichment'),
     ('Reprocess', 'reprocess'),
-    ('decay_nuc', 'storage', None),
+    ('decay_nuc', 'storage'),
     ('from_nuc_struct', 'storage', None),
     ('Storage', 'storage'),
     ('FluencePoint', 'fluence_point'),

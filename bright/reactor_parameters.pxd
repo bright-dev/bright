@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 cimport numpy as np
 cimport pyne.stlcontainers
 from bright cimport cpp_reactor_parameters
@@ -20,5 +22,7 @@ cdef class ReactorParameters:
     cdef public pyne.stlcontainers._MapStrDouble _cladding_form
     cdef public pyne.stlcontainers._MapStrDouble _coolant_form
     cdef public pyne.stlcontainers._MapStrDouble _fuel_form
+
+
 
 

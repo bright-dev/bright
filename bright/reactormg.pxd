@@ -6,6 +6,8 @@
 #                                              #
 #                    Come on, guys. I mean it! #
 ################################################
+
+
 cimport fccomp
 cimport numpy as np
 cimport pyne.stlcontainers
@@ -62,5 +64,7 @@ cdef class ReactorMG(fccomp.FCComp):
     cdef public np.ndarray _phi_t
     cdef public np.ndarray _time0
     cdef public np.ndarray _trans_consts
+
+
 
 
