@@ -1,8 +1,11 @@
+import pyne
 import xdress.typesystem as ts
 
 package = 'bright'
 sourcedir = 'cpp'
 packagedir = 'bright'
+
+includes = [pyne.includes]
 
 extra_types = 'pyne.extra_types'  # non-default value
 

@@ -1,6 +1,5 @@
 desc = {
     'docstrings': {
-        'module': """Python wrapper for the fluence point.""",
         'class': ("This class holds three simple data points that represent "
                   "a fluence point."),
         'attrs': {
@@ -15,3 +14,6 @@ desc = {
                      ('m', 'float64', '0.0')): None,
     }
 
+
+mod = {'FluencePoint': desc,
+       'docstring': "Python wrapper for the fluence point.",}

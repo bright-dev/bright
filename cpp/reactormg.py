@@ -17,7 +17,6 @@ n : str, optional
 
 desc = {
     'docstrings': {
-        'module': "Python wrapper for RMG.",
         'class': class_ds,
         'attrs': {},
         'methods': {},
@@ -25,6 +24,9 @@ desc = {
     'attrs': {},
     'extra': {},
     }
+
+mod = {'ReactorMG': desc,
+       'docstring': "Python wrapper for RMG.",}
 
 desc['docstrings']['attrs']['B'] = \
 """This integer is the total number of batches in the fuel management scheme.  

@@ -20,6 +20,9 @@ desc = {
         },
     }
 
+mod = {'Storage': desc,
+       'docstring': "Python wrapper for Storage.",}
+
 desc['docstrings']['attrs']['decay_time'] = \
 """This the float (double) attribute that represents how long an input fuel 
 mass should be stored for.  This time is represented in seconds, so be sure 

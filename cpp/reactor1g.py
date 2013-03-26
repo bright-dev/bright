@@ -23,7 +23,6 @@ suffix implies that the data is evaluated at the discharge fluence.
 
 desc = {
     'docstrings': {
-        'module': "Python wrapper for reactor1g.",
         'class': class_ds,
         'attrs': {},
         'methods': {},
@@ -32,6 +31,8 @@ desc = {
     'extra': {},
     }
 
+mod = {'Reactor1G': desc,
+       'docstring': "Python wrapper for reactor1g.",}
 
 desc['docstrings']['attrs']['B'] = \
 """This integer is the total number of batches in the fuel management scheme.  

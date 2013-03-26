@@ -16,7 +16,6 @@ n : str, optional
 
 desc = {
     'docstrings': {
-        'module': mod_ds,
         'class': class_ds,
         'attrs': {},
         'methods': {},
@@ -27,6 +26,9 @@ desc = {
         },
     }
 
+
+mod = {'Enrichment': desc,
+       'docstring': mod_ds,}
 
 desc['docstrings']['attrs']['alpha_0'] = \
 r"""The :math:`\\alpha_0` attribute specifies the overall stage separation factor

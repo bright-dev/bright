@@ -12,13 +12,15 @@ will more often be interacting with.
 
 desc = {
     'docstrings': {
-        'module': mod_ds,
         'class': class_ds,
         'attrs': {},
         },
     'attrs': {},
     'extra': {},
     }
+
+mod = {'ReactorParameters': desc,
+       'docstring': mod_ds,}
 
 
 desc['docstrings']['attrs']['batches'] = \

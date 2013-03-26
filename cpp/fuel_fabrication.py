@@ -38,7 +38,6 @@ n : str, optional
 
 desc = {
     'docstrings': {
-        'module': "Python wrapper for fuel fabrication.",
         'class': class_ds,
         'attrs': {},
         'methods': {},
@@ -46,6 +45,9 @@ desc = {
     'attrs': {},
     'extra': {},
     }
+
+mod = {'FuelFabrication': desc,
+       'docstring': "Python wrapper for fuel fabrication.",}
 
 desc['docstrings']['attrs']['materials'] = \
 "A mapping of materials which are mixed to create a valid fuel form for reactor."

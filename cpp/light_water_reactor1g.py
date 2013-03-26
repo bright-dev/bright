@@ -17,7 +17,6 @@ n : str, optional
 
 desc = {
     'docstrings': {
-        'module': "Python wrapper for LWR1G.",
         'class': class_ds,
         'attrs': {},
         'methods': {},
@@ -25,6 +24,9 @@ desc = {
     'attrs': {},
     'extra': {},
     }
+
+mod = {'LightWaterReactor1G': desc,
+       'docstring': "Python wrapper for LWR1G.",}
 
 
 desc['docstrings']['methods']['calc_params'] = \

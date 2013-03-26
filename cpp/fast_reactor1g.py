@@ -17,7 +17,6 @@ n : str, optional
 
 desc = {
     'docstrings': {
-        'module': "Python wrapper for FR1G.",
         'class': class_ds,
         'attrs': {},
         'methods': {},
@@ -26,6 +25,8 @@ desc = {
     'extra': {},
     }
 
+mod = {'FastReactor1G': desc,
+       'docstring': "Python wrapper for FR1G.",}
 
 desc['docstrings']['methods']['calc_params'] = \
 """Along with its own parameter set to track, the FR model implements its own 
