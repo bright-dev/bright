@@ -539,7 +539,7 @@ cdef class Enrichment(fccomp.FCComp):
         """deltaU_i_OverG(self, i)
         no docstring for deltaU_i_OverG, please file a bug report!"""
         cdef double rtnval
-        rtnval = (<cpp_enrichment.Enrichment *> self._inst).deltaU_i_OverG(i)
+        rtnval = (<cpp_enrichment.Enrichment *> self._inst).deltaU_i_OverG(<int> i)
         return float(rtnval)
     
     
@@ -587,7 +587,7 @@ cdef class Enrichment(fccomp.FCComp):
         """xP_i(self, i)
         no docstring for xP_i, please file a bug report!"""
         cdef double rtnval
-        rtnval = (<cpp_enrichment.Enrichment *> self._inst).xP_i(i)
+        rtnval = (<cpp_enrichment.Enrichment *> self._inst).xP_i(<int> i)
         return float(rtnval)
     
     
@@ -595,7 +595,7 @@ cdef class Enrichment(fccomp.FCComp):
         """xW_i(self, i)
         no docstring for xW_i, please file a bug report!"""
         cdef double rtnval
-        rtnval = (<cpp_enrichment.Enrichment *> self._inst).xW_i(i)
+        rtnval = (<cpp_enrichment.Enrichment *> self._inst).xW_i(<int> i)
         return float(rtnval)
     
     

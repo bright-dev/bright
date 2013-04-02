@@ -26,7 +26,7 @@ cdef class FluencePoint:
     def __init__(self, f_=0, F_=0.0, m_=0.0):
         """FluencePoint(self, f_=0, F_=0.0, m_=0.0)
         """
-        self._inst = new cpp_fluence_point.FluencePoint(f_, <double> F_, <double> m_)
+        self._inst = new cpp_fluence_point.FluencePoint(<int> f_, <double> F_, <double> m_)
     
     
     def __dealloc__(self):
@@ -49,7 +49,7 @@ cdef class FluencePoint:
             return int((<cpp_fluence_point.FluencePoint *> self._inst).f)
     
         def __set__(self, value):
-            (<cpp_fluence_point.FluencePoint *> self._inst).f = value
+            (<cpp_fluence_point.FluencePoint *> self._inst).f = <int> value
     
     
     property m:

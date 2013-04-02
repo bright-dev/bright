@@ -194,7 +194,7 @@ cdef class Reactor1G(fccomp.FCComp):
             return int((<cpp_reactor1g.Reactor1G *> self._inst).B)
     
         def __set__(self, value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).B = value
+            (<cpp_reactor1g.Reactor1G *> self._inst).B = <int> value
     
     
     property BU_F_:
@@ -746,7 +746,7 @@ cdef class Reactor1G(fccomp.FCComp):
             return int((<cpp_reactor1g.Reactor1G *> self._inst).fd)
     
         def __set__(self, value):
-            (<cpp_reactor1g.Reactor1G *> self._inst).fd = value
+            (<cpp_reactor1g.Reactor1G *> self._inst).fd = <int> value
     
     
     property fuel_chemical_form:

@@ -67,7 +67,7 @@ cdef class decay_nuc:
             return int((<cpp_storage.decay_nuc *> self._inst).fromiso)
     
         def __set__(self, value):
-            (<cpp_storage.decay_nuc *> self._inst).fromiso = value
+            (<cpp_storage.decay_nuc *> self._inst).fromiso = <int> value
     
     
     property halflife:
@@ -85,7 +85,7 @@ cdef class decay_nuc:
             return int((<cpp_storage.decay_nuc *> self._inst).toiso)
     
         def __set__(self, value):
-            (<cpp_storage.decay_nuc *> self._inst).toiso = value
+            (<cpp_storage.decay_nuc *> self._inst).toiso = <int> value
     
     
     # methods

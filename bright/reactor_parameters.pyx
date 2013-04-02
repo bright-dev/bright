@@ -70,7 +70,7 @@ cdef class ReactorParameters:
             return int((<cpp_reactor_parameters.ReactorParameters *> self._inst).batches)
     
         def __set__(self, value):
-            (<cpp_reactor_parameters.ReactorParameters *> self._inst).batches = value
+            (<cpp_reactor_parameters.ReactorParameters *> self._inst).batches = <int> value
     
     
     property branch_ratio_cutoff:
@@ -88,7 +88,7 @@ cdef class ReactorParameters:
             return int((<cpp_reactor_parameters.ReactorParameters *> self._inst).burn_regions)
     
         def __set__(self, value):
-            (<cpp_reactor_parameters.ReactorParameters *> self._inst).burn_regions = value
+            (<cpp_reactor_parameters.ReactorParameters *> self._inst).burn_regions = <int> value
     
     
     property burn_times:

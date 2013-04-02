@@ -196,7 +196,7 @@ cdef class FCComp:
             return int((<cpp_fccomp.FCComp *> self._inst).pass_num)
     
         def __set__(self, value):
-            (<cpp_fccomp.FCComp *> self._inst).pass_num = value
+            (<cpp_fccomp.FCComp *> self._inst).pass_num = <int> value
     
     
     property track_params:

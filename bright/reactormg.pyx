@@ -217,7 +217,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).B)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).B = value
+            (<cpp_reactormg.ReactorMG *> self._inst).B = <int> value
     
     
     property BU0:
@@ -326,7 +326,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).G)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).G = value
+            (<cpp_reactormg.ReactorMG *> self._inst).G = <int> value
     
     
     property I:
@@ -404,7 +404,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).K_num)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).K_num = value
+            (<cpp_reactormg.ReactorMG *> self._inst).K_num = <int> value
     
     
     property K_ord:
@@ -663,7 +663,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).S)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).S = value
+            (<cpp_reactormg.ReactorMG *> self._inst).S = <int> value
     
     
     property S_O:
@@ -762,7 +762,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).bt_s)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).bt_s = value
+            (<cpp_reactormg.ReactorMG *> self._inst).bt_s = <int> value
     
     
     property burn_regions:
@@ -771,7 +771,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).burn_regions)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).burn_regions = value
+            (<cpp_reactormg.ReactorMG *> self._inst).burn_regions = <int> value
     
     
     property burn_time:
@@ -1246,7 +1246,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).nperturbations)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).nperturbations = value
+            (<cpp_reactormg.ReactorMG *> self._inst).nperturbations = <int> value
     
     
     property perturbed_fields:
@@ -1439,7 +1439,7 @@ cdef class ReactorMG(fccomp.FCComp):
             return int((<cpp_reactormg.ReactorMG *> self._inst).td_n)
     
         def __set__(self, value):
-            (<cpp_reactormg.ReactorMG *> self._inst).td_n = value
+            (<cpp_reactormg.ReactorMG *> self._inst).td_n = <int> value
     
     
     property time0:
@@ -1594,7 +1594,7 @@ cdef class ReactorMG(fccomp.FCComp):
         """bateman(self, i, j, t)
         no docstring for bateman, please file a bug report!"""
         cdef double rtnval
-        rtnval = (<cpp_reactormg.ReactorMG *> self._inst).bateman(i, j, <double> t)
+        rtnval = (<cpp_reactormg.ReactorMG *> self._inst).bateman(<int> i, <int> j, <double> t)
         return float(rtnval)
     
     
@@ -1602,7 +1602,7 @@ cdef class ReactorMG(fccomp.FCComp):
         """bateman_chain(self, i, j, c, t)
         no docstring for bateman_chain, please file a bug report!"""
         cdef double rtnval
-        rtnval = (<cpp_reactormg.ReactorMG *> self._inst).bateman_chain(i, j, c, <double> t)
+        rtnval = (<cpp_reactormg.ReactorMG *> self._inst).bateman_chain(<int> i, <int> j, <int> c, <double> t)
         return float(rtnval)
     
     
