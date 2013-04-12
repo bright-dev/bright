@@ -85,7 +85,7 @@ desc = {
     'docstrings': {
         'class': class_ds,
         'attrs': {
-            'sepeff_ds': sepeff_ds,
+            'sepeff': sepeff_ds,
             },
         'methods': {
             'initialize': init_ds, 
