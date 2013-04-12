@@ -1,0 +1,13 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <define name="BrightLightWaterReactor1G">
+    <element name="BrightLightWaterReactor1G"> 
+      <element name="input">
+        <ref name="incommodity"/>
+        <ref name="outcommodity"/>
+      </element>
+    </element>
+  </define>
+
+</grammar>
