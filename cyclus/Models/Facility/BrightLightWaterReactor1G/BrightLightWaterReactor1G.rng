@@ -3,10 +3,7 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
   <define name="BrightLightWaterReactor1G">
     <element name="BrightLightWaterReactor1G"> 
-      <element name="input">
-        <ref name="incommodity"/>
-        <ref name="outcommodity"/>
-      </element>
+      <evector<rsrc_ptr>vector<rsrc_ptr>
     </element>
   </define>
 
