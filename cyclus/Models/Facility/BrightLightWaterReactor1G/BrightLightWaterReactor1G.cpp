@@ -19,7 +19,8 @@ BrightLightWaterReactor1G::BrightLightWaterReactor1G(){
     }
     std::string libname = bright::BRIGHT_DATA + "/LWR.h5";
     bright::load_track_nucs_hdf5(libname, std::string(""));
-    engine = new bright::LightWaterReactor1G(libname);
+    engine = new bright::LightWaterReactor1G(libname, bright::lwr_defaults);
+    engine.target_BU = 50.0;
   }
   refcount++;
   month_in_cycle_ = 1;
@@ -79,8 +80,6 @@ void BrightLightWaterReactor::init(xmlNodePtr cur) {
 
   // all facilities require commodities - possibly many
   string recipe_name;
-  string in_commod;
-  string out_commod;
   xmlNodeSetPtr nodes = XMLinput->get_xpath_elements(cur, "fuelpair");
 
   // for each fuel pair, there is an in and an out commodity
@@ -90,17 +89,6 @@ void BrightLightWaterReactor::init(xmlNodePtr cur) {
     // get commods
     in_commod = XMLinput->get_xpath_content(pair_node,"incommodity");
     out_commod = XMLinput->get_xpath_content(pair_node,"outcommodity");
-
-    // get in_recipe
-    recipe_name = XMLinput->get_xpath_content(pair_node,"inrecipe");
-    in_recipe_ = RecipeLibrary::Recipe(recipe_name);
-
-    // get out_recipe
-    recipe_name = XMLinput->get_xpath_content(pair_node,"outrecipe");
-    out_recipe_ = RecipeLibrary::Recipe(recipe_name);
-
-    fuelPairs_.push_back(make_pair(make_pair(in_commod,in_recipe_),
-          make_pair(out_commod, out_recipe_)));
   };
 
   stocks_ = deque<Fuel>();
@@ -114,7 +102,6 @@ void BrightLightWaterReactor::copy(BrightLightWaterReactor* src) {
 
   FacilityModel::copy(src);
 
-  fuelPairs_ = src->fuelPairs_;
   capacity_ = src->capacity_;
   cycle_length_ = src->cycle_length_;
   lifetime_ = src->lifetime_;
@@ -127,15 +114,13 @@ void BrightLightWaterReactor::copy(BrightLightWaterReactor* src) {
   state_ = src->state_;
   typeReac_ = src->typeReac_;
   CF_ = src->CF_;
-
+  in_commod = src->in_commod;
+  out_commod = src->out_commod;
 
   stocks_ = deque<Fuel>();
   currCore_ = deque< pair<string, mat_rsrc_ptr > >();
-  inventory_ = deque<Fuel >();
+  inventory_ = deque<Fuel>();
   ordersWaiting_ = deque<msg_ptr>();
-
-  in_recipe_ = src->in_recipe_;
-  out_recipe_ = src->out_recipe_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
@@ -147,9 +132,9 @@ void BrightLightWaterReactor::copyFreshModel(Model* src) {
 std::string BrightLightWaterReactor::str() { 
   std::string s = FacilityModel::str(); 
   s += "    converts commodity '"
-    + fuelPairs_.front().first.first
+    + in_commod
     + "' into commodity '"
-    + this->fuelPairs_.front().second.first
+    + out_commod
     + "'.";
   return s;
 };
@@ -186,29 +171,30 @@ void BrightLightWaterReactor::endCycle() {
 
   // move a batch out of the core 
   string batchCommod = currCore_.front().first;
-  mat_rsrc_ptr batchMat = currCore_.front().second;
+  mat_rsrc_ptr batchMatFeed = currCore_.front().second;
   currCore_.pop_front();
 
-  // figure out the spent fuel commodity and material
-  string outCommod;
-  IsoVector outComp;
+  // Get a pyne composition for bright to use
+  map<int, double>::iterator i;
+  map<int, double> incomp = map<int, double>();
+  map<int, double> batch_feed = batchMatFeed.isoVector().comp().map();
+  for (map<int, double>::iterator i = batch_feed.begin(); i != batch_feed.end(); i++)
+    incomp[pyne::nucname::zzaaam(i->first)] = i->second;
 
-  for (deque< pair< Recipe , Recipe> >::iterator iter = fuelPairs_.begin();
-      iter != fuelPairs_.end();
-      iter++) {
-    if (iter->first.first == batchCommod) {
-      outCommod = iter->second.first;
-      outComp = iter->second.second;
-      break;
-    }
-  }
+  // do the calculation
+  pyne::Material mat_prod = engine.calc(incomp);
+  double mass_prod = mat_prod.mass;
+  map<int, double> outcomp = map<int, double>();
+  CompMapPtr outComp(new CompMap(MASS));
+  for (i = mat_prod.comp.begin(); i != mat_prod.comp.end(); i++)
+    (*outComp)[(i->first)/10] = (i->second) * mass_prod;
 
   // change the composition to the compositon of the spent fuel type
-  batchMat = mat_rsrc_ptr(new Material(outComp));
+  mat_rsrc_ptr batchMatProd = mat_rsrc_ptr(new Material(outComp));
 
   // move converted material into Inventory
   Fuel outBatch;
-  outBatch = make_pair(outCommod, batchMat);
+  outBatch = make_pair(out_commod, batchMatProd);
   inventory_.push_back(outBatch);
 };
 
@@ -300,7 +286,6 @@ void BrightLightWaterReactor::handleTick(int time) {
   LOG(LEV_INFO3, "BLWR1G") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void BrightLightWaterReactor::makeRequests(){
   // MAKE A REQUEST
   if(this->stocksMass() != 0) {
@@ -315,17 +300,13 @@ void BrightLightWaterReactor::makeRequests(){
   string in_commod = request_commod_pair.first;
   IsoVector in_recipe = request_commod_pair.second;
 
-  // It then moves that pair from the front to the back of the preference lineup
-  fuelPairs_.push_back(make_pair(request_commod_pair, offer_commod_pair));
-  fuelPairs_.pop_front();
-
   // It can accept only a whole batch
   double requestAmt;
   double minAmt = in_recipe.mass();
   // The Recipe Reactor should ask for a batch if there isn't one in stock.
   double sto = this->stocksMass(); 
   // subtract sto from batch size to get total empty space. 
-  // Hopefully the result is either 0 or the batch size 
+  // Hopefully the result  if (space <= 0) { is either 0 or the batch size 
   double space = minAmt - sto; // KDHFLAG get minAmt from the input ?
   // this will be a request for free stuff
   double commod_price = 0;
@@ -398,7 +379,7 @@ void BrightLightWaterReactor::makeOffers(){
     offer_amt = iter->second->quantity();
 
     // make a material to offer
-    mat_rsrc_ptr offer_mat = mat_rsrc_ptr(new Material(out_recipe_));
+    mat_rsrc_ptr offer_mat = mat_rsrc_ptr(new Material(iter->second));
     offer_mat->print();
     offer_mat->setQuantity(offer_amt);
 
@@ -485,42 +466,6 @@ void BrightLightWaterReactor::setCapacityFactor(double cf) {
   CF_ = cf;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-IsoVector BrightLightWaterReactor::inRecipe() {
-  return in_recipe_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void BrightLightWaterReactor::setInRecipe(IsoVector recipe) {
-  in_recipe_ = recipe;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-IsoVector BrightLightWaterReactor::outRecipe() {
-  return out_recipe_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void BrightLightWaterReactor::setOutRecipe(IsoVector recipe) {
-  out_recipe_ = recipe;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void BrightLightWaterReactor::addFuelPair(std::string incommod, IsoVector inFuel,
-                                std::string outcommod, IsoVector outFuel) {
-  fuelPairs_.push_back(make_pair(make_pair(incommod, inFuel),
-                                 make_pair(outcommod, outFuel)));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-string BrightLightWaterReactor::inCommod() {
-  return fuelPairs_.front().first.first ;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-string BrightLightWaterReactor::outCommod() {
-  return fuelPairs_.front().second.first;
-}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 double BrightLightWaterReactor::inventoryMass(){

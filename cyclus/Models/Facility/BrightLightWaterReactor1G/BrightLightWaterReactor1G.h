@@ -232,45 +232,14 @@ class BrightLightWaterReactor : public FacilityModel  {
   void setCapacityFactor(double cf);
 
   /**
-     return the input recipe 
-   */
-  IsoVector inRecipe();
-
-  /**
-     set the input recipe 
-   */
-  void setInRecipe(IsoVector recipe);
-
-  /**
-     set the cycle length 
-   */
-  IsoVector outRecipe();
-
-  /**
-     set the output recipe 
-   */
-  void setOutRecipe(IsoVector recipe);
-
-  /**
-     add a fuel pair 
-      
-     @param incommod the input commodity 
-     @param inFuel the isotopics of the input fuel 
-     @param outcommod the output commodity 
-     @param outFuel the isotopics of the output fuel 
-   */
-  void addFuelPair(std::string incommod, IsoVector inFuel, 
-		   std::string outcommod, IsoVector outFuel);
-
-  /**
      return the input commodity 
    */
-  std::string inCommod();
+  std::string in_commod;
 
   /**
      return the output commodity 
    */
-  std::string outCommod();
+  std::string out_commod;
 
   /**
      get the total mass of the stuff in the inventory 
@@ -296,21 +265,6 @@ class BrightLightWaterReactor : public FacilityModel  {
      Perform the actions that must occur at the end of the cycle 
    */
   void endCycle();
-
-  /**
-     The receipe of input materials. 
-   */
-  IsoVector in_recipe_;
-
-  /**
-     The receipe of the output material. 
-   */
-  IsoVector out_recipe_;
-
-  /**
-     The BrightLightWaterReactor has pairs of input and output fuel 
-   */
-  std::deque< std::pair< Recipe, Recipe > > fuelPairs_;
 
   /**
      Fresh fuel assemblies on hand. 
