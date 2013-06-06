@@ -46,6 +46,7 @@ Contents
     usersguide/tutorial
     usersguide/index
     libref/index
+    resources
 
 =============
 Helpful Links
