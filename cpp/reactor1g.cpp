@@ -210,12 +210,8 @@ void bright::Reactor1G::loadlib(std::string lib)
   // Read the "isozz" column so that we can inteligently pick out our data
   int isozz_n = bright::find_index_char( (char *) "isozz", xs_field_names, xs_nfields);
   int * isozz = new int [xs_nrows];
-  #ifdef _WIN32
-    const size_t temp_xs_field_sizes_isozz_n [1] = {xs_field_sizes[isozz_n]};
-    kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, temp_xs_field_sizes_isozz_n, isozz);
-  #else
-    kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, (const size_t [1]) {xs_field_sizes[isozz_n]}, isozz);
-  #endif
+  const size_t temp_xs_field_sizes_isozz_n [1] = {xs_field_sizes[isozz_n]};
+  kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[isozz_n], 0, xs_nrows, sizeof(int), 0, temp_xs_field_sizes_isozz_n, isozz);
 
   // Now, load the XS that we need.
   // NOTE: This maps metastable isotopes to their stable versions if they can't be found!
@@ -238,16 +234,11 @@ void bright::Reactor1G::loadlib(std::string lib)
 
     double * iso_sig_a = new double [1];
     double * iso_sig_s = new double [1];
-    #ifdef _WIN32
-      const size_t temp_xs_field_sizes_sigma_a_n [1] = {xs_field_sizes[sigma_a_n]};
-      const size_t temp_xs_field_sizes_sigma_s_n [1] = {xs_field_sizes[sigma_s_n]};
+    const size_t temp_xs_field_sizes_sigma_a_n [1] = {xs_field_sizes[sigma_a_n]};
+    const size_t temp_xs_field_sizes_sigma_s_n [1] = {xs_field_sizes[sigma_s_n]};
 
-      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_a_n, iso_sig_a);
-      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_s_n, iso_sig_s);
-    #else
-      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_a_n]}, iso_sig_a);
-      kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, (const size_t [1]) {xs_field_sizes[sigma_s_n]}, iso_sig_s);
-    #endif
+    kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_a_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_a_n, iso_sig_a);
+    kdbstat = H5TBread_fields_name(kdblib, "/XS/ThermalMaxwellAve", xs_field_names[sigma_s_n], iso_n, 1, sizeof(double), 0, temp_xs_field_sizes_sigma_s_n, iso_sig_s);
     sigma_a_therm[*i] = iso_sig_a[0];
     sigma_s_therm[*i] = iso_sig_s[0];
   };
