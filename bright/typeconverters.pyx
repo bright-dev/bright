@@ -6,8 +6,8 @@ from pyne cimport cpp_nucname
 from pyne cimport nucname
 from pyne import nucname
 
-from pyne cimport stlconverters as conv
-from pyne import stlconverters as conv
+from pyne cimport stlcontainers as cont
+from pyne import stlcontainers as cont
 
 cimport typeconverters
 

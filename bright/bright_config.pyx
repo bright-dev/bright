@@ -12,8 +12,8 @@ cimport numpy as np
 import numpy as np
 
 # pyne imports 
-from pyne cimport stlconverters as conv
-from pyne import stlconverters as conv
+from pyne cimport stlcontainers as cont
+from pyne import stlcontainers as cont
 
 cimport pyne.nucname
 import pyne.nucname
@@ -80,10 +80,10 @@ cdef class BrightConf:
     property track_nucs:
         """Set of nuclides (in zzaaam form, see pyne) which components should track."""
         def __get__(self):
-            cdef conv._SetInt proxy
+            cdef cont._SetInt proxy
 
             if self._track_nucs is None:
-                proxy = conv.SetInt(False, False)
+                proxy = cont.SetInt(False, False)
                 proxy.set_ptr = &cpp_bright.track_nucs
                 self._track_nucs = proxy
 
@@ -92,8 +92,8 @@ cdef class BrightConf:
         def __set__(self, value):
             cdef cpp_set[int] s
 
-            if isinstance(value, conv._SetInt):
-                cpp_bright.track_nucs = deref((<conv._SetInt> value).set_ptr)
+            if isinstance(value, cont._SetInt):
+                cpp_bright.track_nucs = deref((<cont._SetInt> value).set_ptr)
             elif hasattr(value, '__len__'):
                 s = cpp_set[int]()
                 for nuc in value:
@@ -108,14 +108,14 @@ cdef class BrightConf:
     property track_nucs_order:
         """Array nuclides which determines the order of track_nucs."""
         def __get__(self):
-            return conv.vector_to_array_1d_int(cpp_bright.track_nucs_order)
+            return cont.vector_to_array_1d_int(cpp_bright.track_nucs_order)
 
         def __set__(self, value):
             s = set([pyne.nucname.zzaaam(v) for v in value])
             a = np.array(s)
             a.sort()
-            cpp_bright.track_nucs = conv.py_to_cpp_set_int(s)
-            cpp_bright.track_nucs_order = conv.array_to_vector_1d_int(a)
+            cpp_bright.track_nucs = cont.py_to_cpp_set_int(s)
+            cpp_bright.track_nucs_order = cont.array_to_vector_1d_int(a)
 
 
     property verbosity:

@@ -8,9 +8,10 @@ packagedir = 'bright'
 includes = [pyne.includes]
 
 extra_types = 'pyne.extra_types'  # non-default value
+make_extra_types = False
 
 stlcontainers = []
-
+make_stlcontainers = False
 stlcontainers_module = 'pyne.stlcontainers'
 
 classes = [
