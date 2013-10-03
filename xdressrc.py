@@ -1,5 +1,5 @@
 import pyne
-import xdress.typesystem as ts
+from xdress.typesystem import TypeSystem
 
 package = 'bright'
 sourcedir = 'cpp'
@@ -34,6 +34,7 @@ classes = [
 
 functions = []
 
+ts = TypeSystem.empty()
 
 # hack in some material registrations
 ts.register_class('Material', 
@@ -53,11 +54,11 @@ ts.register_class('Material',
       '{proxy_name}.mat_pointer[0]'),
     )
 
-ts.register_specialization(('map', 'str', ('Material', '*'), 0),
-    cython_c_type='material._MapStrMaterial',
-    cython_cy_type='material._MapStrMaterial',
-    cython_py_type='material.MapStrMaterial',
-    cython_cimport=(('pyne', 'material'),),
-    cython_cyimport=(('pyne', 'material'),),
-    cython_pyimport=(('pyne', 'material'),),
-    )
+#ts.register_specialization(('map', 'str', ('Material', '*'), 0),
+#    cython_c_type='material._MapStrMaterial',
+#    cython_cy_type='material._MapStrMaterial',
+#    cython_py_type='material.MapStrMaterial',
+#    cython_cimport=(('pyne', 'material'),),
+#    cython_cyimport=(('pyne', 'material'),),
+#    cython_pyimport=(('pyne', 'material'),),
+#    )
