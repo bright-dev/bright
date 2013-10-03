@@ -46,7 +46,7 @@ namespace bright {
   extern void load_track_nucs_hdf5(std::string, std::string = "", bool = false);  //Load isotopic tracking list from HDF5 file.
   extern void load_track_nucs_text(std::string, bool = false);                    //Load isotopic tracking list from text file.
 
-  extern void sort_track_nucs(); // Sets the isotopic tracking by zzaaam from lowest to highest and stores it in track_nucs_order
+  extern void sort_track_nucs(); // Sets the isotopic tracking by id from lowest to highest and stores it in track_nucs_order
 
   extern int verbosity;			//How much should the components talk to us? 0 = None, 1 = a little, 2 = a lot!, etc.
   extern int write_text;

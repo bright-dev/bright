@@ -287,7 +287,7 @@ void bright::Reactor1G::fold_mass_weights()
     } 
     else
     {
-      int key_zz = pyne::nucname::zzaaam(key->first);
+      int key_zz = pyne::nucname::id(key->first);
       niF[key_zz] = fuel_chemical_form[key->first];
     }
   };
@@ -295,7 +295,7 @@ void bright::Reactor1G::fold_mass_weights()
   // Note that the ni in the coolant is just coolant_chemical_form
   for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
   {
-    int key_zz = pyne::nucname::zzaaam(key->first);
+    int key_zz = pyne::nucname::id(key->first);
     niC[key_zz] = coolant_chemical_form[key->first];		
   };
 
@@ -318,7 +318,7 @@ void bright::Reactor1G::fold_mass_weights()
       MWF = MWF + (fuel_chemical_form[key->first] * A_IHM);
     else
     {
-      int key_zz = pyne::nucname::zzaaam(key->first);
+      int key_zz = pyne::nucname::id(key->first);
       MWF = MWF + (fuel_chemical_form[key->first] * pyne::atomic_mass(key_zz));
     }
   };
@@ -327,7 +327,7 @@ void bright::Reactor1G::fold_mass_weights()
   MWC = 0.0;
   for (std::map<std::string, double>::iterator key = coolant_chemical_form.begin(); key != coolant_chemical_form.end(); key++)
   {
-    int key_zz = pyne::nucname::zzaaam(key->first);
+    int key_zz = pyne::nucname::id(key->first);
     MWC = MWC + (coolant_chemical_form[key->first] * pyne::atomic_mass(key_zz));
   };
   miC.clear();

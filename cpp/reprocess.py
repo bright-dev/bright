@@ -23,7 +23,7 @@ name : str, optional
 sepeff_ds = \
 """This is a dictionary or map representing the separation 
 efficiencies of each isotope in bright.bright_conf.track_nucs. Therefore 
-it has zzaaam-integer keys and float (double) values. During initialization, 
+it has id-integer keys and float (double) values. During initialization, 
 other SE dictionaries are converted to this standard form::
 
     sepeff = {922350: 0.999, 942390: 0.99}
@@ -35,7 +35,7 @@ init_ds = """initialize(sepeff)
 The initialize() function calculates the sepeff from an integer-keyed 
 dictionary of separation efficiencies.  The difference is that sepdict 
 may contain either elemental or isotopic keys and need not contain every 
-isotope tracked.  On the other hand, sepeff must have only zzaaam keys 
+isotope tracked.  On the other hand, sepeff must have only id keys 
 that match exactly the isotopes in bright.track_nucs.
 
 Parameters
@@ -70,7 +70,7 @@ Parameters
 ----------
 input : dict or Material or None, optional 
     If input is present, it set as the component's mat_feed.  If input is a 
-    isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+    isotopic dictionary (id keys, float values), this dictionary is first 
     converted into a Material before being set as mat_feed.
 
 Returns

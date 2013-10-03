@@ -596,7 +596,7 @@ void bright::ReactorMG::calc_nearest_neighbors()
       iso_col = perturbations.cols[p];
       iso_LL = perturbations.cols[p];
       iso_LL.replace(0, 8, "");
-      iso_zz = pyne::nucname::zzaaam(iso_LL);
+      iso_zz = pyne::nucname::id(iso_LL);
 
       // Determine the mass of the isotope in the feed
       if (0 < mat_feed.comp.count(iso_zz))
@@ -724,7 +724,7 @@ void bright::ReactorMG::interpolate_cross_sections()
       iso_col = perturbations.cols[p];
       iso_LL = perturbations.cols[p];
       iso_LL.replace(0, 8, "");
-      iso_zz = pyne::nucname::zzaaam(iso_LL);
+      iso_zz = pyne::nucname::id(iso_LL);
 
       // Determine the mass of the isotope in the feed
       if (0 < mat_feed.comp.count(iso_zz))
@@ -824,7 +824,7 @@ void bright::ReactorMG::calc_mass_weights()
       MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * A_HM_t[bt_s];
     else
     {
-      key_zz = pyne::nucname::zzaaam(key->first);
+      key_zz = pyne::nucname::id(key->first);
       MW_fuel_t[bt_s] += chemical_form_fuel[key->first] * pyne::atomic_mass(key_zz);
     };
   };
@@ -832,14 +832,14 @@ void bright::ReactorMG::calc_mass_weights()
   // Cladding Molecular Weight
   for (std::map<std::string, double>::iterator key = chemical_form_clad.begin(); key != chemical_form_clad.end(); key++)
   {
-    key_zz = pyne::nucname::zzaaam(key->first);
+    key_zz = pyne::nucname::id(key->first);
     MW_clad_t[bt_s] += chemical_form_clad[key->first] * pyne::atomic_mass(key_zz);
   };
 
   // Coolant Molecular Weight
   for (std::map<std::string, double>::iterator key = chemical_form_cool.begin(); key != chemical_form_cool.end(); key++)
   {
-    key_zz = pyne::nucname::zzaaam(key->first);
+    key_zz = pyne::nucname::id(key->first);
     MW_cool_t[bt_s] += chemical_form_cool[key->first] * pyne::atomic_mass(key_zz);
   };
 
@@ -859,7 +859,7 @@ void bright::ReactorMG::calc_mass_weights()
     }
     else
     {
-      key_zz = pyne::nucname::zzaaam(key->first);
+      key_zz = pyne::nucname::id(key->first);
       n_fuel_it[key_zz][bt_s] += chemical_form_fuel[key->first];
     }
   };
@@ -867,14 +867,14 @@ void bright::ReactorMG::calc_mass_weights()
   // Note that the n_it in the cladding is just chemical_form_clad
   for (std::map<std::string, double>::iterator key = chemical_form_clad.begin(); key != chemical_form_clad.end(); key++)
   {
-    key_zz = pyne::nucname::zzaaam(key->first);
+    key_zz = pyne::nucname::id(key->first);
     n_clad_it[key_zz][bt_s] = chemical_form_clad[key->first];
   };
 
   // Note that the n_it in the coolant is just chemical_form_cool
   for (std::map<std::string, double>::iterator key = chemical_form_cool.begin(); key != chemical_form_cool.end(); key++)
   {
-    key_zz = pyne::nucname::zzaaam(key->first);
+    key_zz = pyne::nucname::id(key->first);
     n_cool_it[key_zz][bt_s] = chemical_form_cool[key->first];
   };
 

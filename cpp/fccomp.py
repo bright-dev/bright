@@ -182,7 +182,7 @@ Parameters
 ----------
 input : dict or Material, optional
     If input is present, it set as mat_feed.  If input is a nuclide dictionary 
-    (zzaaam keys, float values), this dictionary is first converted to a Material 
+    (id keys, float values), this dictionary is first converted to a Material 
     before being set as mat_feed.
 
 Returns

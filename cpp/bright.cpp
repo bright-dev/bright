@@ -125,7 +125,7 @@ void bright::load_track_nucs_hdf5(std::string filename, std::string datasetname,
 
   //load into track_nucs
   for(int n = 0; n < isolen[0]; n++)
-    track_nucs.insert(pyne::nucname::zzaaam(iso_out_int[n]));
+    track_nucs.insert(pyne::nucname::id(iso_out_int[n]));
 
   // Sort the results
   sort_track_nucs();
@@ -153,7 +153,7 @@ void bright::load_track_nucs_text(std::string filename, bool clear_prev)
     isofile >> isoraw;
     isostr.assign(isoraw);
     isostr = pyne::remove_characters(isostr, "()[],.;{}!#|");
-    track_nucs.insert(pyne::nucname::zzaaam(isostr));
+    track_nucs.insert(pyne::nucname::id(isostr));
   };
 
   //close file

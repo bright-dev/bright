@@ -44,12 +44,12 @@ always have a value between the weights of the j and k key components.
 """
 
 desc['docstrings']['attrs']['j'] = \
-"""This is an integer in zzaaam-form that represents the jth key component.
+"""This is an integer in id-form that represents the jth key component.
 This nuclide is preferentially enriched in the product stream.
 For standard uranium cascades j is 922350 (ie U-235).
 """
 desc['docstrings']['attrs']['k'] = \
-"""This is an integer in zzaaam-form that represents the kth key component.
+"""This is an integer in id-form that represents the kth key component.
 This nuclide is preferentially enriched in the waste stream.
 For standard uranium cascades k is 922380 (ie U-238).
 """
@@ -160,7 +160,7 @@ Parameters
 ----------
 input : dict or Material or None, optional
     If input is present, it is set as the component's mat_feed.  If input is 
-    a nuclide mapping (zzaaam keys, float values), it is first converted into a 
+    a nuclide mapping (id keys, float values), it is first converted into a 
     Material before being set as mat_feed.
 
 Returns
