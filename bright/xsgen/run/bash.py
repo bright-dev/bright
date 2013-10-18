@@ -7,7 +7,7 @@ import subprocess
 
 # Char Libraries
 from runchar import RunChar
-from ..templates.run_script import template as run_script_template
+# from ..templates.run_script import template as run_script_template
 from pyne.utils import message, failure
 
 
@@ -37,12 +37,12 @@ class Bash(RunChar):
             run_fill['remote_get'] = ''
         else:
             run_fill['remote_put'] = ("scp -r {rc.user}@{rg}:{rc.dir} ~/tmpchar/\n"
-                                      "cd ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                      "cd ~/tmpchar/\n").format(rc=self.env['remote_connection'],
                                                             rg=self.env['remote_gateway'])
             run_fill['remote_get'] = ("cd ~\n"
                                       "mv ~/CHAR_*.o* ~/tmpchar/\n"
                                       "scp -r ~/tmpchar/* {rc.user}@{rg}:{rc.dir}\n"
-                                      "rm -r ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                      "rm -r ~/tmpchar/\n").format(rc=self.env['remote_connection'],
                                                                    rg=self.env['remote_gateway'])
 
         # Get transport specific values
@@ -57,7 +57,7 @@ class Bash(RunChar):
 
     #
     # Where to run methods
-    # 
+    #
 
     def run_locally(self):
         """Runs the transport calculation on the local machine."""
@@ -84,7 +84,7 @@ class Bash(RunChar):
             # Make remote directory, if it isn't already there
             rc.run("mkdir -p {rc.dir}".format(rc=rc))
 
-            # Remove the current contents of the remote directory        
+            # Remove the current contents of the remote directory
             rc.run("rm -r {rc.dir}*".format(rc=rc))
 
             # Put all appropriate files in reomte dir
@@ -94,7 +94,7 @@ class Bash(RunChar):
                 rc.put(inputfile, rc.dir + inputfile)
 
             # Run char
-            rc.run("source /etc/profile; cd {rc.dir}; ./{rs} > run.log 2>&1 &".format(rc=rc, 
+            rc.run("source /etc/profile; cd {rc.dir}; ./{rs} > run.log 2>&1 &".format(rc=rc,
                                                                                       rs=rs))
             if 0 < self.env['verbosity']:
                 print(message("Running transport code remotely."))
@@ -131,13 +131,13 @@ class Bash(RunChar):
         """Finds the process id for a currently running char instance."""
         if self.env['options'].LOCAL:
             rflag = ''
-            spout = subprocess.check_output("ps ux | grep {0}".format(self.n_code.run_str), shell=True) 
+            spout = subprocess.check_output("ps ux | grep {0}".format(self.n_code.run_str), shell=True)
         else:
             rflag = 'Remote '
             try:
                 spout = subprocess.check_output("ssh {rc.user}@{rc.url} 'ps ux | grep {0}'".format(
-                                                self.n_code.run_str, rc=self.env.remote_connection), 
-                                                shell=True) 
+                                                self.n_code.run_str, rc=self.env.remote_connection),
+                                                shell=True)
             except NameError:
                 if 0 < self.env['verbosity']:
                     print(failure(remote_err_msg))

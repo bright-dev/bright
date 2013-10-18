@@ -32,19 +32,21 @@ np.seterr(divide='ignore')
 try:
     import serpent
 except ImportError:
-    pass
+    import mock
+    print("No serpent, mocking!")
+    serpent = mock.Mock()
 
 def run_serpent_subprocess(argstr):
     rtn = subprocess.check_call('sss-dev ' + argstr, shell=True)
     return rtn
 
 run_serpent_in_switch = {
-    '': serpent.main, 
+    '': serpent.main,
     'sh': run_serpent_subprocess,
     'bash': run_serpent_subprocess,
     'subprocess': run_serpent_subprocess,
-    'python': serpent.main, 
-    'module': serpent.main, 
+    'python': serpent.main,
+    'module': serpent.main,
     }
 
 partial_fission_mts = set([19, 20, 21, 38])
@@ -53,7 +55,6 @@ partial_fission_mts = set([19, 20, 21, 38])
 #
 # Helper Functions
 #
-
 
 def serpent_xs_nucs_available(xsdata):
     """Finds the nuclides available to serpent for cross-section generation.
@@ -88,12 +89,12 @@ def serpent_mt_avaliable(xsdata, nucs, temp_flag, verbosity=100):
 
     Args:
         * xsdata (str): path to serpent *.xsdata file that will be used.
-        * nucs (list of zzaaam): List of nuclides to find MT numbers for. 
+        * nucs (list of zzaaam): List of nuclides to find MT numbers for.
           nuclides must be valid for serpent.
         * temp_flag (3-character string): Flag for the temperature.
 
     Returns:
-        * nuc_mt (dict of sets): A dictionary whose keys are nuclides (zzaaam) and whose 
+        * nuc_mt (dict of sets): A dictionary whose keys are nuclides (zzaaam) and whose
           keys are sets of MT numbers that serpent has available."""
     if 0 < verbosity:
         print(message("Grabbing valid MT numbers for available nuclides:"))
@@ -108,7 +109,7 @@ def serpent_mt_avaliable(xsdata, nucs, temp_flag, verbosity=100):
     # Now, find the MTs for each nuc
     nuc_mts = {}
     for nuc_zz in nucs:
-        # Convert nuc 
+        # Convert nuc
         nuc_serp = nucname.serpent(nuc_zz)
         nuc_serp_flag = "{0}.{1}".format(nuc_serp, temp_flag)
 
@@ -127,7 +128,7 @@ def serpent_mt_avaliable(xsdata, nucs, temp_flag, verbosity=100):
             nuc_mt = nuc_mt - restricted_tallies[(nuc_zz, temp_flag)]
 
         if 0 == len(nuc_mt & serpent_mt_fission - set([-6])):
-            # if nuclide fission not avilable, remove material 
+            # if nuclide fission not avilable, remove material
             # fission and nubar from avilable tallies
             nuc_mt = nuc_mt - serpent_mt_fission
             nuc_mt = nuc_mt - serpent_mt_nubar
@@ -166,7 +167,7 @@ class NCodeSerpent(object):
         self.place_remote_files = ['.']
         self.fetch_remote_files = ['.']
 
-        # Set some helpful attributes 
+        # Set some helpful attributes
         self.mpi_flag = self.get_mpi_flag()
         self.ntimes = len(self.env['burn_times'])
         self.G = len(self.env['group_structure']) - 1
@@ -209,9 +210,9 @@ class NCodeSerpent(object):
         env['temp_flag'] = utils.temperature_flag(env['temperature'])
 
         # Grab the MT numbers that are available for all valid nuclides
-        env['nuc_mts'] = serpent_mt_avaliable(env['serpent_xsdata'], 
-                                              env['core_transmute_in_serpent'], 
-                                              env['temp_flag'], 
+        env['nuc_mts'] = serpent_mt_avaliable(env['serpent_xsdata'],
+                                              env['core_transmute_in_serpent'],
+                                              env['temp_flag'],
                                               env['verbosity'])
         return env
 
@@ -235,18 +236,18 @@ class NCodeSerpent(object):
             else:
                 comp_str += "   {0:.5G}\n".format(comp[nuc])
         return comp_str
-            
+
 
     def update_initial_fuel(self, n):
         """Required to allow for initial fuel nuclide concentration perturbations."""
         if len(self.env['initial_nuc_keys']) == 0:
-            # Don't bother readin the perturbation table if there 
+            # Don't bother readin the perturbation table if there
             # is nothing there to read!
             ihm_mat = 1.0 * self.env['ihm_mat']
         else:
             # Read the perturbations from the file
             pert_nucs = set()
-            init_nuc_conc = {} 
+            init_nuc_conc = {}
 
             for iiv in self.env['initial_nuc_keys']:
                 iiv_col = self.pert_cols[iiv]
@@ -276,7 +277,7 @@ class NCodeSerpent(object):
         self.initial_fuel_stream = from_atom_frac(atom_frac_fuel)
         self.IHM_weight = self.ihm_mat.molecular_weight()
         self.fuel_weight = self.initial_fuel_stream.molecular_weight()
-    
+
 
     def make_input_fuel(self, ms=None):
         if 'fuel_form_mass_weighted' in self.env:
@@ -345,7 +346,7 @@ class NCodeSerpent(object):
             mass_weighted = self.env['clad_form_mass_weighted']
         else:
             mass_weighted = True
-        
+
         return self.make_input_material_weights(clad_stream.comp, mass_weighted)
 
 
@@ -373,7 +374,7 @@ class NCodeSerpent(object):
             mass_weighted = self.env['cool_form_mass_weighted']
         else:
             mass_weighted = True
-        
+
         return self.make_input_material_weights(cool_stream.comp, mass_weighted)
 
 
@@ -397,22 +398,22 @@ class NCodeSerpent(object):
                 print(message("Using a default 17x17 PWR lattice."))
                 print()
             geom['lattice_xy'] = 17
-            geom['lattice']    = ("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" 
-                                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
-                                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n" 
-                                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n" 
-                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n" 
+            geom['lattice']    = ("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n"
+                                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                                  "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n"
+                                  "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n"
+                                  "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
                                   "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n")
 
         # Determine if lattice is symetric
@@ -434,11 +435,11 @@ class NCodeSerpent(object):
     def make_input_energy_groups(self, group_structure=None):
         """Makes the energy group structure.
 
-        CHAR and most other neutronics codes sepecify this using 
+        CHAR and most other neutronics codes sepecify this using
         upper energy bounds.  That way the number of bounds equals the number
         of groups G. Serpent, however, uses only the internal boundaries, so there
-        are G-1 energies given for G groups.  Additionally, the highest energy group 
-        has the range Bound[G-1] <= Group 1 < inifinity.  The lowest energy group 
+        are G-1 energies given for G groups.  Additionally, the highest energy group
+        has the range Bound[G-1] <= Group 1 < inifinity.  The lowest energy group
         thus covers 0.0 MeV <= Group G < Bound[1].
         """
         if group_structure is None:
@@ -454,7 +455,7 @@ class NCodeSerpent(object):
         e['group_inner_structure'] = "  " + "\n  ".join(gs[1:-1])
         e['group_structure'] = "  " + "\n  ".join(gs)
 
-        return e        
+        return e
 
 
     def make_burnup(self, n):
@@ -462,7 +463,7 @@ class NCodeSerpent(object):
         # make burnup dictionary
         bu = {'decay_lib': self.env['serpent_decay_lib'],
               'fission_yield_lib': self.env['serpent_fission_yield_lib'],
-              'num_burn_regions':  int(self.pert_cols['burn_regions'][n]), 
+              'num_burn_regions':  int(self.pert_cols['burn_regions'][n]),
               'fuel_specific_power': self.pert_cols['fuel_specific_power'][n],
               }
 
@@ -478,7 +479,7 @@ class NCodeSerpent(object):
 
 
     def make_detector(self, nuc):
-        """Generates a dictionary of values that fill the detector/cross-section portion of 
+        """Generates a dictionary of values that fill the detector/cross-section portion of
         the serpent template.  Requires the nuclide to be specified."""
         det = {}
 
@@ -491,9 +492,9 @@ class NCodeSerpent(object):
         if nuc_zz in self.env['cool_form'].keys():
             det['detector_mat'] = 'coolant'
         elif nuc_zz in self.env['clad_form'].keys():
-            det['detector_mat'] = 'cladding' 
+            det['detector_mat'] = 'cladding'
         else:
-            det['detector_mat'] = 'fuel' 
+            det['detector_mat'] = 'fuel'
 
         # Setup detectors to calculate XS for
         det['xsdet'] = ''
@@ -506,27 +507,27 @@ class NCodeSerpent(object):
         # Add tally line if MT number is valid
         for tally in tallies:
             if tallies[tally] in nuc_mts:
-                det['xsdet'] += det_format.format(tally_name=tally, 
-                                                  tally_type=tallies[tally], 
+                det['xsdet'] += det_format.format(tally_name=tally,
+                                                  tally_type=tallies[tally],
                                                   detector_mat=det['detector_mat'])
 
         # Add partial fission MTs, to sum later, if total fission tally is not avilable
         if (tallies['sigma_f'] not in nuc_mts) and (0 < len(partial_fission_mts & nuc_mts)):
             for mt in (partial_fission_mts & nuc_mts):
-                det['xsdet'] += det_format.format(tally_name='sigma_f{0}'.format(mt), 
-                                                  tally_type=mt, 
+                det['xsdet'] += det_format.format(tally_name='sigma_f{0}'.format(mt),
+                                                  tally_type=mt,
                                                   detector_mat=det['detector_mat'])
         return det
 
 
     def make_deltam(self, nuc, frac):
-        """Generates a dictionary of values that fill the fuel mass stream portion of the 
+        """Generates a dictionary of values that fill the fuel mass stream portion of the
         serpent template with this nuclide (zzaaam) pertubed to this mass value."""
 
         ihm_mat = 1.0 * self.ihm_mat
 
         pert_nuc = set([nuc])
-        init_nuc_conc = {nuc: frac} 
+        init_nuc_conc = {nuc: frac}
 
         # generate a pertubed stream
         pert_stream = Material(init_nuc_conc)
@@ -548,7 +549,7 @@ class NCodeSerpent(object):
         self.initial_fuel_stream = from_atom_frac(atom_frac_fuel)
         self.IHM_weight = self.ihm_mat.molecular_weight()
         self.fuel_weight = self.initial_fuel_stream.molecular_weight()
-    
+
 
         # make burnup dictionary
         dm = {'fuel': self.make_input_fuel()}
@@ -622,7 +623,7 @@ class NCodeSerpent(object):
 
 
     def make_deltam_input(self, nuc, n, s, frac):
-        """While n indexs the perturbations, nuc is the nuclide (zzaaam) to perturb and 
+        """While n indexs the perturbations, nuc is the nuclide (zzaaam) to perturb and
         frac is the new mass fraction of this nuclide."""
         nuc_LL = nucname.name(nuc)
         self.serpent_fill.update(self.make_burnup(n))
@@ -656,7 +657,7 @@ class NCodeSerpent(object):
 
     #
     # Serpent run methods
-    # 
+    #
 
     def run_script_walltime(self):
         # Set PBS_Walltime
@@ -680,7 +681,7 @@ class NCodeSerpent(object):
         # Set Transport Job Context
         rsfv['transport_job_context'] = self.run_str + " -version"
 
-        # Set Run_Commands 
+        # Set Run_Commands
         if self.env['options'].LOCAL:
             rsfv['run_commands'] = ''
         else:
@@ -738,10 +739,10 @@ class NCodeSerpent(object):
         These two nuclides have almost the same mass and neutronic profile:
             http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Zr-90&n=2
             http://atom.kaeri.re.kr/cgi-bin/nuclide?nuc=Sr-90&n=2
-        We need to do this to preseve the atom density of the fuel, 
+        We need to do this to preseve the atom density of the fuel,
         while not inducing errors through self-shielding and strong absorbers.
         Basically, Zr-90 and Sr-90 become representative fision product pairs.
-        
+
         WARNING: This is only suppossed to be a first order correction!
         Make sure that you include enough fission products in core_transmute.
         """
@@ -799,7 +800,7 @@ class NCodeSerpent(object):
         if not self.env['options'].CACHE:
             rtn = self.run_serpent(args_xs_gen)
 
-        # Parse this run 
+        # Parse this run
         res, det = self.parse_xs_gen(nuc_LL, n)
 
         # Prep for metastable tallies
@@ -826,21 +827,21 @@ class NCodeSerpent(object):
                     pass
                 elif tally == 'sigma_a':
                     # Do absorption later, after other XS have been calculated
-                    pass 
+                    pass
                 elif tally == 'sigma_s_gh':
-                    det['_sigma_s_gh'] = pyne.xs.channels.sigma_s_gh(nuc, 
-                                                                     self.env['temperature'], 
-                                                                     E_n=E_n, 
-                                                                     E_g=E_g, 
+                    det['_sigma_s_gh'] = pyne.xs.channels.sigma_s_gh(nuc,
+                                                                     self.env['temperature'],
+                                                                     E_n=E_n,
+                                                                     E_g=E_g,
                                                                      phi_n=phi_n)
                 elif tally == 'sigma_s':
-                    det['_sigma_s'] = pyne.xs.channels.sigma_s(nuc, self.env['temperature'], 
+                    det['_sigma_s'] = pyne.xs.channels.sigma_s(nuc, self.env['temperature'],
                                                                E_n=E_n, E_g=E_g, phi_n=phi_n)
                 else:
                     tally_rx = tally.partition('_')[2]
                     try:
-                        det['_'+tally] = pyne.xs.channels.sigma_a_reaction(nuc_zz, tally_rx, 
-                                                                           E_n=E_n, E_g=E_g, 
+                        det['_'+tally] = pyne.xs.channels.sigma_a_reaction(nuc_zz, tally_rx,
+                                                                           E_n=E_n, E_g=E_g,
                                                                            phi_n=phi_n)
                     except IndexError:
                         pass
@@ -849,29 +850,29 @@ class NCodeSerpent(object):
         if 'sigma_gamma_x' in tallies:
             if ('sigma_gamma' in tallies) and (tallies['sigma_gamma'] in nuc_mts):
                 tot_sig_g = det['DETsigma_gamma'][:, 10]
-                ms_rat = pyne.xs.channels.metastable_ratio(nuc_zz, 'gamma', E_g=E_g, 
+                ms_rat = pyne.xs.channels.metastable_ratio(nuc_zz, 'gamma', E_g=E_g,
                                                            E_n=E_n, phi_n=phi_n)
                 sig_g = tot_sig_g / (1.0 + ms_rat)
                 sig_g_x = ms_rat * sig_g
                 det['_sigma_gamma_x'] = sig_g_x
                 det['DETsigma_gamma'][:, 10] = sig_g
             else:
-                det['_sigma_gamma_x'] = pyne.xs.channels.sigma_a_reaction(nuc_zz, 'gamma_x', 
-                                                                          E_n=E_n, E_g=E_g, 
+                det['_sigma_gamma_x'] = pyne.xs.channels.sigma_a_reaction(nuc_zz, 'gamma_x',
+                                                                          E_n=E_n, E_g=E_g,
                                                                           phi_n=phi_n)
 
         # Get (n, 2n *)
         if 'sigma_2n_x' in tallies:
             if ('sigma_2n' in tallies) and (tallies['sigma_2n'] in nuc_mts):
                 tot_sig_2n = det['DETsigma_2n'][:, 10]
-                ms_rat = pyne.xs.channels.metastable_ratio(nuc_zz, '2n', E_g=E_g, E_n=E_n, 
+                ms_rat = pyne.xs.channels.metastable_ratio(nuc_zz, '2n', E_g=E_g, E_n=E_n,
                                                            phi_n=phi_n)
                 sig_2n = tot_sig_2n / (1.0 + ms_rat)
                 sig_2n_x = ms_rat * sig_2n
                 det['_sigma_2n_x'] = sig_2n_x
                 det['DETsigma_2n'][:, 10] = sig_2n
             else:
-                det['_sigma_2n_x'] = pyne.xs.channels.sigma_a_reaction(nuc_zz, '2n_x', E_n=E_n, 
+                det['_sigma_2n_x'] = pyne.xs.channels.sigma_a_reaction(nuc_zz, '2n_x', E_n=E_n,
                                                                        E_g=E_g, phi_n=phi_n)
 
         # Get fission XS if MT not available
@@ -908,7 +909,7 @@ class NCodeSerpent(object):
 
         args_flux_g = "{0}_flux_g_{1} {2}".format(self.env['reactor'], n, self.mpi_flag)
 
-        # Make mass stream 
+        # Make mass stream
         top_up_mass = 1.0 - ms_n.mass
         if top_up_mass == 0.0:
             top_up = 0.0
@@ -1088,7 +1089,7 @@ class NCodeSerpent(object):
 
     def init_h5(self):
         """Initialize a new HDF5 file in preparation for burnup and XS runs."""
-        # Setup tables 
+        # Setup tables
         desc = {}
         for n, param in enumerate(self.env['perturbation_params']):
             desc[param] = tb.Float64Col(pos=n)
@@ -1101,20 +1102,20 @@ class NCodeSerpent(object):
         p = rx_h5.createTable(base_group, 'perturbations', desc)
         p.append(self.perturbations)
 
-        # Add the nuclide tracking arrays.  
-        rx_h5.createArray(base_group, 'nucstrack', np.array(self.env['core_transmute']), 
+        # Add the nuclide tracking arrays.
+        rx_h5.createArray(base_group, 'nucstrack', np.array(self.env['core_transmute']),
                           "Nuclides to track, copy of transmute_nucs_zz")
 
-        rx_h5.createArray(base_group, 'load_nucs_zz', np.array(self.env['core_load']), 
+        rx_h5.createArray(base_group, 'load_nucs_zz', np.array(self.env['core_load']),
                           "Core loading nuclides [zzaaam]")
         rx_h5.createArray(base_group, 'load_nucs_LL', np.array(\
-                          [nucname.name(nuc) for nuc in self.env['core_load']]), 
+                          [nucname.name(nuc) for nuc in self.env['core_load']]),
                           "Core loading nuclides [LLAAAM]")
 
-        rx_h5.createArray(base_group, 'transmute_nucs_zz', np.array(self.env['core_transmute']), 
+        rx_h5.createArray(base_group, 'transmute_nucs_zz', np.array(self.env['core_transmute']),
                           "Core transmute nuclides [zzaaam]")
         rx_h5.createArray(base_group, 'transmute_nucs_LL', np.array(\
-                          [nucname.name(nuc) for nuc in self.env['core_transmute']]), 
+                          [nucname.name(nuc) for nuc in self.env['core_transmute']]),
                           "Core transmute nuclides [LLAAAM]")
 
         # Close HDF5 file
@@ -1132,7 +1133,7 @@ class NCodeSerpent(object):
         rx_h5.createArray(base_group, array_name, init_array, array_string)
 
 
-    def init_tally_group(self, rx_h5, base_group, tally, init_array, 
+    def init_tally_group(self, rx_h5, base_group, tally, init_array,
                          gstring='Group {tally}', astring='Array {tally} {nuc}'):
         """Inits a tally group in an hdf5 file."""
 
@@ -1149,7 +1150,7 @@ class NCodeSerpent(object):
 
     def init_h5_burnup(self):
         """Initialize the hdf5 file for a set of burnup calculations based on the its input params."""
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
@@ -1177,8 +1178,8 @@ class NCodeSerpent(object):
         self.init_array(rx_h5, base_group, 'energy', negE, "Energy boundaries [MeV]")
 
         # Initialize transmutation matrix
-        self.init_tally_group(rx_h5, base_group, 'Ti0', neg1, 
-                              "Transmutation matrix from initial core loading [kg_i/kgIHM]", 
+        self.init_tally_group(rx_h5, base_group, 'Ti0', neg1,
+                              "Transmutation matrix from initial core loading [kg_i/kgIHM]",
                               "Mass weight of {nuc} [kg/kgIHM]")
 
         self.init_array(rx_h5, base_group + '/Ti0', 'Mass', neg1, "Mass fraction of fuel [kg/kgIHM]")
@@ -1190,7 +1191,7 @@ class NCodeSerpent(object):
     def init_h5_xs_gen(self):
         """Initialize the hdf5 file for writing for the XS Gen stage.
         The shape of these arrays is dependent on the number of time steps."""
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
@@ -1206,50 +1207,50 @@ class NCodeSerpent(object):
 
         for tally in tallies:
             if tally is not None:
-                self.init_tally_group(rx_h5, base_group, tally, neg1, 
-                                      "Microscopic Cross Section {tally} [barns]", 
+                self.init_tally_group(rx_h5, base_group, tally, neg1,
+                                      "Microscopic Cross Section {tally} [barns]",
                                       "Microscopic Cross Section {tally} for {nuc} [barns]")
 
         # Init aggregate tallies
 
         # nubar
         if ('sigma_f' in tallies) and ('nubar_sigma_f' in tallies) and ('nubar' not in tallies):
-            self.init_tally_group(rx_h5, base_group, 'nubar', neg1, 
+            self.init_tally_group(rx_h5, base_group, 'nubar', neg1,
                                   "{tally} [unitless]", "{tally} for {nuc} [unitless]")
 
         # sigma_i
         if np.array(['sigma_i' in tally  for tally in tallies]).any() and ('sigma_i' not in tallies):
-            self.init_tally_group(rx_h5, base_group, 'sigma_i', neg1, 
-                                  "Microscopic Cross Section {tally} [barns]", 
+            self.init_tally_group(rx_h5, base_group, 'sigma_i', neg1,
+                                  "Microscopic Cross Section {tally} [barns]",
                                   "Microscopic Cross Section {tally} for {nuc} [barns]")
 
         # sigma_s
         if ('sigma_s' not in tallies):
-            self.init_tally_group(rx_h5, base_group, 'sigma_s', neg1, 
-                                  "Microscopic Cross Section {tally} [barns]", 
+            self.init_tally_group(rx_h5, base_group, 'sigma_s', neg1,
+                                  "Microscopic Cross Section {tally} [barns]",
                                   "Microscopic Cross Section {tally} for {nuc} [barns]")
 
         # Scattering kernel, sigma_s_gh
-        self.init_tally_group(rx_h5, base_group, 'sigma_s_gh', negG, 
-                              "Microscopic Scattering Kernel {tally} [barns]", 
+        self.init_tally_group(rx_h5, base_group, 'sigma_s_gh', negG,
+                              "Microscopic Scattering Kernel {tally} [barns]",
                               "Microscopic Scattering Kernel {tally} for {nuc} [barns]")
 
         # Chi
         if 'chi' in tallies:
-            self.init_tally_group(rx_h5, base_group, 'chi', neg1, 
-                                  "Fission neutron energy spectrum {tally} [n/MeV]", 
+            self.init_tally_group(rx_h5, base_group, 'chi', neg1,
+                                  "Fission neutron energy spectrum {tally} [n/MeV]",
                                   "Fission neutron energy spectrum {tally} for {nuc} [n/MeV]")
 
         # (n, gamma *)
         if 'sigma_gamma_x' in tallies:
-            self.init_tally_group(rx_h5, base_group, 'sigma_gamma_x', neg1, 
-                                  "Microscopic Cross Section (n, gamma *) [barns]", 
+            self.init_tally_group(rx_h5, base_group, 'sigma_gamma_x', neg1,
+                                  "Microscopic Cross Section (n, gamma *) [barns]",
                                   "Microscopic Cross Section (n, gamma *) for {nuc} [barns]")
 
         # (n, 2n *)
         if 'sigma_2n_x' in tallies:
-            self.init_tally_group(rx_h5, base_group, 'sigma_2n_x', neg1, 
-                                  "Microscopic Cross Section (n, 2n *) [barns]", 
+            self.init_tally_group(rx_h5, base_group, 'sigma_2n_x', neg1,
+                                  "Microscopic Cross Section (n, 2n *) [barns]",
                                   "Microscopic Cross Section (n, 2n *) for {nuc} [barns]")
 
 
@@ -1259,7 +1260,7 @@ class NCodeSerpent(object):
 
     def init_h5_flux_g(self):
         """Initialize the hdf5 file for a set of high-resoultion flux calculations."""
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
@@ -1293,14 +1294,14 @@ class NCodeSerpent(object):
         deltam_desc = {
             'nuc_LL': tb.StringCol(6, pos=0),
             'nuc_zz': tb.Int32Col(pos=1),
-                         
-            'perturbation': tb.Int16Col(pos=2), 
+
+            'perturbation': tb.Int16Col(pos=2),
             'ihm_mass_fraction': tb.Float64Col(pos=3),
 
-            'reactivity': tb.Float64Col(shape=(self.ntimes, ), pos=4), 
+            'reactivity': tb.Float64Col(shape=(self.ntimes, ), pos=4),
             }
 
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = "/"
 
@@ -1321,14 +1322,14 @@ class NCodeSerpent(object):
         """Writes the results of the burnup calculation to an hdf5 file.
 
         n : Perturbation index of first time step for this burnup calculation.
-        res : A dictionary containing the results of the res file. 
-        dep : A dictionary containing the results of the dep file. 
+        res : A dictionary containing the results of the res file.
+        dep : A dictionary containing the results of the dep file.
         """
 
-        # Find end index 
+        # Find end index
         t = n + len(dep['DAYS'])
 
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
@@ -1348,7 +1349,7 @@ class NCodeSerpent(object):
         Phi[1:] = cumtrapz(phi * (10.0**-21), dep['DAYS'] * (3600.0 * 24.0))
         base_group.Phi[n:t] = Phi
 
-        # Energy Group bounds 
+        # Energy Group bounds
         base_group.energy[n:t] = res['GC_BOUNDS']
 
         # Calculate and store weight percents per kg fuel form (ie not per IHM)
@@ -1356,20 +1357,20 @@ class NCodeSerpent(object):
         # This effect is of order 1E-5, which is large enough to be noticable.
         # Thus we have to go through two bouts of normalization here.
         mw_conversion = self.fuel_weight / (self.IHM_weight * dep['TOT_VOLUME'] * pert_cols.fuel_density[n])
-        mw = dep['TOT_MASS'] * mw_conversion 
+        mw = dep['TOT_MASS'] * mw_conversion
 
         nuc_LL = {}
         nuc_index = {}
         for nuc_zz in dep['ZAI']:
             # Find valid nuclide indeces
-            try: 
+            try:
                 nuc_LL[nuc_zz] = nucname.name(int(nuc_zz))
             except:
                 continue
             nuc_index[nuc_zz] = dep['i{0}'.format(nuc_zz)] - 1
 
         # Caclulate actual mass of nuclides present
-        mass = mw[nuc_index.values()].sum(axis=0)   
+        mass = mw[nuc_index.values()].sum(axis=0)
 
         # Store normalized mass vector for each nuclide
         for nuc_zz in nuc_index:
@@ -1379,7 +1380,7 @@ class NCodeSerpent(object):
             nuc_array[n:t] = mw_i
 
         # Renormalize mass
-        mass = mass / mass[0]   
+        mass = mass / mass[0]
         base_group.Ti0.Mass[n:t] = mass
 
         # close the file before returning
@@ -1397,19 +1398,19 @@ class NCodeSerpent(object):
         if sys.path[0] != os.getcwd():
             sys.path.insert(0, os.getcwd())
 
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
         # Grab the tallies
         tallies = self.env['tallies']
 
-        # Write the raw tally arrays for this time and this nuc        
+        # Write the raw tally arrays for this time and this nuc
         for tally in tallies:
             tally_hdf5_group = getattr(base_group, tally)
             tally_hdf5_array = getattr(tally_hdf5_group, nuc_LL)
 
-            # Make sure the detector was calculated, 
+            # Make sure the detector was calculated,
             # Or replace the tally with zeros
             if tallies[tally] in self.env['nuc_mts'][nuc_zz]:
                 tally_serp_array = det['DET{0}'.format(tally)]
@@ -1451,9 +1452,9 @@ class NCodeSerpent(object):
             if nuc_is_fissionable:
                 nubar = nubar_sigma_f / sigma_f
             else:
-                nubar = np.zeros(len(tally_hdf5_array[n]), dtype=float)            
+                nubar = np.zeros(len(tally_hdf5_array[n]), dtype=float)
 
-            # Ensure nubar is well-formed            
+            # Ensure nubar is well-formed
             m = ((0.0 <= nubar) != True)
             nubar[m] = 0.0
 
@@ -1478,7 +1479,7 @@ class NCodeSerpent(object):
                 # Grab a sigma_iN array
                 tally_serp_array = det['DET{0}'.format(tally)]
 
-                # Add this array to the current sigma_i 
+                # Add this array to the current sigma_i
                 sigma_i += tally_serp_array[::-1, 10]
 
             tally_hdf5_array[n] = sigma_i
@@ -1536,7 +1537,7 @@ class NCodeSerpent(object):
             if nuc_is_fissionable:
                 chi = res['CHI'][res['idx']][::2]
             else:
-                chi = np.zeros(len(tally_hdf5_array[n]), dtype=float)                
+                chi = np.zeros(len(tally_hdf5_array[n]), dtype=float)
 
             tally_hdf5_array[n] = chi
 
@@ -1545,12 +1546,12 @@ class NCodeSerpent(object):
 
 
     def write_flux_g(self, n, res, det):
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root.hi_res
 
         # Grab the HDF5 arrays
-        phi_hdf5_array = base_group.phi   
+        phi_hdf5_array = base_group.phi
         phi_g_hdf5_array = base_group.phi_g
 
         # Grab the Serepent arrays
@@ -1576,7 +1577,7 @@ class NCodeSerpent(object):
 
         nuc_is_fissionable = (86 <= nuc_zz/10000)
 
-        # Open a new hdf5 file 
+        # Open a new hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
@@ -1594,7 +1595,7 @@ class NCodeSerpent(object):
             tally_hdf5_array[n] = np.zeros(len(tally_hdf5_array[n]), dtype=float)
 
 
-        # Write the raw tally arrays for this time and this nuc        
+        # Write the raw tally arrays for this time and this nuc
         for tally in xs_dict:
             if tally not in tallies:
                 continue
@@ -1610,28 +1611,28 @@ class NCodeSerpent(object):
 
             tally_hdf5_array[n] = tally_model_array
 
-    
+
         #
         # Write special tallies
         #
 
         # nubar
         if ('sigma_f' in tallies) and ('sigma_f' in xs_dict) and  ('nubar_sigma_f' in tallies):
-            # set the value of the number of neutrons per fission, based on 
+            # set the value of the number of neutrons per fission, based on
             # whether or not the species actually fissions.
             if (xs_dict['sigma_f'] == 0.0).all():
                 nubar = 0.0
             else:
                 # Average value for thermal U-238 / Pu-239 systems
                 # best guess for now.
-                nubar = 2.871 
+                nubar = 2.871
 
             # Write nubar
             nubar_array = nubar * np.ones(len(xs_dict['sigma_f']), dtype=float)
 
             tally_hdf5_group = getattr(base_group, 'nubar')
             tally_hdf5_array = getattr(tally_hdf5_group, nuc_LL)
-            
+
             tally_hdf5_array[n] = nubar_array
 
             # Write nubar * sigma_f
@@ -1639,7 +1640,7 @@ class NCodeSerpent(object):
 
             tally_hdf5_group = getattr(base_group, 'nubar_sigma_f')
             tally_hdf5_array = getattr(tally_hdf5_group, nuc_LL)
-            
+
             tally_hdf5_array[n] = nubar_sigma_f_array
 
         # sigma_s
@@ -1679,7 +1680,7 @@ class NCodeSerpent(object):
         nuc_zz = nucname.zzaaam(nuc)
         nuc_LL = nucname.name(nuc_zz)
 
-        # Open the hdf5 file 
+        # Open the hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 
@@ -1693,7 +1694,7 @@ class NCodeSerpent(object):
 
         nuc_row['nuc_LL'] = nuc_LL
         nuc_row['nuc_zz'] = nuc_zz
-                         
+
         nuc_row['perturbation'] = n
         nuc_row['ihm_mass_fraction'] = frac[s]
 
@@ -1709,12 +1710,12 @@ class NCodeSerpent(object):
 
     #
     # Analysis functions
-    # 
+    #
 
     def analyze_deltam(self):
         """Analyzes the results of the nuclide sensitivity study, producing a report to stdout."""
 
-        # Open the hdf5 file 
+        # Open the hdf5 file
         rx_h5 = tb.openFile(self.env['reactor'] + ".h5", 'a')
         base_group = rx_h5.root
 

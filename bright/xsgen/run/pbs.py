@@ -9,7 +9,7 @@ from math import ceil
 # Char Libraries
 from runchar import RunChar
 from pyne.utils import message, failure
-from ..templates.run_script import template as run_script_template
+# from ..templates.run_script import template as run_script_template
 
 
 class Pbs(RunChar):
@@ -59,12 +59,12 @@ class Pbs(RunChar):
             run_fill['remote_get'] = ''
         else:
             run_fill['remote_put'] = ("scp -r {rc.user}@{rg}:{rc.dir} ~/tmpchar/\n"
-                                      "cd ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                      "cd ~/tmpchar/\n").format(rc=self.env['remote_connection'],
                                                             rg=self.env['remote_gateway'])
             run_fill['remote_get'] = ("cd ~\n"
                                       "mv ~/CHAR_*.o* ~/tmpchar/\n"
                                       "scp -r ~/tmpchar/* {rc.user}@{rg}:{rc.dir}\n"
-                                      "rm -r ~/tmpchar/\n").format(rc=self.env['remote_connection'], 
+                                      "rm -r ~/tmpchar/\n").format(rc=self.env['remote_connection'],
                                                                    rg=self.env['remote_gateway'])
 
         # Get transport specific values
@@ -102,7 +102,7 @@ class Pbs(RunChar):
             # Make remote directory, if it isn't already there
             rc.run("mkdir -p {rc.dir}".format(rc=rc))
 
-            # Remove the current contents of the remote directory        
+            # Remove the current contents of the remote directory
             rc.run("rm -r {rc.dir}*".format(rc=rc))
 
             # Put all appropriate files in reomte dir
@@ -143,7 +143,7 @@ class Pbs(RunChar):
         """Finds the process id for a currently running char instance."""
         if self.env['options'].LOCAL:
             rflag = ''
-            spout = subprocess.check_output("qstat -u {0}| grep {1}".format(os.getlogin(), self.n_code.run_str), shell=True) 
+            spout = subprocess.check_output("qstat -u {0}| grep {1}".format(os.getlogin(), self.n_code.run_str), shell=True)
         else:
             rflag = 'Remote '
             try:

@@ -5,11 +5,11 @@
 ############################
 from __future__ import print_function
 import os
-import sys
-import time
+# import sys
+# import time
 import shutil
 import logging
-import subprocess
+# import subprocess
 
 from optparse import OptionParser
 
@@ -37,7 +37,7 @@ from pyne.utils import message, failure, remove
 
 from testing import _run_tests
 
-run_switch = {'': Bash, 
+run_switch = {'': Bash,
               'BASH': Bash,
               'bash': Bash,
               'PBS': Pbs,
@@ -48,10 +48,10 @@ run_switch = {'': Bash,
 
 from n_code_serpent import NCodeSerpent
 
-n_code_switch = {'': NCodeSerpent, 
-                 'sss': NCodeSerpent, 
-                 'Serpent': NCodeSerpent, 
-                 'serpent': NCodeSerpent, 
+n_code_switch = {'': NCodeSerpent,
+                 'sss': NCodeSerpent,
+                 'Serpent': NCodeSerpent,
+                 'serpent': NCodeSerpent,
                  }
 
 
@@ -98,7 +98,7 @@ def parse_nucs(s):
                 nrange = [n]
             tmpset = set(nrange)
 
-        # Add the union 
+        # Add the union
         nset = (nset | tmpset)
 
     return nset
@@ -111,67 +111,67 @@ def main():
     usage = "usage: %prog [options] confchar"
     parser = OptionParser(usage)
 
-    parser.add_option("-v", "--verbose", action="store_true", dest="VERBOSE", 
+    parser.add_option("-v", "--verbose", action="store_true", dest="VERBOSE",
         default=False, help="Gives extra info while running.")
 
-    parser.add_option("-i", "--input", action="store_true", dest="MAKE_INPUT", 
+    parser.add_option("-i", "--input", action="store_true", dest="MAKE_INPUT",
         help="Makes the transport calculation input deck.")
 
-    parser.add_option("-r", "--run", action="store_true", dest="RUN_TRANSPORT", 
+    parser.add_option("-r", "--run", action="store_true", dest="RUN_TRANSPORT",
         default=False, help="Run the transport calculation.")
 
-    parser.add_option("-d", "--dry-run", action="store_false", dest="RUN_TRANSPORT", 
+    parser.add_option("-d", "--dry-run", action="store_false", dest="RUN_TRANSPORT",
         help="Dry Run. Do NOT run the transport calculation.")
 
-    parser.add_option("-a", "--analyze", action="store_true", dest="RUN_ANALYSIS", 
+    parser.add_option("-a", "--analyze", action="store_true", dest="RUN_ANALYSIS",
         default=False, help="Run analysis on database.")
 
-    parser.add_option("-b", "--burnup",  action="store_true", dest="RUN_BURNUP", 
+    parser.add_option("-b", "--burnup",  action="store_true", dest="RUN_BURNUP",
         default=False, help="Run the burnup calculation.")
 
-    parser.add_option("-x", "--xs",  action="store_true", dest="RUN_XS_GEN", 
+    parser.add_option("-x", "--xs",  action="store_true", dest="RUN_XS_GEN",
         default=False, help="Run the cross-section generation calculation.")
 
-    parser.add_option("-m", "--delta-mass",  action="store_true", dest="RUN_DELTAM", 
+    parser.add_option("-m", "--delta-mass",  action="store_true", dest="RUN_DELTAM",
         default=False, help="Run the initial nuclide sensitivity calculation.")
 
-    parser.add_option("-N", action="store", dest="NPERT", 
+    parser.add_option("-N", action="store", dest="NPERT",
         default='', help="Pertubation indices to calculate, in Python slice syntax.")
 
-    parser.add_option("-I",  action="store", dest="ISOS", 
+    parser.add_option("-I",  action="store", dest="ISOS",
         default='', help="Nuclides to calculate.")
 
-    parser.add_option("-S",  action="store", dest="NSENS", 
+    parser.add_option("-S",  action="store", dest="NSENS",
         default='', help="Sensitivity indices to calculate, in Python slice syntax.")
 
-    parser.add_option("-c", "--clean", action="store_true", dest="CLEAN", 
+    parser.add_option("-c", "--clean", action="store_true", dest="CLEAN",
         help="Cleans the reactor direactory of current files.")
 
-    parser.add_option("-C", "--cache", action="store_true", dest="CACHE", 
+    parser.add_option("-C", "--cache", action="store_true", dest="CACHE",
         default=False, help="Uses the current files in the reactor direactory.")
 
-    parser.add_option("-l", "--local", action="store_true", dest="LOCAL", 
+    parser.add_option("-l", "--local", action="store_true", dest="LOCAL",
         default=True, help="Run or Fetch files locally.")
 
-    parser.add_option("-s", "--server", action="store_false", dest="LOCAL", 
+    parser.add_option("-s", "--server", action="store_false", dest="LOCAL",
         help="Run or Fetch files from a remote server.")
 
-    parser.add_option("-f", "--fetch", action="store_true", dest="FETCH_FILES", default=False, 
+    parser.add_option("-f", "--fetch", action="store_true", dest="FETCH_FILES", default=False,
         help="Fetches files from the remote server. Does not run transport, even if -r is set. Automatically sets -s.")
 
-    parser.add_option("-p", "--pid", action="store_true", dest="PID", default=False, 
+    parser.add_option("-p", "--pid", action="store_true", dest="PID", default=False,
         help="Finds the process identification number of a current transport run. Sets -d.")
 
-    parser.add_option("-k", "--kill", action="store_true", dest="KILL_TRANSPORT", 
+    parser.add_option("-k", "--kill", action="store_true", dest="KILL_TRANSPORT",
         default=False, help="Kills the current transport run. Sets -p.")
 
-    parser.add_option("--cwd", action="store_true", dest="CWD", default=False, 
+    parser.add_option("--cwd", action="store_true", dest="CWD", default=False,
         help="Run char in the current working directory.")
 
-    parser.add_option("--ui", action="store_true", dest="UI", default=False, 
+    parser.add_option("--ui", action="store_true", dest="UI", default=False,
         help="Launches the char ui.")
 
-    parser.add_option("-t", "--test", action="store_true", dest="TEST", 
+    parser.add_option("-t", "--test", action="store_true", dest="TEST",
         default=False, help="Tests an existing library for soundness.")
 
     (options, args) = parser.parse_args()
@@ -299,7 +299,7 @@ def main():
         n_code.analyze_deltam()
 
     elif options.RUN_BURNUP or options.RUN_XS_GEN or options.RUN_DELTAM:
-        # Make tranumatrion libraries by executing the as a separate step from 
+        # Make tranumatrion libraries by executing the as a separate step from
         # the cross-section generation
         if options.RUN_BURNUP:
             runchar.burnup(idx)
