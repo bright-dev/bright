@@ -1,4 +1,4 @@
-from .plugins import Plugin
+from plugins import Plugin
 # from utils import RunControl, NotSpecified, DEFAULT_RC_FILE, DEFAULT_PLUGINS
 
 class XDressPlugin(Plugin):

@@ -1,4 +1,3 @@
-# xsgen
 """This module provides the architecture for creating and handling xdress plugins.
 
 :author: Anthony Scopatz <scopatz@gmail.com>
@@ -149,7 +148,7 @@ import importlib
 import argparse
 import textwrap
 
-from .utils import RunControl, NotSpecified, nyansep
+from utils import RunControl, NotSpecified, nyansep
 
 if sys.version_info[0] >= 3:
     basestring = str
