@@ -486,8 +486,8 @@ void bright::Reactor1G::calc_sub_mats()
   // Sets possibly relevant reactor input and output substreams.
 
   // Uranium
-  mat_feed_u  = mat_feed.sub_u();
-  mat_prod_u = mat_prod.sub_u();
+  mat_feed_u  = mat_feed.sub_elem(920000000);
+  mat_prod_u = mat_prod.sub_elem(920000000);
 
   // TRU
   mat_feed_tru = mat_feed.sub_tru();
