@@ -1,7 +1,12 @@
 import argparse
-from plugins import Plugins
-from utils import NotSpecified, RunControl, exec_file
+from bright.xsgen.plugins import Plugins
+from bright.xsgen.utils import NotSpecified, RunControl, exec_file
 import os
+
+try:
+    import argcomplete
+except ImportError:
+    argcomplete = None
 
 DEFAULT_RC_FILE="rc"
 DEFAULT_PLUGINS=["base"]
@@ -26,8 +31,8 @@ def main():
 
     plugins = Plugins(prerc.plugins)
     parser = plugins.build_cli()
-    # if argcomplete is not None and prerc.bash_completion:
-        # argcomplete.autocomplete(parser)
+    if argcomplete is not None and prerc.bash_completion:
+        argcomplete.autocomplete(parser)
     ns = parser.parse_args()
     rc = plugins.merge_rcs()
     rc._update(rcdict)

@@ -25,14 +25,14 @@ zz_name = nucname.zz_name
 #################
 ### CHAR Libs ###
 #################
-import envchar
+from bright.xsgen import envchar
 
-from run.pbs import Pbs
-from run.bash import Bash
+from bright.xsgen.run.pbs import Pbs
+from bright.xsgen.run.bash import Bash
 
-from pyne.utils import message, failure, remove
+from pyne.utils import failure, remove
 
-from testing import _run_tests
+from bright.xsgen.testing import _run_tests
 
 run_switch = {'': Bash, 
               'BASH': Bash,
@@ -44,7 +44,7 @@ run_switch = {'': Bash,
               }
 
 # from n_code_serpent import NCodeSerpent
-from mock import Mock
+from mock import Moc
 NCodeSerpent = Mock()
 
 n_code_switch = {'': NCodeSerpent, 

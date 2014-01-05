@@ -128,6 +128,9 @@ def setup():
                 'bright.gui.views.custom_graph_canvas',
                 'bright.gui.views.component_views.views', 
                 'bright.data',
+                'bright.xsgen',
+                'bright.xsgen.run',
+                'bright.xsgen.ui',
                 ]
     pack_dir = {
         'bright': 'bright',
