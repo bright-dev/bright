@@ -44,7 +44,7 @@ run_switch = {'': Bash,
               }
 
 # from n_code_serpent import NCodeSerpent
-from mock import Moc
+from mock import Mock
 NCodeSerpent = Mock()
 
 n_code_switch = {'': NCodeSerpent, 
@@ -179,7 +179,7 @@ def main():
     if options.UI:
         # Test to see if ui library is installed
         try:
-            from .ui import app
+            from bright.xsgen.ui import app
         except ImportError:
             print(failure("Please install the Enthought Tool Suite (ETS) for CHAR UI."))
             raise SystemExit

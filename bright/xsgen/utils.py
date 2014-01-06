@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import os
 import subprocess
+from pprint import pformat
 
 from pyne import nucname
 

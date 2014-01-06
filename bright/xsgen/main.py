@@ -8,7 +8,7 @@ try:
 except ImportError:
     argcomplete = None
 
-DEFAULT_RC_FILE="rc"
+DEFAULT_RC_FILE="defaultrc.py"
 DEFAULT_PLUGINS=["base"]
 
 def main():
