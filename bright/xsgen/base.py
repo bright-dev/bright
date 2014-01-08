@@ -15,7 +15,8 @@ from pyne.utils import failure, remove
 class XDressPlugin(Plugin):
     """Core functionality for char."""
 
-    defaultrc = {"UI": False,
+    defaultrc = {"VERBOSE": False,
+                 "UI": False,
                  "CWD": False,
                  "CLEAN": False,
                  "DEBUG": False,
@@ -32,6 +33,9 @@ class XDressPlugin(Plugin):
     }
 
     def update_argparser(self, parser):
+        parser.add_argument("-v", "--verbose", action="store_true", dest="VERBOSE",
+            help="Gives extra info while running.")
+
         parser.add_argument("--ui", action="store_true", dest="UI",
             help="Launches the char ui.")
 
@@ -200,7 +204,6 @@ class XDressPlugin(Plugin):
 
         elif rc.FETCH_FILES:
             # Fetches files from remote server
-            print("bash.py:203")
             runchar.fetch()
         elif rc.PID:
             # Finds and prints the PID of CHAR

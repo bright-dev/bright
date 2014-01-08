@@ -68,13 +68,13 @@ class Bash(RunChar):
         # Report times
         time_msg = "{0:.3G}".format((t2-t1)/60.0)
         self.env.logger.info("Transport executed in {0} minutes.".format(time_msg))
-        if 0 < self.env.verbosity:
+        if 0 < self.env.VERBOSE:
             print(message("\nTransport executed in {0} minutes.\n".format(time_msg)))
 
 
     def run_remotely(self):
         """Runs the transport calculation on a remote machine"""
-        if 0 < self.env.verbosity:
+        if 0 < self.env.VERBOSE:
             print(message("Copying files to remote server."))
 
         rs = self.env.run_script
@@ -96,11 +96,11 @@ class Bash(RunChar):
             # Run char
             rc.run("source /etc/profile; cd {rc.dir}; ./{rs} > run.log 2>&1 &".format(rc=rc,
                                                                                       rs=rs))
-            if 0 < self.env.verbosity:
+            if 0 < self.env.VERBOSE:
                 print(message("Running transport code remotely."))
 
         except NameError:
-            if 0 < self.env.verbosity:
+            if 0 < self.env.VERBOSE:
                 print(failure(remote_err_msg))
 
         # My work here is done
@@ -113,16 +113,15 @@ class Bash(RunChar):
     #
 
     def fetch(self):
-        print("bash.py:116")
         """Fetches files from remote server."""
-        if 0 < self.env.verbosity:
+        if 0 < self.env.VERBOSE:
             print(message("Fetching files from remote server."))
 
         try:
             for outputfile in self.n_code.fetch_remote_files:
                 self.env.remote_connection.get(self.env.remote_connection.dir + outputfile, ".")
         except NameError:
-            if 0 < self.env.verbosity:
+            if self.env.VERBOSE:
                 print(failure(remote_err_msg))
 
         raise SystemExit
@@ -140,19 +139,19 @@ class Bash(RunChar):
                                                 self.n_code.run_str, rc=self.env.remote_connection),
                                                 shell=True)
             except NameError:
-                if 0 < self.env.verbosity:
+                if 0 < self.env.VERBOSE:
                     print(failure(remote_err_msg))
 
         spout = spout.split('\n')[:-1]
         if len(spout) < 1:
-            if 0 < self.env.verbosity:
+            if 0 < self.env.VERBOSE:
                 print(message("{0}Process Not Running.".format(rflag)))
             raise SystemExit
 
         self.pid = spout[0].split()[1]
         self.prt = spout[0].split()[9]
 
-        if 0 < self.env.verbosity:
+        if 0 < self.env.VERBOSE:
             print(message("{0}Process ID: {1}".format(rflag, self.pid)))
             print(message("{0}Process Runtime: {1} min.".format(rflag, self.prt)))
 
@@ -178,7 +177,7 @@ class Bash(RunChar):
 
         spout = spout.split('\n')[:-1]
 
-        if 0 < self.env.verbosity:
+        if 0 < self.env.VERBOSE:
             print(spout)
             print(message("{0}Process Killed.".format(rflag)))
 
