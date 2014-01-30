@@ -7,7 +7,7 @@ import bright.xsgen.envchar as envchar
 from bright.xsgen.run.pbs import Pbs
 from bright.xsgen.run.bash import Bash
 
-class XDressPlugin(Plugin):
+class XSGenPlugin(Plugin):
 
     defaultrc = {"VERBOSE": False,
                  "UI": False,

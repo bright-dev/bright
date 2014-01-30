@@ -1,6 +1,6 @@
 from bright.xsgen.plugins import Plugin
 
-class XDressPlugin(Plugin):
+class XSGenPlugin(Plugin):
     def update_argparser(self, parser):
         parser.add_argument("-i", "--input", action="store_true", dest="MAKE_INPUT",
             help="Makes the transport calculation input deck.")

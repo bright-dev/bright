@@ -1,7 +1,7 @@
 from bright.xsgen.plugins import Plugin
 from bright.xsgen.testing import _run_tests
 
-class XDressPlugin(Plugin):
+class XSGenPlugin(Plugin):
     def update_argparser(self, parser):
         parser.add_argument("-t", "--test", action="store_true", dest="TEST",
             help="Tests an existing library for soundness.")

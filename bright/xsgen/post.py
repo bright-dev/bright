@@ -1,6 +1,6 @@
 from bright.xsgen.plugins import Plugin
 
-class XDressPlugin(Plugin):
+class XSGenPlugin(Plugin):
     def execute(self, rc):
         # Clean up
         if not rc.CWD:

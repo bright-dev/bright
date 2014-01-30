@@ -1,36 +1,36 @@
-"""This module provides the architecture for creating and handling xdress plugins.
+"""This module provides the architecture for creating and handling xsgen plugins.
 
 :author: Anthony Scopatz <scopatz@gmail.com>
 
-The purpose of xdress is to be as modular and extensible as possible, allowing for
-developers to build and execute their own tools as needed.  As such, xdress has
+The purpose of xsgen is to be as modular and extensible as possible, allowing for
+developers to build and execute their own tools as needed.  As such, xsgen has
 a very nimble plugin interface that easily handles run control, adding arguments to
 the command line interface, setting up & validating the run control, command
-execution, and teardown.  In fact, the entire xdress execution is based on this
+execution, and teardown.  In fact, the entire xsgen execution is based on this
 plugin architecture.  You can be certain that this is well supported feature and
 not some hack'd add on.
 
 Writing Plugins
 ===============
-Writing plugins is easy!  You simply need to have a variable named ``XDressPlugin``
+Writing plugins is easy!  You simply need to have a variable named ``XSGenPlugin``
 in a module.  Say your module is called ``mymod`` and lives in a package ``mypack``,
-then xdress would know this plugin by the name ``"mypack.mymod"``.  This is exactly
+then xsgen would know this plugin by the name ``"mypack.mymod"``.  This is exactly
 the same string that you would use to do an absolute import of ``mymod``.
 
-To expose this plugin to an xdress execution, either add it to the ``plugins``
-variable in your ``xdressrc.py`` file::
+To expose this plugin to an xsgen execution, either add it to the ``plugins``
+variable in your ``xsgenrc.py`` file::
 
-    from xdress.utils import DEFAULT_PLUGINS
+    from xsgen.utils import DEFAULT_PLUGINS
     plugins = list(DEFAULT_PLUGINS) + ['mypack.mymod']
 
 Or you can add it on the command line::
 
-    ~ $ xdress --plugins xdress.stlwrap xdress.autoall xdress.cythongen mypack.mymod
+    ~ $ xsgen --plugins xsgen.stlwrap xsgen.autoall xsgen.cythongen mypack.mymod
 
 Note that in both of the above cases we retain normal functionality by including
-the default plugins that come with xdress.
+the default plugins that come with xsgen.
 
-The ``XDressPlugin`` variable must be callable with no arguments and return a
+The ``XSGenPlugin`` variable must be callable with no arguments and return a
 variable with certain attributes.  Normally this is done as a class but through
 the magic of duck typing it doesn't have to be.  The ``Plugin`` class is provided
 as a base class which implements a minimal, zero-work interface.  This is useful
@@ -46,7 +46,7 @@ Interface
 :defaultrc: This is a dictionary or run control instance that maps run control
     parameters to their default values if they are otherwise not specified.  To
     make a parameter have to be given by the user, set the value to the singleton
-    ``xdress.utils.NotSpecified``.  Parameters with the same name in different
+    ``xsgen.utils.NotSpecified``.  Parameters with the same name in different
     plugins will clobber each other, with the last plugin's value being ultimately
     assigned.  The exception to this is if a later plugin's parameter value is
     ``NotSpecified`` then the previous plugin value will be retained.  See the
@@ -97,13 +97,13 @@ Example
 -------
 Here is simple, if morbid, plugin example::
 
-    from xdress.plugins import Plugin
+    from xsgen.plugins import Plugin
 
-    class XDressPlugin(Plugin):
+    class XSGenPlugin(Plugin):
         '''Which famous person was executed?'''
 
         # everything should require base, it is useful!
-        requires = ('xdress.base',)
+        requires = ('xsgen.base',)
 
         defaultrc = {
             'choices': ['J. Edgar Hoover', 'Hua Mulan', 'Leslie'],
@@ -154,7 +154,7 @@ if sys.version_info[0] >= 3:
     basestring = str
 
 class Plugin(object):
-    """A base plugin for other xdress pluigins to inherit.
+    """A base plugin for other xsgen pluigins to inherit.
     """
 
     requires = ()
@@ -201,7 +201,7 @@ class Plugin(object):
         ----------
         parser : argparse.ArgumentParser
             The parser to be updated.  Arguments defaults should not be given, or
-            if given should only be ``xdress.utils.Not Specified``.  This is to
+            if given should only be ``xsgen.utils.Not Specified``.  This is to
             prevent collisions with the run controller.  Default values should
             instead be given in this class's ``defaultrc`` attribute or method.
             Argument names or the ``dest`` keyword argument should match the keys
@@ -217,7 +217,7 @@ class Plugin(object):
 
         Parameters
         ----------
-        rc : xdress.utils.RunControl
+        rc : xsgen.utils.RunControl
 
         """
         pass
@@ -227,7 +227,7 @@ class Plugin(object):
 
         Parameters
         ----------
-        rc : xdress.utils.RunControl
+        rc : xsgen.utils.RunControl
 
         """
         pass
@@ -237,7 +237,7 @@ class Plugin(object):
 
         Parameters
         ----------
-        rc : xdress.utils.RunControl
+        rc : xsgen.utils.RunControl
 
         """
         pass
@@ -248,7 +248,7 @@ class Plugin(object):
 
         Parameters
         ----------
-        rc : xdress.utils.RunControl
+        rc : xsgen.utils.RunControl
 
         Returns
         -------
@@ -278,7 +278,7 @@ class Plugins(object):
         ----------
         modnames : list of str
             The module names where the plugins live.  Plugins must have the name
-            'XDressPlugin' in the these modules.
+            'XSGenPlugin' in the these modules.
         loaddeps: bool, optional
             Flag for automatically loading dependencies, should only be False in
             a limited set of circumstances.
@@ -296,7 +296,7 @@ class Plugins(object):
             if modname in self.modnames:
                 continue
             mod = importlib.import_module(modname)
-            plugin = mod.XDressPlugin()
+            plugin = mod.XSGenPlugin()
             req = plugin.requires() if callable(plugin.requires) else plugin.requires
             req = req if loaddeps else ()
             self._load(req, loaddeps=loaddeps)
@@ -372,7 +372,7 @@ class Plugins(object):
         if rc.DEBUG:
             import traceback
             sep = nyansep + '\n\n'
-            msg = '{0}xdress failed with the following error:\n\n'.format(sep)
+            msg = '{0}xsgen failed with the following error:\n\n'.format(sep)
             msg += traceback.format_exc()
             msg += '\n{0}Run control run-time contents:\n\n{1}\n\n'.format(sep,
                                                                     rc._pformat())

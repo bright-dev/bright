@@ -1,6 +1,6 @@
 from bright.xsgen.plugins import Plugin
 
-class XDressPlugin(Plugin):
+class XSGenPlugin(Plugin):
     def update_argparser(self, parser):
         parser.add_argument("-r", "--run", action="store_true", dest="RUN_TRANSPORT",
             help="Run the transport calculation.")
