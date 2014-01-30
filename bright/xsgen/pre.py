@@ -44,6 +44,8 @@ class XDressPlugin(Plugin):
 
         parser.add_argument("ABSPATH", help="A config file for xsgen.")
 
+        parser.add_argument("--rc", help="Alternative rc file")
+
     def setup(self, rc):
         run_switch = {'': Bash,
                       'BASH': Bash,

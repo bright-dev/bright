@@ -9,13 +9,13 @@ except ImportError:
     argcomplete = None
 
 DEFAULT_RC_FILE = "defaultrc.py"
-DEFAULT_PLUGINS = ["pre", "make_mc_input", "run", "post"]
+DEFAULT_PLUGINS = ["pre", "make_mc_input", "run_transport", "post"]
 
 def main():
     preparser = argparse.ArgumentParser()
     preparser.add_argument("infile")
     preparser.add_argument("--plugins", default=NotSpecified, nargs="+")
-    preparser.add_argument("--rc", default=NotSpecified, nargs="+")
+    preparser.add_argument("--rc", default=NotSpecified, nargs="?")
     prens = preparser.parse_known_args()[0]
     prens.abspath = os.path.abspath(prens.infile)
     predefaultrc = RunControl(rc=DEFAULT_RC_FILE, plugins=DEFAULT_PLUGINS)
@@ -23,6 +23,7 @@ def main():
     prerc._update(predefaultrc)
     prerc.rc = prens.rc
     rcdict = {}
+    print prerc.rc
     if os.path.isfile(prerc.rc):
         exec_file(prerc.rc, rcdict, rcdict)
         prerc.rc = rcdict['rc'] if 'rc' in rcdict else NotSpecified
@@ -30,6 +31,7 @@ def main():
     prerc._update([(k, v) for k, v in prens.__dict__.items()])
 
     plugins = Plugins(prerc.plugins)
+    print plugins
     parser = plugins.build_cli()
     if argcomplete is not None and prerc.bash_completion:
         argcomplete.autocomplete(parser)

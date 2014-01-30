@@ -186,6 +186,7 @@ class RunControl(object):
 
 def exec_file(filename, glb=None, loc=None):
     """A function equivalent to the Python 2.x execfile statement."""
+    import io
     with io.open(filename, 'r') as f:
         src = f.read()
     exec(compile(src, filename, "exec"), glb, loc)

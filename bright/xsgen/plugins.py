@@ -310,7 +310,7 @@ class Plugins(object):
         -------
         parser : argparse.ArgumentParser
         """
-        parser = argparse.ArgumentParser("Generates XDress API",
+        parser = argparse.ArgumentParser("xsgen",
                     conflict_handler='resolve', argument_default=NotSpecified)
         for plugin in self.plugins:
             plugin.update_argparser(parser)
