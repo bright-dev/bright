@@ -1,16 +1,21 @@
 import argparse
-from plugins import Plugins
-from utils import NotSpecified, RunControl, exec_file
+from bright.xsgen.plugins import Plugins
+from bright.xsgen.utils import NotSpecified, RunControl, exec_file
 import os
 
-DEFAULT_RC_FILE="rc"
-DEFAULT_PLUGINS=["base"]
+try:
+    import argcomplete
+except ImportError:
+    argcomplete = None
+
+DEFAULT_RC_FILE = "defaultrc.py"
+DEFAULT_PLUGINS = ["pre", "make_mc_input", "run_transport", "post", "test"]
 
 def main():
     preparser = argparse.ArgumentParser()
     preparser.add_argument("infile")
     preparser.add_argument("--plugins", default=NotSpecified, nargs="+")
-    preparser.add_argument("--rc", default=NotSpecified, nargs="+")
+    preparser.add_argument("--rc", default=NotSpecified, nargs="?")
     prens = preparser.parse_known_args()[0]
     prens.abspath = os.path.abspath(prens.infile)
     predefaultrc = RunControl(rc=DEFAULT_RC_FILE, plugins=DEFAULT_PLUGINS)
@@ -26,8 +31,8 @@ def main():
 
     plugins = Plugins(prerc.plugins)
     parser = plugins.build_cli()
-    # if argcomplete is not None and prerc.bash_completion:
-        # argcomplete.autocomplete(parser)
+    if argcomplete is not None and prerc.bash_completion:
+        argcomplete.autocomplete(parser)
     ns = parser.parse_args()
     rc = plugins.merge_rcs()
     rc._update(rcdict)

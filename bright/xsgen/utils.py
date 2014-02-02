@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import os
 import subprocess
+from pprint import pformat
 
 from pyne import nucname
 
@@ -102,6 +103,17 @@ class RunControl(object):
             msg = "RunControl object has no attribute {0!r}.".format(key)
             raise AttributeError(msg)
 
+    def get(self, key, default=None):
+        if key in self._dict:
+            return self._dict[key]
+        elif key in self.__dict__:
+            return self.__dict__[key]
+        elif key in self.__class__.__dict__:
+            return self.__class__.__dict__[key]
+        else:
+            return default
+
+
     def __setattr__(self, key, value):
         if key.startswith('_'):
             self.__dict__[key] = value
@@ -174,6 +186,7 @@ class RunControl(object):
 
 def exec_file(filename, glb=None, loc=None):
     """A function equivalent to the Python 2.x execfile statement."""
+    import io
     with io.open(filename, 'r') as f:
         src = f.read()
     exec(compile(src, filename, "exec"), glb, loc)
