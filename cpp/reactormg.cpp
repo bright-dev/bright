@@ -233,28 +233,20 @@ void bright::ReactorMG::loadlib(std::string lib)
   //
   // Read in the decay data table as an array of pyne::atomic_decay_struct
   //
-  int i, j, k, ind, jnd, knd, l, g;
-  // Get the HDF5 compound type (table) description
-  H5::CompType atom_dec_desc(sizeof(pyne::atomic_decay_struct));
-  atom_dec_desc.insertMember("from_nuc",   HOFFSET(pyne::atomic_decay_struct, from_nuc),   H5::PredType::NATIVE_INT);
-  atom_dec_desc.insertMember("level", HOFFSET(pyne::atomic_decay_struct, level), H5::PredType::NATIVE_DOUBLE);
-  atom_dec_desc.insertMember("to_nuc",   HOFFSET(pyne::atomic_decay_struct, to_nuc),   H5::PredType::NATIVE_INT);
-  atom_dec_desc.insertMember("half_life", HOFFSET(pyne::atomic_decay_struct, half_life), H5::PredType::NATIVE_DOUBLE);
-  atom_dec_desc.insertMember("decay_const", HOFFSET(pyne::atomic_decay_struct, decay_const), H5::PredType::NATIVE_DOUBLE);
-  atom_dec_desc.insertMember("branch_ratio", HOFFSET(pyne::atomic_decay_struct, branch_ratio), H5::PredType::NATIVE_DOUBLE);
+  int i;
+  int j;
+  int g;
+  int l;
+  int ind;
+  int jnd;
+  pyne::half_life(std::string("H1"));  // Make sure that decay data is loaded
+  int ndecays = pyne::decay_data.size();
 
-  H5::DataSet decay_data_set = nuc_data_h5.openDataSet("/atomic_decay");
-  H5::DataSpace decay_data_space = decay_data_set.getSpace();
-  int decay_data_length = decay_data_space.getSimpleExtentNpoints(); 
-
-  pyne::atomic_decay_struct * decay_data_array = new pyne::atomic_decay_struct [decay_data_length];
-  decay_data_set.read(decay_data_array, atom_dec_desc);
-
-  // Finish initializing K, based on decay info    
-  for (l = 0; l < decay_data_length; l++)
-  {
-    K.insert(decay_data_array[l].from_nuc);
-    K.insert(decay_data_array[l].to_nuc);
+  // Finish initializing K, based on decay info
+  std::map<std::pair<int, int>, pyne::decay_struct>::iterator dd = pyne::decay_data.begin();
+  for (; dd != pyne::decay_data.end(); ++dd) {
+    K.insert(dd->first.first);
+    K.insert(dd->first.second);
   };
 
   K_num = K.size();
@@ -264,12 +256,12 @@ void bright::ReactorMG::loadlib(std::string lib)
     K_ind[K_ord[k]] = k;
 
   // Make decay_martrix from this data.
-  decay_matrix = bright::SparseMatrix<double>(2*decay_data_length, K_num, K_num);
+  decay_matrix = bright::SparseMatrix<double>(2*ndecays, K_num, K_num);
 
-  for (l = 0; l < decay_data_length; l++)
-  {
-    i = decay_data_array[l].from_nuc;
-    j = decay_data_array[l].to_nuc;
+  dd = pyne::decay_data.begin();
+  for (; dd != pyne::decay_data.end(); ++dd) {
+    i = dd->first.first;
+    j = dd->first.second;
 
     if (i == j)
       continue;
@@ -279,11 +271,12 @@ void bright::ReactorMG::loadlib(std::string lib)
     jnd = K_ind[j];
 
     // Add diagonal elements
-    decay_matrix.push_back(ind, ind, -decay_data_array[l].decay_const);
+    double decay_const = 0.69314718056 / dd->second.half_life;
+    decay_matrix.push_back(ind, ind, -decay_const);
 
     // Add i,j element to matrix
     if (i != j)
-      decay_matrix.push_back(ind, jnd, decay_data_array[l].branch_ratio * decay_data_array[l].decay_const);
+      decay_matrix.push_back(ind, jnd, dd->second.branch_ratio * decay_const);
   };
 
   decay_matrix.clean_up();
