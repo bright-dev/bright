@@ -4,7 +4,7 @@
 #if !defined(_BRIGHT_ENRICHMENT_PARAMETERS_)
 #define _BRIGHT_ENRICHMENT_PARAMETERS_
 
-#include "bright.h"
+#include "utils.h"
 
 /************************************************/
 /*** Enrichment Component Class and Functions ***/
