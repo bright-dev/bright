@@ -5,11 +5,8 @@
 ############################
 from __future__ import print_function
 import os
-import sys
-import time
 import shutil
 import logging
-import subprocess
 
 from optparse import OptionParser
 
@@ -28,14 +25,14 @@ zz_name = nucname.zz_name
 #################
 ### CHAR Libs ###
 #################
-import envchar
+from bright.xsgen import envchar
 
-from run.pbs import Pbs
-from run.bash import Bash
+from bright.xsgen.run.pbs import Pbs
+from bright.xsgen.run.bash import Bash
 
-from pyne.utils import message, failure, remove
+from pyne.utils import failure, remove
 
-from testing import _run_tests
+from bright.xsgen.testing import _run_tests
 
 run_switch = {'': Bash, 
               'BASH': Bash,
@@ -46,7 +43,9 @@ run_switch = {'': Bash,
               'torque': Pbs,
               }
 
-from n_code_serpent import NCodeSerpent
+# from n_code_serpent import NCodeSerpent
+from mock import Mock
+NCodeSerpent = Mock()
 
 n_code_switch = {'': NCodeSerpent, 
                  'sss': NCodeSerpent, 
@@ -180,7 +179,7 @@ def main():
     if options.UI:
         # Test to see if ui library is installed
         try:
-            from .ui import app
+            from bright.xsgen.ui import app
         except ImportError:
             print(failure("Please install the Enthought Tool Suite (ETS) for CHAR UI."))
             raise SystemExit
