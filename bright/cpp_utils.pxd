@@ -1,10 +1,10 @@
-"""Cython header for bright library."""
+"""Cython header for utils library."""
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.vector cimport vector
 from libcpp.string cimport string as std_string
 
-cdef extern from "bright.h" namespace "bright":
+cdef extern from "utils.h" namespace "bright":
     std_string BRIGHT_DATA
 
     void bright_start() except +
@@ -22,5 +22,3 @@ cdef extern from "bright.h" namespace "bright":
     bint write_text
 
     std_string output_filename
-
-

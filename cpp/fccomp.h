@@ -4,7 +4,7 @@
 #if !defined(_BRIGHT_FCCOMP_)
 #define _BRIGHT_FCCOMP_
 
-#include "bright.h"
+#include "utils.h"
 
 /**************************************************/
 /*** Fuel Cycle Component Classes And Functions ***/

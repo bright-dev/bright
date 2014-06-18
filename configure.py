@@ -2,7 +2,7 @@
  
 import os
 import sys
-import glob
+from glob import glob
 import json
 from distutils.file_util import copy_file, move_file
 from distutils.dir_util import mkpath, remove_tree
@@ -10,12 +10,7 @@ from copy import deepcopy
 
 from Cython.Compiler.Version import version as CYTHON_VERSION
 
-
-
-INFO = {
-    'version': '0.6-dev',
-    }
-
+INFO = {'version': '0.6-dev',}
 
 def main():
     "Run functions specified on the command line"
@@ -114,7 +109,6 @@ def setup():
     scripts = [s for s in scripts if (os.name == 'nt' and s.endswith('.bat')) or 
                                      (os.name != 'nt' and not s.endswith('.bat'))]
     packages = ['bright', 
-                'bright.lib', 
                 'bright.gui', 
                 'bright.gui.models',
                 'bright.apigen',
@@ -134,22 +128,28 @@ def setup():
                 ]
     pack_dir = {
         'bright': 'bright',
-        'bright.lib': 'bright/lib',
         'bright.gui': 'bright/gui',
         'bright.data': 'data',
         'bright.apigen': 'bright/apigen',
         }
     extpttn = ['*.dll', '*.so', '*.dylib', '*.pyd', '*.pyo']
     pack_data = {
+        'lib': extpttn,
         'bright': ['*.pxd', 'include/*.h', 'include/*/*.h', 'include/*/*/*.h',
                    'include/*/*/*/*.h', 'include/bright/*.pxd', 
                    'include/bright/*/*.pxd', 'include/bright/*/*/*.pxd', 
                    'include/bright/*/*/*/*.pxd', '*.json',] + extpttn,
-        'bright.lib': extpttn,
         'bright.gui': ['*.pyw'],
         'bright.data': ['*.h5',],
         'bright.apigen': ['*.h', '*.json'],
         }
+    libbrights = set()
+    for ext in extpttn:
+        libbrights |= set(glob('cpp/' + ext))
+    data_files = [
+        ('lib', libbrights),
+        ('include/bright', glob('../cpp/*.h')),
+        ]
     setup_kwargs = {
         "name": "bright",
         "version": INFO['version'],
@@ -160,6 +160,7 @@ def setup():
         "packages": packages,
         "package_dir": pack_dir,
         "package_data": pack_data,
+        "data_files": data_files,
         "scripts": scripts,
         }
     rtn = core.setup(**setup_kwargs)

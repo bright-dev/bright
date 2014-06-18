@@ -1,6 +1,6 @@
-// General Library 
+// General Library
 
-#include "bright.h"
+#include "utils.h"
 
 //Bright Globals
 
@@ -59,16 +59,16 @@ void bright::load_track_nucs_hdf5(std::string filename, std::string datasetname,
   std::string defaultsets [14] = {
     "/track_nucs",
     "/Isos2Track",
-    "/isostrack",   
+    "/isostrack",
     "/IsosTrack",
-    "/isotrack",   
-    "/IsoTrack",    
+    "/isotrack",
+    "/IsoTrack",
     "/ToIso",
     "/ToIsos",
     "/ToIso_zz",
-    "/ToIso_MCNP",  
-    "/FromIso",  
-    "/FromIsos",  
+    "/ToIso_MCNP",
+    "/FromIso",
+    "/FromIsos",
     "/FromIso_zz",
     "/FromIso_MCNP"
     };
@@ -90,7 +90,7 @@ void bright::load_track_nucs_hdf5(std::string filename, std::string datasetname,
     int n = 0;
     while (n < dslen)
     {
-      try {  
+      try {
         isoset = isofile.openDataSet(defaultsets[n]);
         break;
       }
@@ -117,7 +117,7 @@ void bright::load_track_nucs_hdf5(std::string filename, std::string datasetname,
     int         iso_out_int [isolen[0]];
   #endif
   isoset.read(iso_out_int, H5::PredType::NATIVE_INT);
-  //Maybe add other data types in the future... 
+  //Maybe add other data types in the future...
 
   //Clear previous entries
   if (clear_prev)
@@ -192,7 +192,7 @@ H5::CompType bright::make_fission_desc()
   fdesc.insertMember( "high_energy_yield", HOFFSET(fission_struct, high_energy_yield), H5::PredType::NATIVE_INT8);
 
   fdesc.insertMember( "xs", HOFFSET(fission_struct, xs), bright::cinder_g_type);
- 
+
   return fdesc;
 };
 
@@ -214,7 +214,7 @@ H5::CompType bright::make_fission_product_yields_desc()
   fpydesc.insertMember( "to_nuc_zz", HOFFSET(fission_product_yields_struct, to_nuc_zz), H5::PredType::NATIVE_INT);
 
   fpydesc.insertMember( "mass_frac", HOFFSET(fission_product_yields_struct, mass_frac), H5::PredType::NATIVE_DOUBLE);
- 
+
   return fpydesc;
 };
 
@@ -247,7 +247,7 @@ H5::CompType bright::make_xs_1g_desc()
   xs1gdesc.insertMember( "sigma_2n", HOFFSET(xs_1g_struct, sigma_2n), H5::PredType::NATIVE_DOUBLE);
   xs1gdesc.insertMember( "sigma_3n", HOFFSET(xs_1g_struct, sigma_3n), H5::PredType::NATIVE_DOUBLE);
   xs1gdesc.insertMember( "sigma_4n", HOFFSET(xs_1g_struct, sigma_4n), H5::PredType::NATIVE_DOUBLE);
- 
+
   return xs1gdesc;
 };
 
@@ -262,12 +262,12 @@ H5::CompType bright::xs_1g_desc = bright::make_xs_1g_desc();
 
 std::vector<double> bright::delta_vector(double x, std::vector<double> vec)
 {
-  // This functions finds the 
-  // value of (x - vec[i]) for all elements i 
+  // This functions finds the
+  // value of (x - vec[i]) for all elements i
   // in the vector.
   std::vector<double> d (vec.size(), 0.0);
 
-  // Calculate the normalized delta for 
+  // Calculate the normalized delta for
   // all i elements.
   for(int i = 0; i < vec.size(); i++)
     d[i] = (x - vec[i]);
@@ -281,8 +281,8 @@ std::vector<double> bright::delta_vector(double x, std::vector<double> vec)
 
 std::vector<double> bright::normalized_delta(double x, std::vector<double> vec)
 {
-  // This functions find the normalized 
-  // value of (x - vec[i]) for all elements i 
+  // This functions find the normalized
+  // value of (x - vec[i]) for all elements i
   // in the vector.
   //
   // This is equivelent to the fraction:
@@ -290,10 +290,10 @@ std::vector<double> bright::normalized_delta(double x, std::vector<double> vec)
   //     ------------
   //      norm_factor
   //
-  // Where the normalization factor is 
-  //   norm_factor = (vec_max - vec_min) 
+  // Where the normalization factor is
+  //   norm_factor = (vec_max - vec_min)
   // if the min does not equal the max.
-  // and norm_factor = vec_min = vec_max 
+  // and norm_factor = vec_min = vec_max
   // if it does.
 
   double norm_factor;
@@ -308,7 +308,7 @@ std::vector<double> bright::normalized_delta(double x, std::vector<double> vec)
   else
     norm_factor = vec_max - vec_min;
 
-  // Calculate the normalized delta for 
+  // Calculate the normalized delta for
   // all i elements.
   for(int i = 0; i < vec.size(); i++)
     nd[i] = (x - vec[i]) / norm_factor;
@@ -374,12 +374,12 @@ std::vector<double> bright::y_x_factor_interpolation(double x_factor, std::vecto
 std::vector< std::vector<double> > bright::vector_outer_product(std::vector<double> a, std::vector<double> b)
 {
   // Performs outer product operation on two vectors
-  int I = a.size(); 
+  int I = a.size();
 
   if (I != b.size())
     throw VectorSizeError();
 
-  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0));
 
   for (int i = 0; i < I; i++)
   {
@@ -398,9 +398,9 @@ std::vector< std::vector<double> > bright::vector_outer_product(std::vector<doub
 std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vector<double> > a)
 {
   // Performs outer product operation on two vectors
-  int I = a.size(); 
+  int I = a.size();
 
-  std::vector< std::vector<double> > a_inv (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > a_inv (I, std::vector<double>(I, 0.0));
 
   /* This function calculates the inverse of a square matrix
    *
@@ -414,21 +414,21 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
 
   /* Sum variables */
   double sum, x;
-    
+
   /*  Copy the input matrix to output matrix */
-  for (i = 0; i < I; i++) 
+  for (i = 0; i < I; i++)
   {
     for (j = 0; j < I; j++)
-      a_inv[i][j] = a[i][j]; 
+      a_inv[i][j] = a[i][j];
   };
-    
+
   /* Add small value to diagonal if diagonal is zero */
   for(i = 0; i < I; i++)
-  { 
+  {
     if((a_inv[i][i] < 1e-12) && (a_inv[i][i] > -1e-12))
-      a_inv[i][i] = 1e-12; 
+      a_inv[i][i] = 1e-12;
   }
-    
+
   /* Matrix size of one is special cased */
   if (I == 1)
   {
@@ -441,17 +441,17 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
     throw VectorSizeError();
 
   /* normalize row 0 */
-  for (i = 1; i < I; i++) 
+  for (i = 1; i < I; i++)
     a_inv[0][i] /= a_inv[0][0];
 
-  /* Do LU separation */    
-  for (i = 1; i < I; i++)  
+  /* Do LU separation */
+  for (i = 1; i < I; i++)
   {
     /* do a column of L */
-    for (j = i; j < I; j++)  
-    { 
+    for (j = i; j < I; j++)
+    {
       sum = 0.0;
-      for (k = 0; k < i; k++) 
+      for (k = 0; k < i; k++)
         sum += a_inv[j][k] * a_inv[k][i];
 
       a_inv[j][i] -= sum;
@@ -460,7 +460,7 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
     if (i == I-1)
       continue;
 
-        
+
     /* do a row of U */
     for (j = i+1; j < I; j++)
     {
@@ -472,17 +472,17 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
     };
   };
 
-    /* invert L */ 
-    for ( i = 0; i < I; i++ )  
+    /* invert L */
+    for ( i = 0; i < I; i++ )
     {
-        for ( j = i; j < I; j++ )  
+        for ( j = i; j < I; j++ )
         {
             x = 1.0;
 
-            if ( i != j ) 
+            if ( i != j )
             {
                 x = 0.0;
-                for ( k = i; k < j; k++ ) 
+                for ( k = i; k < j; k++ )
                     x -= a_inv[j][k] * a_inv[k][i];
             };
 
@@ -490,12 +490,12 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
         };
     };
 
-  /* invert U */ 
-  for ( i = 0; i < I; i++ ) 
+  /* invert U */
+  for ( i = 0; i < I; i++ )
   {
-    for ( j = i; j < I; j++ )  
+    for ( j = i; j < I; j++ )
     {
-      if ( i == j ) 
+      if ( i == j )
         continue;
 
       sum = 0.0;
@@ -506,20 +506,20 @@ std::vector< std::vector<double> > bright::matrix_inverse(std::vector< std::vect
     };
   };
 
-  /* final inversion */ 
-  for ( i = 0; i < I; i++ ) 
+  /* final inversion */
+  for ( i = 0; i < I; i++ )
   {
-    for ( j = 0; j < I; j++ )  
+    for ( j = 0; j < I; j++ )
     {
       sum = 0.0;
 
-      for ( k = ((i>j)?i:j); k < I; k++ ) 
+      for ( k = ((i>j)?i:j); k < I; k++ )
         sum += ((j==k)?1.0:a_inv[j][k]) * a_inv[k][i];
 
       a_inv[j][i] = sum;
     };
   };
- 
+
   return a_inv;
 };
 
@@ -535,8 +535,8 @@ std::vector< std::vector<double> > bright::matrix_addition(std::vector< std::vec
 
   if ( I != a[0].size() || I != b.size() || I != b[0].size())
     throw VectorSizeError();
-    
-  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
+
+  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0));
 
   int i, j;
 
@@ -560,8 +560,8 @@ std::vector< std::vector<double> > bright::matrix_multiplication(std::vector< st
 
   if ( I != a[0].size() || I != b.size() || I != b[0].size())
     throw VectorSizeError();
-    
-  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0)); 
+
+  std::vector< std::vector<double> > c (I, std::vector<double>(I, 0.0));
 
   int i, j, k;
 
@@ -569,7 +569,7 @@ std::vector< std::vector<double> > bright::matrix_multiplication(std::vector< st
   {
     for (j = 0; j < I; j++)
     {
-      for (k = 0; k < I; k++)        
+      for (k = 0; k < I; k++)
         c[i][j] += a[i][k] * b[k][j];
     };
   };
@@ -591,7 +591,7 @@ std::vector< std::vector<double> > bright::scalar_matrix_product(double a, std::
   if (I != M[0].size())
     throw VectorSizeError();
 
-  std::vector< std::vector<double> > r (I, std::vector<double>(I, 0.0)); 
+  std::vector< std::vector<double> > r (I, std::vector<double>(I, 0.0));
 
   for (int i = 0; i < I; i++)
   {
@@ -633,7 +633,7 @@ std::vector<double> bright::scalar_matrix_vector_product(double a, std::vector< 
 
 
 
-/* 
+/*
  * Array Helpers
  */
 
@@ -645,7 +645,7 @@ int bright::find_index_char(char * val, char ** arr, int arr_len)
   // For Arrays of char strings
 
   if (arr_len < 0)
-    arr_len = length_array(arr);
+    arr_len = sizeof(arr) / sizeof(*arr);
 
   for (int n = 0; n < arr_len; n++)
   {
@@ -655,8 +655,3 @@ int bright::find_index_char(char * val, char ** arr, int arr_len)
 
   return -1;
 };
-
-
-
-
-
