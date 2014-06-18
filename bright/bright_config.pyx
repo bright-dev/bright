@@ -11,14 +11,15 @@ from libcpp.string cimport string as std_string
 cimport numpy as np
 import numpy as np
 
+cimport pyne.nucname
+import pyne.nucname
+
+
 # pyne imports 
 from pyne cimport stlcontainers as cont
 from pyne import stlcontainers as cont
 
-cimport pyne.nucname
-import pyne.nucname
-
-cimport cpp_bright
+cimport cpp_utils
 
 import os
 
@@ -44,7 +45,7 @@ def bright_start():
         os.environ['BRIGHT_DATA'] = bright_data
 
     # Call the C-version of bright_start
-    cpp_bright.bright_start()
+    cpp_utils.bright_start()
 
 
 # Run the appropriate start-up routines
@@ -70,11 +71,11 @@ cdef class BrightConf:
         """Overide for directory path which is (by default) read in from an
         environmental variable of the same name."""
         def __get__(self):
-            cdef std_string value = cpp_bright.BRIGHT_DATA
+            cdef std_string value = cpp_utils.BRIGHT_DATA
             return value.c_str()
 
         def __set__(self, char * value):
-            cpp_bright.BRIGHT_DATA = std_string(value)
+            cpp_utils.BRIGHT_DATA = std_string(value)
         
 
     property track_nucs:
@@ -84,7 +85,7 @@ cdef class BrightConf:
 
             if self._track_nucs is None:
                 proxy = cont.SetInt(False, False)
-                proxy.set_ptr = &cpp_bright.track_nucs
+                proxy.set_ptr = &cpp_utils.track_nucs
                 self._track_nucs = proxy
 
             return self._track_nucs
@@ -93,12 +94,12 @@ cdef class BrightConf:
             cdef cpp_set[int] s
 
             if isinstance(value, cont._SetInt):
-                cpp_bright.track_nucs = deref((<cont._SetInt> value).set_ptr)
+                cpp_utils.track_nucs = deref((<cont._SetInt> value).set_ptr)
             elif hasattr(value, '__len__'):
                 s = cpp_set[int]()
                 for nuc in value:
                     s.insert(pyne.nucname.zzaaam(nuc))
-                cpp_bright.track_nucs = s
+                cpp_utils.track_nucs = s
             else:
                 raise TypeError('{0} cannot be converted to a C++ set.'.format(type(value)))
 
@@ -108,51 +109,51 @@ cdef class BrightConf:
     property track_nucs_order:
         """Array nuclides which determines the order of track_nucs."""
         def __get__(self):
-            return cont.vector_to_array_1d_int(cpp_bright.track_nucs_order)
+            return cont.vector_to_array_1d_int(cpp_utils.track_nucs_order)
 
         def __set__(self, value):
             s = set([pyne.nucname.zzaaam(v) for v in value])
             a = np.array(s)
             a.sort()
-            cpp_bright.track_nucs = cont.py_to_cpp_set_int(s)
-            cpp_bright.track_nucs_order = cont.array_to_vector_1d_int(a)
+            cpp_utils.track_nucs = cont.py_to_cpp_set_int(s)
+            cpp_utils.track_nucs_order = cont.array_to_vector_1d_int(a)
 
 
     property verbosity:
         """Determines the at which to print messages. Lower numbers mean fewer messages (default 0)."""
         def __get__(self):
-            return cpp_bright.verbosity
+            return cpp_utils.verbosity
 
         def __set__(self, int value):
-            cpp_bright.verbosity = value
+            cpp_utils.verbosity = value
 
 
     property write_hdf5:
         """Boolean flag for whether to write binary HDF5 output."""
         def __get__(self):
-            return cpp_bright.write_hdf5
+            return cpp_utils.write_hdf5
 
         def __set__(self, bint value):
-            cpp_bright.write_hdf5 = value
+            cpp_utils.write_hdf5 = value
 
 
     property write_text:
         """Boolean flag for whether to write flat text file output."""
         def __get__(self):
-            return cpp_bright.write_text
+            return cpp_utils.write_text
 
         def __set__(self, bint value):
-            cpp_bright.write_text = value
+            cpp_utils.write_text = value
 
 
     property output_filename:
         """Path to outputh file."""
         def __get__(self):
-            cdef std_string value = cpp_bright.output_filename
+            cdef std_string value = cpp_utils.output_filename
             return value.c_str()
 
         def __set__(self, char * value):
-            cpp_bright.output_filename = std_string(value)
+            cpp_utils.output_filename = std_string(value)
 
 
 # Make a singleton of the Bright config object
@@ -195,7 +196,7 @@ def load_track_nucs_hdf5(char * filename, char * datasetname="", bint clear=Fals
         "/FromIso_MCNP"
 
     """
-    cpp_bright.load_track_nucs_hdf5(std_string(filename), std_string(datasetname), clear)
+    cpp_utils.load_track_nucs_hdf5(std_string(filename), std_string(datasetname), clear)
 
 
 def load_track_nucs_text(char * filename, bint clear=False):
@@ -212,13 +213,13 @@ def load_track_nucs_text(char * filename, bint clear=False):
         Flag that if set removes the currrent entries from track_nucs prior to loading in new values.
 
     """
-    cpp_bright.load_track_nucs_text(std_string(filename), clear)
+    cpp_utils.load_track_nucs_text(std_string(filename), clear)
 
 
 
 def sort_track_nucs():
     """This function sorts the track_nucs and places the result in track_nucs_order."""
-    cpp_bright.sort_track_nucs()
+    cpp_utils.sort_track_nucs()
 
 
 

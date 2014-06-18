@@ -1,5 +1,5 @@
 # Python extension modules
-include_directories(${BRIGHT_INCLUDE_DIRS})
+include_directories(${BRIGHT_INCLUDE_DIRS} ${PYNE_INCLUDE_DIR}/pyne)
 
 # Print include dir
 get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)

@@ -1,6 +1,6 @@
 // General Library
 
-#include "bright.cpp"
+#include "utils.h"
 
 //Bright Globals
 
@@ -645,7 +645,7 @@ int bright::find_index_char(char * val, char ** arr, int arr_len)
   // For Arrays of char strings
 
   if (arr_len < 0)
-    arr_len = length_array(arr);
+    arr_len = sizeof(arr) / sizeof(*arr);
 
   for (int n = 0; n < arr_len; n++)
   {
