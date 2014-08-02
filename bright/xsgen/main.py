@@ -13,11 +13,9 @@ DEFAULT_PLUGINS = ["pre", "make_mc_input", "run_transport", "post", "test"]
 
 def main():
     preparser = argparse.ArgumentParser()
-    preparser.add_argument("infile")
     preparser.add_argument("--plugins", default=NotSpecified, nargs="+")
     preparser.add_argument("--rc", default=NotSpecified, nargs="?")
     prens = preparser.parse_known_args()[0]
-    prens.abspath = os.path.abspath(prens.infile)
     predefaultrc = RunControl(rc=DEFAULT_RC_FILE, plugins=DEFAULT_PLUGINS)
     prerc = RunControl()
     prerc._update(predefaultrc)
