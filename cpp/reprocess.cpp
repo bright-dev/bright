@@ -58,7 +58,7 @@ bright::Reprocess::Reprocess (std::map<std::string, double> ssed, std::string n)
     {
       try
       {
-        sed[pyne::nucname::zzaaam(i->first)] = i->second;
+        sed[pyne::nucname::id(i->first)] = i->second;
       }
       catch (std::exception& e)
       {

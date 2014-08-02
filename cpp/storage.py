@@ -48,7 +48,7 @@ Parameters
 ----------
 input : dict or Material or None, optional 
     If input is present, it set as the component's mat_feed.  If input is a 
-    isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+    isotopic dictionary (id keys, float values), this dictionary is first 
     converted into a Material before being set as mat_feed.
 decay_time : float or None, optional 
     decay_time is set to the time value here prior to any other calculations.  

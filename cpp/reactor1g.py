@@ -188,27 +188,27 @@ desc['docstrings']['attrs']['MWC'] = \
     
 desc['docstrings']['attrs']['niF'] = \
 """Atomic number weight of the fuel as a function of initial nuclide. 
-Map with zzaaam-integer keys and float values."""
+Map with id-integer keys and float values."""
     
 desc['docstrings']['attrs']['niC'] = \
 """Atomic number weight of the coolant as a function of initial nuclide.  
-Map with zzaaam-integer keys and float values."""
+Map with id-integer keys and float values."""
 
 desc['docstrings']['attrs']['miF'] = \
 """Mass weight of the fuel as a function of initial nuclide.  
-Map with zzaaam-integer keys and float values."""
+Map with id-integer keys and float values."""
     
 desc['docstrings']['attrs']['miC'] = \
 """Mass weight of the coolant as a function of initial nuclide.  
-Map with zzaaam-integer keys and float values."""
+Map with id-integer keys and float values."""
 
 desc['docstrings']['attrs']['NiF'] = \
 """Number density of the fuel as a function of initial nuclide.  
-Map with zzaaam-integer keys and float values."""
+Map with id-integer keys and float values."""
     
 desc['docstrings']['attrs']['NiC'] = \
 """Number density of the coolant as a function of initial nuclide.  
-Map with zzaaam-integer keys and float values."""
+Map with id-integer keys and float values."""
 
 desc['docstrings']['attrs']['dF_F_'] = \
 """The neutron destruction rate [n/s] of the fuel as a function of fluence.  
@@ -245,7 +245,7 @@ desc['docstrings']['attrs']['k_F_'] = \
 desc['docstrings']['attrs']['Mj_F_'] = \
 """The transmutation matrix of the fuel (specifically, mat_feed) into the jth nuclide 
 as a function of fluence.  Used with the discharge fluence Fd to calculate mat_prod.  
-This object is therefore a dictionary from zzaaam-integers to vectors of floats."""
+This object is therefore a dictionary from id-integers to vectors of floats."""
 
 desc['docstrings']['attrs']['zeta_F_'] = \
 """The thermal disadvantage factor as a function of fluence.  This attribute is 
@@ -435,7 +435,7 @@ Parameters
 ----------
 input : dict or Material or None, optional 
     If input is present, it set as the component's mat_feed.  If input is a 
-    isotopic dictionary (zzaaam keys, float values), this dictionary is first 
+    isotopic dictionary (id keys, float values), this dictionary is first 
     converted into a Material before being set as mat_feed.
 
 Returns
@@ -554,7 +554,7 @@ Parameters
 ----------
 input : dict or Material or None, optional 
     If input is present, it set as the component's mat_feed.  If input 
-    is a nuclide dictionary (zzaaam keys, float values), this dictionary 
+    is a nuclide dictionary (id keys, float values), this dictionary 
     is first converted into a Material before being set as mat_feed.
 
 Returns

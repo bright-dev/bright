@@ -250,7 +250,7 @@ void bright::FCComp::write_mat_pass ()
     {
       try
       {
-        int isoInLine = pyne::nucname::zzaaam(isoflag);
+        int isoInLine = pyne::nucname::id(isoflag);
 
         if (0 < mat_feed.comp.count(isoInLine) )
           isobuf << "\t" << mat_feed.comp[isoInLine];

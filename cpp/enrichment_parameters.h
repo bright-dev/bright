@@ -25,8 +25,8 @@ namespace bright {
     double alpha_0; //Initial stage separation factor
     double Mstar_0; //Initial guess for mass separation factor
 
-    int j; //Component to enrich (U-235), zzaaam form
-    int k; //Component to de-enrich, or strip (U-238), zzaaam form
+    int j; //Component to enrich (U-235), id form
+    int k; //Component to de-enrich, or strip (U-238), id form
 
     double N0; //Initial guess for the number of enriching stages
     double M0; //Initial guess for the number of stripping stages
