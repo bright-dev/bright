@@ -241,9 +241,10 @@ void bright::ReactorMG::loadlib(std::string lib)
   int jnd;
   pyne::half_life(std::string("H1"));  // Make sure that decay data is loaded
   int ndecays = pyne::decay_data.size();
+  
 
   // Finish initializing K, based on decay info
-  std::map<std::pair<int, int>, pyne::decay_struct>::iterator dd = pyne::decay_data.begin();
+  std::map<std::pair<int, int>, pyne::decay>::iterator dd = pyne::decay_data.begin();
   for (; dd != pyne::decay_data.end(); ++dd) {
     K.insert(dd->first.first);
     K.insert(dd->first.second);
