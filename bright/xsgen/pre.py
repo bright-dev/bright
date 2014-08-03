@@ -1,4 +1,3 @@
-import logging
 import os
 import sys
 import shutil
@@ -98,12 +97,3 @@ class XSGenPlugin(Plugin):
             if rc.reactor not in os.listdir('.'):
                 os.mkdir(rc.reactor)
             os.chdir(rc.reactor)
-
-        # Start up logger
-        logger = logging.getLogger('char')
-        hdlr = logging.FileHandler('char.log')
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-        hdlr.setFormatter(formatter)
-        logger.addHandler(hdlr)
-        logger.setLevel(logging.INFO)
-        rc.logger = logger
