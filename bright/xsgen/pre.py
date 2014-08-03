@@ -8,17 +8,18 @@ import subprocess
 import numpy as np
 from pyne import nucname
 from pyne.material import Material
+from pyne.utils import failure
 
 import bright.xsgen.utils as utils
-from bright.xsgen.utils import NotSpecified, failure
+from bright.xsgen.utils import NotSpecified
 from bright.xsgen.plugins import Plugin
-from bright.xdress.openmc_origen import OpenMCOrigen
+from bright.xsgen.openmc_origen import OpenMCOrigen
 from bright.xsgen.tally_types import restricted_tallies
 
 if sys.version_info[0] > 2:
     basestring = str
 
-INITIAL_NUC_RE = 'initial_([A-Za-z]{0,2}\d{1,7}[Mm]?)'
+INITIAL_NUC_RE = re.compile('initial_([A-Za-z]{0,2}\d{1,7}[Mm]?)')
 
 SOLVER_ENGINES = {'openmc+origen': OpenMCOrigen}
 
@@ -43,6 +44,7 @@ class XSGenPlugin(Plugin):
 
     defaultrc = {'solver': NotSpecified,
                  'formats': ('h5',),
+                 'ui': False,
                  }
 
     rcdocs = { 
@@ -65,7 +67,7 @@ class XSGenPlugin(Plugin):
         if rc.ui:
             run_ui()
 
-        self.ensure_rc()
+        self.ensure_rc(rc)
 
         if rc.solver is NotSpecified:
             raise ValueError('a solver type must be specified')
@@ -136,13 +138,13 @@ class XSGenPlugin(Plugin):
         max_mass = 0.0
         initial_nuc_keys = []
         for key in rc:
-            m = re.match(initial_nuc_pattern, key)
+            m = INITIAL_NUC_RE.match(key)
             if m is None:
                 continue
 
-            rc_initial_nuc = rc[key]
+            rc_initial_nuc = getattr(rc, key)
             rc_initial_nuc = np.atleast_1d(rc_initial_nuc)
-            rc[key] = rc_initial_nuc
+            setattr(rc, key, rc_initial_nuc)
 
             initial_nuc_keys.append(key)
             max_mass += np.max(rc_initial_nuc)
@@ -160,6 +162,6 @@ class XSGenPlugin(Plugin):
             'fuel_cell_radius', 'void_cell_radius', 'clad_cell_radius',
             'unit_cell_pitch', 'burn_regions', 'fuel_specific_power',]
 
-        rc.perturbation_params.extend(initial_nuc_keys)
+        rc.perturbation_params.extend(rc.initial_nuc_keys)
         # burn_times needs to be the last element
         rc.perturbation_params.append('burn_times')

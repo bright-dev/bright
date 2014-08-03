@@ -369,7 +369,7 @@ class Plugins(object):
     def exit(self, err=0):
         """Exits the process, possibly printing debug info."""
         rc = self.rc
-        if rc.DEBUG:
+        if rc.debug:
             import traceback
             sep = nyansep + '\n\n'
             msg = '{0}xsgen failed with the following error:\n\n'.format(sep)
