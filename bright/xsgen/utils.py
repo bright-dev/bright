@@ -7,7 +7,10 @@ from pprint import pformat
 from pyne import nucname
 
 USE_COLOR = (os.name is 'posix')
-
+DEFAULT_RC_FILE = "defaultrc.py"
+DEFAULT_PLUGINS = ("bright.xsgen.pre", "bright.xsgen.make_mc_input", 
+                   "bright.xsgen.run_transport", "bright.xsgen.post", 
+                   "bright.xsgen.test")
 
 def load_nuc_file(path):
     """Takes a file that contains whitespace separated nuclide names and
@@ -193,3 +196,93 @@ def exec_file(filename, glb=None, loc=None):
 
 nyansep = r'~\_/' * 17 + '~=[,,_,,]:3'
 
+def indent(s, n=4, join=True):
+    """Indents all lines in the string or list s by n spaces."""
+    spaces = " " * n
+    lines = s.splitlines() if isinstance(s, basestring) else s
+    lines = lines or ()
+    if join:
+        return '\n'.join([spaces + l for l in lines if l is not None])
+    else:
+        return [spaces + l for l in lines if l is not None]
+
+#
+# filesystem helpers
+#
+
+def newoverwrite(s, filename, verbose=False):
+    """Useful for not forcing re-compiles and thus playing nicely with the
+    build system.  This is acomplished by not writing the file if the existsing
+    contents are exactly the same as what would be written out.
+
+    Parameters
+    ----------
+    s : str
+        string contents of file to possible
+    filename : str
+        Path to file.
+    vebose : bool, optional
+        prints extra message
+
+    """
+    if os.path.isfile(filename):
+        with io.open(filename, 'rb') as f:
+            old = f.read()
+        if s == old:
+            return
+    with io.open(filename, 'wb') as f:
+        f.write(s.encode())
+    if verbose:
+        print("  wrote " + filename)
+
+def newcopyover(f1, f2, verbose=False):
+    """Useful for not forcing re-compiles and thus playing nicely with the
+    build system.  This is acomplished by not writing the file if the existsing
+    contents are exactly the same as what would be written out.
+
+    Parameters
+    ----------
+    f1 : str
+        Path to file to copy from
+    f2 : str
+        Path to file to copy over
+    vebose : bool, optional
+        prints extra message
+
+    """
+    if os.path.isfile(f1):
+        with io.open(f1, 'r') as f:
+            s = f.read()
+        return newoverwrite(s, f2, verbose)
+
+def writenewonly(s, filename, verbose=False):
+    """Only writes the contents of the string to a file if the file does not exist.
+    Useful for not tocuhing files.
+
+    Parameters
+    ----------
+    s : str
+        string contents of file to possible
+    filename : str
+        Path to file.
+    vebose : bool, optional
+        prints extra message
+
+    """
+    if os.path.isfile(filename):
+        return
+    with open(filename, 'w') as f:
+        f.write(str(s))
+    if verbose:
+        print("  wrote " + filename)
+
+def ensuredirs(f):
+    """For a file path, ensure that its directory path exists."""
+    d = os.path.split(f)[0]
+    if not os.path.isdir(d):
+        os.makedirs(d)
+
+def touch(filename):
+    """Opens a file and updates the mtime, like the posix command of the same name."""
+    with io.open(filename, 'a') as f:
+        os.utime(filename, None)
