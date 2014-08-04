@@ -4,6 +4,8 @@ import os
 import sys
 import shutil
 import subprocess
+from itertools import product
+from collections import namedtuple
 
 import numpy as np
 from pyne import nucname
@@ -73,6 +75,7 @@ class XSGenPlugin(Plugin):
             run_ui()
 
         self.ensure_rc(rc)
+        self.make_states(rc)
 
         if rc.solver is NotSpecified:
             raise ValueError('a solver type must be specified')
@@ -87,6 +90,7 @@ class XSGenPlugin(Plugin):
         self._ensure_fs(rc)
         self._ensure_smf(rc)
         self._ensure_av(rc)
+        self._ensure_inp(rc)
         self._ensure_pp(rc)
 
     def _ensure_bt(self, rc):
@@ -138,7 +142,7 @@ class XSGenPlugin(Plugin):
         rc.burn_regions = np.atleast_1d(rc.burn_regions)
         rc.fuel_specific_power = np.atleast_1d(rc.fuel_specific_power)
 
-    def _ensure_av(self, rc):
+    def _ensure_inp(self, rc):
         # Grab initial nuc perturbation
         max_mass = 0.0
         initial_nuc_keys = []
@@ -170,3 +174,11 @@ class XSGenPlugin(Plugin):
         rc.perturbation_params.extend(rc.initial_nuc_keys)
         # burn_times needs to be the last element
         rc.perturbation_params.append('burn_times')
+
+    def make_states(self, rc):
+        """Makes the reactor state table."""
+        State = rc.State = namedtuple('State', rc.perturbation_params)
+        data = [getattr(rc, a) for a in rc.perturbation_params]
+        rc.states = [State(*p) for p in product(*data)]
+        rc.nstates = len(rc.states)
+

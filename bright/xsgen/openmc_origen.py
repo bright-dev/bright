@@ -7,3 +7,6 @@ class OpenMCOrigen(object):
 
     def __init__(self, rc):
         self.rc = rc
+
+    def generate(self, state):
+        pass
