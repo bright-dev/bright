@@ -1,4 +1,4 @@
-from __future__ import print_fucntion
+from __future__ import print_function
 
 class BrightliteWriter(object):
 
