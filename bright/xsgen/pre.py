@@ -15,6 +15,7 @@ from bright.xsgen.utils import NotSpecified
 from bright.xsgen.plugins import Plugin
 from bright.xsgen.openmc_origen import OpenMCOrigen
 from bright.xsgen.tally_types import restricted_tallies
+from bright.xsgen.brightlite import BrightliteWriter
 
 if sys.version_info[0] > 2:
     basestring = str
@@ -22,6 +23,10 @@ if sys.version_info[0] > 2:
 INITIAL_NUC_RE = re.compile('initial_([A-Za-z]{0,2}\d{1,7}[Mm]?)')
 
 SOLVER_ENGINES = {'openmc+origen': OpenMCOrigen}
+
+FORMAT_WRITERS = {
+    'brightlite': BrightliteWriter,
+    }
 
 def run_ui():
     """Runs the cross section user interface."""
@@ -73,7 +78,7 @@ class XSGenPlugin(Plugin):
             raise ValueError('a solver type must be specified')
         rc.engine = SOLVER_ENGINES[rc.solver](rc)
 
-        # setup persistence
+        rc.writers = [FORMAT_WRITERS[format](rc) for format in rc.formats]
 
     def ensure_rc(self, rc):
         self._ensure_bt(rc)
