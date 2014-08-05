@@ -4,11 +4,13 @@ import sys
 import subprocess
 
 from pyne import nucname
+from pyne.material import Material
 
 # templates are from openmc/examples/lattice/simple
 
 SETTINGS_TEMPLATE = """<?xml version="1.0"?>
 <settings>
+  <cross_sections>{openmc_cross_sections}</cross_sections>
   <eigenvalue>
     <batches>{k_cycles}</batches>
     <inactive>{k_cycles_skip}</inactive>
@@ -71,8 +73,7 @@ GEOMETRY_TEMPLATE = """<?xml version="1.0"?>
 </geometry>
 """
 
-TALLIES_TEMPLATE = """
-<?xml version="1.0"?>
+TALLIES_TEMPLATE = """<?xml version="1.0"?>
 <tallies>
   <tally id="1">
     <label>groupxs</label>
@@ -139,8 +140,9 @@ class OpenMCOrigen(object):
         with open(os.path.join(pwd, 'settings.xml'), 'w') as f:
             f.write(settings)
         # materials
+        null_mat = Material({n: 0.0 for n in ctx['core_transmute_nucs']})
         ctx['_fuel_nucs'] = _mat_to_nucs(rc.fuel_material)
-        ctx['_clad_nucs'] = _mat_to_nucs(rc.clad_material)
+        ctx['_clad_nucs'] = _mat_to_nucs(rc.clad_material + null_mat)
         ctx['_cool_nucs'] = _mat_to_nucs(rc.cool_material)
         materials = MATERIALS_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'materials.xml'), 'w') as f:
