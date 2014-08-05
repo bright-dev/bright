@@ -30,7 +30,7 @@ FORMAT_WRITERS = {
     'brightlite': BrightliteWriter,
     }
 
-ensure_mat = lambda m: m is isinstance(m, Material) else Material(m)
+ensure_mat = lambda m: m if isinstance(m, Material) else Material(m)
 
 def run_ui():
     """Runs the cross section user interface."""
@@ -94,6 +94,7 @@ class XSGenPlugin(Plugin):
         self._ensure_inp(rc)
         self._ensure_pp(rc)
         self._ensure_mats(rc)
+        self._ensure_lattice(rc)
 
     def _ensure_bt(self, rc):
         # Make Time Steps
@@ -230,12 +231,34 @@ class XSGenPlugin(Plugin):
         else: 
             MW = (2 * 1.0) + (1 * 16.0) + (0.199 * 550 * 10.0**-6 * 10.0) + \
                                           (0.801 * 550 * 10.0**-6 * 11.0)
-            rc.cool_material = Material({{
+            rc.cool_material = Material({
                 10010: (2 * 1.0) / MW,
                 80160: (1 * 16.0) / MW,
                 50100: (0.199 * 550 * 10.0**-6 * 10.0) / MW,
                 50110: (0.801 * 550 * 10.0**-6 * 11.0) / MW,
                 })
+
+    def _ensure_lattice(self, rc):
+        if 'lattice' not in rc:
+            rc.lattice = ("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n"
+                          "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 2 1 1 2 1 1 2 1 1 2 1 1 2 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 \n"
+                          "1 1 1 1 1 2 1 1 2 1 1 2 1 1 1 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n"
+                          "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 \n")
+        if 'lattice_shape' not in rc:
+            rc.lattice_shape = (17, 17)
 
     def make_states(self, rc):
         """Makes the reactor state table."""

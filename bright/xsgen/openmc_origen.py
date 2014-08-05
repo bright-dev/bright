@@ -41,6 +41,36 @@ MATERIALS_TEMPLATE = """<?xml version="1.0"?>
 </materials>
 """
 
+GEOMETRY_TEMPLATE = """<?xml version="1.0"?>
+<geometry>
+  <cell id="1" fill="5" surfaces="1 -2 3 -4" />
+  <cell id="101" universe="1" material="1" surfaces="-5" />
+  <cell id="102" universe="1" material="void" surfaces="5 -6" />
+  <cell id="103" universe="1" material="3" surfaces="6 -7" />
+  <cell id="104" universe="1" material="2" surfaces="7" />
+  <cell id="201" universe="2" material="2" surfaces="8 -8" />
+  <cell id="302" universe="3" material="3" surfaces="9 -9" />
+  <lattice id="5">
+    <type>rectangular</type>
+    <dimension>{_latt_shape0} {_latt_shape1}</dimension>
+    <lower_left>0.0 0.0</lower_left>
+    <width>{_latt_x_pitch} {_latt_y_pitch}</width>
+    <universes>
+      {lattice}
+    </universes>
+  </lattice>
+  <surface id="1" type="x-plane" coeffs="0.0" boundary="reflective" />
+  <surface id="2" type="x-plane" coeffs="{_latt_x_pitch}" boundary="reflective" />
+  <surface id="3" type="y-plane" coeffs="0.0" boundary="reflective" />
+  <surface id="4" type="y-plane" coeffs="{_latt_y_pitch}" boundary="reflective" />
+  <surface id="5" type="z-cylinder" coeffs="0.0 0.0 {fuel_cell_radius}" />
+  <surface id="6" type="z-cylinder" coeffs="0.0 0.0 {void_cell_radius}" />
+  <surface id="7" type="z-cylinder" coeffs="0.0 0.0 {clad_cell_radius}" />
+  <surface id="8" type="z-cylinder" coeffs="0.0 0.0 0.0" />
+  <surface id="9" type="z-cylinder" coeffs="0.0 0.0 0.0" />
+</geometry>
+"""
+
 class OpenMCOrigen(object):
     """An that combines OpenMC for k-code calculations and ORIGEN for 
     transmutation.
@@ -82,6 +112,7 @@ class OpenMCOrigen(object):
     def _make_omc_input(self, state):
         pwd = self.pwd(state)
         ctx = self.context(state)
+        rc = self.rc
         # settings
         settings = SETTINGS_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'settings.xml'), 'w') as f:
@@ -93,11 +124,20 @@ class OpenMCOrigen(object):
         materials = MATERIALS_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'materials.xml'), 'w') as f:
             f.write(materials)
+        # geometry
+        ctx['lattice'] = ctx['lattice'].strip().replace('\n', '\n      ')
+        ctx['_latt_shape0'] = ctx['lattice_shape'][0]
+        ctx['_latt_shape1'] = ctx['lattice_shape'][1]
+        ctx['_latt_x_pitch'] = ctx['unit_cell_pitch'] * ctx['lattice_shape'][0]
+        ctx['_latt_y_pitch'] = ctx['unit_cell_pitch'] * ctx['lattice_shape'][1]
+        geometry = GEOMETRY_TEMPLATE.format(**ctx)
+        with open(os.path.join(pwd, 'geometry.xml'), 'w') as f:
+            f.write(geometry)
 
 def _mat_to_nucs(mat):
     nucs = []
     template = '<nuclide name="{nuc}" wo="{mass}" />'
-    for nuc, mass in mat.comp:
+    for nuc, mass in mat.comp.items():
         nucs.append(template.format(nuc=nucname.serpent(nuc), mass=mass))
     nucs = "\n    ".join(nucs)
     return nucs
