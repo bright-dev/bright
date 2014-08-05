@@ -1,10 +1,13 @@
 from __future__ import print_function
 import os
+import io
 import sys
 import subprocess
 
 from pyne import nucname
 from pyne.material import Material
+
+from lxml import etree
 
 # templates are from openmc/examples/lattice/simple
 
@@ -140,10 +143,11 @@ class OpenMCOrigen(object):
         with open(os.path.join(pwd, 'settings.xml'), 'w') as f:
             f.write(settings)
         # materials
+        valid_nucs = nucs_in_cross_sections(ctx['openmc_cross_sections'])
         null_mat = Material({n: 0.0 for n in ctx['core_transmute_nucs']})
-        ctx['_fuel_nucs'] = _mat_to_nucs(rc.fuel_material)
-        ctx['_clad_nucs'] = _mat_to_nucs(rc.clad_material + null_mat)
-        ctx['_cool_nucs'] = _mat_to_nucs(rc.cool_material)
+        ctx['_fuel_nucs'] = _mat_to_nucs(rc.fuel_material[valid_nucs])
+        ctx['_clad_nucs'] = _mat_to_nucs((rc.clad_material + null_mat)[valid_nucs])
+        ctx['_cool_nucs'] = _mat_to_nucs(rc.cool_material[valid_nucs])
         materials = MATERIALS_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'materials.xml'), 'w') as f:
             f.write(materials)
@@ -163,6 +167,18 @@ class OpenMCOrigen(object):
         tallies = TALLIES_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'tallies.xml'), 'w') as f:
             f.write(tallies)
+
+def nucs_in_cross_sections(fname):
+    """Returns the set of nulcides present in the cross_sections.xml file.
+    """
+    tree = etree.parse(fname)
+    nucs = set()
+    for ace_table in tree.iterfind('//ace_table[@alias]'):
+        nuc = ace_table.attrib['alias'].split('.')[0].lower()
+        nuc = nuc.replace('nat', '')
+        nuc = nucname.id(nuc)
+        nucs.add(nuc)
+    return nucs
 
 def _mat_to_nucs(mat):
     nucs = []
