@@ -9,7 +9,7 @@ from collections import namedtuple
 
 import numpy as np
 from pyne import nucname
-from pyne.material import Material
+from pyne.material import Material, from_atom_frac
 from pyne.utils import failure
 
 import bright.xsgen.utils as utils
@@ -29,6 +29,8 @@ SOLVER_ENGINES = {'openmc+origen': OpenMCOrigen}
 FORMAT_WRITERS = {
     'brightlite': BrightliteWriter,
     }
+
+ensure_mat = lambda m: m is isinstance(m, Material) else Material(m)
 
 def run_ui():
     """Runs the cross section user interface."""
@@ -87,11 +89,11 @@ class XSGenPlugin(Plugin):
         self._ensure_bt(rc)
         self._ensure_nl(rc)
         self._ensure_temp(rc)
-        self._ensure_fs(rc)
         self._ensure_smf(rc)
         self._ensure_av(rc)
         self._ensure_inp(rc)
         self._ensure_pp(rc)
+        self._ensure_mats(rc)
 
     def _ensure_bt(self, rc):
         # Make Time Steps
@@ -119,10 +121,6 @@ class XSGenPlugin(Plugin):
     def _ensure_temp(self, rc):
         # Make temperature
         rc.temperature = rc.get('temperature', 600)
-
-    def _ensure_fs(self, rc):
-        # Make fuel stream
-        rc.ihm_mat = Material(rc.initial_heavy_metal)
 
     def _ensure_smf(self, rc):
         # make sensitivity mass fractions
@@ -174,6 +172,70 @@ class XSGenPlugin(Plugin):
         rc.perturbation_params.extend(rc.initial_nuc_keys)
         # burn_times needs to be the last element
         rc.perturbation_params.append('burn_times')
+
+    def _ensure_mats(self, rc):
+        if 'fuel_material'in rc:
+            rc.fuel_material = ensure_mat(rc.fuel_material)
+        elif 'fuel_chemical_form' in rc and 'initial_heavy_metal' in rc:
+            ihm_mat = Material(rc.initial_heavy_metal)
+            atom_frac = {k: v for k, v in rc.fuel_chemical_form.items() if k != "IHM"}
+            atom_frac[ihm_mat] = rc.fuel_chemical_form.get("IHM", 0.0)
+            rc.fuel_material = from_atom_frac(atom_frac)
+        else:
+            raise ValueError("Please specify a fuel.")
+
+        if 'clad_material' in rc: 
+            rc.clad_material = ensure_mat(rc.clad_material)
+        else: 
+            rc.clad_material = Material({
+                # Natural Zirconium
+                400900: 0.98135 * 0.5145,
+                400910: 0.98135 * 0.1122,
+                400920: 0.98135 * 0.1715,
+                400940: 0.98135 * 0.1738,
+                400960: 0.98135 * 0.0280,
+                # The plastic is all melted and the natural Chromium too..
+                240500: 0.00100 * 0.04345,
+                240520: 0.00100 * 0.83789,
+                240530: 0.00100 * 0.09501,
+                240540: 0.00100 * 0.02365,
+                # Natural Iron
+                260540: 0.00135 * 0.05845,
+                260560: 0.00135 * 0.91754,
+                260570: 0.00135 * 0.02119,
+                260580: 0.00135 * 0.00282,
+                # Natural Nickel
+                280580: 0.00055 * 0.68077,
+                280600: 0.00055 * 0.26223,
+                280610: 0.00055 * 0.01140,
+                280620: 0.00055 * 0.03634,
+                280640: 0.00055 * 0.00926,
+                # Natural Tin
+                501120: 0.01450 * 0.0097,
+                501140: 0.01450 * 0.0065,
+                501150: 0.01450 * 0.0034,
+                501160: 0.01450 * 0.1454,
+                501170: 0.01450 * 0.0768,
+                501180: 0.01450 * 0.2422,
+                501190: 0.01450 * 0.0858,
+                501200: 0.01450 * 0.3259,
+                501220: 0.01450 * 0.0463,
+                501240: 0.01450 * 0.0579,
+                # We Need Oxygen!
+                80160:  0.00125,
+                })
+
+        if 'cool_material' in rc: 
+            rc.cool_material = ensure_mat(rc.cool_material)
+        else: 
+            MW = (2 * 1.0) + (1 * 16.0) + (0.199 * 550 * 10.0**-6 * 10.0) + \
+                                          (0.801 * 550 * 10.0**-6 * 11.0)
+            rc.cool_material = Material({{
+                10010: (2 * 1.0) / MW,
+                80160: (1 * 16.0) / MW,
+                50100: (0.199 * 550 * 10.0**-6 * 10.0) / MW,
+                50110: (0.801 * 550 * 10.0**-6 * 11.0) / MW,
+                })
 
     def make_states(self, rc):
         """Makes the reactor state table."""
