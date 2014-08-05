@@ -71,6 +71,27 @@ GEOMETRY_TEMPLATE = """<?xml version="1.0"?>
 </geometry>
 """
 
+TALLIES_TEMPLATE = """
+<?xml version="1.0"?>
+<tallies>
+  <tally id="1">
+    <label>groupxs</label>
+    <filter type="energy" bins="{_egrid}" />
+    <filter type="material" bins="1" />
+    <scores>flux total scatter absorption fission nu-fission kappa-fission nu-scatter</scores>
+    <nuclides>{_nucs} total</nuclides>
+  </tally>
+  <tally id="2">
+    <label>s_gh</label>
+    <filter type="energy" bins="{_egrid}" />
+    <filter type="energyout" bins="{_egrid}" />
+    <filter type="material" bins="1" />
+    <scores>scatter</scores>
+    <nuclides>{_nucs} total</nuclides>
+  </tally>
+</tallies>
+"""
+
 class OpenMCOrigen(object):
     """An that combines OpenMC for k-code calculations and ORIGEN for 
     transmutation.
@@ -133,6 +154,13 @@ class OpenMCOrigen(object):
         geometry = GEOMETRY_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'geometry.xml'), 'w') as f:
             f.write(geometry)
+        # tallies
+        ctx['_egrid'] = " ".join(map(str, sorted(ctx['group_structure'])))
+        nucs = ctx['core_transmute_nucs']
+        ctx['_nucs'] = " ".join([nucname.serpent(nuc) for nuc in nucs])
+        tallies = TALLIES_TEMPLATE.format(**ctx)
+        with open(os.path.join(pwd, 'tallies.xml'), 'w') as f:
+            f.write(tallies)
 
 def _mat_to_nucs(mat):
     nucs = []
