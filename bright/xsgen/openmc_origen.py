@@ -9,6 +9,8 @@ from pyne.material import Material
 
 from lxml import etree
 
+from utils import indir
+
 # templates are from openmc/examples/lattice/simple
 
 SETTINGS_TEMPLATE = """<?xml version="1.0"?>
@@ -144,11 +146,18 @@ class OpenMCOrigen(object):
         return self.statelibs[state]
 
     def openmc(self, state):
+        """Runs OpenMC for a given state."""
+        # make inpurs
         pwd = self.pwd(state)
         if not os.path.isdir(pwd):
             os.makedirs(pwd)
         self._make_omc_input(state)
         # run openmc
+        statepoint = _find_statepoint(pwd)
+        if statepoint is None:
+            with indir(pwd):
+                subprocess.check_call(['openmc'])
+            statepoint = _find_statepoint(pwd)
         # parse results
 
     def _make_omc_input(self, state):
@@ -212,3 +221,9 @@ def _mat_to_nucs(mat):
         nucs.append(template.format(nuc=nucname.serpent(nuc), mass=mass*100))
     nucs = "\n    ".join(nucs)
     return nucs
+
+def _find_statepoint(pwd):
+    for f in os.listdir(pwd):
+        if f.startswith('statepoint'):
+            return f
+    return None

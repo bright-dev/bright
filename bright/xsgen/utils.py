@@ -3,6 +3,7 @@ from __future__ import print_function
 import os
 import subprocess
 from pprint import pformat
+from contextlib import contextmanager
 
 from pyne import nucname
 
@@ -286,3 +287,16 @@ def touch(filename):
     """Opens a file and updates the mtime, like the posix command of the same name."""
     with io.open(filename, 'a') as f:
         os.utime(filename, None)
+
+@contextmanager
+def indir(d):
+    """Execute a block from within a directory, then return to the 
+    original directory.
+    """
+    origdir = os.getcwd()
+    d = os.path.abspath(d)
+    os.chdir(d)
+    os.environ['PWD'] = d
+    yield
+    os.chdir(origdir)
+    os.environ['PWD'] = origdir
