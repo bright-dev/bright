@@ -53,21 +53,21 @@ GEOMETRY_TEMPLATE = """<?xml version="1.0"?>
   <cell id="102" universe="1" material="void" surfaces="5 -6" />
   <cell id="103" universe="1" material="3" surfaces="6 -7" />
   <cell id="104" universe="1" material="2" surfaces="7" />
-  <cell id="201" universe="2" material="2" surfaces="8 -8" />
-  <cell id="302" universe="3" material="3" surfaces="9 -9" />
+  <cell id="201" universe="2" material="2" surfaces="8" />
+  <cell id="302" universe="3" material="3" surfaces="9" />
   <lattice id="5">
     <type>rectangular</type>
     <dimension>{_latt_shape0} {_latt_shape1}</dimension>
-    <lower_left>0.0 0.0</lower_left>
-    <width>{_latt_x_pitch} {_latt_y_pitch}</width>
+    <lower_left>-{_latt_x_half_pitch} -{_latt_y_half_pitch}</lower_left>
+    <width>{unit_cell_pitch} {unit_cell_pitch}</width>
     <universes>
       {lattice}
     </universes>
   </lattice>
-  <surface id="1" type="x-plane" coeffs="0.0" boundary="reflective" />
-  <surface id="2" type="x-plane" coeffs="{_latt_x_pitch}" boundary="reflective" />
-  <surface id="3" type="y-plane" coeffs="0.0" boundary="reflective" />
-  <surface id="4" type="y-plane" coeffs="{_latt_y_pitch}" boundary="reflective" />
+  <surface id="1" type="x-plane" coeffs="-{_latt_x_half_pitch}" boundary="reflective" />
+  <surface id="2" type="x-plane" coeffs="{_latt_x_half_pitch}" boundary="reflective" />
+  <surface id="3" type="y-plane" coeffs="-{_latt_y_half_pitch}" boundary="reflective" />
+  <surface id="4" type="y-plane" coeffs="{_latt_y_half_pitch}" boundary="reflective" />
   <surface id="5" type="z-cylinder" coeffs="0.0 0.0 {fuel_cell_radius}" />
   <surface id="6" type="z-cylinder" coeffs="0.0 0.0 {void_cell_radius}" />
   <surface id="7" type="z-cylinder" coeffs="0.0 0.0 {clad_cell_radius}" />
@@ -79,13 +79,20 @@ GEOMETRY_TEMPLATE = """<?xml version="1.0"?>
 TALLIES_TEMPLATE = """<?xml version="1.0"?>
 <tallies>
   <tally id="1">
+    <label>flux</label>
+    <filter type="energy" bins="{_egrid}" />
+    <filter type="material" bins="1" />
+    <scores>flux</scores>
+    <nuclides>total</nuclides>
+  </tally>
+  <tally id="2">
     <label>groupxs</label>
     <filter type="energy" bins="{_egrid}" />
     <filter type="material" bins="1" />
-    <scores>flux total scatter absorption fission nu-fission kappa-fission nu-scatter</scores>
+    <scores>total scatter absorption fission nu-fission kappa-fission nu-scatter</scores>
     <nuclides>{_nucs} total</nuclides>
   </tally>
-  <tally id="2">
+  <tally id="3">
     <label>s_gh</label>
     <filter type="energy" bins="{_egrid}" />
     <filter type="energyout" bins="{_egrid}" />
@@ -94,6 +101,16 @@ TALLIES_TEMPLATE = """<?xml version="1.0"?>
     <nuclides>{_nucs} total</nuclides>
   </tally>
 </tallies>
+"""
+
+PLOTS_TEMPLATE = """<?xml version="1.0"?>
+<plots>
+  <plot id="1" color="mat">
+    <origin>0. 0. 0.</origin>
+    <width>{_latt_x_pitch} {_latt_y_pitch}</width>
+    <pixels>600 600</pixels>
+  </plot>
+</plots>
 """
 
 class OpenMCOrigen(object):
@@ -144,7 +161,9 @@ class OpenMCOrigen(object):
             f.write(settings)
         # materials
         valid_nucs = nucs_in_cross_sections(ctx['openmc_cross_sections'])
-        null_mat = Material({n: 0.0 for n in ctx['core_transmute_nucs']})
+        core_nucs = set(map(nucname.id, ctx['core_transmute_nucs']))
+        #null_mat = Material({n: 0.0 for n in ctx['core_transmute_nucs']})
+        null_mat = Material({n: 1e-300 for n in core_nucs})
         ctx['_fuel_nucs'] = _mat_to_nucs(rc.fuel_material[valid_nucs])
         ctx['_clad_nucs'] = _mat_to_nucs((rc.clad_material + null_mat)[valid_nucs])
         ctx['_cool_nucs'] = _mat_to_nucs(rc.cool_material[valid_nucs])
@@ -157,16 +176,22 @@ class OpenMCOrigen(object):
         ctx['_latt_shape1'] = ctx['lattice_shape'][1]
         ctx['_latt_x_pitch'] = ctx['unit_cell_pitch'] * ctx['lattice_shape'][0]
         ctx['_latt_y_pitch'] = ctx['unit_cell_pitch'] * ctx['lattice_shape'][1]
+        ctx['_latt_x_half_pitch'] = ctx['_latt_x_pitch'] / 2.0
+        ctx['_latt_y_half_pitch'] = ctx['_latt_y_pitch'] / 2.0
         geometry = GEOMETRY_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'geometry.xml'), 'w') as f:
             f.write(geometry)
         # tallies
         ctx['_egrid'] = " ".join(map(str, sorted(ctx['group_structure'])))
-        nucs = ctx['core_transmute_nucs']
+        nucs = core_nucs & valid_nucs
         ctx['_nucs'] = " ".join([nucname.serpent(nuc) for nuc in nucs])
         tallies = TALLIES_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'tallies.xml'), 'w') as f:
             f.write(tallies)
+        # plots
+        plots = PLOTS_TEMPLATE.format(**ctx)
+        with open(os.path.join(pwd, 'plots.xml'), 'w') as f:
+            f.write(plots)
 
 def nucs_in_cross_sections(fname):
     """Returns the set of nulcides present in the cross_sections.xml file.
@@ -184,6 +209,6 @@ def _mat_to_nucs(mat):
     nucs = []
     template = '<nuclide name="{nuc}" wo="{mass}" />'
     for nuc, mass in mat.comp.items():
-        nucs.append(template.format(nuc=nucname.serpent(nuc), mass=mass))
+        nucs.append(template.format(nuc=nucname.serpent(nuc), mass=mass*100))
     nucs = "\n    ".join(nucs)
     return nucs

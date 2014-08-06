@@ -179,7 +179,8 @@ class XSGenPlugin(Plugin):
             rc.fuel_material = ensure_mat(rc.fuel_material)
         elif 'fuel_chemical_form' in rc and 'initial_heavy_metal' in rc:
             ihm_mat = Material(rc.initial_heavy_metal)
-            atom_frac = {k: v for k, v in rc.fuel_chemical_form.items() if k != "IHM"}
+            atom_frac = {nucname.id(k): v for k, v in \
+                         rc.fuel_chemical_form.items() if k != "IHM"}
             atom_frac[ihm_mat] = rc.fuel_chemical_form.get("IHM", 0.0)
             rc.fuel_material = from_atom_frac(atom_frac)
         else:
