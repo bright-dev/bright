@@ -15,7 +15,6 @@ from pyne.utils import failure
 import bright.xsgen.utils as utils
 from bright.xsgen.utils import NotSpecified
 from bright.xsgen.plugins import Plugin
-from bright.xsgen.openmc_origen import OpenMCOrigen
 from bright.xsgen.tally_types import restricted_tallies
 from bright.xsgen.brightlite import BrightliteWriter
 
@@ -23,8 +22,6 @@ if sys.version_info[0] > 2:
     basestring = str
 
 INITIAL_NUC_RE = re.compile('initial_([A-Za-z]{0,2}\d{1,7}[Mm]?)')
-
-SOLVER_ENGINES = {'openmc+origen': OpenMCOrigen}
 
 FORMAT_WRITERS = {
     'brightlite': BrightliteWriter,
@@ -51,15 +48,11 @@ class XSGenPlugin(Plugin):
 
     requires = ('bright.xsgen.base',)
 
-    defaultrc = {'solver': NotSpecified,
-                 'formats': ('h5',),
+    defaultrc = {'formats': ('h5',),
                  'ui': False,
                  }
 
     rcdocs = { 
-        'solver': ('The physics codes that are used to solve the '
-                   'burnup-criticality problem and compute cross sections and '
-                   'transmutation matrices.'),
         'formats': 'The output formats to write out.',
         }
 
@@ -68,7 +61,6 @@ class XSGenPlugin(Plugin):
             help="Launches the char ui.")
         parser.add_argument("-c", "--clean", action="store_true", dest="clean",
             help="Cleans the reactor directory of current files.")
-        parser.add_argument('--solver', dest='solver', help=self.rcdocs['solver'])
         parser.add_argument('--formats', dest='formats', help=self.rcdocs['formats'], 
                             nargs='+')
 
@@ -78,10 +70,6 @@ class XSGenPlugin(Plugin):
 
         self.ensure_rc(rc)
         self.make_states(rc)
-
-        if rc.solver is NotSpecified:
-            raise ValueError('a solver type must be specified')
-        rc.engine = SOLVER_ENGINES[rc.solver](rc)
 
         rc.writers = [FORMAT_WRITERS[format](rc) for format in rc.formats]
 

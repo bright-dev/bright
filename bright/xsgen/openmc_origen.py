@@ -6,8 +6,8 @@ import subprocess
 
 from pyne import nucname
 from pyne.material import Material
-
-from lxml import etree
+from pyne.xs import data_source 
+from pyne.xs.cache import XSCache
 
 from utils import indir
 
@@ -88,19 +88,26 @@ TALLIES_TEMPLATE = """<?xml version="1.0"?>
     <nuclides>total</nuclides>
   </tally>
   <tally id="2">
-    <label>groupxs</label>
-    <filter type="energy" bins="{_egrid}" />
+    <label>cinderflux</label>
+    <filter type="energy" bins="{_cds_egrid}" />
     <filter type="material" bins="1" />
-    <scores>total scatter absorption fission nu-fission kappa-fission nu-scatter</scores>
-    <nuclides>{_nucs} total</nuclides>
+    <scores>flux</scores>
+    <nuclides>total</nuclides>
   </tally>
   <tally id="3">
+    <label>eafflux</label>
+    <filter type="energy" bins="{_eafds_egrid}" />
+    <filter type="material" bins="1" />
+    <scores>flux</scores>
+    <nuclides>total</nuclides>
+  </tally>
+  <tally id="4">
     <label>s_gh</label>
     <filter type="energy" bins="{_egrid}" />
     <filter type="energyout" bins="{_egrid}" />
     <filter type="material" bins="1" />
     <scores>scatter</scores>
-    <nuclides>{_nucs} total</nuclides>
+    <nuclides>total</nuclides>
   </tally>
 </tallies>
 """
@@ -126,6 +133,14 @@ class OpenMCOrigen(object):
         self.builddir = 'build-' + rc.reactor
         if not os.path.isdir(self.builddir):
             os.makedirs(self.builddir)
+        self.cinderds = data_source.CinderDataSource()
+        self.eafds = data_source.EAFDataSource()
+        self.omcds = data_source.OpenMCDataSource(
+                        cross_sections=rc.openmc_cross_sections,
+                        src_group_struct=self.eafds.src_group_struct)
+        self.xscache = XSCache(data_sources=[self.omcds, self.eafds, self.cinderds,
+                                             data_source.SimpleDataSource,
+                                             data_source.NullDataSource])
 
     def pwd(self, state):
         return os.path.join(self.builddir, str(hash(state)), 'omc')
@@ -169,12 +184,10 @@ class OpenMCOrigen(object):
         with open(os.path.join(pwd, 'settings.xml'), 'w') as f:
             f.write(settings)
         # materials
-        valid_nucs = nucs_in_cross_sections(ctx['openmc_cross_sections'])
+        valid_nucs = self.nucs_in_cross_sections()
         core_nucs = set(map(nucname.id, ctx['core_transmute_nucs']))
-        #null_mat = Material({n: 0.0 for n in ctx['core_transmute_nucs']})
-        null_mat = Material({n: 1e-300 for n in core_nucs})
         ctx['_fuel_nucs'] = _mat_to_nucs(rc.fuel_material[valid_nucs])
-        ctx['_clad_nucs'] = _mat_to_nucs((rc.clad_material + null_mat)[valid_nucs])
+        ctx['_clad_nucs'] = _mat_to_nucs(rc.clad_material[valid_nucs])
         ctx['_cool_nucs'] = _mat_to_nucs(rc.cool_material[valid_nucs])
         materials = MATERIALS_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'materials.xml'), 'w') as f:
@@ -192,8 +205,10 @@ class OpenMCOrigen(object):
             f.write(geometry)
         # tallies
         ctx['_egrid'] = " ".join(map(str, sorted(ctx['group_structure'])))
+        ctx['_cds_egrid'] = " ".join(map(str, sorted(self.cinderds.src_group_struct)))
+        ctx['_eafds_egrid'] = " ".join(map(str, sorted(self.eafds.src_group_struct)))
         nucs = core_nucs & valid_nucs
-        ctx['_nucs'] = " ".join([nucname.serpent(nuc) for nuc in nucs])
+        ctx['_nucs'] = " ".join([nucname.serpent(nuc) for nuc in sorted(nucs)])
         tallies = TALLIES_TEMPLATE.format(**ctx)
         with open(os.path.join(pwd, 'tallies.xml'), 'w') as f:
             f.write(tallies)
@@ -202,17 +217,11 @@ class OpenMCOrigen(object):
         with open(os.path.join(pwd, 'plots.xml'), 'w') as f:
             f.write(plots)
 
-def nucs_in_cross_sections(fname):
-    """Returns the set of nulcides present in the cross_sections.xml file.
-    """
-    tree = etree.parse(fname)
-    nucs = set()
-    for ace_table in tree.iterfind('//ace_table[@alias]'):
-        nuc = ace_table.attrib['alias'].split('.')[0].lower()
-        nuc = nuc.replace('nat', '')
-        nuc = nucname.id(nuc)
-        nucs.add(nuc)
-    return nucs
+    def nucs_in_cross_sections(self):
+        """Returns the set of nulcides present in the cross_sections.xml file.
+        """
+        return {n.nucid for n in self.omcds.cross_sections.ace_tables \
+                if n.nucid is not None}
 
 def _mat_to_nucs(mat):
     nucs = []
