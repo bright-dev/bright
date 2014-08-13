@@ -4,6 +4,8 @@ import io
 import sys
 import subprocess
 
+import numpy as np
+
 from pyne import nucname
 from pyne.material import Material
 from pyne.xs import data_source 
@@ -102,6 +104,13 @@ TALLIES_TEMPLATE = """<?xml version="1.0"?>
     <nuclides>total</nuclides>
   </tally>
   <tally id="4">
+    <label>omcflux</label>
+    <filter type="energy" bins="{_omcds_egrid}" />
+    <filter type="material" bins="1" />
+    <scores>flux</scores>
+    <nuclides>total</nuclides>
+  </tally>
+  <tally id="5">
     <label>s_gh</label>
     <filter type="energy" bins="{_egrid}" />
     <filter type="energyout" bins="{_egrid}" />
@@ -137,7 +146,8 @@ class OpenMCOrigen(object):
         self.eafds = data_source.EAFDataSource()
         self.omcds = data_source.OpenMCDataSource(
                         cross_sections=rc.openmc_cross_sections,
-                        src_group_struct=self.eafds.src_group_struct)
+                        #src_group_struct=self.eafds.src_group_struct)
+                        src_group_struct=np.logspace(1, -9, 1001))
         self.xscache = XSCache(data_sources=[self.omcds, self.eafds, self.cinderds,
                                              data_source.SimpleDataSource,
                                              data_source.NullDataSource])
@@ -207,6 +217,7 @@ class OpenMCOrigen(object):
         ctx['_egrid'] = " ".join(map(str, sorted(ctx['group_structure'])))
         ctx['_cds_egrid'] = " ".join(map(str, sorted(self.cinderds.src_group_struct)))
         ctx['_eafds_egrid'] = " ".join(map(str, sorted(self.eafds.src_group_struct)))
+        ctx['_omcds_egrid'] = " ".join(map(str, sorted(self.omcds.src_group_struct)))
         nucs = core_nucs & valid_nucs
         ctx['_nucs'] = " ".join([nucname.serpent(nuc) for nuc in sorted(nucs)])
         tallies = TALLIES_TEMPLATE.format(**ctx)
