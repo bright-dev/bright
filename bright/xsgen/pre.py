@@ -50,10 +50,13 @@ class XSGenPlugin(Plugin):
 
     defaultrc = {'formats': ('h5',),
                  'ui': False,
+                 'is_thermal': True, 
                  }
 
     rcdocs = { 
         'formats': 'The output formats to write out.',
+        'is_thermal': ('Whether the reactor is a thermal system (True) or a '
+                       'fast one (False)'),
         }
 
     def update_argparser(self, parser):
@@ -63,6 +66,8 @@ class XSGenPlugin(Plugin):
             help="Cleans the reactor directory of current files.")
         parser.add_argument('--formats', dest='formats', help=self.rcdocs['formats'], 
                             nargs='+')
+        parser.add_argument('--is-thermal', dest='is_thermal', type=bool, 
+                            help=self.rcdocs['is_thermal'])
 
     def setup(self, rc):
         if rc.ui:
@@ -75,6 +80,7 @@ class XSGenPlugin(Plugin):
 
     def ensure_rc(self, rc):
         self._ensure_bt(rc)
+        self._ensure_gs(rc)
         self._ensure_nl(rc)
         self._ensure_temp(rc)
         self._ensure_smf(rc)
@@ -93,18 +99,25 @@ class XSGenPlugin(Plugin):
             rc.burn_times = np.arange(0, bt_upper_lim, rc.time_step)
         rc.burn_times_index = list(range(len(rc.burn_times)))
 
+    def _ensure_gs(self, rc):
+        # ensure group structure
+        gs = np.asarray(rc.group_structure, 'f8')
+        if gs[0] < gs[-1]:
+            gs = gs[::-1]
+        rc.group_structure = gs
+
     def _ensure_nl(self, rc):
         # Make nuclide lists
         if isinstance(rc.core_load_nucs, basestring):
             core_load = load_nuc_file(rc.core_load_nucs)
         else:
-            core_load = [nucname.zzaaam(nuc) for nuc in rc.core_load_nucs]
+            core_load = [nucname.id(nuc) for nuc in rc.core_load_nucs]
         rc.core_load = sorted(set(core_load))
 
         if isinstance(rc.core_transmute_nucs, basestring):
             core_transmute = load_nuc_file(rc.core_transmute_nucs)
         else:
-            core_transmute = [nucname.zzaaam(nuc) for nuc in rc.core_transmute_nucs]
+            core_transmute = [nucname.id(nuc) for nuc in rc.core_transmute_nucs]
         rc.core_transmute = sorted(set(core_transmute))
 
     def _ensure_temp(self, rc):

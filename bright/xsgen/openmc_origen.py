@@ -6,6 +6,9 @@ import subprocess
 
 import numpy as np
 
+from statepoint import StatePoint
+
+from pyne import rxname
 from pyne import nucname
 from pyne.material import Material
 from pyne.xs import data_source 
@@ -136,6 +139,9 @@ class OpenMCOrigen(object):
     transmutation.
     """
 
+    reactions = {rxname.id(_) for _ in ('total', 'absorption', 'gamma', 'gamma_1', 
+                 'z_2n', 'z_2n_1', 'z_3n', 'proton', 'alpha', 'fission')}
+
     def __init__(self, rc):
         self.rc = rc
         self.statelibs = {}
@@ -148,9 +154,13 @@ class OpenMCOrigen(object):
                         cross_sections=rc.openmc_cross_sections,
                         #src_group_struct=self.eafds.src_group_struct)
                         src_group_struct=np.logspace(1, -9, 1001))
-        self.xscache = XSCache(data_sources=[self.omcds, self.eafds, self.cinderds,
-                                             data_source.SimpleDataSource,
-                                             data_source.NullDataSource])
+        data_sources = [self.omcds]
+        if not rc.is_thermal:
+            data_sources.append(self.eafds)
+        data_sources += [self.cinderds, data_source.SimpleDataSource,
+                         data_source.NullDataSource]
+        self.xscache = XSCache(data_sources=data_sources)
+        print(data_sources)
 
     def pwd(self, state):
         return os.path.join(self.builddir, str(hash(state)), 'omc')
@@ -166,7 +176,7 @@ class OpenMCOrigen(object):
         if state in self.statelibs:
             return self.statelibs[state]
         if state.burn_times != 0.0:
-            raise ValueError("Burn must start at t=0.")
+            raise ValueError('Burn must start at t=0.')
         self.openmc(state)
         return self.statelibs[state]
 
@@ -183,7 +193,9 @@ class OpenMCOrigen(object):
             with indir(pwd):
                 subprocess.check_call(['openmc'])
             statepoint = _find_statepoint(pwd)
-        # parse results
+        # parse & prepare results
+        k, phi_g = self._parse_statepoint(statepoint)
+        xstab = self._generate_xs(phi_g)
 
     def _make_omc_input(self, state):
         pwd = self.pwd(state)
@@ -195,7 +207,7 @@ class OpenMCOrigen(object):
             f.write(settings)
         # materials
         valid_nucs = self.nucs_in_cross_sections()
-        core_nucs = set(map(nucname.id, ctx['core_transmute_nucs']))
+        core_nucs = set(ctx['core_transmute'])
         ctx['_fuel_nucs'] = _mat_to_nucs(rc.fuel_material[valid_nucs])
         ctx['_clad_nucs'] = _mat_to_nucs(rc.clad_material[valid_nucs])
         ctx['_cool_nucs'] = _mat_to_nucs(rc.cool_material[valid_nucs])
@@ -234,6 +246,44 @@ class OpenMCOrigen(object):
         return {n.nucid for n in self.omcds.cross_sections.ace_tables \
                 if n.nucid is not None}
 
+    def _parse_statepoint(self, statepoint):
+        """Parses a statepoint file and reads in the relevant fluxes, assigns them 
+        to the DataSources or the XSCache, and returns k and phi_g.
+        """
+        sp = StatePoint(statepoint)
+        sp.read_results()
+        # compute group fluxes for data sources
+        for tally, ds in zip(sp.tallies[1:4], (self.cinderds, self.eafds, self.omcds)):
+            ds.src_phi_g = tally.results[::-1, :, 0].flatten()
+            ds.src_phi_g /= ds.src_phi_g.sum()
+        # compute return values
+        k, kerr = sp.k_combined
+        t_flux = sp.tallies[0]
+        phi_g = t_flux.results[::-1, :, 0].flatten()
+        phi_g /= phi_g.sum()
+        return k, phi_g
+
+    def _generate_xs(self, phi_g):
+        rc = self.rc
+        xscache = self.xscache
+        xscache['E_g'] = rc.group_structure
+        xscache['phi_g'] = phi_g
+        G = len(phi_g)
+        temp = rc.temperature
+        rxs = self.reactions
+        nucs = rc.core_transmute
+        dt = np.dtype([('nuc', 'i4'), ('rx', np.uint32), ('xs', 'f8', G)])
+        data = np.empty(len(nucs)*len(rxs), dtype=dt)
+        i = 0
+        for nuc in nucs:
+            for rx in rxs:
+                #import pdb; pdb.set_trace()
+                xs = xscache[nuc, rx, temp]
+                print(nucname.name(nuc), rxname.name(rx), xs)
+                data[i] = nuc, rx, xs
+                i += 1
+        return data
+
 def _mat_to_nucs(mat):
     nucs = []
     template = '<nuclide name="{nuc}" wo="{mass}" />'
@@ -245,5 +295,5 @@ def _mat_to_nucs(mat):
 def _find_statepoint(pwd):
     for f in os.listdir(pwd):
         if f.startswith('statepoint'):
-            return f
+            return os.path.join(pwd, f)
     return None
