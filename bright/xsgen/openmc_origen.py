@@ -10,6 +10,7 @@ from statepoint import StatePoint
 
 from pyne import rxname
 from pyne import nucname
+from pyne import origen22
 from pyne.material import Material
 from pyne.xs import data_source 
 from pyne.xs.cache import XSCache
@@ -157,10 +158,11 @@ class OpenMCOrigen(object):
         data_sources = [self.omcds]
         if not rc.is_thermal:
             data_sources.append(self.eafds)
-        data_sources += [self.cinderds, data_source.SimpleDataSource,
-                         data_source.NullDataSource]
+        data_sources += [self.cinderds, data_source.SimpleDataSource(),
+                         data_source.NullDataSource()]
+        for ds in data_sources[1:]:
+            ds.load()
         self.xscache = XSCache(data_sources=data_sources)
-        print(data_sources)
 
     def pwd(self, state):
         return os.path.join(self.builddir, str(hash(state)), 'omc')
@@ -177,7 +179,8 @@ class OpenMCOrigen(object):
             return self.statelibs[state]
         if state.burn_times != 0.0:
             raise ValueError('Burn must start at t=0.')
-        self.openmc(state)
+        k, phi_g, xs = self.openmc(state)
+        self.origen(state, xs)
         return self.statelibs[state]
 
     def openmc(self, state):
@@ -196,6 +199,7 @@ class OpenMCOrigen(object):
         # parse & prepare results
         k, phi_g = self._parse_statepoint(statepoint)
         xstab = self._generate_xs(phi_g)
+        return k, phi_g, xstab
 
     def _make_omc_input(self, state):
         pwd = self.pwd(state)
@@ -265,6 +269,7 @@ class OpenMCOrigen(object):
 
     def _generate_xs(self, phi_g):
         rc = self.rc
+        verbose = rc.verbose
         xscache = self.xscache
         xscache['E_g'] = rc.group_structure
         xscache['phi_g'] = phi_g
@@ -277,12 +282,17 @@ class OpenMCOrigen(object):
         i = 0
         for nuc in nucs:
             for rx in rxs:
-                #import pdb; pdb.set_trace()
                 xs = xscache[nuc, rx, temp]
-                print(nucname.name(nuc), rxname.name(rx), xs)
+                if verbose:
+                    print("OpenMC XS:", nucname.name(nuc), rxname.name(rx), xs)
                 data[i] = nuc, rx, xs
                 i += 1
         return data
+
+    def origen(self, state, xs):
+        """Runs ORIGEN calulations to obtain transmutation matix."""
+        t9 = origen22.xslibs(xscache=self.xscache, verbose=self.rc.verbose)
+        import pdb; pdb.set_trace()
 
 def _mat_to_nucs(mat):
     nucs = []
