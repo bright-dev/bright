@@ -17,12 +17,12 @@ discusses the Python level, though it serves for both interfaces.
 Bright currently has the following external C++ dependencies:
 
    #. `HDF5 <http://www.hdfgroup.org/HDF5/>`_
-   #. `PyNE <http://pyne.github.com/pyne/>`_
+   #. `PyNE <http://pyne.io/>`_
 
 From python, Bright may require these additional dependencies:
 
    #. `Cython <http://cython.org/>`_
-   #. `NumPy <http://numpy.scipy.org/>`_
+   #. `NumPy <http://www.numpy.org/>`_
    #. `SciPy <http://www.scipy.org/>`_
    #. `ETS <http://code.enthought.com/>`_ (for GUI)
    #. `PyTables <http://www.pytables.org/>`_
